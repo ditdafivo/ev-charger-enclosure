@@ -294,7 +294,7 @@ def build_enclosure(
         ("rail_rb","post_fr","post_br", 7, 0, None, True),
         ("rail_lb","post_fl","post_bl", 7, 0, None, True),
         ("rail_fb","rail_lb","rail_rb", 7, CENTER_RAIL_OFFSET, None, True),
-        ("rail_rbu","post_fr","post_br", 12, 0, None, True),
+        ("rail_rbu","post_fr","post_br", 13, 0, None, True),
         ("rail_r_tambour","post_fr","post_br", FRAME_DIMS.z-TAMBOUR_TOP_OFFSET, 0, None, True),
         ("rail_l_tambour","post_fl","post_bl", FRAME_DIMS.z-TAMBOUR_TOP_OFFSET, 0, None, True),
         ("rail_rt","post_fr","post_br", FRAME_DIMS.z-UPPER_RAIL_OFFSET, 0, None, True),

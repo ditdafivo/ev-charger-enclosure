@@ -12,7 +12,7 @@
 tambour_door_open = true;
 siding = true;
 ground = false;
-xygrid_zloc = -1;
+xygrid_zloc = -1; // [-1:1:48]
 {% if build_step_count %}
 build_step = {{ build_step_count + 1 }}; // [{{ range(0, build_step_count + 2) | map('string') | join(', ') }}]
 

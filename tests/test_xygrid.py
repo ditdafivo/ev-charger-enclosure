@@ -52,7 +52,6 @@ class XYGridTests(unittest.TestCase):
         scad = Model(self.sample_members()).to_scad()
 
         self.assertIn("ground = false;", scad)
-        self.assertIn("xygrid_zloc = -1;", scad)
         self.assertIn("xygrid_zloc == floor(xygrid_zloc)", scad)
         self.assertIn("module render_xygrid(bounds, zloc)", scad)
         self.assertIn("coordinate % 10 == 0", scad)

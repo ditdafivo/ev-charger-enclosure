@@ -1,9 +1,11 @@
 name: Deploy OpenSCAD Playground to Pages
 
 on:
-  push:
-    branches:
-      - pages-source
+  workflow_run:
+    workflows:
+      - Queue OpenSCAD Playground deployment
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -17,12 +19,15 @@ concurrency:
 
 jobs:
   build:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Check out deployment source
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && 'pages-source' || github.sha }}
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || 'pages-source' }}
           submodules: true
 
       - name: Set up Node.js
@@ -31,7 +36,9 @@ jobs:
           node-version: 22
 
       - name: Build static Playground
-        run: ./openscad_playground_container/scripts/build-pages.sh pages/model.scad pages-dist "$GITHUB_SHA"
+        run: >-
+          ./openscad_playground_container/scripts/build-pages.sh
+          pages/model.scad pages-dist "$(git rev-parse HEAD)"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

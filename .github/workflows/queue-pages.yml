@@ -1,0 +1,16 @@
+name: Queue OpenSCAD Playground deployment
+
+on:
+  push:
+    branches:
+      - pages-source
+
+permissions:
+  contents: read
+
+jobs:
+  queue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Queue deployment from the default branch
+        run: echo "Pages source is ready at $GITHUB_SHA"

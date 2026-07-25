@@ -929,9 +929,23 @@ class ParameterizedBuildTests(unittest.TestCase):
                 cwd=repository,
                 check=True,
             )
+            subprocess.run(
+                ["git", "push", "--quiet", "-u", "origin", "main"],
+                cwd=repository,
+                check=True,
+            )
 
             model_path = root / "model.scad"
             model_path.write_text(f'import("{build.LOCAL_MESH_PATH}");\n')
+            dirty_file = repository / "uncommitted.txt"
+            dirty_file.write_text("not committed\n")
+            dirty_stderr = io.StringIO()
+            with contextlib.chdir(repository), contextlib.redirect_stderr(
+                dirty_stderr
+            ):
+                self.assertFalse(build.deploy_generated_model(model_path))
+            dirty_file.unlink()
+
             with contextlib.chdir(repository), contextlib.redirect_stdout(
                 io.StringIO()
             ):
@@ -971,6 +985,33 @@ class ParameterizedBuildTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
             ).stdout
+
+            (repository / "README.md").write_text("local commit not pushed\n")
+            subprocess.run(
+                ["git", "add", "README.md"], cwd=repository, check=True
+            )
+            subprocess.run(
+                ["git", "commit", "-m", "Local only"],
+                cwd=repository,
+                check=True,
+                capture_output=True,
+            )
+            unsynced_stderr = io.StringIO()
+            with contextlib.chdir(repository), contextlib.redirect_stderr(
+                unsynced_stderr
+            ):
+                self.assertFalse(build.deploy_generated_model(model_path))
+            final_commit = subprocess.run(
+                [
+                    "git",
+                    f"--git-dir={remote}",
+                    "rev-parse",
+                    "refs/heads/pages-source",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
             status = subprocess.run(
                 ["git", "status", "--porcelain"],
                 cwd=repository,
@@ -980,6 +1021,9 @@ class ParameterizedBuildTests(unittest.TestCase):
             ).stdout
 
         self.assertEqual(first_commit, second_commit)
+        self.assertEqual(second_commit, final_commit)
+        self.assertIn("working tree is not clean", dirty_stderr.getvalue())
+        self.assertIn("is not synchronized", unsynced_stderr.getvalue())
         self.assertEqual(
             deployed_model,
             f'import("{build.PLAYGROUND_MESH_PATH}");\n',

@@ -26,6 +26,10 @@ without publishing, use:
 uv run build.py --no-deploy
 ```
 
+Automatic publishing is also skipped unless the working tree is clean and the
+current commit exactly matches its freshly fetched upstream branch. This keeps
+generated Pages deployments from getting ahead of the source code on GitHub.
+
 The `--width`, `--depth`, `--height`, and `--power-conduit-layout` options
 customize the enclosure. Run `uv run build.py --help` for their descriptions.
 

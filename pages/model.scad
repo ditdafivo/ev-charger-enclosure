@@ -11,6 +11,8 @@
 // true: fully open; false: fully closed
 tambour_door_open = true;
 siding = true;
+ground = false;
+xygrid_zloc = -1; // [-1:1:48]
 build_step = 26; // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
 
@@ -184,6 +186,14 @@ siding_parts = [
     ["enclosure_siding_angle_tambour_header_face", "black_aluminum_angle", [3.5, 22.875, 45], [20.5, 0.125, 1.25], [0.03, 0.03, 0.03, 1]],
     ["enclosure_siding_angle_tambour_header_bottom", "black_aluminum_angle", [3.5, 21.625, 44.875], [20.5, 1.25, 0.125], [0.03, 0.03, 0.03, 1]]
 ];
+
+xygrid_bounds = [-2.125, 32.5, -6, 24];
+xygrid_origin = [27.5, 0];
+
+assert(
+    xygrid_zloc == floor(xygrid_zloc),
+    str("xygrid_zloc must be an integer; got ", xygrid_zloc)
+);
 
 build_step_count = 25;
 build_step_objects = [
@@ -512,6 +522,16 @@ function cp_axis(p) = p[1];
 function cp_length(p) = p[2];
 function cp_diameter(p) = p[3];
 
+function xygrid_line_color(coordinate) =
+    coordinate % 10 == 0 ? [0.90, 0.16, 0.12, 0.75] :
+    coordinate % 5 == 0 ? [0.12, 0.42, 0.90, 0.60] :
+    [0.65, 0.68, 0.72, 0.35];
+
+function xygrid_line_width(coordinate) =
+    coordinate % 10 == 0 ? 0.06 :
+    coordinate % 5 == 0 ? 0.04 :
+    0.02;
+
 function c_component_matrix(c) =
     [
         [c_along(c)[0], c_across(c)[0], c_out(c)[0], c_origin(c)[0]],
@@ -705,6 +725,38 @@ module render_siding_part(s, highlighted = false) {
             cube(s_size(s));
 }
 
+module render_xygrid(bounds, origin, zloc) {
+    min_x = bounds[0];
+    max_x = bounds[1];
+    min_y = bounds[2];
+    max_y = bounds[3];
+    origin_x = origin[0];
+    origin_y = origin[1];
+    line_height = 0.01;
+
+    for (x = [ceil(min_x - origin_x) : floor(max_x - origin_x)]) {
+        line_width = xygrid_line_width(x);
+        color(xygrid_line_color(x))
+            translate([
+                origin_x + x - line_width / 2,
+                min_y,
+                zloc - line_height / 2
+            ])
+                cube([line_width, max_y - min_y, line_height]);
+    }
+
+    for (y = [ceil(min_y - origin_y) : floor(max_y - origin_y)]) {
+        line_width = xygrid_line_width(y);
+        color(xygrid_line_color(y))
+            translate([
+                min_x,
+                origin_y + y - line_width / 2,
+                zloc - line_height / 2
+            ])
+                cube([max_x - min_x, line_width, line_height]);
+    }
+}
+
 module render_assembly(assembly_name, enabled) {
     if (enabled) {
         for (p = pieces) {
@@ -806,6 +858,12 @@ if (siding) {
     }
 }
 
-for (g = grounds) {
-    render_ground(g);
+if (ground) {
+    for (g = grounds) {
+        render_ground(g);
+    }
+}
+
+if ($preview && xygrid_zloc >= 0 && len(xygrid_bounds) == 4) {
+    render_xygrid(xygrid_bounds, xygrid_origin, xygrid_zloc);
 }

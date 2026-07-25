@@ -1705,6 +1705,10 @@ def build_enclosure(
         grounds=grounds,
         tambours=tambours,
         sidings=[siding],
+        xygrid_origin=(
+            members["post_fr"].max_on("x"),
+            members["post_fr"].min_on("y"),
+        ),
         build_steps=(
             {
                 "junction-spline": JUNCTION_SPLINE_BUILD_STEPS,
@@ -1778,17 +1782,89 @@ def _playground_model_text(model_path: Path) -> str:
     return model_text.replace(LOCAL_MESH_PATH, PLAYGROUND_MESH_PATH)
 
 
+def _validate_deployment_source(repository: str) -> None:
+    """Require a clean checkout exactly synchronized with its upstream."""
+
+    status = subprocess.run(
+        ["git", "status", "--porcelain", "--untracked-files=normal"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if status:
+        raise ValueError(
+            "working tree is not clean; commit or remove local changes before "
+            "deploying"
+        )
+
+    branch = subprocess.run(
+        ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    remote = subprocess.run(
+        ["git", "config", "--get", f"branch.{branch}.remote"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    merge_ref = subprocess.run(
+        ["git", "config", "--get", f"branch.{branch}.merge"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if remote == ".":
+        raise ValueError(
+            f"branch {branch!r} tracks a local branch; configure a remote upstream "
+            "before deploying"
+        )
+
+    subprocess.run(
+        ["git", "fetch", "--quiet", remote, merge_ref],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    local_commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    remote_commit = subprocess.run(
+        ["git", "rev-parse", "FETCH_HEAD"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if local_commit != remote_commit:
+        raise ValueError(
+            f"local branch {branch!r} is not synchronized with {remote}/{merge_ref}; "
+            "push or update the branch before deploying"
+        )
+
+
 def deploy_generated_model(model_path: Path) -> bool:
     """Push a generated model commit that triggers the Pages workflow."""
 
     try:
-        playground_text = _playground_model_text(model_path)
         repository = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
             check=True,
             capture_output=True,
             text=True,
         ).stdout.strip()
+        _validate_deployment_source(repository)
+        playground_text = _playground_model_text(model_path)
         remote_ref = (
             f"refs/remotes/{PLAYGROUND_REMOTE}/{PLAYGROUND_DEPLOY_BRANCH}"
         )

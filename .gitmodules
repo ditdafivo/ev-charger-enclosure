@@ -1,0 +1,3 @@
+[submodule "openscad_playground_container/openscad-playground"]
+	path = openscad_playground_container/openscad-playground
+	url = https://github.com/ditdafivo/openscad-playground.git

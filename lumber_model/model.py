@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 import csv
 import json
+import math
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -16,6 +17,7 @@ from lumber_model.components import ComponentInstance
 from lumber_model.conduit import ConduitRun
 from lumber_model.constants import LumberType
 from lumber_model.formatting import (
+    fmt_float,
     inches_to_fraction_text,
     round_to_increment,
     sanitize_scad_identifier,
@@ -25,6 +27,44 @@ from lumber_model.ground import GroundPlane
 from lumber_model.lumber import AngledLumber, LumberPiece
 from lumber_model.siding import CompositeSiding
 from lumber_model.tambour import TambourDoor
+
+
+XYBounds = tuple[float, float, float, float]
+
+
+def _include_xy_box(
+    bounds: list[float],
+    min_x: float,
+    max_x: float,
+    min_y: float,
+    max_y: float,
+) -> None:
+    bounds[0] = min(bounds[0], min_x)
+    bounds[1] = max(bounds[1], max_x)
+    bounds[2] = min(bounds[2], min_y)
+    bounds[3] = max(bounds[3], max_y)
+
+
+def _include_centerline_segments(
+    bounds: list[float],
+    points: tuple[Vector3, ...],
+    diameter: float,
+) -> None:
+    radius = diameter / 2
+    for start, end in zip(points, points[1:]):
+        delta = tuple(end[index] - start[index] for index in range(3))
+        length = math.sqrt(sum(value * value for value in delta))
+        if length == 0:
+            continue
+        x_radius = radius * math.sqrt(max(0, 1 - (delta[0] / length) ** 2))
+        y_radius = radius * math.sqrt(max(0, 1 - (delta[1] / length) ** 2))
+        _include_xy_box(
+            bounds,
+            min(start[0], end[0]) - x_radius,
+            max(start[0], end[0]) + x_radius,
+            min(start[1], end[1]) - y_radius,
+            max(start[1], end[1]) + y_radius,
+        )
 
 
 @dataclass(init=False)
@@ -212,7 +252,9 @@ class Model:
                 f"after sanitization: {duplicate_conduit_vars}"
             )
 
-        component_by_name = {component.name: component for component in self.components}
+        component_by_name = {
+            component.name: component for component in self.components
+        }
 
         for conduit in self.conduits:
             conduit.resolved(component_by_name, member_by_name)
@@ -638,6 +680,135 @@ class Model:
             for name in step.object_names
         ]
 
+    def _xygrid_bounds(self) -> XYBounds | None:
+        """Return non-ground XY geometry bounds with a one-inch margin."""
+        bounds = [math.inf, -math.inf, math.inf, -math.inf]
+        member_by_name = {piece.name: piece for piece in self.pieces}
+        component_by_name = {
+            component.name: component for component in self.components
+        }
+
+        for piece in self.pieces:
+            if isinstance(piece, AngledLumber):
+                dx = piece.end[0] - piece.start[0]
+                dy = piece.end[1] - piece.start[1]
+                perpendicular_x = -dy / piece.length
+                perpendicular_y = dx / piece.length
+                x_radius = abs(perpendicular_x) * piece.width / 2
+                y_radius = abs(perpendicular_y) * piece.width / 2
+                _include_xy_box(
+                    bounds,
+                    min(piece.start[0], piece.end[0]) - x_radius,
+                    max(piece.start[0], piece.end[0]) + x_radius,
+                    min(piece.start[1], piece.end[1]) - y_radius,
+                    max(piece.start[1], piece.end[1]) + y_radius,
+                )
+            else:
+                _include_xy_box(
+                    bounds,
+                    piece.min[0],
+                    piece.max[0],
+                    piece.min[1],
+                    piece.max[1],
+                )
+
+        for component in self.components:
+            resolved = component.resolved(member_by_name[component.member])
+            _include_xy_box(
+                bounds,
+                resolved.box_min[0],
+                resolved.box_min[0] + resolved.box_size[0],
+                resolved.box_min[1],
+                resolved.box_min[1] + resolved.box_size[1],
+            )
+
+        for conduit in self.conduits:
+            resolved = conduit.resolved(component_by_name, member_by_name)
+            _include_centerline_segments(bounds, resolved.points, resolved.od)
+
+        for cable in self.cables:
+            radius = cable.diameter / 2
+            for point in cable.points:
+                _include_xy_box(
+                    bounds,
+                    point[0] - radius,
+                    point[0] + radius,
+                    point[1] - radius,
+                    point[1] + radius,
+                )
+
+        for tambour in self.tambours:
+            resolved = tambour.resolved(self)
+            _include_centerline_segments(
+                bounds,
+                resolved.left_points,
+                resolved.track_diameter,
+            )
+            _include_centerline_segments(
+                bounds,
+                resolved.right_points,
+                resolved.track_diameter,
+            )
+
+            for slats in (resolved.slats, resolved.closed_slats):
+                for left, right, tangent in slats:
+                    span = tuple(right[index] - left[index] for index in range(3))
+                    span_length = math.sqrt(sum(value * value for value in span))
+                    span_dir = tuple(value / span_length for value in span)
+                    tangent_length = math.sqrt(sum(value * value for value in tangent))
+                    travel_dir = tuple(value / tangent_length for value in tangent)
+                    depth_dir = (
+                        span_dir[1] * travel_dir[2]
+                        - span_dir[2] * travel_dir[1],
+                        span_dir[2] * travel_dir[0]
+                        - span_dir[0] * travel_dir[2],
+                        span_dir[0] * travel_dir[1]
+                        - span_dir[1] * travel_dir[0],
+                    )
+                    depth_length = math.sqrt(
+                        sum(value * value for value in depth_dir)
+                    )
+                    depth_dir = tuple(value / depth_length for value in depth_dir)
+                    center = tuple(
+                        (left[index] + right[index]) / 2 for index in range(3)
+                    )
+                    half_extent = tuple(
+                        (
+                            abs(span_dir[index]) * span_length
+                            + abs(travel_dir[index]) * resolved.slat_thickness
+                            + abs(depth_dir[index]) * resolved.slat_depth
+                        )
+                        / 2
+                        for index in range(3)
+                    )
+                    _include_xy_box(
+                        bounds,
+                        center[0] - half_extent[0],
+                        center[0] + half_extent[0],
+                        center[1] - half_extent[1],
+                        center[1] + half_extent[1],
+                    )
+
+        for siding in self.sidings:
+            for part in siding.parts:
+                _include_xy_box(
+                    bounds,
+                    part.start[0],
+                    part.start[0] + part.size[0],
+                    part.start[1],
+                    part.start[1] + part.size[1],
+                )
+
+        if math.isinf(bounds[0]):
+            return None
+        return (bounds[0] - 1, bounds[1] + 1, bounds[2] - 1, bounds[3] + 1)
+
+    def _scad_xygrid_bounds(self) -> str:
+        bounds = self._xygrid_bounds()
+        if bounds is None:
+            return "[]"
+        return "[" + ", ".join(fmt_float(value) for value in bounds) + "]"
+
     def to_scad(
         self,
         template_dir: str | Path = "templates",
@@ -671,6 +842,7 @@ class Model:
             tambour_assemblies=self.scad_tambour_assemblies(),
             tambour_records=self.scad_tambour_records(),
             siding_records=self.scad_siding_records(),
+            xygrid_bounds=self._scad_xygrid_bounds(),
             build_step_records=self.scad_build_step_records(),
             build_step_count=len(self.build_steps),
         )

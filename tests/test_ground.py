@@ -91,6 +91,8 @@ class GroundPlaneTests(unittest.TestCase):
 
         self.assertIn("grounds = [", scad)
         self.assertIn('"ground"', scad)
+        self.assertIn("ground = false;", scad)
+        self.assertIn("if (ground)", scad)
         self.assertIn("render_ground(g)", scad)
 
     def test_ground_plane_rejects_collinear_points(self) -> None:

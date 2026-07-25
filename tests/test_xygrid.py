@@ -52,16 +52,38 @@ class XYGridTests(unittest.TestCase):
         scad = Model(self.sample_members()).to_scad()
 
         self.assertIn("ground = false;", scad)
+        self.assertIn("xygrid_origin = [0, 0];", scad)
         self.assertIn("xygrid_zloc == floor(xygrid_zloc)", scad)
-        self.assertIn("module render_xygrid(bounds, zloc)", scad)
+        self.assertIn("module render_xygrid(bounds, origin, zloc)", scad)
         self.assertIn("coordinate % 10 == 0", scad)
         self.assertIn("coordinate % 5 == 0", scad)
-        self.assertIn("[ceil(min_x) : floor(max_x)]", scad)
-        self.assertIn("[ceil(min_y) : floor(max_y)]", scad)
+        self.assertIn(
+            "[ceil(min_x - origin_x) : floor(max_x - origin_x)]",
+            scad,
+        )
+        self.assertIn(
+            "[ceil(min_y - origin_y) : floor(max_y - origin_y)]",
+            scad,
+        )
         self.assertIn(
             "if ($preview && xygrid_zloc >= 0 && len(xygrid_bounds) == 4)",
             scad,
         )
+
+    def test_full_enclosure_grid_origin_is_post_fr_outer_front_corner(self) -> None:
+        post_fr = build.members["post_fr"]
+
+        self.assertEqual(
+            build.model.xygrid_origin,
+            (post_fr.max_on("x"), post_fr.min_on("y")),
+        )
+        self.assertEqual(build.model.xygrid_origin, (27.5, 0))
+        self.assertIn("xygrid_origin = [27.5, 0];", build.model.to_scad())
+
+    def test_enclosure_grid_origin_tracks_non_default_width(self) -> None:
+        enclosure = build.build_enclosure(width=30)
+
+        self.assertEqual(enclosure.model.xygrid_origin, (33.5, 0))
 
     def test_full_enclosure_bounds_cover_non_ground_geometry(self) -> None:
         self.assertEqual(

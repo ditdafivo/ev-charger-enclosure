@@ -1705,6 +1705,10 @@ def build_enclosure(
         grounds=grounds,
         tambours=tambours,
         sidings=[siding],
+        xygrid_origin=(
+            members["post_fr"].max_on("x"),
+            members["post_fr"].min_on("y"),
+        ),
         build_steps=(
             {
                 "junction-spline": JUNCTION_SPLINE_BUILD_STEPS,

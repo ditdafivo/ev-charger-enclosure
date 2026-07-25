@@ -30,6 +30,7 @@ from lumber_model.tambour import TambourDoor
 
 
 XYBounds = tuple[float, float, float, float]
+XYOrigin = tuple[float, float]
 
 
 def _include_xy_box(
@@ -77,6 +78,7 @@ class Model:
     tambours: list[TambourDoor]
     sidings: list[CompositeSiding]
     build_steps: tuple[BuildStep, ...]
+    xygrid_origin: XYOrigin
 
     def __init__(
         self,
@@ -92,6 +94,7 @@ class Model:
         | Iterable[CompositeSiding]
         | None = None,
         build_steps: Iterable[BuildStep] | None = None,
+        xygrid_origin: XYOrigin = (0, 0),
     ):
         if isinstance(pieces, Mapping):
             self.pieces = list(pieces.values())
@@ -141,6 +144,7 @@ class Model:
             self.sidings = list(sidings)
 
         self.build_steps = tuple(build_steps or ())
+        self.xygrid_origin = xygrid_origin
 
     @classmethod
     def from_members(
@@ -809,6 +813,10 @@ class Model:
             return "[]"
         return "[" + ", ".join(fmt_float(value) for value in bounds) + "]"
 
+    def _scad_xygrid_origin(self) -> str:
+        values = ", ".join(fmt_float(value) for value in self.xygrid_origin)
+        return f"[{values}]"
+
     def to_scad(
         self,
         template_dir: str | Path = "templates",
@@ -843,6 +851,7 @@ class Model:
             tambour_records=self.scad_tambour_records(),
             siding_records=self.scad_siding_records(),
             xygrid_bounds=self._scad_xygrid_bounds(),
+            xygrid_origin=self._scad_xygrid_origin(),
             build_step_records=self.scad_build_step_records(),
             build_step_count=len(self.build_steps),
         )

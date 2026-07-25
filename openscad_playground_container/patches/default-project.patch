@@ -1,0 +1,94 @@
+diff --git a/src/state/initial-state.ts b/src/state/initial-state.ts
+index 7f9341e..fabfed8 100644
+--- a/src/state/initial-state.ts
++++ b/src/state/initial-state.ts
+@@ -1,9 +1,13 @@
+ // Portions of this file are Copyright 2021 Google LLC, and licensed under GPL2+. See COPYING.
+ 
+-import defaultScad from './default-scad.ts';
+ import { State } from './app-state.ts';
+ 
+-export const defaultSourcePath = '/playground.scad';
++export const defaultSourcePath = '/model.scad';
++const defaultSources = [
++  {path: defaultSourcePath, url: './default-project/model.scad?v=__PLAYGROUND_BUILD_ID__'},
++  {path: '/ev_charger_plug.stl', url: './default-project/ev_charger_plug.stl'},
++];
++
+ export const defaultModelColor = '#f9d72c';
+ const defaultBlurhash = "|KSPX^%3~qtjMx$lR*x]t7n,R%xuxbM{WBt7ayfk_3bY9FnAt8XOxanjNF%fxbMyIn%3t7NFoLaeoeV[WBo{xar^IoS1xbxcR*S0xbofRjV[j[kCNGofxaWBNHW-xasDR*WTkBxuWBM{s:t7bYahRjfkozWUadofbIW:jZ";
+   
+@@ -25,8 +29,6 @@ export function createInitialState(state: State | null, source?: {content?: strin
+       blurhash = source.blurhash;
+     } else {
+-      content = defaultScad;
+       path = defaultSourcePath;
+-      blurhash = defaultBlurhash;
+     }
+     let activePath = path ?? (url && new URL(url).pathname.split('/').pop()) ?? defaultSourcePath;
+     initialState = {
+@@ -34,5 +36,5 @@ export function createInitialState(state: State | null, source?: {content?: strin
+       params: {
+         activePath,
+-        sources: [{path: activePath, content, url}],
++        sources: source ? [{path: activePath, content, url}] : defaultSources,
+         features: [],
+         exportFormat2D: 'svg',
+@@ -42,6 +44,6 @@ export function createInitialState(state: State | null, source?: {content?: strin
+       view: {
+         layout: {
+           mode: 'multi',
+-          editor: true,
++          editor: false,
+           viewer: true,
+           customizer: false,
+@@ -90,6 +92,3 @@
+ export function getBlankProjectState() {
+-  return createInitialState(null, {
+-    path: defaultSourcePath,
+-    content: defaultScad, 
+-  });
++  return createInitialState(null);
+ }
+diff --git a/webpack.config.js b/webpack.config.js
+index c099958..0dccdd1 100644
+--- a/webpack.config.js
++++ b/webpack.config.js
+@@ -77,4 +77,5 @@ module.exports = [
+             /(^|\/)\./,
+             /\.map$/,
+             /^manifest.*\.js$/,
++            /^default-project\/model\.scad$/,
+           ],
+@@ -85,5 +86,8 @@ module.exports = [
+           clientsClaim: true,
+           skipWaiting: true,
+-          runtimeCaching: [{
++          runtimeCaching: [{
++            urlPattern: ({ url }) => url.pathname.endsWith('/default-project/model.scad'),
++            handler: 'NetworkOnly',
++          }, {
+             urlPattern: ({ request, url }) => true,
+             handler: 'StaleWhileRevalidate',
+diff --git a/src/components/HelpMenu.tsx b/src/components/HelpMenu.tsx
+index 4bc1061..f2b1117 100644
+--- a/src/components/HelpMenu.tsx
++++ b/src/components/HelpMenu.tsx
+@@ -11,13 +11,13 @@ export default function HelpMenu({className, style}: {className?: string, style?
+       <Menu style={style} className={className}  model={[
+         {
+-          label: "openscad-playground",
++          label: "EV charger enclosure source",
+           icon: 'pi pi-github',
+-          url: 'https://github.com/openscad/openscad-playground/',
++          url: 'https://github.com/ditdafivo/ev-charger-enclosure/',
+           target: '_blank'
+         },
+         {
+-          label: 'LICENSES',
++          label: 'Licenses and notices',
+           icon: 'pi pi-info-circle',
+-          url: 'https://github.com/openscad/openscad-playground/blob/main/LICENSE.md',
++          url: './LICENSE.md',
+           target: '_blank'
+         },

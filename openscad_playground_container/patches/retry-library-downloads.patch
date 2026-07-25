@@ -1,0 +1,96 @@
+diff --git a/webpack-libs-plugin.js b/webpack-libs-plugin.js
+index d286094..452ea4d 100644
+--- a/webpack-libs-plugin.js
++++ b/webpack-libs-plugin.js
+@@ -70,31 +70,51 @@ class OpenSCADLibrariesPlugin {
+         }
+     }
+ 
+-    async downloadFile(url, outputPath) {
+-        console.log(`Downloading ${url} to ${outputPath}`);
+-
++    async downloadFileOnce(url, outputPath) {
+         return new Promise((resolve, reject) => {
+-            https.get(url, (response) => {
++            const request = https.get(url, (response) => {
+                 if (response.statusCode === 302 || response.statusCode === 301) {
+-                    return this.downloadFile(response.headers.location, outputPath)
++                    response.resume();
++                    return this.downloadFileOnce(response.headers.location, outputPath)
+                         .then(resolve)
+                         .catch(reject);
+                 }
+ 
+                 if (response.statusCode !== 200) {
++                    response.resume();
+                     reject(new Error(`Failed to download: ${response.statusCode}`));
+                     return;
+                 }
+ 
+                 const fileStream = createWriteStream(outputPath);
+                 pipeline(response, fileStream)
+                     .then(resolve)
+                     .catch(reject);
+-            }).on('error', reject);
++            });
++            request.setTimeout(120000, () => request.destroy(new Error('Download timed out')));
++            request.on('error', reject);
+         });
+     }
+ 
+-    async cloneRepo(repo, targetDir, branch = 'master', shallow = true) {
++    async downloadFile(url, outputPath, maxAttempts = 5) {
++        const tempPath = `${outputPath}.part`;
++        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
++            console.log(`Downloading ${url} to ${outputPath} (attempt ${attempt}/${maxAttempts})`);
++            try {
++                await fs.rm(tempPath, { force: true });
++                await this.downloadFileOnce(url, tempPath);
++                await fs.rename(tempPath, outputPath);
++                return;
++            } catch (error) {
++                await fs.rm(tempPath, { force: true });
++                if (attempt === maxAttempts) throw error;
++                console.warn(`Download failed: ${error.message}; retrying...`);
++                await new Promise(resolve => setTimeout(resolve, attempt * 2000));
++            }
++        }
++    }
++
++    async cloneRepo(repo, targetDir, branch = 'master', shallow = true, maxAttempts = 5) {
+         const cloneArgs = [
+             'clone',
+             '--recurse',
+@@ -103,15 +123,25 @@ class OpenSCADLibrariesPlugin {
+             `--branch ${branch}`,
+             '--single-branch',
+             repo,
+-            targetDir
+         ].filter(Boolean);
+ 
+-        console.log(`Cloning ${repo} to ${targetDir}`);
+-        try {
+-            await execAsync(`git ${cloneArgs.join(' ')}`);
+-        } catch (error) {
+-            console.error(`Failed to clone ${repo}:`, error.message);
+-            throw error;
++        const tempDir = `${targetDir}.part`;
++        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
++            console.log(`Cloning ${repo} to ${targetDir} (attempt ${attempt}/${maxAttempts})`);
++            try {
++                await fs.rm(tempDir, { recursive: true, force: true });
++                await execAsync(`git ${cloneArgs.join(' ')} ${tempDir}`);
++                await fs.rename(tempDir, targetDir);
++                return;
++            } catch (error) {
++                await fs.rm(tempDir, { recursive: true, force: true });
++                if (attempt === maxAttempts) {
++                    console.error(`Failed to clone ${repo}:`, error.message);
++                    throw error;
++                }
++                console.warn(`Clone failed: ${error.message}; retrying...`);
++                await new Promise(resolve => setTimeout(resolve, attempt * 2000));
++            }
+         }
+     }
+ 

@@ -19,6 +19,47 @@ from lumber_model import (
 )
 
 
+class TopBracingBuildTests(unittest.TestCase):
+    def test_default_uses_one_shallow_diagonal_at_the_existing_frame_top(self) -> None:
+        brace = build.members["brace_bl_fr"]
+
+        self.assertNotIn("brace_br_fl", build.members)
+        self.assertEqual(brace.type, "1x4")
+        self.assertAlmostEqual(brace.thickness, 0.75)
+        self.assertAlmostEqual(brace.min[2], 46.25)
+        self.assertAlmostEqual(brace.max[2], build.DEFAULT_HEIGHT)
+        self.assertAlmostEqual(brace.length, 25.3281587)
+        self.assertAlmostEqual(brace.cut_angle_deg, 35.965005)
+
+    def test_custom_dimensions_recalculate_shallow_diagonal(self) -> None:
+        enclosure = build.build_enclosure(width=36, depth=30, height=55)
+        brace = enclosure.members["brace_bl_fr"]
+
+        self.assertEqual(brace.type, "1x4")
+        self.assertAlmostEqual(brace.thickness, 0.75)
+        self.assertAlmostEqual(brace.max[2], 55)
+        self.assertAlmostEqual(brace.min[2], 54.25)
+        self.assertAlmostEqual(
+            brace.length,
+            math.hypot(36 - 3.5, 30 - 3.5),
+        )
+
+    def test_cut_and_shopping_lists_include_one_by_four_brace(self) -> None:
+        cut_row = next(
+            row
+            for row in build.model.cut_list_rows(rounding_increment=None)
+            if row["members"] == "brace_bl_fr"
+        )
+        shopping_row = next(
+            row for row in build.model.shopping_list_rows() if row["type"] == "1x4"
+        )
+
+        self.assertEqual(cut_row["type"], "1x4")
+        self.assertEqual(cut_row["qty"], 1)
+        self.assertEqual(shopping_row["stock_length_in"], 72)
+        self.assertEqual(shopping_row["qty"], 1)
+
+
 class BackRightOutletBuildTests(unittest.TestCase):
     def assertVectorAlmostEqual(
         self,

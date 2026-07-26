@@ -11,6 +11,9 @@ backing, pulls, and associated hardware remain provisional and are documented
 separately in [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md); they are not yet included in
 the generated material outputs.
 
+The top-plane bracing decision, site load screen, and required connection
+capacity are documented in [`TOP_BRACING.md`](TOP_BRACING.md).
+
 This guide does not define fasteners, structural connections, concrete work,
 or the means and methods for excavation or underground work. It does require
 the modeled underground conduit and site restoration to be completed before
@@ -325,18 +328,22 @@ front_street_light_backer_upper
 
 ## 12. Add the complete top bracing (`top-bracing`)
 
-Install the four top perimeter 2x4 braces, followed by the two diagonal 2x4
-braces. The perimeter cuts are two at 20 1/2 inches and two at 14 7/8 inches.
-Both diagonal cuts are 25 5/16 inches in the model.
+Install the four top perimeter 2x4 braces, followed by the single stress-rated
+nominal 1x4 diagonal. The perimeter cuts are two at 20 1/2 inches and two at
+14 7/8 inches. The diagonal cut is 25 5/16 inches in the model. Its top remains
+flush with the 47-inch frame top, placing its underside at 46 1/4 inches and
+recovering 3/4 inch of interior clearance relative to the former 2x4
+diagonals.
 
 Before fastening the permanent bracing, reconfirm that every post is plumb,
 compare the frame diagonals, and verify the recorded tambour-guide spacing.
 Install the braces without pulling the frame or fixed guides out of alignment,
 then repeat the plumb, square, guide-spacing, and modeled curtain-clearance
-checks. Remove temporary external bracing only after the permanent frame is
-stable. The model places both diagonals in the same horizontal plane but does
-not define their crossing joint, end joinery, fasteners, or required structural
-connection; resolve those details in the approved structural installation.
+checks. Use only the species/grade and positive two-way connection approved
+against the 826-pound ASD brace demand in `TOP_BRACING.md`; ordinary deck
+screws, end-grain screws, and unverified toe-screw patterns are not acceptable.
+Remove temporary external bracing only after the permanent frame and its
+connections are approved and stable.
 
 New model objects:
 
@@ -346,7 +353,6 @@ brace_fl_bl
 brace_bl_br
 brace_fr_br
 brace_bl_fr
-brace_br_fl
 ```
 
 ## 13. Mount the EV charger with its cord and plug (`ev-charger-mounting`)

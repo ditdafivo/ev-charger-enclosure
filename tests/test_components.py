@@ -205,6 +205,19 @@ class ComponentResolutionTests(unittest.TestCase):
         self.assertEqual(brace.width, 3.5)
         self.assertEqual(brace.thickness, 1.5)
 
+    def test_nominal_one_by_four_has_shallow_actual_thickness(self) -> None:
+        brace = AngledLumber(
+            name="brace",
+            assembly="frame",
+            type="1x4",
+            start=(3.5, 20, 46.625),
+            end=(24, 3.5, 46.625),
+        )
+
+        self.assertEqual(brace.width, 3.5)
+        self.assertEqual(brace.thickness, 0.75)
+        self.assertEqual(brace.bom_row()["size_z"], 0.75)
+
     def test_angled_lumber_bom_row_includes_cut_angles(self) -> None:
         brace = AngledLumber(
             name="brace",
@@ -837,6 +850,43 @@ class ComponentValidationTests(unittest.TestCase):
         self.assertEqual(brace_row["end_cut_angle_deg"], 38.83)
         self.assertEqual(rail_row["start_cut_angle_deg"], "")
         self.assertEqual(rail_row["end_cut_angle_deg"], "")
+
+    def test_shopping_list_supports_nominal_one_by_four(self) -> None:
+        members = LumberCollection()
+        members.diagonal_between(
+            "brace",
+            assembly="frame",
+            type="1x4",
+            support_a=members.add(
+                "post_a",
+                assembly="frame",
+                type="4x4",
+                axis="z",
+                start=AbsoluteCoord(0, 0, 0),
+                length=48,
+            ),
+            support_b=members.add(
+                "post_b",
+                assembly="frame",
+                type="4x4",
+                axis="z",
+                start=AbsoluteCoord(24, 20, 0),
+                length=48,
+            ),
+            position=46.625,
+        )
+
+        rows = Model(members).shopping_list_rows()
+
+        self.assertIn(
+            {
+                "type": "1x4",
+                "stock_length_in": 72,
+                "stock_length_display": '72"',
+                "qty": 1,
+            },
+            rows,
+        )
 
     def test_angled_lumber_scad_is_rendered_with_transform(self) -> None:
         members = LumberCollection()

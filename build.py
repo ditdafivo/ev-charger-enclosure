@@ -121,6 +121,8 @@ def build_enclosure(
 
     HEIGHT_2x4=1.5
     HALF_HEIGHT_2x4=HEIGHT_2x4/2
+    HEIGHT_1x4=0.75
+    HALF_HEIGHT_1x4=HEIGHT_1x4/2
     WIDTH_4x4=3.5
 
     members = LumberCollection()
@@ -191,18 +193,14 @@ def build_enclosure(
             position=FRAME_DIMS.z-HALF_HEIGHT_2x4,
         )
 
-    for name,support_a,support_b in [
-        ("brace_bl_fr","post_bl","post_fr"),
-        ("brace_br_fl","post_br","post_fl"),
-    ]:
-        members.diagonal_between(
-            name,
-            assembly="frame",
-            type="2x4",
-            support_a=support_a,
-            support_b=support_b,
-            position=FRAME_DIMS.z-HALF_HEIGHT_2x4,
-        )
+    members.diagonal_between(
+        "brace_bl_fr",
+        assembly="frame",
+        type="1x4",
+        support_a="post_bl",
+        support_b="post_fr",
+        position=FRAME_DIMS.z-HALF_HEIGHT_1x4,
+    )
 
     CENTER_RAIL_OFFSET=-3
     TAMBOUR_TOP_OFFSET=2

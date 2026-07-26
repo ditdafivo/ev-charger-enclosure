@@ -4,10 +4,11 @@ from typing import Literal
 
 
 Axis = Literal["x", "y", "z"]
-LumberType = Literal["2x4", "4x4"]
+LumberType = Literal["1x4", "2x4", "4x4"]
 
 
 ACTUAL_DIMS: dict[LumberType, tuple[float, float]] = {
+    "1x4": (0.75, 3.5),
     "2x4": (1.5, 3.5),
     "4x4": (3.5, 3.5),
 }

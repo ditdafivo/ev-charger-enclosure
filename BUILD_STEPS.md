@@ -239,21 +239,26 @@ rail_rt
 
 ## 7. Add the upper front cross rail (`upper-front-rail`)
 
-Install the 20 1/2-inch `rail_ft` between the upper side rails, directly above
-`rail_fb` in the model.
+Install the 20 1/2-inch 2x4 `rail_ft` with its lower and upper faces at
+z = 41 and 42 1/2 inches. Install the two 1 3/4-inch vertical 2x4 support
+blocks between its ends and the undersides of `rail_lt` and `rail_rt`.
 
-Check it for level and square and verify that it is positioned to receive
-`front_center_rail` while preserving the modeled tambour and cable clearances.
+Check the header for level and square, obtain full bearing from the support
+blocks, and verify that the assembly is positioned to receive
+`front_center_rail`. Use connections designed for the charger dead load and
+the repeated lateral and torsional loads produced while handling its cord.
 
 New model objects:
 
 ```text
 rail_ft
+rail_ft_left_support
+rail_ft_right_support
 ```
 
 ## 8. Add the main vertical rails (`main-vertical-rails`)
 
-Install the 39-inch `front_center_rail` between the lower and upper front cross
+Install the 33 1/4-inch `front_center_rail` between the lower and upper front cross
 rails. Install the 30-inch `right_center_rail` between `rail_rbu` and `rail_rt`.
 
 Check both rails for plumb. Their face orientation matters: the front center
@@ -276,6 +281,8 @@ These lumber members support the custom guide liners; they are not themselves
 the finished tracks. Check both for plumb and verify their inside spacing and
 front-to-back position against the full-size track template in
 [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) before fixing them permanently.
+Their modeled Y range is 4 3/4 to 6 1/4 inches, supporting the guide
+centerline at y = 5 inches.
 
 New model objects:
 
@@ -382,18 +389,17 @@ front_ev_charger_cable
 ## 14. Preassemble and mount the power junction (`power-junction-assembly`)
 
 Before mounting the Carlon E987N power junction box, fit its bottom-facing
-1 1/4-inch input adapter and coupling at the back-left corner, top-back 1-inch
-charger outlet, and the two right-side 1/2-inch light and receptacle outlets.
+1 1/4-inch input adapter and coupling at the back-left corner, rear-facing
+1 1/4-inch charger outlet, and the two right-side 1/2-inch light and receptacle
+outlets.
 The light outlet is forward of the receptacle outlet. Then mount the connected
 box on `front_center_rail`, spanning x = 14 to 18 inches in the default model,
 and y = 1.1875 to 5.1875 inches. Its bottom face remains at the modeled
 elevation of approximately z = 6.50 inches. Keep every fitting axis aligned
 with its conduit path.
 
-Check that the fittings are fully seated and clear of `front_center_rail`. The
-charger fitting is at x = 15.4075 inches and y = 4.1875 inches in the default
-model. This places the 1-inch conduit one-quarter inch from the positive-X face
-of `front_center_rail` while leaving the charger-body penetration unchanged.
+Check that the fittings are fully seated and clear of `front_center_rail`.
+Keep the charger fitting aligned with the short 1 1/4-inch feed to the LB body.
 
 The incoming #6 and #12 groups enter through the bottom riser. The #12
 hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs,
@@ -418,11 +424,10 @@ power_junction_outlet_coupling
 
 ## 15. Connect the power junction to the EV charger (`ev-charger-power`)
 
-Using the physical charger-input position recorded in Step 13, install a
-continuous 1-inch conduit from the top-back junction-box coupling directly to
-the charger entry. Form a smooth spline that leaves the box vertically, shifts
-toward positive Y, and enters the bottom of the charger vertically without an
-intermediate conduit body or reducer.
+Using the physical charger-input position recorded in Step 13, run the short
+1 1/4-inch feed rearward from the junction coupling into the LB conduit body.
+Fit the reducer at its upward outlet, then form the modeled 1-inch spline from
+the reducer to the bottom of the charger.
 
 Check alignment at the riser, junction box, top adapter and coupling, and
 charger entry. Route the unspliced #6 charger group through this conduit
@@ -439,6 +444,9 @@ New model objects:
 
 ```text
 power_ev_charger_feed
+power_ev_lb_body
+power_ev_lb_feed
+power_ev_reducer
 ```
 
 ## 16. Rough in the street light (`street-light-rough-in`)
@@ -458,7 +466,7 @@ envelope and the closed tambour plane.
 Check that the box is centered at x = 13 3/4 inches and z = 40 inches, the
 unused side and top ports are plugged, the horizontal run is securely strapped
 to its backing, and the conduit stays forward of the open tambour door at
-y = 3 3/4 inches. Pull and terminate the light branch's #12 conductors only
+y = 5 inches. Pull and terminate the light branch's #12 conductors only
 under the approved wiring design.
 
 New model objects:
@@ -575,8 +583,8 @@ two low-voltage lanes until the charger feed branches.
 Identify this run as blue Cat 6 cable in accordance with the model.
 
 Check its direct entry sweep, the 0.625-inch minimum bend radius, and clearance
-from the tambour door, power conduit, siding, and charger cord through the
-door's full travel.
+from the tambour door, power conduit, and siding through the door's full
+travel.
 
 New model objects:
 
@@ -676,7 +684,10 @@ Reload the curtain through the removable lower-rear sections and reinstall the
 end stops. Cycle the door fully from both recessed pulls and repeat the
 operating-force, tracking, endpoint-retention, and framing/trim clearance tests
 from [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md). Repeat the full-travel clearance
-check against every completed conduit, cable route, and the charger cord.
+check against every completed conduit and fixed cable route. Install the
+removable 20 1/2-by-8 7/8-inch, 1/4-inch plywood ceiling panel on independent
+retainers at z = 43 1/4 to 43 1/2 inches beneath the overhead curtain, then
+repeat the full-travel test before placing the enclosure in service.
 
 New model objects:
 
@@ -695,6 +706,7 @@ enclosure_siding_angle_tambour_right_a
 enclosure_siding_angle_tambour_right_b
 enclosure_siding_angle_tambour_header_face
 enclosure_siding_angle_tambour_header_bottom
+tambour_ceiling_panel
 ```
 
 ## 24. Finish the street-light assembly (`street-light-finish`)
@@ -736,8 +748,8 @@ The 25 steps above assign all modeled construction objects exactly once:
 
 | Category | Modeled count | Assigned steps |
 | --- | ---: | --- |
-| Lumber members | 27 | 2-9, 11-12, 17 |
-| Components and fittings | 24 | 13-19, 24-25 |
+| Lumber members | 29 | 2-9, 11-12, 17 |
+| Components and fittings | 25 | 13-19, 23-25 |
 | Conduit runs | 6 | 1, 15-17 |
 | Cable paths | 4 | 13, 19-21 |
 | Tambour assemblies | 1 | 10 |

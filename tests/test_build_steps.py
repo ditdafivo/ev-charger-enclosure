@@ -113,7 +113,7 @@ class BuildStepModelTests(unittest.TestCase):
         }
 
         self.assertEqual(len(model.build_steps), 25)
-        self.assertEqual(len(assigned), 134)
+        self.assertEqual(len(assigned), 140)
         self.assertEqual(set(assigned), set(model.renderable_object_names()))
         self.assertEqual(
             model.build_steps[0].object_names,
@@ -141,6 +141,12 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertEqual(step_by_object["power_junction_ev_adapter"], 14)
         self.assertEqual(step_by_object["power_junction_ev_coupling"], 14)
         self.assertEqual(step_by_object["power_ev_charger_feed"], 15)
+        self.assertEqual(step_by_object["power_ev_lb_body"], 15)
+        self.assertEqual(step_by_object["power_ev_lb_feed"], 15)
+        self.assertEqual(step_by_object["power_ev_reducer"], 15)
+        self.assertEqual(step_by_object["rail_ft_left_support"], 7)
+        self.assertEqual(step_by_object["rail_ft_right_support"], 7)
+        self.assertEqual(step_by_object["tambour_ceiling_panel"], 23)
         self.assertEqual(step_by_object["back_right_outlet_backer_lower"], 17)
         self.assertEqual(step_by_object["back_right_outlet"], 17)
 
@@ -162,6 +168,8 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn('["power_junction_ev_adapter", 14]', scad)
         self.assertIn('["power_junction_ev_coupling", 14]', scad)
         self.assertIn('["power_ev_charger_feed", 15]', scad)
+        self.assertIn('["power_ev_lb_feed", 15]', scad)
+        self.assertIn('["tambour_ceiling_panel", 23]', scad)
         self.assertIn('["back_right_outlet_backer_lower", 17]', scad)
         self.assertIn('["back_right_outlet", 17]', scad)
         self.assertIn('["back_right_outlet_cover", 25]', scad)

@@ -18,16 +18,17 @@ the build record at the end of this guide.
 
 | Feature | Modeled value | Status |
 | --- | ---: | --- |
-| Distance between left and right track centerlines | 26 1/2 in | Verify against the built frame |
-| Rear lower track endpoint | `y = 29`, `z = 3` in | Fixed enclosure interface |
-| Front lower track endpoint | `y = 5 1/2`, `z = 16` in | Fixed enclosure interface |
+| Distance between left and right track centerlines | 20 1/2 in | Verify against the built frame |
+| Rear lower track endpoint | `y = 21 3/8`, `z = 3` in | Fixed enclosure interface |
+| Front lower track endpoint | `y = 5`, `z = 16` in | Fixed enclosure interface |
 | Top track centerline | `z = 44 1/2` in | Fixed enclosure interface |
 | Bend centerline radius | 3 in | Prototype-controlled |
 | Curtain length | 44 in | Prototype-controlled |
 | Slat pitch | 1 in | Prototype-controlled |
 | Slat travel-direction width | 0.9 in | Prototype-controlled |
-| Slat face depth | 3/4 in modeled; 1 1/2 in maximum envelope | Prototype-controlled |
+| Slat face depth | 1 1/2 in modeled maximum envelope | Prototype-controlled |
 | Rendered track diameter | 1/2 in | Visualization only |
+| Removable ceiling panel | 20 1/2 by 8 7/8 by 1/4 in | Fixed enclosure interface |
 
 The model places 44 slats on the 44-inch curtain. It models the two tracks as
 round centerlines; it does not define a groove, liner cross-section, running
@@ -87,7 +88,7 @@ Make two special pull slats as part of the curtain:
 Rear elevation, door closed (not to scale):
 
 ```text
-                    top track centerline z = 45
+                  top track centerline z = 44.5
        left track  |==========================|  right track
                    |                          |
                    |  upper recessed pull     |  about 18 in above lower edge
@@ -102,7 +103,7 @@ Side path and handle orientation (not to scale):
 
 ```text
  rear opening                                      enclosure front
- y = 29                                                   y = 5.5
+ y = 21.375                                                 y = 5
     |        top brace underside z = 45.5                    |
     |        ----------------------------------               |
     |        1/4-in minimum clearance                         |
@@ -115,6 +116,12 @@ Side path and handle orientation (not to scale):
  Any proud handle reduces the required 1/4-in clearance.
  The recessed pull must remain inside the approved 1 1/2-in envelope.
 ```
+
+The model includes a removable 1/4-inch exterior-plywood ceiling from
+`y = 8.75` to `y = 17.625` and `z = 43.25` to `z = 43.5`. It shields the
+overhead curtain from hands and the charger cord while retaining 1/4 inch
+below the maximum curtain envelope. Support it on independent removable
+retainers; do not fasten through a guide liner or obstruct track inspection.
 
 Machine a continuous recessed finger channel across most of the usable span of
 each pull slat. Stop the channel before the end regions engaged by the tracks.
@@ -207,8 +214,12 @@ access.
 6. After siding and trim, uncover and clean the tracks. Confirm that no
    fastener or trim movement changed their spacing.
 7. Reinstall the curtain, loading sections, and stops, then repeat the full
-   acceptance test, including clearance from the already completed conduit,
-   cable routes, and charger cord.
+   acceptance test, including clearance from the already completed conduit
+   and fixed cable routes. Install the removable ceiling and repeat the test.
+
+The rendered charger cord is illustrative rather than an accurate operating
+envelope. Do not use its modeled path as a hard tambour-clearance datum; the
+ceiling panel provides the physical guard beneath the overhead curtain.
 
 The OpenSCAD build-step view shows the completed tambour assembly beginning at
 its trial-fit step. It does not attempt to depict the curtain's temporary

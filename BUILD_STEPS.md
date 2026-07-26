@@ -2,7 +2,7 @@
 
 This guide describes the modeled construction sequence for the fixed enclosure
 design: 24-inch left-to-right post center spacing, 18 3/8-inch front-to-back post
-center spacing, 47 inches above grade, and 36 inches of each post below grade.
+center spacing, 47 inches above grade, and 32 inches of each post below grade.
 Dimensions and cut lengths below apply to this design only.
 
 The generated BOM and cut list remain the authoritative material references
@@ -44,9 +44,11 @@ by a qualified installer.
 Before installing any posts, establish the enclosure layout from protected
 reference points and complete both underground conduit runs. Bring the modeled
 1 1/4-inch power riser out of the ground beneath the power junction box
-(x = 15 inches and y = 4.1875 inches in the default model) and
-the modeled 3/4-inch low-voltage riser out at x = 21 inches and y = 2.25
-inches. Leave their upper ends positioned for the later equipment connections.
+(x = 17 inches and y = 4.1875 inches in the default model) and bring the
+modeled 3/4-inch low-voltage riser out beneath the rear of its junction box.
+Its default axis is approximately x = 13.17 inches and y = 5.44 inches, clear
+of the post footings. Leave both upper ends positioned for the later equipment
+connections.
 
 Complete required underground inspection before covering the work, then
 backfill and compact the excavation and restore a level local grade before
@@ -65,9 +67,11 @@ low_voltage_ground_riser
 
 ## 2. Install the four posts (`posts`)
 
-Position the four 83-inch 4x4 posts on the 24-by-18 3/8-inch centerline
-rectangle.
-The model places 36 inches below grade and 47 inches above grade.
+Excavate and fill four 10-inch-diameter gravel footings from 36 inches below
+the nominal ground datum to grade, centered on the post centerlines. Position
+the four 79-inch 4x4 posts on the 24-by-18 3/8-inch centerline rectangle. The
+model places each post 32 inches below grade and 47 inches above grade, leaving
+4 inches of gravel beneath it.
 
 Check the center spacing in both directions, compare the two plan diagonals,
 and verify every post is plumb. Establish the front, back, left, and right
@@ -84,6 +88,10 @@ post_fl
 post_fr
 post_bl
 post_br
+footing_fl
+footing_fr
+footing_bl
+footing_br
 ```
 
 ## 3. Add the lower side rails (`lower-side-rails`)
@@ -404,15 +412,17 @@ power_back_right_outlet_feed
 
 ## 18. Add the low-voltage termination (`low-voltage-termination`)
 
-Mount the low-voltage junction box on the interior negative-x faces of
-`post_fr` and `right_tambour_rail`, centered at y = 2.25 inches and z = 13
-inches. Its front face remains 1/4 inch behind the front faces of the posts.
-Connect the bottom 3/4-inch input adapter to the low-voltage riser
-installed in Step 1, then add the three cable glands.
+Mount the low-voltage junction box to the same y-coordinate plane as the power
+junction box, spanning x = 10 to 14 inches and centered at y = 4.1875 inches
+and z = 13 inches. The power junction spans x = 15 to 19 inches, leaving a
+one-inch gap. Future backing lumber may be added but is not included. Connect
+the rear portion of the bottom panel to the 3/4-inch riser installed in Step 1,
+then add the three cable glands across the front portion of the bottom panel.
 
-Check the modeled gland order from front to rear, preserve space below each
-gland for its cable bend, and do not pull the previously located riser out of
-plumb while mounting the box.
+Keep each fitting center at least 3/4 inch from the panel sides. Confirm that
+the riser remains plumb and clear of the 10-inch footing and that the existing
+cables have room to leave the forward glands; their final routing will be
+refined separately.
 
 New model objects:
 

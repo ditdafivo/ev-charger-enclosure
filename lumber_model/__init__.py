@@ -65,6 +65,11 @@ from lumber_model.conduit import (
 )
 from lumber_model.constants import ACTUAL_DIMS, AXES, AXIS_INDEX, Axis, LumberType
 from lumber_model.ground import GroundPlane, ResolvedGroundPlane
+from lumber_model.footing import (
+    DEFAULT_GRAVEL_COLOR,
+    Footing,
+    ResolvedFooting,
+)
 from lumber_model.geometry import cubic_bezier_points
 from lumber_model.lumber import AngledLumber, Lumber, LumberPiece
 from lumber_model.model import Model
@@ -108,6 +113,7 @@ __all__ = [
     "COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX",
     "COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING",
     "DEFAULT_CABLE_COLOR",
+    "DEFAULT_GRAVEL_COLOR",
     "DEFAULT_ANGLE_COLOR",
     "DEFAULT_DECKING_COLOR",
     "CONDUIT_OD_BY_TRADE_SIZE",
@@ -142,6 +148,7 @@ __all__ = [
     "CONDUCTOR_VOLUME_BY_AWG",
     "FaceName",
     "FrontSidingOpening",
+    "Footing",
     "RightSidingOpening",
     "GroundPlane",
     "Lumber",
@@ -158,6 +165,7 @@ __all__ = [
     "ResolvedCableRun",
     "ResolvedComponent",
     "ResolvedGroundPlane",
+    "ResolvedFooting",
     "ResolvedTambourDoor",
     "SidingColor",
     "SidingPart",

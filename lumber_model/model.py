@@ -23,6 +23,7 @@ from lumber_model.formatting import (
     sanitize_scad_identifier,
 )
 from lumber_model.geometry import Vector3
+from lumber_model.footing import Footing
 from lumber_model.ground import GroundPlane
 from lumber_model.lumber import AngledLumber, LumberPiece
 from lumber_model.siding import CompositeSiding
@@ -75,6 +76,7 @@ class Model:
     conduits: list[ConduitRun]
     cables: list[CableRun]
     grounds: list[GroundPlane]
+    footings: list[Footing]
     tambours: list[TambourDoor]
     sidings: list[CompositeSiding]
     build_steps: tuple[BuildStep, ...]
@@ -89,6 +91,7 @@ class Model:
         conduits: Mapping[str, ConduitRun] | Iterable[ConduitRun] | None = None,
         cables: Mapping[str, CableRun] | Iterable[CableRun] | None = None,
         grounds: Mapping[str, GroundPlane] | Iterable[GroundPlane] | None = None,
+        footings: Mapping[str, Footing] | Iterable[Footing] | None = None,
         tambours: Mapping[str, TambourDoor] | Iterable[TambourDoor] | None = None,
         sidings: Mapping[str, CompositeSiding]
         | Iterable[CompositeSiding]
@@ -128,6 +131,13 @@ class Model:
             self.grounds = list(grounds.values())
         else:
             self.grounds = list(grounds)
+
+        if footings is None:
+            self.footings = []
+        elif isinstance(footings, Mapping):
+            self.footings = list(footings.values())
+        else:
+            self.footings = list(footings)
 
         if tambours is None:
             self.tambours = []
@@ -302,6 +312,17 @@ class Model:
         for ground in self.grounds:
             ground.resolved(self)
 
+        footing_names = [footing.name for footing in self.footings]
+        duplicate_footings = sorted(
+            {name for name in footing_names if footing_names.count(name) > 1}
+        )
+
+        if duplicate_footings:
+            raise ValueError(f"Duplicate footing names: {duplicate_footings}")
+
+        for footing in self.footings:
+            footing.resolved(self)
+
         tambour_names = [tambour.name for tambour in self.tambours]
         duplicate_tambours = sorted(
             {name for name in tambour_names if tambour_names.count(name) > 1}
@@ -347,6 +368,7 @@ class Model:
             + [component.name for component in self.components]
             + [conduit.name for conduit in self.conduits]
             + [cable.name for cable in self.cables]
+            + [footing.name for footing in self.footings]
             + [tambour.name for tambour in self.tambours]
             + [part.name for siding in self.sidings for part in siding.parts]
         )
@@ -659,6 +681,9 @@ class Model:
     def scad_ground_records(self) -> list[str]:
         return [ground.resolved(self).scad_record() for ground in self.grounds]
 
+    def scad_footing_records(self) -> list[str]:
+        return [footing.resolved(self).scad_record() for footing in self.footings]
+
     def tambour_assemblies(self) -> list[str]:
         return sorted({tambour.assembly for tambour in self.tambours})
 
@@ -847,6 +872,7 @@ class Model:
             cable_assemblies=self.scad_cable_assemblies(),
             cable_records=self.scad_cable_records(),
             ground_records=self.scad_ground_records(),
+            footing_records=self.scad_footing_records(),
             tambour_assemblies=self.scad_tambour_assemblies(),
             tambour_records=self.scad_tambour_records(),
             siding_records=self.scad_siding_records(),

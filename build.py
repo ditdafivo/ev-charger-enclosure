@@ -324,6 +324,11 @@ def build_enclosure(
 
     for name,position in [
         (
+            "front_street_light_backer_bottom",
+            FRONT_STREET_LIGHT_CENTER_Z
+            - 3 * FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
+        ),
+        (
             "front_street_light_backer_lower",
             FRONT_STREET_LIGHT_CENTER_Z - FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
         ),
@@ -346,16 +351,16 @@ def build_enclosure(
     FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR=ComponentAnchor(
         "front_street_light_base_box",
         position=(
-            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0],
-            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1]/2,
+            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2,
+            0,
         ),
     )
     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT=(
-        FRONT_STREET_LIGHT_CENTER_X
-        + COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2,
+        FRONT_STREET_LIGHT_CENTER_X,
         FRONT_STREET_LIGHT_BOX_BACK_Y
         - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]/2,
-        FRONT_STREET_LIGHT_CENTER_Z,
+        FRONT_STREET_LIGHT_CENTER_Z
+        - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1]/2,
     )
     FRONT_STREET_LIGHT_CONDUIT_ENTRY=_member_relative_coord(
         "post_fl",
@@ -1000,6 +1005,10 @@ def build_enclosure(
         members["post_fr"].min_on("x")
         - CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2
     )
+    POWER_LIGHT_HORIZONTAL_RUN_Z=(
+        members["front_street_light_backer_bottom"].center_on("z")
+        - HEIGHT_2x4/2
+    )
     conduits.add(
         "power_street_light_feed",
         trade_size="1/2",
@@ -1021,13 +1030,20 @@ def build_enclosure(
                 "post_fr",
                 POWER_LIGHT_POST_X,
                 power_light_entry[1],
-                power_light_entry[2],
+                POWER_LIGHT_HORIZONTAL_RUN_Z,
+            ),
+            _member_relative_coord(
+                "front_street_light_backer_bottom",
+                power_light_entry[0],
+                power_light_entry[1],
+                POWER_LIGHT_HORIZONTAL_RUN_Z,
             ),
             FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
         ),
         bends=(
             ConduitBend(point_index=1, radius=3),
             ConduitBend(point_index=2, radius=3),
+            ConduitBend(point_index=3, radius=3),
         ),
     )
 

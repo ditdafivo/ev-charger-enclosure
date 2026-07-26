@@ -91,8 +91,9 @@ class FrontStreetLightBuildTests(unittest.TestCase):
         for a, e in zip(actual, expected, strict=True):
             self.assertAlmostEqual(a, e)
 
-    def test_backers_span_front_posts_and_form_centered_backing_field(self) -> None:
+    def test_backers_span_front_posts_and_form_contiguous_backing_field(self) -> None:
         for name, expected_z in (
+            ("front_street_light_backer_bottom", 34.75),
             ("front_street_light_backer_lower", 38.25),
             ("front_street_light_backer_upper", 41.75),
         ):
@@ -103,6 +104,14 @@ class FrontStreetLightBuildTests(unittest.TestCase):
                 self.assertFalse(backer.rotated)
                 self.assertAlmostEqual(backer.min_on("y"), 2.30)
                 self.assertAlmostEqual(backer.center_on("z"), expected_z)
+
+        bottom = build.members["front_street_light_backer_bottom"]
+        lower = build.members["front_street_light_backer_lower"]
+        upper = build.members["front_street_light_backer_upper"]
+        self.assertAlmostEqual(bottom.min_on("z"), 33)
+        self.assertAlmostEqual(bottom.max_on("z"), lower.min_on("z"))
+        self.assertAlmostEqual(lower.max_on("z"), upper.min_on("z"))
+        self.assertAlmostEqual(upper.max_on("z"), 43.5)
 
     def test_box_stack_and_light_have_finished_position(self) -> None:
         lower_backer = build.members["front_street_light_backer_lower"]
@@ -128,10 +137,10 @@ class FrontStreetLightBuildTests(unittest.TestCase):
             build.siding.min_y - build.siding.board_thickness,
         )
 
-    def test_positive_x_port_receives_conduit(self) -> None:
+    def test_bottom_port_receives_conduit(self) -> None:
         self.assertVectorAlmostEqual(
             build.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(build.members),
-            (15.85, 1.5, 40),
+            (13.75, 1.5, 37.3),
         )
         self.assertIsInstance(
             build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
@@ -318,10 +327,10 @@ class PowerJunctionBuildTests(unittest.TestCase):
             enclosure.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(enclosure.members),
         )
         self.assertEqual(len(ev.points), 25)
-        self.assertEqual(light.bends, ((1, 3), (2, 3)))
+        self.assertEqual(light.bends, ((1, 3), (2, 3), (3, 3)))
         self.assertGreater(len(light.points), 20)
 
-    def test_street_light_feed_uses_right_side_and_post_plane(self) -> None:
+    def test_street_light_feed_sweeps_left_into_bottom_port(self) -> None:
         light = self.resolved_conduit("power_street_light_feed")
         adapter = build.components["power_junction_light_adapter"].resolved(
             build.members["front_center_rail"]
@@ -361,10 +370,15 @@ class PowerJunctionBuildTests(unittest.TestCase):
             1,
         )
         self.assertGreater(light.points[-1][2], light.points[0][2])
+        self.assertAlmostEqual(
+            light.points[-1][0],
+            build.FRONT_STREET_LIGHT_CENTER_X,
+        )
 
         raw_points = build.conduits["power_street_light_feed"].points
         lower_post_point = raw_points[1].resolve(build.members)
         upper_post_point = raw_points[2].resolve(build.members)
+        horizontal_end = raw_points[3].resolve(build.members)
         self.assertAlmostEqual(lower_post_point[0], build.POWER_LIGHT_POST_X)
         self.assertAlmostEqual(upper_post_point[0], build.POWER_LIGHT_POST_X)
         self.assertAlmostEqual(
@@ -374,6 +388,19 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertAlmostEqual(
             upper_post_point[1],
             build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+        )
+        self.assertAlmostEqual(
+            upper_post_point[2],
+            build.POWER_LIGHT_HORIZONTAL_RUN_Z,
+        )
+        self.assertAlmostEqual(
+            horizontal_end[2],
+            build.POWER_LIGHT_HORIZONTAL_RUN_Z,
+        )
+        self.assertGreater(upper_post_point[0], horizontal_end[0])
+        self.assertAlmostEqual(
+            horizontal_end[0],
+            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[0],
         )
 
     def test_layout_tracks_resized_enclosures(self) -> None:

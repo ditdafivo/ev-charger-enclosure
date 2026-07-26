@@ -305,16 +305,20 @@ enclosure_tambour_door
 
 ## 11. Add the street-light backing (`street-light-backing`)
 
-Install the two 20 1/2-inch front backing 2x4s. The lower backer starts at a
-modeled elevation of 36 1/2 inches and the upper at 40 inches. Their rearward
-face position locates the outlet-box stack relative to the siding.
+Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
+modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
+upper backer at 40 inches. Their rearward face position locates the outlet-box
+stack relative to the siding, and the bottom backer supports the horizontal
+street-light conduit run.
 
-Check that the backers are level and that their shared center aligns with the
-modeled street-light center at x = 13 3/4 inches and z = 40 inches.
+Check that the backers are level, form a continuous field from z = 33 through
+43 1/2 inches, and share the modeled street-light centerline at
+x = 13 3/4 inches. The outlet box remains centered at z = 40 inches.
 
 New model objects:
 
 ```text
+front_street_light_backer_bottom
 front_street_light_backer_lower
 front_street_light_backer_upper
 ```
@@ -436,16 +440,19 @@ Mount the Commercial Electric WRB550B base box on the street-light backers.
 Install the 1/2-inch feed from the forward fitting on the positive-X side of
 the power junction box. Run toward positive X and make the first modeled
 3-inch-radius sweep upward against the negative-X face of `post_fr`. Make the
-required Y transition gradually on this long rising leg. At z = 40 inches,
-make the second 3-inch-radius sweep toward negative X and enter the
-positive-X-facing port of the WRB550B base box at x = 15.85 and y = 1.5 inches.
-The junction-box fitting center is at y = 2.1875 inches, leaving approximately
-1.14 inches between the conduit envelope and the closed tambour plane.
+required Y transition gradually on this long rising leg. At z = 34 inches,
+make the second 3-inch-radius sweep toward negative X, support the horizontal
+run on the bottom backer, and make the third 3-inch-radius sweep toward
+positive Z into the bottom port of the WRB550B base box at x = 13.75,
+y = 1.5, and z = 37.3 inches. The junction-box fitting center is at
+y = 2.1875 inches, leaving approximately 1.14 inches between the conduit
+envelope and the closed tambour plane.
 
 Check that the box is centered at x = 13 3/4 inches and z = 40 inches, the
-unused ports are plugged, and the conduit stays forward of the open tambour
-door at y = 3 3/4 inches. Pull and terminate the light branch's #12 conductors
-only under the approved wiring design.
+unused side and top ports are plugged, the horizontal run is securely strapped
+to its backing, and the conduit stays forward of the open tambour door at
+y = 3 3/4 inches. Pull and terminate the light branch's #12 conductors only
+under the approved wiring design.
 
 New model objects:
 

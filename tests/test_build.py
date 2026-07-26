@@ -572,11 +572,17 @@ class LowVoltageBuildTests(unittest.TestCase):
             "low_voltage_wifi_feed": build.path_2_entry,
             "low_voltage_ev_charger_feed": build.path_3_entry,
         }
+        expected_colors = {
+            "low_voltage_street_light_service": build.LOW_VOLTAGE_STREET_LIGHT_COLOR,
+            "low_voltage_wifi_feed": build.LOW_VOLTAGE_CAT6_COLOR,
+            "low_voltage_ev_charger_feed": build.LOW_VOLTAGE_CAT6_COLOR,
+        }
 
         for index, (name, endpoint) in enumerate(expected_endpoints.items()):
             cable = build.cables[name]
             self.assertEqual(cable.assembly, "low_voltage_cabling")
             self.assertEqual(cable.diameter, 1/8)
+            self.assertEqual(cable.color, expected_colors[name])
             self.assertVectorAlmostEqual(
                 cable.points[0],
                 (
@@ -615,6 +621,7 @@ class LowVoltageBuildTests(unittest.TestCase):
                 self.assertFalse(inside_backer)
 
         wifi_feed = build.cables["low_voltage_wifi_feed"]
+        self.assertLess(build.path_2_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
         self.assertIn(build.path_2_front_rail, wifi_feed.points)
         self.assertGreater(build.path_2_front_rail[0], build.path_2_start[0])
         self.assertGreater(build.path_2_front_rail[1], build.path_2_start[1])
@@ -639,6 +646,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertGreater(build.path_2_entry[2], build.path_2_entry_sweep[2])
 
         ev_feed = build.cables["low_voltage_ev_charger_feed"]
+        self.assertGreater(build.path_3_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
         self.assertIn(build.path_3_front_rail, ev_feed.points)
         self.assertGreater(build.path_3_front_rail[0], build.path_3_start[0])
         self.assertGreater(build.path_3_front_rail[1], build.path_3_start[1])
@@ -665,6 +673,81 @@ class LowVoltageBuildTests(unittest.TestCase):
 
         for cable in (service, wifi_feed, ev_feed):
             self.assertLess(cable.points[1][2], cable.points[0][2])
+
+        self.assertIn(build.path_1_spline_bottom, service.points)
+        self.assertAlmostEqual(
+            min(point[2] for point in service.points),
+            build.LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z,
+        )
+        for cable in (wifi_feed, ev_feed):
+            self.assertAlmostEqual(
+                minimum_cable_bend_radius(cable.points),
+                build.LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS,
+            )
+
+        rail_fb=build.members["rail_fb"]
+        cable_radius=build.LOW_VOLTAGE_CABLE_DIAMETER/2
+        rail_min=tuple(rail_fb.min_on(axis)-cable_radius for axis in "xyz")
+        rail_max=tuple(rail_fb.max_on(axis)+cable_radius for axis in "xyz")
+
+        def segment_intersects_rail(
+            start: tuple[float,float,float],
+            end: tuple[float,float,float],
+        ) -> bool:
+            interval_min=0.0
+            interval_max=1.0
+            for index in range(3):
+                delta=end[index]-start[index]
+                if abs(delta) < 1e-12:
+                    if not rail_min[index] <= start[index] <= rail_max[index]:
+                        return False
+                    continue
+                near=(rail_min[index]-start[index])/delta
+                far=(rail_max[index]-start[index])/delta
+                if near > far:
+                    near,far=far,near
+                interval_min=max(interval_min, near)
+                interval_max=min(interval_max, far)
+                if interval_min > interval_max:
+                    return False
+            return True
+
+        for cable in (wifi_feed, ev_feed):
+            self.assertFalse(
+                any(
+                    segment_intersects_rail(start, end)
+                    for start,end in zip(cable.points, cable.points[1:])
+                )
+            )
+
+        required_riser_clearance = (
+            build.LOW_VOLTAGE_CONDUIT_RADIUS
+            + build.LOW_VOLTAGE_CABLE_DIAMETER/2
+        )
+        for cable in (wifi_feed, ev_feed):
+            for start,end in zip(cable.points, cable.points[1:]):
+                if min(start[2], end[2]) > build.LOW_VOLTAGE_INPUT_ADAPTER_END_Z:
+                    continue
+                segment_x=end[0]-start[0]
+                segment_y=end[1]-start[1]
+                segment_length_squared=segment_x**2+segment_y**2
+                projection=(
+                    (
+                        (build.LOW_VOLTAGE_INPUT_X-start[0])*segment_x
+                        +(build.LOW_VOLTAGE_INPUT_Y-start[1])*segment_y
+                    )/segment_length_squared
+                    if segment_length_squared
+                    else 0
+                )
+                projection=max(0, min(1, projection))
+                center_distance = math.hypot(
+                    start[0]+projection*segment_x-build.LOW_VOLTAGE_INPUT_X,
+                    start[1]+projection*segment_y-build.LOW_VOLTAGE_INPUT_Y,
+                )
+                self.assertGreaterEqual(
+                    center_distance,
+                    required_riser_clearance-1e-9,
+                )
 
     def test_wifi_and_charger_droops_clear_open_tambour_edge(self) -> None:
         for name in ("low_voltage_wifi_feed", "low_voltage_ev_charger_feed"):

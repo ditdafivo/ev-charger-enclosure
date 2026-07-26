@@ -493,7 +493,12 @@ then add the three cable glands across the front portion of the bottom panel.
 Keep each fitting center at least 3/4 inch from the panel sides. Confirm that
 the riser remains plumb and clear of the 10-inch footing and that the existing
 cables have room to leave the forward glands in negative Z before sweeping
-toward the negative-X side of the framing.
+toward the negative-X side of the framing. Route the blue Cat 6 feeds around
+opposite X sides of the 3/4-inch riser, retaining the modeled clearance. Use
+the modeled 0.625-inch upward turn beneath the glands, remain on the negative-Y
+side of `rail_fb` until above it. Use the gentle departure spline modeled for
+the dark-brown street-light cable; it bottoms at z = 8.25 inches without a flat
+horizontal run.
 
 New model objects:
 
@@ -514,6 +519,7 @@ the positive-Y face of the rail near the top, cross in positive X along the
 positive-Y face of `rail_ft`, and descend the negative-X face of
 `right_center_rail`. Just below the access point, bend around the rail's
 positive-Y face and sweep upward into the existing bottom entry.
+Identify this run as blue Cat 6 cable in accordance with the model.
 
 Check that the cable retains at least the modeled 0.625-inch minimum bend
 radius and remains clear throughout the tambour door's travel.
@@ -532,6 +538,7 @@ up the positive-X face of `post_fl`. Continue beneath `brace_fl_fr` and
 approach the mirrored service loop above the street-light box stack from the
 negative-X direction. The loop returns in that direction before terminating
 at the existing conduit entry.
+The model renders this low-voltage cable dark brown.
 
 Check attachment clearances, the 1 1/4-inch service-loop radius, the overall
 0.625-inch minimum bend radius, clearance from the street-light backing, and
@@ -551,6 +558,7 @@ the elevation of the EV charger's bottom plane, bend in positive Y to clear the
 positive-Y face of the rail, then sweep upward into the charger's unchanged
 bottom entry. Maintain the modeled one-cable-diameter separation between the
 two low-voltage lanes until the charger feed branches.
+Identify this run as blue Cat 6 cable in accordance with the model.
 
 Check its direct entry sweep, the 0.625-inch minimum bend radius, and clearance
 from the tambour door, power conduit, siding, and charger cord through the

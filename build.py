@@ -560,6 +560,8 @@ def build_enclosure(
     )
     LOW_VOLTAGE_CABLE_DIAMETER=1/8
     LOW_VOLTAGE_MINIMUM_BEND_RADIUS=5*LOW_VOLTAGE_CABLE_DIAMETER
+    LOW_VOLTAGE_CAT6_COLOR=(0.05, 0.2, 0.8, 1.0)
+    LOW_VOLTAGE_STREET_LIGHT_COLOR=(0.18, 0.07, 0.025, 1.0)
 
     components = ComponentCollection()
 
@@ -1184,6 +1186,19 @@ def build_enclosure(
     LOW_VOLTAGE_GLAND_END_Z=(
         LOW_VOLTAGE_BOX_BOTTOM_Z-ONE_INCH_CABLE_GLAND.size[0]
     )
+    LOW_VOLTAGE_RISER_CABLE_CLEARANCE=(
+        LOW_VOLTAGE_CONDUIT_RADIUS
+        + LOW_VOLTAGE_CABLE_DIAMETER/2
+        + LOW_VOLTAGE_CABLE_DIAMETER
+    )
+    LOW_VOLTAGE_RISER_BYPASS_Z=LOW_VOLTAGE_GLAND_END_Z-4
+    LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z=LOW_VOLTAGE_GLAND_END_Z-2
+    LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS=LOW_VOLTAGE_MINIMUM_BEND_RADIUS
+    LOW_VOLTAGE_RAIL_FB_CLEAR_Z=(
+        members["rail_fb"].max_on("z")
+        + LOW_VOLTAGE_CABLE_DIAMETER/2
+        + LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS
+    )
     LOW_VOLTAGE_POST_FL_POS_X=(
         members["post_fl"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
@@ -1210,6 +1225,21 @@ def build_enclosure(
         members["post_fl"].center_on("y"),
         16,
     )
+    PATH_1_EXIT_SPLINE_HANDLE=1.5
+    path_1_exit_direction=(
+        path_1_post[0]-path_1_start[0],
+        path_1_post[1]-path_1_start[1],
+    )
+    path_1_exit_direction_length=math.hypot(*path_1_exit_direction)
+    path_1_exit_unit=(
+        path_1_exit_direction[0]/path_1_exit_direction_length,
+        path_1_exit_direction[1]/path_1_exit_direction_length,
+    )
+    path_1_spline_bottom=(
+        (path_1_start[0]+path_1_post[0])/2,
+        (path_1_start[1]+path_1_post[1])/2,
+        LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z,
+    )
     PATH_1_BRIDGE_LEFT_X=LOW_VOLTAGE_POST_FL_POS_X+3.9375
     PATH_1_LOOP_LEFT_X=FRONT_STREET_LIGHT_CENTER_X-3.25
     PATH_1_LOOP_INNER_X=FRONT_STREET_LIGHT_CENTER_X-1.75
@@ -1217,8 +1247,26 @@ def build_enclosure(
     path_1_points=_join_centerline_sections(
         cubic_bezier_points(
             path_1_start,
-            (path_1_start[0], path_1_start[1], path_1_start[2]-3),
-            (path_1_post[0], path_1_post[1], path_1_post[2]-5),
+            (path_1_start[0], path_1_start[1], path_1_start[2]-2),
+            (
+                path_1_spline_bottom[0]
+                - path_1_exit_unit[0]*PATH_1_EXIT_SPLINE_HANDLE,
+                path_1_spline_bottom[1]
+                - path_1_exit_unit[1]*PATH_1_EXIT_SPLINE_HANDLE,
+                path_1_spline_bottom[2],
+            ),
+            path_1_spline_bottom,
+        ),
+        cubic_bezier_points(
+            path_1_spline_bottom,
+            (
+                path_1_spline_bottom[0]
+                + path_1_exit_unit[0]*PATH_1_EXIT_SPLINE_HANDLE,
+                path_1_spline_bottom[1]
+                + path_1_exit_unit[1]*PATH_1_EXIT_SPLINE_HANDLE,
+                path_1_spline_bottom[2],
+            ),
+            (path_1_post[0], path_1_post[1], path_1_post[2]-3),
             path_1_post,
         ),
         rounded_cable_points(
@@ -1297,6 +1345,21 @@ def build_enclosure(
 
     wifi=components["front_wifi_access_point"].resolved(members["right_center_rail"])
     path_2_start=(LOW_VOLTAGE_GLAND_XS[1], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
+    path_2_riser_bypass=(
+        LOW_VOLTAGE_INPUT_X-LOW_VOLTAGE_RISER_CABLE_CLEARANCE,
+        LOW_VOLTAGE_INPUT_Y,
+        LOW_VOLTAGE_RISER_BYPASS_Z,
+    )
+    path_2_riser_approach=(
+        path_2_riser_bypass[0],
+        path_2_riser_bypass[1]-0.75,
+        path_2_riser_bypass[2],
+    )
+    path_2_riser_climb=(
+        path_2_riser_bypass[0],
+        path_2_riser_bypass[1],
+        LOW_VOLTAGE_RAIL_FB_CLEAR_Z,
+    )
     path_2_front_rail=(
         LOW_VOLTAGE_FRONT_RAIL_NEG_X,
         members["front_center_rail"].center_on("y")+LOW_VOLTAGE_WIFI_LANE_OFFSET,
@@ -1326,8 +1389,22 @@ def build_enclosure(
     path_2_points=_join_centerline_sections(
         cubic_bezier_points(
             path_2_start,
-            (path_2_start[0], path_2_start[1], path_2_start[2]-4),
-            (path_2_front_rail[0], path_2_front_rail[1], path_2_front_rail[2]-8),
+            (path_2_start[0], path_2_start[1], path_2_start[2]-2.5),
+            (
+                path_2_riser_approach[0],
+                path_2_riser_approach[1]-1.5,
+                path_2_riser_approach[2],
+            ),
+            path_2_riser_approach,
+        ),
+        rounded_cable_points(
+            (path_2_riser_approach, path_2_riser_bypass, path_2_riser_climb),
+            {1: LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS},
+        ),
+        cubic_bezier_points(
+            path_2_riser_climb,
+            (path_2_riser_climb[0], path_2_riser_climb[1], path_2_riser_climb[2]+1.8),
+            (path_2_front_rail[0], path_2_front_rail[1], path_2_front_rail[2]-4),
             path_2_front_rail,
         ),
         rounded_cable_points(
@@ -1358,6 +1435,21 @@ def build_enclosure(
 
     charger=components["front_ev_charger_body"].resolved(members["front_center_rail"])
     path_3_start=(LOW_VOLTAGE_GLAND_XS[2], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
+    path_3_riser_bypass=(
+        LOW_VOLTAGE_INPUT_X+LOW_VOLTAGE_RISER_CABLE_CLEARANCE,
+        LOW_VOLTAGE_INPUT_Y,
+        LOW_VOLTAGE_RISER_BYPASS_Z,
+    )
+    path_3_riser_approach=(
+        path_3_riser_bypass[0],
+        path_3_riser_bypass[1]-0.75,
+        path_3_riser_bypass[2],
+    )
+    path_3_riser_climb=(
+        path_3_riser_bypass[0],
+        path_3_riser_bypass[1],
+        LOW_VOLTAGE_RAIL_FB_CLEAR_Z,
+    )
     path_3_front_rail=(
         LOW_VOLTAGE_FRONT_RAIL_NEG_X,
         members["front_center_rail"].center_on("y")+LOW_VOLTAGE_CHARGER_LANE_OFFSET,
@@ -1382,8 +1474,22 @@ def build_enclosure(
     path_3_points=_join_centerline_sections(
         cubic_bezier_points(
             path_3_start,
-            (path_3_start[0], path_3_start[1], path_3_start[2]-4),
-            (path_3_front_rail[0], path_3_front_rail[1], path_3_front_rail[2]-8),
+            (path_3_start[0], path_3_start[1], path_3_start[2]-2.5),
+            (
+                path_3_riser_approach[0],
+                path_3_riser_approach[1]-1.5,
+                path_3_riser_approach[2],
+            ),
+            path_3_riser_approach,
+        ),
+        rounded_cable_points(
+            (path_3_riser_approach, path_3_riser_bypass, path_3_riser_climb),
+            {1: LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS},
+        ),
+        cubic_bezier_points(
+            path_3_riser_climb,
+            (path_3_riser_climb[0], path_3_riser_climb[1], path_3_riser_climb[2]+1.8),
+            (path_3_front_rail[0], path_3_front_rail[1], path_3_front_rail[2]-4),
             path_3_front_rail,
         ),
         rounded_cable_points(
@@ -1402,16 +1508,21 @@ def build_enclosure(
         ),
     )
 
-    for name,points in (
-        ("low_voltage_street_light_service", path_1_points),
-        ("low_voltage_wifi_feed", path_2_points),
-        ("low_voltage_ev_charger_feed", path_3_points),
+    for name,points,color in (
+        (
+            "low_voltage_street_light_service",
+            path_1_points,
+            LOW_VOLTAGE_STREET_LIGHT_COLOR,
+        ),
+        ("low_voltage_wifi_feed", path_2_points, LOW_VOLTAGE_CAT6_COLOR),
+        ("low_voltage_ev_charger_feed", path_3_points, LOW_VOLTAGE_CAT6_COLOR),
     ):
         cables.add(
             name,
             assembly="low_voltage_cabling",
             diameter=LOW_VOLTAGE_CABLE_DIAMETER,
             points=points,
+            color=color,
         )
 
     model = Model(

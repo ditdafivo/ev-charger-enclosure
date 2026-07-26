@@ -427,20 +427,23 @@ def build_enclosure(
             rotated=False,
         )
 
-    FRONT_STREET_LIGHT_CONDUIT_ENTRY=_member_relative_coord(
-        "post_fl",
-        FRONT_STREET_LIGHT_CENTER_X,
-        (
-            FRONT_STREET_LIGHT_BOX_BACK_Y
-            - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2] / 2
-        ),
-        (
-            FRONT_STREET_LIGHT_CENTER_Z
-            - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1] / 2
+    FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR=ComponentAnchor(
+        "front_street_light_base_box",
+        position=(
+            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0],
+            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1]/2,
         ),
     )
     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT=(
-        FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(members)
+        FRONT_STREET_LIGHT_CENTER_X
+        + COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2,
+        FRONT_STREET_LIGHT_BOX_BACK_Y
+        - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]/2,
+        FRONT_STREET_LIGHT_CENTER_Z,
+    )
+    FRONT_STREET_LIGHT_CONDUIT_ENTRY=_member_relative_coord(
+        "post_fl",
+        *FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT,
     )
 
     FRONT_STREET_LIGHT_SIDING_OPENING=FrontSidingOpening(
@@ -497,15 +500,17 @@ def build_enclosure(
         for post_name in ("post_fl", "post_fr", "post_bl", "post_br")
     ]
 
-    POWER_JUNCTION_RIGHT_SHIFT=2
+    POWER_JUNCTION_RIGHT_SHIFT=1
     POWER_JUNCTION_X=(
         members["front_center_rail"].center_on("x")
         + 1.25
         + POWER_JUNCTION_RIGHT_SHIFT
     )
     POWER_JUNCTION_PORT_Y=(members["front_center_rail"].min_on("y")-1)
+    # Keep the box at its previous elevation while translating it in X.
+    POWER_JUNCTION_GROUND_REFERENCE_X=POWER_JUNCTION_X+1
     POWER_JUNCTION_GROUND_Z=grounds[0].resolved(members).z_at(
-        POWER_JUNCTION_X,
+        POWER_JUNCTION_GROUND_REFERENCE_X,
         POWER_JUNCTION_PORT_Y,
     )
     POWER_JUNCTION_BOTTOM_Z=POWER_JUNCTION_GROUND_Z+6
@@ -520,10 +525,26 @@ def build_enclosure(
     POWER_JUNCTION_RIGHT_X=(
         POWER_JUNCTION_X + CARLON_E987N_JUNCTION_BOX.size[1]/2
     )
+    POWER_JUNCTION_INPUT_EDGE_CLEARANCE=(
+        CARLON_E996G_BOX_ADAPTER.size[1]/2
+    )
+    POWER_JUNCTION_INPUT_PORT_X=(
+        POWER_JUNCTION_X
+        - CARLON_E987N_JUNCTION_BOX.size[1]/2
+        + POWER_JUNCTION_INPUT_EDGE_CLEARANCE
+    )
+    POWER_JUNCTION_INPUT_PORT_Y=(
+        POWER_JUNCTION_CENTER_Y
+        + CARLON_E987N_JUNCTION_BOX.size[1]/2
+        - POWER_JUNCTION_INPUT_EDGE_CLEARANCE
+    )
+    POWER_JUNCTION_INPUT_GROUND_Z=grounds[0].resolved(members).z_at(
+        POWER_JUNCTION_INPUT_PORT_X,
+        POWER_JUNCTION_INPUT_PORT_Y,
+    )
     POWER_JUNCTION_EV_PORT_X=POWER_JUNCTION_X+0.875
     POWER_JUNCTION_EV_PORT_Y=members["front_center_rail"].min_on("y")
     POWER_JUNCTION_EV_PORT_Z=POWER_JUNCTION_CENTER_Z
-    POWER_JUNCTION_LIGHT_PORT_X=POWER_JUNCTION_X-1.25
     POWER_JUNCTION_LIGHT_PORT_Y=(POWER_JUNCTION_PORT_Y-2)
     POWER_JUNCTION_OUTLET_PORT_Z=POWER_JUNCTION_CENTER_Z
 
@@ -596,18 +617,13 @@ def build_enclosure(
         if abs(LOW_VOLTAGE_POST_FL_Y_OFFSET) < 12
         else -math.inf
     )
+    # Preserve the former riser's computed position, translated exactly one
+    # inch with the boxes.  The old 12-inch post_fl clearance intentionally
+    # yields to the requested location; footing collision checks remain.
     LOW_VOLTAGE_INPUT_X=max(
         LOW_VOLTAGE_BOX_LEFT_X+LOW_VOLTAGE_PORT_EDGE_CLEARANCE,
-        LOW_VOLTAGE_POST_FL_MIN_X,
+        LOW_VOLTAGE_POST_FL_MIN_X-1,
     )
-    LOW_VOLTAGE_POST_FL_DISTANCE=math.hypot(
-        LOW_VOLTAGE_INPUT_X-LOW_VOLTAGE_POST_FL_CENTER[0],
-        LOW_VOLTAGE_INPUT_Y-LOW_VOLTAGE_POST_FL_CENTER[1],
-    )
-    if LOW_VOLTAGE_POST_FL_DISTANCE < 12:
-        raise ValueError(
-            "low-voltage riser cannot maintain 12-inch clearance from post_fl"
-        )
     if LOW_VOLTAGE_INPUT_X > (
         LOW_VOLTAGE_BOX_REAR_X-LOW_VOLTAGE_PORT_EDGE_CLEARANCE
     ):
@@ -884,22 +900,22 @@ def build_enclosure(
 
         # The former input adapter/coupling move to the box's rear face and
         # receive the T's 1-1/4-inch negative-Y branch.
-        POWER_JUNCTION_INPUT_PORT_X=POWER_T_AXIS_X
-        POWER_JUNCTION_INPUT_PORT_Y=members["front_center_rail"].min_on("y")
-        POWER_JUNCTION_INPUT_PORT_Z=POWER_T_CENTER_Z
+        POWER_JUNCTION_T_PORT_X=POWER_T_AXIS_X
+        POWER_JUNCTION_T_PORT_Y=members["front_center_rail"].min_on("y")
+        POWER_JUNCTION_T_PORT_Z=POWER_T_CENTER_Z
         components.add(
             "power_junction_input_adapter",
             assembly="electrical_conduit_fittings",
             component_type=CARLON_E996G_BOX_ADAPTER,
             member="front_center_rail",
             at=(
-                POWER_JUNCTION_INPUT_PORT_Z
+                POWER_JUNCTION_T_PORT_Z
                 - members["front_center_rail"].min_on("z")
             ),
             face="wide_neg",
             offset=(
                 0,
-                POWER_JUNCTION_INPUT_PORT_X
+                POWER_JUNCTION_T_PORT_X
                 - members["front_center_rail"].center_on("x"),
                 0,
             ),
@@ -911,13 +927,13 @@ def build_enclosure(
             component_type=CARLON_E940G_COUPLING,
             member="front_center_rail",
             at=(
-                POWER_JUNCTION_INPUT_PORT_Z
+                POWER_JUNCTION_T_PORT_Z
                 - members["front_center_rail"].min_on("z")
             ),
             face="wide_neg",
             offset=(
                 CARLON_E996G_BOX_ADAPTER.size[0]/2,
-                POWER_JUNCTION_INPUT_PORT_X
+                POWER_JUNCTION_T_PORT_X
                 - members["front_center_rail"].center_on("x"),
                 0,
             ),
@@ -961,9 +977,12 @@ def build_enclosure(
             face="wide_neg",
             offset=(
                 max(0, -input_adapter_position),
-                -(POWER_JUNCTION_X-members["front_center_rail"].center_on("x")),
+                -(
+                    POWER_JUNCTION_INPUT_PORT_X
+                    - members["front_center_rail"].center_on("x")
+                ),
                 members["front_center_rail"].min_on("y")
-                - POWER_JUNCTION_CENTER_Y,
+                - POWER_JUNCTION_INPUT_PORT_Y,
             ),
             orientation="down",
         )
@@ -982,9 +1001,12 @@ def build_enclosure(
             face="wide_neg",
             offset=(
                 max(0, -input_coupling_position),
-                -(POWER_JUNCTION_X-members["front_center_rail"].center_on("x")),
+                -(
+                    POWER_JUNCTION_INPUT_PORT_X
+                    - members["front_center_rail"].center_on("x")
+                ),
                 members["front_center_rail"].min_on("y")
-                - POWER_JUNCTION_CENTER_Y,
+                - POWER_JUNCTION_INPUT_PORT_Y,
             ),
             orientation="down",
         )
@@ -1061,8 +1083,12 @@ def build_enclosure(
             face="wide_neg",
             offset=(
                 max(0, -input_adapter_position),
-                -(POWER_JUNCTION_X-members["front_center_rail"].center_on("x")),
-                1,
+                -(
+                    POWER_JUNCTION_INPUT_PORT_X
+                    - members["front_center_rail"].center_on("x")
+                ),
+                members["front_center_rail"].min_on("y")
+                - POWER_JUNCTION_INPUT_PORT_Y,
             ),
             orientation="down",
         )
@@ -1081,8 +1107,12 @@ def build_enclosure(
             face="wide_neg",
             offset=(
                 max(0, -input_coupling_position),
-                -(POWER_JUNCTION_X-members["front_center_rail"].center_on("x")),
-                1,
+                -(
+                    POWER_JUNCTION_INPUT_PORT_X
+                    - members["front_center_rail"].center_on("x")
+                ),
+                members["front_center_rail"].min_on("y")
+                - POWER_JUNCTION_INPUT_PORT_Y,
             ),
             orientation="down",
         )
@@ -1160,36 +1190,37 @@ def build_enclosure(
             ),
         )
 
-    # Top-facing 1/2-inch street-light penetration.
+    # Positive-X-facing 1/2-inch street-light penetration.  It shares the
+    # right side with the outlet fitting but sits farther forward (negative Y).
     components.add(
         "power_junction_light_adapter",
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E996D_BOX_ADAPTER,
         member="front_center_rail",
-        at=POWER_JUNCTION_TOP_Z-members["front_center_rail"].min_on("z"),
+        at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
         face="wide_neg",
         offset=(
+            POWER_JUNCTION_RIGHT_X-members["front_center_rail"].center_on("x"),
             0,
-            POWER_JUNCTION_LIGHT_PORT_X-members["front_center_rail"].center_on("x"),
             members["front_center_rail"].min_on("y")-POWER_JUNCTION_LIGHT_PORT_Y,
         ),
+        orientation="left",
     )
     components.add(
         "power_junction_light_coupling",
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E940D_COUPLING,
         member="front_center_rail",
-        at=(
-            POWER_JUNCTION_TOP_Z
-            + CARLON_E996D_BOX_ADAPTER.size[0]/2
-            - members["front_center_rail"].min_on("z")
-        ),
+        at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
         face="wide_neg",
         offset=(
+            POWER_JUNCTION_RIGHT_X
+            + CARLON_E996D_BOX_ADAPTER.size[0]/2
+            - members["front_center_rail"].center_on("x"),
             0,
-            POWER_JUNCTION_LIGHT_PORT_X-members["front_center_rail"].center_on("x"),
             members["front_center_rail"].min_on("y")-POWER_JUNCTION_LIGHT_PORT_Y,
         ),
+        orientation="left",
     )
 
     # Right-side 1/2-inch outlet penetration.
@@ -1264,10 +1295,7 @@ def build_enclosure(
             ),
         )
     elif power_conduit_layout == "junction-spline":
-        POWER_JUNCTION_SPLINE_GROUND_Z=grounds[0].resolved(members).z_at(
-            POWER_JUNCTION_X,
-            POWER_JUNCTION_CENTER_Y,
-        )
+        POWER_JUNCTION_SPLINE_GROUND_Z=POWER_JUNCTION_INPUT_GROUND_Z
         POWER_INPUT_COUPLING_END_Z=(
             POWER_JUNCTION_BOTTOM_Z
             - CARLON_E996G_BOX_ADAPTER.size[0]/2
@@ -1279,14 +1307,14 @@ def build_enclosure(
             points=(
                 _member_relative_coord(
                     "front_center_rail",
-                    POWER_JUNCTION_X,
-                    POWER_JUNCTION_CENTER_Y,
+                    POWER_JUNCTION_INPUT_PORT_X,
+                    POWER_JUNCTION_INPUT_PORT_Y,
                     POWER_JUNCTION_SPLINE_GROUND_Z,
                 ),
                 _member_relative_coord(
                     "front_center_rail",
-                    POWER_JUNCTION_X,
-                    POWER_JUNCTION_CENTER_Y,
+                    POWER_JUNCTION_INPUT_PORT_X,
+                    POWER_JUNCTION_INPUT_PORT_Y,
                     POWER_INPUT_COUPLING_END_Z,
                 ),
             ),
@@ -1329,14 +1357,14 @@ def build_enclosure(
             points=(
                 _member_relative_coord(
                     "front_center_rail",
-                    POWER_JUNCTION_X,
-                    POWER_JUNCTION_PORT_Y,
-                    POWER_JUNCTION_GROUND_Z,
+                    POWER_JUNCTION_INPUT_PORT_X,
+                    POWER_JUNCTION_INPUT_PORT_Y,
+                    POWER_JUNCTION_INPUT_GROUND_Z,
                 ),
                 _member_relative_coord(
                     "front_center_rail",
-                    POWER_JUNCTION_X,
-                    POWER_JUNCTION_PORT_Y,
+                    POWER_JUNCTION_INPUT_PORT_X,
+                    POWER_JUNCTION_INPUT_PORT_Y,
                     POWER_INPUT_COUPLING_END_Z,
                 ),
             ),
@@ -1386,29 +1414,45 @@ def build_enclosure(
         )
 
     POWER_LIGHT_COUPLING_END=(
-        POWER_JUNCTION_LIGHT_PORT_X,
-        POWER_JUNCTION_LIGHT_PORT_Y,
-        POWER_JUNCTION_TOP_Z
+        POWER_JUNCTION_RIGHT_X
         + CARLON_E996D_BOX_ADAPTER.size[0]/2
         + CARLON_E940D_COUPLING.size[0],
+        POWER_JUNCTION_LIGHT_PORT_Y,
+        POWER_JUNCTION_OUTLET_PORT_Z,
     )
     power_light_entry=FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
+    POWER_LIGHT_POST_X=(
+        members["post_fr"].min_on("x")
+        - CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2
+    )
     conduits.add(
         "power_street_light_feed",
         trade_size="1/2",
-        points=cubic_bezier_conduit_points(
-            POWER_LIGHT_COUPLING_END,
-            (
-                POWER_LIGHT_COUPLING_END[0],
-                POWER_LIGHT_COUPLING_END[1],
-                POWER_LIGHT_COUPLING_END[2]+8,
+        points=(
+            ComponentAnchor(
+                "power_junction_light_coupling",
+                position=(
+                    CARLON_E940D_COUPLING.size[0],
+                    CARLON_E940D_COUPLING.size[1]/2,
+                ),
             ),
-            (
-                power_light_entry[0],
+            _member_relative_coord(
+                "post_fr",
+                POWER_LIGHT_POST_X,
+                POWER_JUNCTION_LIGHT_PORT_Y,
+                POWER_JUNCTION_OUTLET_PORT_Z,
+            ),
+            _member_relative_coord(
+                "post_fr",
+                POWER_LIGHT_POST_X,
                 power_light_entry[1],
-                power_light_entry[2]-8,
+                power_light_entry[2],
             ),
-            power_light_entry,
+            FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
+        ),
+        bends=(
+            ConduitBend(point_index=1, radius=3),
+            ConduitBend(point_index=2, radius=3),
         ),
     )
 

@@ -128,10 +128,14 @@ class FrontStreetLightBuildTests(unittest.TestCase):
             build.siding.min_y - build.siding.board_thickness,
         )
 
-    def test_bottom_hub_entry_is_available_for_future_conduit(self) -> None:
+    def test_positive_x_port_receives_conduit(self) -> None:
         self.assertVectorAlmostEqual(
             build.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(build.members),
-            (13.75, 1.5, 37.3),
+            (15.85, 1.5, 40),
+        )
+        self.assertIsInstance(
+            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
+            ComponentAnchor,
         )
 
     def test_siding_is_cut_out_around_extension_ring(self) -> None:
@@ -169,7 +173,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
 
         self.assertVectorAlmostEqual(
             box.box_min,
-            (15, 2.1875, build.POWER_JUNCTION_BOTTOM_Z),
+            (14, 2.1875, build.POWER_JUNCTION_BOTTOM_Z),
         )
         self.assertVectorAlmostEqual(box.box_size, (4, 4, 4))
         self.assertAlmostEqual(
@@ -201,13 +205,13 @@ class PowerJunctionBuildTests(unittest.TestCase):
 
         box_instance = build.components["power_junction_box"]
         box = box_instance.resolved(build.members[box_instance.member])
-        box_center_xy = (
-            box.box_min[0]+box.box_size[0]/2,
-            box.box_min[1]+box.box_size[1]/2,
+        input_port_xy = (
+            build.POWER_JUNCTION_INPUT_PORT_X,
+            build.POWER_JUNCTION_INPUT_PORT_Y,
         )
         riser = self.resolved_conduit("power_ground_riser")
-        self.assertVectorAlmostEqual(riser.points[0][:2], box_center_xy)
-        self.assertVectorAlmostEqual(riser.points[-1][:2], box_center_xy)
+        self.assertVectorAlmostEqual(riser.points[0][:2], input_port_xy)
+        self.assertVectorAlmostEqual(riser.points[-1][:2], input_port_xy)
         for name in (
             "power_junction_input_adapter",
             "power_junction_input_coupling",
@@ -218,7 +222,16 @@ class PowerJunctionBuildTests(unittest.TestCase):
                 fitting.box_min[0]+fitting.box_size[0]/2,
                 fitting.box_min[1]+fitting.box_size[1]/2,
             )
-            self.assertVectorAlmostEqual(fitting_center_xy, box_center_xy)
+            self.assertVectorAlmostEqual(fitting_center_xy, input_port_xy)
+
+        self.assertAlmostEqual(
+            input_port_xy[0]-box.box_min[0],
+            build.POWER_JUNCTION_INPUT_EDGE_CLEARANCE,
+        )
+        self.assertAlmostEqual(
+            box.box_min[1]+box.box_size[1]-input_port_xy[1],
+            build.POWER_JUNCTION_INPUT_EDGE_CLEARANCE,
+        )
 
         self.assertAlmostEqual(build.POWER_JUNCTION_SPLINE_PORT_X, box.box_min[0]+3)
         self.assertAlmostEqual(build.POWER_JUNCTION_SPLINE_PORT_Y, box.box_min[1]+3)
@@ -351,7 +364,57 @@ class PowerJunctionBuildTests(unittest.TestCase):
         )
         self.assertEqual(ev.bends, ())
         self.assertEqual(len(ev.points), 2)
+        self.assertEqual(light.bends, ((1, 3), (2, 3)))
         self.assertGreater(len(light.points), 20)
+
+    def test_street_light_feed_uses_right_side_and_post_plane(self) -> None:
+        light = self.resolved_conduit("power_street_light_feed")
+        adapter = build.components["power_junction_light_adapter"].resolved(
+            build.members["front_center_rail"]
+        )
+        outlet = build.components["power_junction_outlet_adapter"].resolved(
+            build.members["front_center_rail"]
+        )
+
+        self.assertEqual(
+            build.components["power_junction_light_adapter"].orientation,
+            "left",
+        )
+        self.assertAlmostEqual(adapter.box_min[0], build.POWER_JUNCTION_RIGHT_X)
+        self.assertLess(
+            adapter.box_min[1]+adapter.box_size[1]/2,
+            outlet.box_min[1]+outlet.box_size[1]/2,
+        )
+        self.assertAlmostEqual(
+            adapter.box_min[2]+adapter.box_size[2]/2,
+            outlet.box_min[2]+outlet.box_size[2]/2,
+        )
+        self.assertVectorAlmostEqual(
+            light.points[0],
+            build.POWER_LIGHT_COUPLING_END,
+        )
+        self.assertVectorAlmostEqual(
+            light.points[-1], build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
+        )
+        self.assertAlmostEqual(
+            max(point[0] for point in light.points),
+            build.POWER_LIGHT_POST_X,
+        )
+        self.assertGreater(light.points[-1][2], light.points[0][2])
+
+        raw_points = build.conduits["power_street_light_feed"].points
+        lower_post_point = raw_points[1].resolve(build.members)
+        upper_post_point = raw_points[2].resolve(build.members)
+        self.assertAlmostEqual(lower_post_point[0], build.POWER_LIGHT_POST_X)
+        self.assertAlmostEqual(upper_post_point[0], build.POWER_LIGHT_POST_X)
+        self.assertAlmostEqual(
+            lower_post_point[1],
+            build.POWER_JUNCTION_LIGHT_PORT_Y,
+        )
+        self.assertAlmostEqual(
+            upper_post_point[1],
+            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+        )
 
     def test_layout_tracks_resized_charger_and_preserves_legacy_route(self) -> None:
         for enclosure in (
@@ -460,9 +523,9 @@ class LowVoltageBuildTests(unittest.TestCase):
 
         self.assertIs(instance.component_type, CARLON_E987N_JUNCTION_BOX)
         self.assertEqual(instance.face, "wide_neg")
-        self.assertVectorAlmostEqual(box.box_min, (10, 2.1875, 11))
+        self.assertVectorAlmostEqual(box.box_min, (9, 2.1875, 11))
         self.assertVectorAlmostEqual(box.box_size, (4, 4, 4))
-        self.assertAlmostEqual(box.box_min[0]+box.box_size[0], 14)
+        self.assertAlmostEqual(box.box_min[0]+box.box_size[0], 13)
         self.assertAlmostEqual(box.box_min[2]+box.box_size[2]/2, 13)
 
         box_min_y = box.box_min[1]
@@ -556,12 +619,10 @@ class LowVoltageBuildTests(unittest.TestCase):
         )
         self.assertEqual(riser.points[0][:2], riser.points[-1][:2])
 
-        post_fl = build.members["post_fl"]
-        distance_from_post_fl = math.hypot(
-            riser.points[0][0]-post_fl.center_on("x"),
-            riser.points[0][1]-post_fl.center_on("y"),
+        self.assertAlmostEqual(
+            riser.points[0][0],
+            build.LOW_VOLTAGE_POST_FL_MIN_X-1,
         )
-        self.assertGreaterEqual(distance_from_post_fl, 12)
 
         for footing in build.footings:
             resolved = footing.resolved(build.model)

@@ -45,10 +45,11 @@ Before installing any posts, establish the enclosure layout from protected
 reference points and mark all four 10-inch footing circles. Route both
 underground conduit runs through the enclosure interior and clear of the full
 footing excavations before sweeping them up to the risers. Bring the modeled
-1 1/4-inch power riser out of the ground beneath the power junction box
-(x = 17 inches and y = 4.1875 inches in the default model) and bring the
-modeled 3/4-inch low-voltage riser out beneath the rear of its junction box.
-Its default axis is approximately x = 13.17 inches and y = 5.44 inches, clear
+1 1/4-inch power riser out of the ground beneath the back-left corner of the
+power junction box (x = 14.975 inches and y = 5.2125 inches in the default
+model) and bring the modeled 3/4-inch low-voltage riser out beneath the rear of
+its junction box.
+Its default axis is approximately x = 12.17 inches and y = 5.44 inches, clear
 of the post footings. Leave both upper ends positioned for the later equipment
 connections.
 
@@ -370,15 +371,16 @@ front_ev_charger_cable
 ## 14. Preassemble and mount the power junction (`power-junction-assembly`)
 
 Before mounting the Carlon E987N power junction box, fit its bottom-facing
-1 1/4-inch input adapter and coupling, top-back 1-inch charger outlet, top
-1/2-inch light outlet, and right-side 1/2-inch receptacle outlet. Then mount the
-connected box on `front_center_rail`, with its bottom face 6 inches above the
-local modeled ground plane. Keep every fitting axis aligned with its conduit
-path.
+1 1/4-inch input adapter and coupling at the back-left corner, top-back 1-inch
+charger outlet, and the two right-side 1/2-inch light and receptacle outlets.
+The light outlet is forward of the receptacle outlet. Then mount the connected
+box on `front_center_rail`, spanning x = 14 to 18 inches in the default model,
+with its bottom face 6 inches above the local modeled ground plane. Keep every
+fitting axis aligned with its conduit path.
 
 Check that the fittings are fully seated and clear of `front_center_rail`. The
 charger fitting is centered one inch from the positive-X and positive-Y edges
-of the box lid (x = 16 inches and y = 5.1875 inches in the default model).
+of the box lid (x = 17 inches and y = 5.1875 inches in the default model).
 
 The incoming #6 and #12 groups enter through the bottom riser. The #12
 hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs,
@@ -429,8 +431,12 @@ power_ev_charger_feed
 ## 16. Rough in the street light (`street-light-rough-in`)
 
 Mount the Commercial Electric WRB550B base box on the street-light backers.
-Install the 1/2-inch feed from the top junction-box fitting, following the
-modeled smooth forward and lateral offset into the base box's open bottom port.
+Install the 1/2-inch feed from the forward fitting on the positive-X side of
+the power junction box. Run toward positive X and make the first modeled
+3-inch-radius sweep upward against the negative-X face of `post_fr`. Make the
+required Y transition gradually on this long rising leg. At z = 40 inches,
+make the second 3-inch-radius sweep toward negative X and enter the
+positive-X-facing port of the WRB550B base box at x = 15.85 and y = 1.5 inches.
 
 Check that the box is centered at x = 13 3/4 inches and z = 40 inches, the
 unused ports are plugged, and the conduit stays forward of the open tambour
@@ -473,8 +479,8 @@ power_back_right_outlet_feed
 ## 18. Add the low-voltage termination (`low-voltage-termination`)
 
 Mount the low-voltage junction box to the same y-coordinate plane as the power
-junction box, spanning x = 10 to 14 inches and centered at y = 4.1875 inches
-and z = 13 inches. The power junction spans x = 15 to 19 inches, leaving a
+junction box, spanning x = 9 to 13 inches and centered at y = 4.1875 inches
+and z = 13 inches. The power junction spans x = 14 to 18 inches, leaving a
 one-inch gap. Future backing lumber may be added but is not included. Connect
 the rear portion of the bottom panel to the 3/4-inch riser installed in Step 1,
 then add the three cable glands across the front portion of the bottom panel.

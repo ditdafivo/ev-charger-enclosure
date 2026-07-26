@@ -475,13 +475,13 @@ def build_enclosure(
         for post_name in ("post_fl", "post_fr", "post_bl", "post_br")
     ]
 
-    POWER_JUNCTION_RIGHT_SHIFT=1
+    POWER_JUNCTION_RIGHT_SHIFT=2
     POWER_JUNCTION_X=(
         members["front_center_rail"].center_on("x")
         + 1.25
         + POWER_JUNCTION_RIGHT_SHIFT
     )
-    POWER_JUNCTION_Y_SHIFT=-1
+    POWER_JUNCTION_Y_SHIFT=0
     POWER_JUNCTION_PORT_Y=(
         members["front_center_rail"].min_on("y")
         - 1
@@ -567,12 +567,12 @@ def build_enclosure(
         if abs(LOW_VOLTAGE_POST_FL_Y_OFFSET) < 12
         else -math.inf
     )
-    # Preserve the former riser's computed position, translated exactly one
-    # inch with the boxes.  The old 12-inch post_fl clearance intentionally
-    # yields to the requested location; footing collision checks remain.
+    # Translate the former riser axis one inch in positive X with both boxes.
+    # The old 12-inch post_fl clearance intentionally yields to the requested
+    # location; footing collision checks remain.
     LOW_VOLTAGE_INPUT_X=max(
         LOW_VOLTAGE_BOX_LEFT_X+LOW_VOLTAGE_PORT_EDGE_CLEARANCE,
-        LOW_VOLTAGE_POST_FL_MIN_X-1,
+        LOW_VOLTAGE_POST_FL_MIN_X,
     )
     if LOW_VOLTAGE_INPUT_X > (
         LOW_VOLTAGE_BOX_REAR_X-LOW_VOLTAGE_PORT_EDGE_CLEARANCE
@@ -1078,7 +1078,7 @@ def build_enclosure(
             FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
         ),
         bends=(
-            ConduitBend(point_index=1, radius=3),
+            ConduitBend(point_index=1, radius=2.5),
             ConduitBend(point_index=2, radius=3),
             ConduitBend(point_index=3, radius=3),
         ),

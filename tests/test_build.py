@@ -418,7 +418,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
 
         self.assertVectorAlmostEqual(
             box.box_min,
-            (14, 1.1875, build.POWER_JUNCTION_BOTTOM_Z),
+            (15, 2.1875, build.POWER_JUNCTION_BOTTOM_Z),
         )
         self.assertVectorAlmostEqual(box.box_size, (4, 4, 4))
         self.assertAlmostEqual(
@@ -454,7 +454,9 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertVectorAlmostEqual(riser.points[-1][:2], build.POWER_EV_ENTRY[:2])
         self.assertEqual(branch.trade_size, "1-1/4")
         self.assertEqual(branch.points[0][0], branch.points[-1][0])
+        self.assertAlmostEqual(branch.points[0][0], 16)
         self.assertEqual(branch.points[0][2], branch.points[-1][2])
+        self.assertLess(branch.points[0][1]-branch.points[-1][1], 0.25)
         self.assertAlmostEqual(
             branch.points[0][2]-branch.od/2,
             build.members["rail_fb"].max_on("z")+build.POWER_T_RAIL_CLEARANCE,
@@ -478,6 +480,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             adapter.box_min[1],
             box.box_min[1]+box.box_size[1],
         )
+        self.assertAlmostEqual(adapter.box_min[0]+adapter.box_size[0]/2, 16)
         self.assertLess(adapter.box_min[1], coupling.box_min[1])
         self.assertLess(coupling.box_min[1], branch.points[-1][1])
 
@@ -557,7 +560,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             enclosure.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(enclosure.members),
         )
         self.assertEqual(len(ev.points), 2)
-        self.assertEqual(light.bends, ((1, 3), (2, 3), (3, 3)))
+        self.assertEqual(light.bends, ((1, 2.5), (2, 3), (3, 3)))
         self.assertGreater(len(light.points), 20)
 
     def test_street_light_feed_sweeps_left_into_bottom_port(self) -> None:
@@ -691,25 +694,22 @@ class LowVoltageBuildTests(unittest.TestCase):
             build.members.as_dict(),
         )
 
-    def test_low_voltage_box_stays_one_inch_behind_shifted_power_box(self) -> None:
+    def test_junction_boxes_share_positive_y_face_and_one_inch_x_gap(self) -> None:
         instance = build.components["low_voltage_termination_box"]
         box = self.resolved_component("low_voltage_termination_box")
 
         self.assertIs(instance.component_type, CARLON_E987N_JUNCTION_BOX)
         self.assertEqual(instance.face, "wide_neg")
-        self.assertVectorAlmostEqual(box.box_min, (9, 2.1875, 11))
+        self.assertVectorAlmostEqual(box.box_min, (10, 2.1875, 11))
         self.assertVectorAlmostEqual(box.box_size, (4, 4, 4))
-        self.assertAlmostEqual(box.box_min[0]+box.box_size[0], 13)
+        self.assertAlmostEqual(box.box_min[0]+box.box_size[0], 14)
         self.assertAlmostEqual(box.box_min[2]+box.box_size[2]/2, 13)
 
         box_min_y = box.box_min[1]
         box_max_y = box_min_y+box.box_size[1]
         power = self.resolved_component("power_junction_box")
-        self.assertAlmostEqual(box_min_y, power.box_min[1]+1)
-        self.assertAlmostEqual(
-            box_max_y,
-            power.box_min[1]+power.box_size[1]+1,
-        )
+        self.assertAlmostEqual(box_min_y, power.box_min[1])
+        self.assertAlmostEqual(box_max_y, power.box_min[1]+power.box_size[1])
         self.assertAlmostEqual(power.box_min[0]-(box.box_min[0]+box.box_size[0]), 1)
 
     def test_bottom_fittings_are_inside_the_box_and_do_not_overlap(self) -> None:
@@ -798,7 +798,7 @@ class LowVoltageBuildTests(unittest.TestCase):
 
         self.assertAlmostEqual(
             riser.points[0][0],
-            build.LOW_VOLTAGE_POST_FL_MIN_X-1,
+            build.LOW_VOLTAGE_POST_FL_MIN_X,
         )
 
         for footing in build.footings:
@@ -898,7 +898,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         ev_feed = build.cables["low_voltage_ev_charger_feed"]
         self.assertGreater(build.path_3_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
         self.assertIn(build.path_3_front_rail, ev_feed.points)
-        self.assertGreater(build.path_3_front_rail[0], build.path_3_start[0])
+        self.assertLess(build.path_3_front_rail[0], build.path_3_start[0])
         self.assertGreater(build.path_3_front_rail[1], build.path_3_start[1])
         self.assertAlmostEqual(
             build.path_3_front_rail[1]-build.path_2_front_rail[1],

@@ -134,8 +134,14 @@ class TambourClearanceBuildTests(unittest.TestCase):
             depth_z=travel_y
             for step in range(9):
                 fraction=step/8
-                center_y=start[1]+fraction*dy
-                center_z=start[2]+fraction*dz
+                center_y=(
+                    start[1]+fraction*dy
+                    -tambour.slat_track_offset*depth_y
+                )
+                center_z=(
+                    start[2]+fraction*dz
+                    -tambour.slat_track_offset*depth_z
+                )
                 vertices = [
                     (
                         center_y
@@ -177,7 +183,12 @@ class TambourClearanceBuildTests(unittest.TestCase):
     def test_front_path_clears_backers_and_lowered_header(self) -> None:
         tambour = build.tambours["enclosure_tambour_door"].resolved(build.model)
         self.assertEqual(tambour.slat_depth, 1.5)
+        self.assertEqual(tambour.slat_track_offset, 0.375)
+        self.assertEqual(tambour.bends, ((1, 2.625), (2, 2.625)))
         self.assertEqual(build.TAMBOUR_FRONT_Y, 5)
+        self.assertEqual(build.TAMBOUR_TRACK_FRONT_Y, 5.375)
+        self.assertEqual(build.TAMBOUR_TRACK_TOP_Z, 44.125)
+        self.assertEqual(build.TAMBOUR_TRACK_BACK_Y, 21)
         for name in ("left_tambour_rail", "right_tambour_rail"):
             self.assertAlmostEqual(build.members[name].center_on("y"), 5.5)
 
@@ -1108,8 +1119,8 @@ class ParameterizedBuildTests(unittest.TestCase):
         tambour = enclosure.tambours["enclosure_tambour_door"].resolved(
             enclosure.model
         )
-        self.assertAlmostEqual(tambour.left_points[0][1], 29)
-        self.assertAlmostEqual(tambour.right_points[0][1], 29)
+        self.assertAlmostEqual(tambour.left_points[0][1], 28.625)
+        self.assertAlmostEqual(tambour.right_points[0][1], 28.625)
         self.assertAlmostEqual(tambour.left_points[0][0], 3.5)
         self.assertAlmostEqual(tambour.right_points[0][0], 30)
 
@@ -1203,7 +1214,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         tambour = taller.tambours["enclosure_tambour_door"].resolved(taller.model)
         self.assertAlmostEqual(
             max(point[2] for point in tambour.left_points),
-            52.5,
+            taller.TAMBOUR_TRACK_TOP_Z,
         )
 
     def test_dimensions_must_be_finite_and_positive(self) -> None:

@@ -214,6 +214,9 @@ def build_enclosure(
     )
     TAMBOUR_TOP_Z=FRAME_DIMS.z-TAMBOUR_TOP_OFFSET
     TAMBOUR_FRONT_Y=5
+    TAMBOUR_SLAT_TRACK_OFFSET=TAMBOUR_MAX_SLAT_DEPTH/4
+    TAMBOUR_TRACK_FRONT_Y=TAMBOUR_FRONT_Y+TAMBOUR_SLAT_TRACK_OFFSET
+    TAMBOUR_TRACK_TOP_Z=TAMBOUR_TOP_Z-TAMBOUR_SLAT_TRACK_OFFSET
     TAMBOUR_VERTICAL_SUPPORT_CENTER_Y=TAMBOUR_FRONT_Y+0.5
     TAMBOUR_FRONT_HEADER_TOP_Z=TAMBOUR_TOP_Z-2
     TAMBOUR_FRONT_HEADER_CENTER_Z=(
@@ -1209,9 +1212,10 @@ def build_enclosure(
     TAMBOUR_LEFT_X = members["post_fl"].max_on("x")
     TAMBOUR_RIGHT_X = members["post_fr"].min_on("x")
     TAMBOUR_BACK_Y = members["post_bl"].max_on("y") - 0.5
+    TAMBOUR_TRACK_BACK_Y = TAMBOUR_BACK_Y-TAMBOUR_SLAT_TRACK_OFFSET
     TAMBOUR_BACK_BOTTOM_Z = 3
     TAMBOUR_FRONT_BOTTOM_Z = 16
-    TAMBOUR_BEND_RADIUS = 3
+    TAMBOUR_BEND_RADIUS = 3-TAMBOUR_SLAT_TRACK_OFFSET
 
     tambours.add(
         "enclosure_tambour_door",
@@ -1220,26 +1224,51 @@ def build_enclosure(
             RelativeCoord(
                 "post_bl",
                 WIDTH_4x4,
-                WIDTH_4x4-0.5,
+                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
                 BURIED_FRAME_Z+TAMBOUR_BACK_BOTTOM_Z,
             ),
-            RelativeCoord("post_bl", WIDTH_4x4, WIDTH_4x4-0.5, BURIED_FRAME_Z+TAMBOUR_TOP_Z),
-            RelativeCoord("post_fl", WIDTH_4x4, TAMBOUR_FRONT_Y, BURIED_FRAME_Z+TAMBOUR_TOP_Z),
+            RelativeCoord(
+                "post_bl",
+                WIDTH_4x4,
+                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
+            ),
             RelativeCoord(
                 "post_fl",
                 WIDTH_4x4,
-                TAMBOUR_FRONT_Y,
+                TAMBOUR_TRACK_FRONT_Y,
+                BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
+            ),
+            RelativeCoord(
+                "post_fl",
+                WIDTH_4x4,
+                TAMBOUR_TRACK_FRONT_Y,
                 BURIED_FRAME_Z+TAMBOUR_FRONT_BOTTOM_Z,
             ),
         ),
         right_points=(
-            RelativeCoord("post_br", 0, WIDTH_4x4-0.5, BURIED_FRAME_Z+TAMBOUR_BACK_BOTTOM_Z),
-            RelativeCoord("post_br", 0, WIDTH_4x4-0.5, BURIED_FRAME_Z+TAMBOUR_TOP_Z),
-            RelativeCoord("post_fr", 0, TAMBOUR_FRONT_Y, BURIED_FRAME_Z+TAMBOUR_TOP_Z),
+            RelativeCoord(
+                "post_br",
+                0,
+                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                BURIED_FRAME_Z+TAMBOUR_BACK_BOTTOM_Z,
+            ),
+            RelativeCoord(
+                "post_br",
+                0,
+                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
+            ),
             RelativeCoord(
                 "post_fr",
                 0,
-                TAMBOUR_FRONT_Y,
+                TAMBOUR_TRACK_FRONT_Y,
+                BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
+            ),
+            RelativeCoord(
+                "post_fr",
+                0,
+                TAMBOUR_TRACK_FRONT_Y,
                 BURIED_FRAME_Z+TAMBOUR_FRONT_BOTTOM_Z,
             ),
         ),
@@ -1249,6 +1278,7 @@ def build_enclosure(
         ),
         door_length=44,
         slat_depth=TAMBOUR_MAX_SLAT_DEPTH,
+        slat_track_offset=TAMBOUR_SLAT_TRACK_OFFSET,
         slat_color=TAMBOUR_DOOR_COLOR,
     )
 
@@ -1256,10 +1286,10 @@ def build_enclosure(
     TAMBOUR_CEILING_CLEARANCE=0.25
     TAMBOUR_CEILING_BEND_INSET=0.75
     TAMBOUR_CEILING_FRONT_Y=(
-        TAMBOUR_FRONT_Y+TAMBOUR_BEND_RADIUS+TAMBOUR_CEILING_BEND_INSET
+        TAMBOUR_TRACK_FRONT_Y+TAMBOUR_BEND_RADIUS+TAMBOUR_CEILING_BEND_INSET
     )
     TAMBOUR_CEILING_REAR_Y=(
-        TAMBOUR_BACK_Y-TAMBOUR_BEND_RADIUS-TAMBOUR_CEILING_BEND_INSET
+        TAMBOUR_TRACK_BACK_Y-TAMBOUR_BEND_RADIUS-TAMBOUR_CEILING_BEND_INSET
     )
     TAMBOUR_CEILING_TOP_Z=(
         TAMBOUR_TOP_Z

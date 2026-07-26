@@ -35,13 +35,14 @@ overlapped by 1/4 inch:
 45.75 - 45.50 = 0.25 inch
 ```
 
-The tambour top supports now occupy `z = 43.75` to `45.25` inches and the top
-track centerline is `z = 44.50` inches. This leaves 1/4 inch between the support
-rails and perimeter braces. It also accommodates a curtain and recessed-pull
+The tambour top supports now occupy `z = 43.75` to `45.25` inches. The slat
+center path remains at `z = 44.50` inches, while the track centerline is offset
+3/8 inch inward at `z = 44.125` inches. This leaves 1/4 inch between the support
+rails and perimeter braces and accommodates a curtain and recessed-pull
 envelope up to 1 1/2 inches deep while retaining the same clearance:
 
 ```text
-45.50 - (44.50 + 1.50 / 2) = 0.25 inch
+45.50 - (44.125 + 0.375 + 1.50 / 2) = 0.25 inch
 ```
 
 Handles, finger pulls, fasteners, and reinforcement must remain within that

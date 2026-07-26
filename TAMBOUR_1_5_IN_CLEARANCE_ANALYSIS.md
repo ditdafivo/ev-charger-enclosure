@@ -26,8 +26,9 @@ overhead curtain from hands and the cord.
 
 ### Front guide and street-light backers
 
-The front guide centerline moved from `y = 3.75` to `y = 5.0`. A centered
-1.5-inch envelope reaches forward to `y = 4.25`; the backers end at `y = 3.80`:
+The slat center path remains at `y = 5.0`, while the guide centerline is
+modeled 3/8 inch inward at `y = 5.375`. The 1.5-inch envelope still reaches
+forward to `y = 4.25`; the backers end at `y = 3.80`:
 
 ```text
 4.25 - 3.80 = 0.45 inch
@@ -43,10 +44,10 @@ The front center rail bears against its underside. Two short vertical 2x4
 blocks provide full-depth attachment faces at the header ends and bear against
 the undersides of the upper side rails.
 
-The swept-envelope regression follows the resolved piecewise track, orients a
-1.5-by-0.9-inch slat to every sampled segment, and checks the lowest curtain
-surface over the header's Y interval. The resulting clearance exceeds the
-required 1/4 inch, including through the front bend.
+The swept-envelope regression follows the resolved piecewise track, offsets
+the center of each 1.5-by-0.9-inch slat 3/8 inch outward, and checks the lowest
+curtain surface over the header's Y interval. The resulting clearance exceeds
+the required 1/4 inch, including through the 2 5/8-inch-radius front bend.
 
 This is a geometry result, not a structural rating. The header, blocks, center
 rail, fasteners, and connections must be selected for the charger dead load
@@ -97,7 +98,8 @@ solid-envelope assertion. It must be approved on the full-width prototype.
 ## Acceptance requirements
 
 1. Build the guide paths from one full-size template using the modeled
-   `y = 5.0`, `z = 44.5`, and 3-inch-radius datums.
+   front `y = 5.375`, top `z = 44.125`, rear `y = 21.0`, and 2 5/8-inch-radius
+   track datums.
 2. Verify the header load path and connections for the charger and holster's
    dead and dynamic loads.
 3. Prototype the groove, liner, slat ends, pulls, fasteners, loading section,

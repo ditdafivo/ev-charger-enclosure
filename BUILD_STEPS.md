@@ -282,7 +282,7 @@ the finished tracks. Check both for plumb and verify their inside spacing and
 front-to-back position against the full-size track template in
 [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) before fixing them permanently.
 Their modeled Y range is 4 3/4 to 6 1/4 inches, supporting the guide
-centerline at y = 5 inches.
+centerline at y = 5 3/8 inches.
 
 New model objects:
 
@@ -319,9 +319,11 @@ mirrored guide liners along the modeled paths before installing any nearby
 electrical equipment or conduit. Their final position is the controlling
 clearance datum for the power-junction assembly, its 1 1/4-inch conduit, and
 all outgoing conduit runs; do not use those later assemblies to force or shift
-a guide. The guide liners' rear lower endpoint is at z = 3 inches, their front
-lower endpoint is at z = 16 inches, their top centerline is at z = 44 1/2 inches,
-and both turns begin from a modeled 3-inch centerline radius.
+a guide. The guide liners' rear lower endpoint is at `y = 21`, `z = 3` inches;
+their front lower endpoint is at `y = 5 3/8`, `z = 16` inches; their top
+centerline is at `z = 44 1/8` inches; and both turns begin from a modeled
+2 5/8-inch centerline radius. This puts the guide 3/8 inch into the inner half
+of the 1 1/2-inch slat while preserving the approved curtain envelope.
 
 Load the completed curtain and cycle it fully using both the lowest pull slat
 and the recessed pull approximately 18 inches above it. Verify equal tracking,

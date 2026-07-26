@@ -19,10 +19,11 @@ the build record at the end of this guide.
 | Feature | Modeled value | Status |
 | --- | ---: | --- |
 | Distance between left and right track centerlines | 20 1/2 in | Verify against the built frame |
-| Rear lower track endpoint | `y = 21 3/8`, `z = 3` in | Fixed enclosure interface |
-| Front lower track endpoint | `y = 5`, `z = 16` in | Fixed enclosure interface |
-| Top track centerline | `z = 44 1/2` in | Fixed enclosure interface |
-| Bend centerline radius | 3 in | Prototype-controlled |
+| Rear lower track endpoint | `y = 21`, `z = 3` in | Fixed enclosure interface |
+| Front lower track endpoint | `y = 5 3/8`, `z = 16` in | Fixed enclosure interface |
+| Top track centerline | `z = 44 1/8` in | Fixed enclosure interface |
+| Track offset into slat | 3/8 in | Prototype-controlled |
+| Bend centerline radius | 2 5/8 in | Prototype-controlled |
 | Curtain length | 44 in | Prototype-controlled |
 | Slat pitch | 1 in | Prototype-controlled |
 | Slat travel-direction width | 0.9 in | Prototype-controlled |
@@ -35,9 +36,13 @@ round centerlines; it does not define a groove, liner cross-section, running
 clearance, fastener pattern, or loading opening. Derive those details from the
 prototype rather than treating the rendered cylinders as stock material.
 
-The top track centerline is 1 inch below the perimeter braces. This permits an
+The track is modeled 3/8 inch into the slat's inner half, where most of the
+slat mass will remain after an outer-face finger indentation or handle detail
+is selected. The slat center path therefore remains at `z = 44.5` on the top
+run even though the track centerline is at `z = 44.125`. This permits an
 approved curtain and pull-slat envelope up to 1 1/2 inches deep while retaining
-1/4 inch of clearance below the braces: `44.5 + 1.5 / 2 = 45.25` inches. No
+1/4 inch of clearance below the braces: `44.125 + 0.375 + 1.5 / 2 = 45.25`
+inches. No
 handle, fastener, backing reinforcement, or track fixing may project beyond
 that approved envelope in this region. A thinner production profile increases
 the clearance but does not permit the track centerline to be raised.
@@ -88,7 +93,7 @@ Make two special pull slats as part of the curtain:
 Rear elevation, door closed (not to scale):
 
 ```text
-                  top track centerline z = 44.5
+                  top track centerline z = 44.125
        left track  |==========================|  right track
                    |                          |
                    |  upper recessed pull     |  about 18 in above lower edge
@@ -103,12 +108,12 @@ Side path and handle orientation (not to scale):
 
 ```text
  rear opening                                      enclosure front
- y = 21.375                                                 y = 5
+ y = 21                                                 y = 5.375
     |        top brace underside z = 45.5                    |
     |        ----------------------------------               |
     |        1/4-in minimum clearance                         |
     |      / recessed pull rotates onto top run \             |
-    |     /======================================\ z = 44.5   |
+    |     /======================================\ z = 44.125 |
     |     |                                      |            |
     |     |                                      |            |
  z = 3 --+                                      +-- z = 16
@@ -161,7 +166,7 @@ below.
 
 ### 2. Full-size path template
 
-Lay out the complete side path at full scale, including both 3-inch-radius
+Lay out the complete side path at full scale, including both 2 5/8-inch-radius
 bends and both lower endpoints. Use a fair curve with tangent transitions; do
 not approximate the bend with a sharp miter. Make a rigid master template and
 use it for both mirrored track assemblies.

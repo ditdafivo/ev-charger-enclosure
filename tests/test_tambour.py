@@ -61,6 +61,7 @@ class TambourTests(unittest.TestCase):
 
         self.assertEqual(len(resolved.closed_slats), 4)
         self.assertEqual(resolved.slat_thickness, 0.9)
+        self.assertEqual(resolved.slat_track_offset, 0)
         for left, right, _tangent in resolved.closed_slats:
             self.assertEqual(right[0] - left[0], 5)
             self.assertEqual(left[1], 10)
@@ -68,6 +69,26 @@ class TambourTests(unittest.TestCase):
         self.assertLess(
             resolved.closed_slats[0][0][2], resolved.closed_slats[-1][0][2]
         )
+
+    def test_track_offset_moves_slat_center_outward_from_track(self) -> None:
+        door = sample_tambour()
+        offset_door = TambourDoor(
+            **{
+                **door.__dict__,
+                "slat_depth": 1.5,
+                "slat_track_offset": 0.375,
+            }
+        )
+        resolved = offset_door.resolved()
+
+        self.assertEqual(resolved.slat_track_offset, 0.375)
+        self.assertAlmostEqual(resolved.closed_slats[0][0][1], 10.375)
+        self.assertEqual(resolved.left_points[0][1], 10)
+
+    def test_track_offset_must_remain_within_slat(self) -> None:
+        door = sample_tambour()
+        with self.assertRaisesRegex(ValueError, "must remain within the slat"):
+            TambourDoor(**{**door.__dict__, "slat_track_offset": 0.5})
 
     def test_model_rejects_duplicate_tambour_names(self) -> None:
         members = LumberCollection()
@@ -103,7 +124,7 @@ class TambourTests(unittest.TestCase):
             scad,
         )
         self.assertIn(
-            "function t_slats(t, is_open) = is_open ? t[11] : t[12];", scad
+            "function t_slats(t, is_open) = is_open ? t[12] : t[13];", scad
         )
 
 

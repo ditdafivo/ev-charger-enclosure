@@ -113,7 +113,7 @@ class BuildStepModelTests(unittest.TestCase):
         }
 
         self.assertEqual(len(model.build_steps), 25)
-        self.assertEqual(len(assigned), 130)
+        self.assertEqual(len(assigned), 134)
         self.assertEqual(set(assigned), set(model.renderable_object_names()))
         self.assertEqual(
             model.build_steps[0].object_names,
@@ -124,6 +124,7 @@ class BuildStepModelTests(unittest.TestCase):
             ("back_right_outlet_cover",),
         )
         self.assertEqual(step_by_object["post_fl"], 2)
+        self.assertEqual(step_by_object["footing_fl"], 2)
         self.assertEqual(step_by_object["front_street_light_backer_lower"], 11)
         self.assertEqual(step_by_object["brace_fl_fr"], 12)
         self.assertEqual(step_by_object["brace_br_fl"], 12)
@@ -147,6 +148,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn('["power_ground_riser", 1]', scad)
         self.assertIn('["low_voltage_ground_riser", 1]', scad)
         self.assertIn('["post_fl", 2]', scad)
+        self.assertIn('["footing_fl", 2]', scad)
         self.assertIn('["brace_fl_fr", 12]', scad)
         self.assertIn('["front_ev_charger_body", 13]', scad)
         self.assertIn('["front_ev_charger_cable", 13]', scad)

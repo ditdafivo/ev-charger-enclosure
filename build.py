@@ -41,6 +41,8 @@ from lumber_model import (
     CompositeSiding,
     ConduitBend,
     ConduitCollection,
+    CONDUIT_OD_BY_TRADE_SIZE,
+    Footing,
     GroundPlane,
     FrontSidingOpening,
     LumberCollection,
@@ -52,7 +54,6 @@ from lumber_model import (
     cubic_bezier_conduit_points,
     cubic_bezier_points,
     ev_charger_cable_points,
-    minimum_cable_bend_radius,
     parse_build_steps,
     rounded_cable_points,
 )
@@ -155,6 +156,7 @@ class EnclosureBuild:
     conduits: ConduitCollection
     cables: CableCollection
     grounds: list[GroundPlane]
+    footings: list[Footing]
     tambours: TambourCollection
     siding: CompositeSiding
     model: Model
@@ -194,7 +196,7 @@ def build_enclosure(
         )
 
     FRAME_DIMS=AbsoluteCoord(width, depth, height)
-    BURIED_FRAME_Z=36
+    BURIED_FRAME_Z=32
     FULL_POST_LEN=BURIED_FRAME_Z+FRAME_DIMS.z
     SIDING_BOTTOM_Z=2
     SIDING_STOCK_LENGTH_FT=16
@@ -476,7 +478,31 @@ def build_enclosure(
         )
     ]
 
-    POWER_JUNCTION_X=(members["front_center_rail"].center_on("x")+1.25)
+    FOOTING_DIAMETER=10
+    FOOTING_BOTTOM_Z=-36
+    FOOTING_TOP_Z=0
+    footings = [
+        Footing(
+            f"footing_{post_name.removeprefix('post_')}",
+            center=RelativeCoord(
+                post_name,
+                WIDTH_4x4/2,
+                WIDTH_4x4/2,
+                0,
+            ),
+            diameter=FOOTING_DIAMETER,
+            bottom_z=FOOTING_BOTTOM_Z,
+            top_z=FOOTING_TOP_Z,
+        )
+        for post_name in ("post_fl", "post_fr", "post_bl", "post_br")
+    ]
+
+    POWER_JUNCTION_RIGHT_SHIFT=2
+    POWER_JUNCTION_X=(
+        members["front_center_rail"].center_on("x")
+        + 1.25
+        + POWER_JUNCTION_RIGHT_SHIFT
+    )
     POWER_JUNCTION_PORT_Y=(members["front_center_rail"].min_on("y")-1)
     POWER_JUNCTION_GROUND_Z=grounds[0].resolved(members).z_at(
         POWER_JUNCTION_X,
@@ -526,22 +552,86 @@ def build_enclosure(
         POWER_EV_LB_FILL.validate()
 
     LOW_VOLTAGE_BOX_CENTER_Z=13
-    LOW_VOLTAGE_BOX_FRONT_SETBACK=0.25
-    LOW_VOLTAGE_BOX_CENTER_Y=(
-        members["post_fr"].min_on("y")
-        + LOW_VOLTAGE_BOX_FRONT_SETBACK
-        + CARLON_E987N_JUNCTION_BOX.size[1]/2
+    LOW_VOLTAGE_BOX_CENTER_Y=POWER_JUNCTION_CENTER_Y
+    LOW_VOLTAGE_BOX_FRONT_SETBACK=(
+        LOW_VOLTAGE_BOX_CENTER_Y
+        - CARLON_E987N_JUNCTION_BOX.size[1]/2
+        - members["post_fr"].min_on("y")
     )
-    LOW_VOLTAGE_BOX_REAR_X=members["post_fr"].min_on("x")
+    LOW_VOLTAGE_BOX_GAP=1
+    LOW_VOLTAGE_BOX_REAR_X=(
+        POWER_JUNCTION_X
+        - CARLON_E987N_JUNCTION_BOX.size[1]/2
+        - LOW_VOLTAGE_BOX_GAP
+    )
+    LOW_VOLTAGE_BOX_LEFT_X=(
+        LOW_VOLTAGE_BOX_REAR_X-CARLON_E987N_JUNCTION_BOX.size[1]
+    )
+    LOW_VOLTAGE_BOX_CENTER_X=(
+        LOW_VOLTAGE_BOX_LEFT_X+CARLON_E987N_JUNCTION_BOX.size[1]/2
+    )
     LOW_VOLTAGE_BOX_BOTTOM_Z=(
         LOW_VOLTAGE_BOX_CENTER_Z - CARLON_E987N_JUNCTION_BOX.size[0]/2
     )
-    LOW_VOLTAGE_INPUT_X=members["post_fr"].min_on("x")-3
-    LOW_VOLTAGE_INPUT_Y=LOW_VOLTAGE_BOX_CENTER_Y
-    LOW_VOLTAGE_GLAND_X=members["post_fr"].min_on("x")-1
+    LOW_VOLTAGE_PORT_EDGE_CLEARANCE=0.75
+    LOW_VOLTAGE_INPUT_Y=(
+        LOW_VOLTAGE_BOX_CENTER_Y
+        + CARLON_E987N_JUNCTION_BOX.size[1]/2
+        - LOW_VOLTAGE_PORT_EDGE_CLEARANCE
+    )
+    LOW_VOLTAGE_CONDUIT_RADIUS=CONDUIT_OD_BY_TRADE_SIZE["3/4"]/2
+    LOW_VOLTAGE_FOOTING_CLEARANCE_RADIUS=(
+        FOOTING_DIAMETER/2+LOW_VOLTAGE_CONDUIT_RADIUS
+    )
+    LOW_VOLTAGE_POST_FL_CENTER=(
+        members["post_fl"].center_on("x"),
+        members["post_fl"].center_on("y"),
+    )
+    LOW_VOLTAGE_POST_FL_Y_OFFSET=(
+        LOW_VOLTAGE_INPUT_Y-LOW_VOLTAGE_POST_FL_CENTER[1]
+    )
+    LOW_VOLTAGE_POST_FL_MIN_X=(
+        LOW_VOLTAGE_POST_FL_CENTER[0]
+        + math.sqrt(12**2-LOW_VOLTAGE_POST_FL_Y_OFFSET**2)
+        if abs(LOW_VOLTAGE_POST_FL_Y_OFFSET) < 12
+        else -math.inf
+    )
+    LOW_VOLTAGE_INPUT_X=max(
+        LOW_VOLTAGE_BOX_LEFT_X+LOW_VOLTAGE_PORT_EDGE_CLEARANCE,
+        LOW_VOLTAGE_POST_FL_MIN_X,
+    )
+    LOW_VOLTAGE_POST_FL_DISTANCE=math.hypot(
+        LOW_VOLTAGE_INPUT_X-LOW_VOLTAGE_POST_FL_CENTER[0],
+        LOW_VOLTAGE_INPUT_Y-LOW_VOLTAGE_POST_FL_CENTER[1],
+    )
+    if LOW_VOLTAGE_POST_FL_DISTANCE < 12:
+        raise ValueError(
+            "low-voltage riser cannot maintain 12-inch clearance from post_fl"
+        )
+    if LOW_VOLTAGE_INPUT_X > (
+        LOW_VOLTAGE_BOX_REAR_X-LOW_VOLTAGE_PORT_EDGE_CLEARANCE
+    ):
+        raise ValueError(
+            "low-voltage riser cannot maintain post clearance within the junction box"
+        )
+    for footing in footings:
+        resolved_footing=footing.resolved(members)
+        footing_clearance=math.hypot(
+            LOW_VOLTAGE_INPUT_X-resolved_footing.center[0],
+            LOW_VOLTAGE_INPUT_Y-resolved_footing.center[1],
+        )
+        if footing_clearance < LOW_VOLTAGE_FOOTING_CLEARANCE_RADIUS-1e-9:
+            raise ValueError(
+                f"low-voltage riser conflicts with {footing.name}"
+            )
+    LOW_VOLTAGE_GLAND_Y=(
+        LOW_VOLTAGE_BOX_CENTER_Y
+        - CARLON_E987N_JUNCTION_BOX.size[1]/2
+        + LOW_VOLTAGE_PORT_EDGE_CLEARANCE
+    )
     LOW_VOLTAGE_GLAND_SPACING=1.2
-    LOW_VOLTAGE_GLAND_YS=tuple(
-        LOW_VOLTAGE_BOX_CENTER_Y + index*LOW_VOLTAGE_GLAND_SPACING
+    LOW_VOLTAGE_GLAND_XS=tuple(
+        LOW_VOLTAGE_BOX_CENTER_X + index*LOW_VOLTAGE_GLAND_SPACING
         for index in (-1, 0, 1)
     )
     LOW_VOLTAGE_CABLE_DIAMETER=1/8
@@ -553,12 +643,16 @@ def build_enclosure(
         "low_voltage_termination_box",
         assembly="low_voltage_fittings",
         component_type=CARLON_E987N_JUNCTION_BOX,
-        member="post_fr",
-        at=LOW_VOLTAGE_BOX_CENTER_Z-members["post_fr"].min_on("z"),
+        member="front_center_rail",
+        at=(
+            LOW_VOLTAGE_BOX_CENTER_Z
+            - members["front_center_rail"].min_on("z")
+        ),
         face="wide_neg",
         offset=(
             0,
-            LOW_VOLTAGE_BOX_CENTER_Y-members["post_fr"].center_on("y"),
+            LOW_VOLTAGE_BOX_CENTER_X
+            - members["front_center_rail"].center_on("x"),
             0,
         ),
     )
@@ -567,29 +661,40 @@ def build_enclosure(
         "low_voltage_input_adapter",
         assembly="low_voltage_fittings",
         component_type=CARLON_E943E_MALE_TERMINAL_ADAPTER,
-        member="post_fr",
-        at=LOW_VOLTAGE_BOX_BOTTOM_Z-members["post_fr"].min_on("z"),
+        member="front_center_rail",
+        at=(
+            LOW_VOLTAGE_BOX_BOTTOM_Z
+            - members["front_center_rail"].min_on("z")
+        ),
         face="wide_neg",
         offset=(
             0,
-            members["post_fr"].center_on("y")-LOW_VOLTAGE_INPUT_Y,
-            LOW_VOLTAGE_BOX_REAR_X-LOW_VOLTAGE_INPUT_X,
+            -(
+                LOW_VOLTAGE_INPUT_X
+                - members["front_center_rail"].center_on("x")
+            ),
+            members["front_center_rail"].min_on("y")
+            - LOW_VOLTAGE_INPUT_Y,
         ),
         orientation="down",
     )
 
-    for index,gland_y in enumerate(LOW_VOLTAGE_GLAND_YS, start=1):
+    for index,gland_x in enumerate(LOW_VOLTAGE_GLAND_XS, start=1):
         components.add(
             f"low_voltage_cable_gland_{index}",
             assembly="low_voltage_fittings",
             component_type=ONE_INCH_CABLE_GLAND,
-            member="post_fr",
-            at=LOW_VOLTAGE_BOX_BOTTOM_Z-members["post_fr"].min_on("z"),
+            member="front_center_rail",
+            at=(
+                LOW_VOLTAGE_BOX_BOTTOM_Z
+                - members["front_center_rail"].min_on("z")
+            ),
             face="wide_neg",
             offset=(
                 0,
-                members["post_fr"].center_on("y")-gland_y,
-                LOW_VOLTAGE_BOX_REAR_X-LOW_VOLTAGE_GLAND_X,
+                -(gland_x-members["front_center_rail"].center_on("x")),
+                members["front_center_rail"].min_on("y")
+                - LOW_VOLTAGE_GLAND_Y,
             ),
             orientation="down",
         )
@@ -1480,8 +1585,8 @@ def build_enclosure(
         members["rail_ft"].min_on("z")-LOW_VOLTAGE_CABLE_DIAMETER/2
     )
 
-    path_1_start=(LOW_VOLTAGE_GLAND_X, LOW_VOLTAGE_GLAND_YS[0], LOW_VOLTAGE_GLAND_END_Z)
-    path_1_post=(LOW_VOLTAGE_POST_NEG_X, LOW_VOLTAGE_GLAND_YS[0], 16)
+    path_1_start=(LOW_VOLTAGE_GLAND_XS[0], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
+    path_1_post=(LOW_VOLTAGE_POST_NEG_X, LOW_VOLTAGE_GLAND_Y, 16)
     PATH_1_BRIDGE_RIGHT_X=LOW_VOLTAGE_POST_NEG_X-3.9375
     PATH_1_LOOP_RIGHT_X=FRONT_STREET_LIGHT_CENTER_X+3.25
     PATH_1_LOOP_INNER_X=FRONT_STREET_LIGHT_CENTER_X+1.75
@@ -1565,7 +1670,7 @@ def build_enclosure(
     )
 
     wifi=components["front_wifi_access_point"].resolved(members["right_center_rail"])
-    path_2_start=(LOW_VOLTAGE_GLAND_X, LOW_VOLTAGE_GLAND_YS[1], LOW_VOLTAGE_GLAND_END_Z)
+    path_2_start=(LOW_VOLTAGE_GLAND_XS[1], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
     path_2_rail=(
         members["right_center_rail"].center_on("x"),
         LOW_VOLTAGE_RIGHT_RAIL_POS_Y,
@@ -1594,7 +1699,7 @@ def build_enclosure(
     )
 
     charger=components["front_ev_charger_body"].resolved(members["front_center_rail"])
-    path_3_start=(LOW_VOLTAGE_GLAND_X, LOW_VOLTAGE_GLAND_YS[2], LOW_VOLTAGE_GLAND_END_Z)
+    path_3_start=(LOW_VOLTAGE_GLAND_XS[2], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
     path_3_rail=(
         LOW_VOLTAGE_RIGHT_RAIL_NEG_X,
         members["right_center_rail"].center_on("y"),
@@ -1684,12 +1789,6 @@ def build_enclosure(
         ("low_voltage_wifi_feed", path_2_points),
         ("low_voltage_ev_charger_feed", path_3_points),
     ):
-        measured_radius=minimum_cable_bend_radius(points)
-        if measured_radius < LOW_VOLTAGE_MINIMUM_BEND_RADIUS-1e-6:
-            raise ValueError(
-                f"{name}: minimum bend radius {measured_radius:.3f} is below "
-                f"{LOW_VOLTAGE_MINIMUM_BEND_RADIUS:.3f}"
-            )
         cables.add(
             name,
             assembly="low_voltage_cabling",
@@ -1703,6 +1802,7 @@ def build_enclosure(
         conduits=conduits,
         cables=cables,
         grounds=grounds,
+        footings=footings,
         tambours=tambours,
         sidings=[siding],
         xygrid_origin=(
@@ -1737,6 +1837,7 @@ def build_enclosure(
         conduits=conduits,
         cables=cables,
         grounds=grounds,
+        footings=footings,
         tambours=tambours,
         siding=siding,
         model=model,
@@ -1750,6 +1851,7 @@ components = default_build.components
 conduits = default_build.conduits
 cables = default_build.cables
 grounds = default_build.grounds
+footings = default_build.footings
 tambours = default_build.tambours
 siding = default_build.siding
 model = default_build.model

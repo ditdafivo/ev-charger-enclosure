@@ -12,6 +12,7 @@
 tambour_door_open = true;
 siding = true;
 ground = false;
+footings = true;
 xygrid_zloc = -1; // [-1:1:48]
 {% if build_step_count %}
 build_step = {{ build_step_count + 1 }}; // [{{ range(0, build_step_count + 2) | map('string') | join(', ') }}]
@@ -59,6 +60,10 @@ cables = [
 
 grounds = [
     {{ ground_records | join(',\n    ') }}
+];
+
+footing_parts = [
+    {{ footing_records | join(',\n    ') }}
 ];
 
 tambours = [
@@ -124,6 +129,13 @@ function l_width(l) = len(l) > 8 ? l[8] : 0;
 function l_thickness(l) = len(l) > 9 ? l[9] : 0;
 function l_angle(l) = len(l) > 10 ? l[10] : 0;
 function l_is_angled(l) = l_axis(l) == "angled";
+
+function f_name(f) = f[0];
+function f_center(f) = f[1];
+function f_diameter(f) = f[2];
+function f_bottom_z(f) = f[3];
+function f_top_z(f) = f[4];
+function f_color(f) = f[5];
 
 function l_dims(type) =
     type == "2x4" ? [1.5, 3.5] :
@@ -440,6 +452,16 @@ module render_ground(g) {
                 );
 }
 
+module render_footing(f, highlighted = false) {
+    color(highlighted ? build_step_highlight_color() : f_color(f))
+        translate([f_center(f)[0], f_center(f)[1], f_bottom_z(f)])
+            cylinder(
+                h = f_top_z(f) - f_bottom_z(f),
+                d = f_diameter(f),
+                $fn = 96
+            );
+}
+
 module render_tambour_track(points, diameter) {
     for (i = [0 : len(points) - 2]) {
         conduit_segment(points[i], points[i + 1], diameter);
@@ -611,6 +633,14 @@ if (siding) {
 if (ground) {
     for (g = grounds) {
         render_ground(g);
+    }
+}
+
+if (footings) {
+    for (f = footing_parts) {
+        if (object_is_visible(f_name(f))) {
+            render_footing(f, object_is_highlighted(f_name(f)));
+        }
     }
 }
 

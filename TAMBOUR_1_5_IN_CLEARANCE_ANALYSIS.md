@@ -20,7 +20,7 @@ overhead curtain from hands and the cord.
 | Shallow top diagonal | Approximately 1-inch clearance |
 | Lowered `rail_ft` and front bend | At least 0.25-inch modeled clearance |
 | Front street-light backers | 0.45-inch planar clearance |
-| Junction-riser charger feed | Clears below or behind the front curtain |
+| Charger-riser feed | Clears below or behind the front curtain |
 | Plywood ceiling | 0.25 inch below the horizontal curtain envelope |
 | Rear trim and lateral slat ends | Prototype-controlled guide detail |
 
@@ -56,16 +56,15 @@ the plug.
 
 ### Charger-feed conduit
 
-The former direct spline rose through the relocated front curtain envelope.
-It has been replaced by the junction-riser arrangement: a 1 1/4-inch rearward
-feed leaves the junction box, enters an LB conduit body, reduces to 1 inch, and
-rises near the charger's Y coordinate. The LB feed remains below the lower
-front curtain endpoint, and the 1-inch rise remains behind the vertical
-curtain with construction-tolerant clearance.
+The charger-riser arrangement aligns the 1 1/4-inch ground riser and T body
+with the charger's conduit-port X coordinate. Its complete horizontal branch
+runs 1/4 inch above `rail_fb` to the rear of the junction box, while the
+reduced 1-inch feed rises directly from the T body to the charger. Both feeds
+remain below or behind the front curtain envelope.
 
-The junction box retains its 37-cubic-inch fill calculation with 12 cubic
-inches of margin. The LB conduit body requires 20 cubic inches against its
-modeled 32-cubic-inch marking, also leaving 12 cubic inches.
+The #6 charger group bypasses the junction box through the T body. The box's
+remaining #12 groups require 18 cubic inches against its modeled 49-cubic-inch
+marking, leaving 31 cubic inches.
 
 ### Removable plywood ceiling
 

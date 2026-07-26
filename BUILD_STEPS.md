@@ -48,10 +48,9 @@ Before installing any posts, establish the enclosure layout from protected
 reference points and mark all four 10-inch footing circles. Route both
 underground conduit runs through the enclosure interior and clear of the full
 footing excavations before sweeping them up to the risers. Bring the modeled
-1 1/4-inch power riser out of the ground beneath the back-left corner of the
-power junction box (x = 14.975 inches and y = 4.2125 inches in the default
-model) and bring the modeled 3/4-inch low-voltage riser out beneath the rear of
-its junction box.
+1 1/4-inch power riser out of the ground on the EV charger's conduit-port axis
+(x = 16 inches and y = 11.3375 inches in the default model) and bring the
+modeled 3/4-inch low-voltage riser out beneath the rear of its junction box.
 Its default axis is approximately x = 12.17 inches and y = 5.44 inches, clear
 of the post footings. Leave both upper ends positioned for the later equipment
 connections.
@@ -368,7 +367,9 @@ front_street_light_backer_upper
 ## 13. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
 
 Mount the EV charger body and its inseparable flexible cord and plug on
-`front_center_rail`. Confirm and record the physical location of its conduit
+`front_center_rail`, with the charger body shifted 2 inches downward from its
+former modeled position while the cord holster remains fixed. Confirm and
+record the physical location of its conduit
 input; this installed position controls the field-fit conduit connection in
 Step 15. Route the cord between the charger body, storage position, and
 ground-level reach shown by the model.
@@ -390,10 +391,9 @@ front_ev_charger_cable
 
 ## 14. Preassemble and mount the power junction (`power-junction-assembly`)
 
-Before mounting the Carlon E987N power junction box, fit its bottom-facing
-1 1/4-inch input adapter and coupling at the back-left corner, rear-facing
-1 1/4-inch charger outlet, and the two right-side 1/2-inch light and receptacle
-outlets.
+Before mounting the Carlon E987N power junction box, fit its rear-facing
+1 1/4-inch input adapter and coupling for the T-body branch and the two
+right-side 1/2-inch light and receptacle outlets.
 The light outlet is forward of the receptacle outlet. Then mount the connected
 box on `front_center_rail`, spanning x = 14 to 18 inches in the default model,
 and y = 1.1875 to 5.1875 inches. Its bottom face remains at the modeled
@@ -401,14 +401,14 @@ elevation of approximately z = 6.50 inches. Keep every fitting axis aligned
 with its conduit path.
 
 Check that the fittings are fully seated and clear of `front_center_rail`.
-Keep the charger fitting aligned with the short 1 1/4-inch feed to the LB body.
+Keep the rear fitting aligned with the raised 1 1/4-inch feed from the T body.
 
-The incoming #6 and #12 groups enter through the bottom riser. The #12
-hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs,
-the #12 equipment grounds are spliced, and the #6 charger conductors continue
-unspliced to the charger. The conservative junction-box calculation is 37.00
-in³ against an assumed 49.00 in³ marked capacity. Verify the marking on the
-installed box and the locally required calculation before construction.
+The #6 charger group continues vertically through the T body and bypasses the
+junction box. The #12 supply group branches through the T into the box, where
+its hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs
+and the #12 equipment grounds are spliced. The modeled junction-box calculation
+is 18.00 in³ against an assumed 49.00 in³ marked capacity. Verify the marking
+on the installed box and the locally required calculation before construction.
 
 New model objects:
 
@@ -416,8 +416,6 @@ New model objects:
 power_junction_box
 power_junction_input_adapter
 power_junction_input_coupling
-power_junction_ev_adapter
-power_junction_ev_coupling
 power_junction_light_adapter
 power_junction_light_coupling
 power_junction_outlet_adapter
@@ -426,10 +424,12 @@ power_junction_outlet_coupling
 
 ## 15. Connect the power junction to the EV charger (`ev-charger-power`)
 
-Using the physical charger-input position recorded in Step 13, run the short
-1 1/4-inch feed rearward from the junction coupling into the LB conduit body.
-Fit the reducer at its upward outlet, then form the modeled 1-inch spline from
-the reducer to the bottom of the charger.
+Using the physical charger-input position recorded in Step 13, align the
+1 1/4-inch ground riser and T body with the charger's conduit-port X coordinate.
+Set the T-body branch high enough that the complete conduit envelope passes
+above `rail_fb`, then run the full horizontal branch to the rear coupling on
+the junction box. Fit the reducer at the T body's upward outlet and run the
+straight 1-inch conduit to the bottom of the charger.
 
 Check alignment at the riser, junction box, top adapter and coupling, and
 charger entry. Route the unspliced #6 charger group through this conduit
@@ -446,9 +446,9 @@ New model objects:
 
 ```text
 power_ev_charger_feed
-power_ev_lb_body
-power_ev_lb_feed
 power_ev_reducer
+power_ev_t_body
+power_t_junction_feed
 ```
 
 ## 16. Rough in the street light (`street-light-rough-in`)

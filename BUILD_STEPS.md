@@ -42,7 +42,9 @@ by a qualified installer.
 ## 1. Complete the underground conduit risers and restore grade (`underground-risers`)
 
 Before installing any posts, establish the enclosure layout from protected
-reference points and complete both underground conduit runs. Bring the modeled
+reference points and mark all four 10-inch footing circles. Route both
+underground conduit runs through the enclosure interior and clear of the full
+footing excavations before sweeping them up to the risers. Bring the modeled
 1 1/4-inch power riser out of the ground beneath the power junction box
 (x = 17 inches and y = 4.1875 inches in the default model) and bring the
 modeled 3/4-inch low-voltage riser out beneath the rear of its junction box.
@@ -50,13 +52,32 @@ Its default axis is approximately x = 13.17 inches and y = 5.44 inches, clear
 of the post footings. Leave both upper ends positioned for the later equipment
 connections.
 
-Complete required underground inspection before covering the work, then
-backfill and compact the excavation and restore a level local grade before
-laying out the post holes. Reconfirm both stub-up locations, keep them plumb,
-cap or otherwise protect their open ends, and guard them against movement or
-damage during post excavation and framing. Burial depth, trenching, conductor
-or cable installation, separation, and the underground supply design remain
-outside the model and must follow the approved site design.
+Before covering the conduit, measure and photograph its centerline, depth, and
+the complete envelope of every sweep from protected reference points. Establish
+two parallel witness lines that bound a no-auger corridor along each run. Drive
+the witness stakes outside the trench and excavation area at intervals of a few
+feet, connect them with taut string or marking paint, and record enough offsets
+to reconstruct the lines if they are disturbed. Do not place closely spaced
+stakes beside the conduit or where they would interfere with compaction. Mark
+the sweep envelopes separately; a surface riser axis alone does not locate the
+underground bend. Install detectable warning tape and, where appropriate for a
+nonmetallic raceway, an approved tracer wire above the conduit.
+
+Complete the required underground inspection before covering the work. Place
+clean selected material around and above the conduit so angular or oversized
+backfill cannot bear directly against it. Backfill the remainder of the trench
+at suitable moisture and mechanically compact it in thin lifts, keeping the
+fill balanced around the conduit and the risers plumb. Restore a level local
+grade, preserve or reconstruct the witness lines from the recorded references,
+and correct and recompact any later settlement before excavating the posts. A
+period of watering and observation may reveal settlement, but it does not
+replace lift compaction.
+
+Reconfirm both stub-up locations, keep them plumb, cap or otherwise protect
+their open ends, and guard them against movement or damage during post
+excavation and framing. Burial depth, trenching, conductor or cable
+installation, separation, marking-system materials, and the underground supply
+design remain outside the model and must follow the approved site design.
 
 New model objects:
 
@@ -73,13 +94,32 @@ the four 79-inch 4x4 posts on the 24-by-18 3/8-inch centerline rectangle. The
 model places each post 32 inches below grade and 47 inches above grade, leaving
 4 inches of gravel beneath it.
 
-Check the center spacing in both directions, compare the two plan diagonals,
-and verify every post is plumb. Establish the front, back, left, and right
-orientation now; all later part names depend on it. Use temporary external
-bracing as needed to hold the posts plumb and the frame square until the
-installed rails and backers provide adequate stability and the permanent top
-bracing is installed in Step 12. Protect the two conduit stub-ups and verify
-that neither moves while excavating, setting, or backfilling the posts.
+Before powered excavation, complete the required utility locate and compare
+each entire footing circle with the preserved no-auger corridors and recorded
+conduit and sweep locations. A marking system establishes location; it does not
+make an inadequate clearance safe. Use the auger only where the complete
+10-inch excavation, including a practical allowance for setup error, bit drift,
+and soil breakout, remains outside the marked corridor. Hand- or
+vacuum-excavate where a sweep is too close, the recorded clearance is
+insufficient, or the markings cannot be reliably reconstructed. Keep the auger
+and spoil loads off the restored conduit trench where practical, and stop if
+unexpected fill, warning tape, or movement of a riser is observed.
+
+Using the 10-inch bit, excavate and complete only one footing at a time. Place
+4 inches of compactable angular crushed aggregate beneath the post, set the
+post, and use temporary external bracing to hold it plumb. Place the remaining
+aggregate evenly around all four sides in thin lifts, tamping each lift with a
+narrow tool before adding the next. Complete the footing to grade and verify
+the post and both conduit risers have not moved before starting the next hole.
+Do not use rounded pea gravel.
+
+As the posts are completed, check the center spacing in both directions,
+compare the two plan diagonals, and verify every post is plumb. Establish the
+front, back, left, and right orientation now; all later part names depend on
+it. Maintain the temporary external bracing until the installed rails and
+backers provide adequate stability and the permanent top bracing is installed
+in Step 12. Continue to protect the two conduit stub-ups throughout excavation,
+setting, and tamping.
 
 New model objects:
 

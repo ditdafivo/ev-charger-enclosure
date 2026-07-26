@@ -32,7 +32,7 @@ by a qualified installer.
   permanent context and is not assigned to a step.
 - Temporary operations such as removing and protecting the tambour curtain
   after its trial fit are not separate model objects. From its introduction in
-  Step 10, the visualization shows the completed tambour in its nominal open
+  Step 11, the visualization shows the completed tambour in its nominal open
   position.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
@@ -141,9 +141,9 @@ conduit risers have not moved. Do not use rounded pea gravel.
 Check the center spacing in both directions, compare the two plan diagonals,
 and verify every post is plumb. Establish the front, back, left, and right
 orientation now; all later part names depend on it. Maintain the temporary
-external bracing until the installed rails and backers provide adequate
-stability and the permanent top bracing is installed in Step 12. Continue to
-protect the two conduit stub-ups throughout excavation, setting, and tamping.
+external bracing until the permanent top bracing is installed and its frame
+and connections are approved and stable. Continue to protect the two conduit
+stub-ups throughout excavation, setting, and tamping.
 
 New model objects:
 
@@ -158,7 +158,35 @@ footing_bl
 footing_br
 ```
 
-## 3. Add the lower side rails (`lower-side-rails`)
+## 3. Add the complete top bracing (`top-bracing`)
+
+Install the four top perimeter 2x4 braces, followed by the single stress-rated
+nominal 1x4 diagonal. The perimeter cuts are two at 20 1/2 inches and two at
+14 7/8 inches. The diagonal cut is 25 5/16 inches in the model. Its top remains
+flush with the 47-inch frame top, placing its underside at 46 1/4 inches and
+recovering 3/4 inch of interior clearance relative to the former 2x4
+diagonals.
+
+Before fastening the permanent bracing, reconfirm that every post is plumb and
+compare the frame diagonals. Install the braces without pulling the posts out
+of alignment, then repeat the plumb and square checks. Use only the
+species/grade and positive two-way connection approved against the 826-pound
+ASD brace demand in `TOP_BRACING.md`; ordinary deck screws, end-grain screws,
+and unverified toe-screw patterns are not acceptable. Remove temporary
+external bracing only after the permanent frame and its connections are
+approved and stable.
+
+New model objects:
+
+```text
+brace_fl_fr
+brace_fl_bl
+brace_bl_br
+brace_fr_br
+brace_bl_fr
+```
+
+## 4. Add the lower side rails (`lower-side-rails`)
 
 Install the left and right 14 7/8-inch 2x4 rails between the front and back
 posts. Their modeled bottom elevation is 6 1/4 inches above the nominal ground
@@ -175,14 +203,14 @@ rail_lb
 rail_rb
 ```
 
-## 4. Add the lower front cross rail (`lower-front-rail`)
+## 5. Add the lower front cross rail (`lower-front-rail`)
 
 Install the 20 1/2-inch `rail_fb` between the two lower side rails. Its modeled
 front face is offset toward the enclosure interior to support the front center
 rail and the power-junction assembly.
 
 Check that it is level, square to the side rails, and correctly oriented before
-adding the vertical member in Step 7.
+adding the vertical member in Step 8.
 
 New model objects:
 
@@ -190,7 +218,7 @@ New model objects:
 rail_fb
 ```
 
-## 5. Add the upper side rails (`upper-side-rails`)
+## 6. Add the upper side rails (`upper-side-rails`)
 
 Install the three 14 7/8-inch rails: the right intermediate receiver rail and
 the upper left and right rails. Keep their modeled wide faces horizontal.
@@ -198,7 +226,7 @@ the upper left and right rails. Keep their modeled wide faces horizontal.
 Check that `rail_lt` and `rail_rt` are level with each other and 42 3/4 inches
 above the nominal ground datum at their lower faces. Check `rail_rbu` at its
 modeled lower-face elevation of 11 1/4 inches; it receives the right-side
-vertical rails in Step 7 and Step 8. Reconfirm post plumbness and the frame
+vertical rails in Step 8 and Step 9. Reconfirm post plumbness and the frame
 diagonals as these rails are fastened.
 
 New model objects:
@@ -209,7 +237,7 @@ rail_lt
 rail_rt
 ```
 
-## 6. Add the upper front cross rail (`upper-front-rail`)
+## 7. Add the upper front cross rail (`upper-front-rail`)
 
 Install the 20 1/2-inch `rail_ft` between the upper side rails, directly above
 `rail_fb` in the model.
@@ -223,7 +251,7 @@ New model objects:
 rail_ft
 ```
 
-## 7. Add the main vertical rails (`main-vertical-rails`)
+## 8. Add the main vertical rails (`main-vertical-rails`)
 
 Install the 39-inch `front_center_rail` between the lower and upper front cross
 rails. Install the 30-inch `right_center_rail` between `rail_rbu` and `rail_rt`.
@@ -239,7 +267,7 @@ front_center_rail
 right_center_rail
 ```
 
-## 8. Add the tambour vertical supports (`tambour-vertical-rails`)
+## 9. Add the tambour vertical supports (`tambour-vertical-rails`)
 
 Install the 39-inch `left_tambour_rail` between `rail_lb` and `rail_lt` and the
 30-inch `right_tambour_rail` between `rail_rbu` and `rail_rt`.
@@ -256,11 +284,12 @@ left_tambour_rail
 right_tambour_rail
 ```
 
-## 9. Add the tambour top supports (`tambour-top-rails`)
+## 10. Add the tambour top supports (`tambour-top-rails`)
 
 Install the left and right 14 7/8-inch top rails at the modeled lower-face
-elevation of 44 1/4 inches. These lumber members support the guide liners that
-define the upper path of the door.
+elevation of 43 3/4 inches. Their upper faces are at 45 1/4 inches, leaving
+1/4 inch below the perimeter braces. These lumber members support the guide
+liners that define the upper path of the door.
 
 Check that the two rails are level, parallel, and aligned with the vertical
 tambour supports. Preserve the modeled rear and front bend clearances and
@@ -274,7 +303,7 @@ rail_l_tambour
 rail_r_tambour
 ```
 
-## 10. Install and set the tracks; trial-fit the tambour (`tambour-door`)
+## 11. Install and set the tracks; trial-fit the tambour (`tambour-door`)
 
 Follow [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) to complete the full-size prototype
 and approve the slat profile, recessed pulls, flexible backing, track profile,
@@ -284,18 +313,19 @@ electrical equipment or conduit. Their final position is the controlling
 clearance datum for the power-junction assembly, its 1 1/4-inch conduit, and
 all outgoing conduit runs; do not use those later assemblies to force or shift
 a guide. The guide liners' rear lower endpoint is at z = 3 inches, their front
-lower endpoint is at z = 16 inches, their top centerline is at z = 45 inches,
+lower endpoint is at z = 16 inches, their top centerline is at z = 44 1/2 inches,
 and both turns begin from a modeled 3-inch centerline radius.
 
 Load the completed curtain and cycle it fully using both the lowest pull slat
 and the recessed pull approximately 18 inches above it. Verify equal tracking,
 the approved operating force, clearance from every installed framing member,
-and clearance from the modeled envelope of the top bracing that will be added
-in Step 12. Mark all matched track parts, then remove the curtain, removable
-loading sections, and end stops. Protect the fixed liners from debris, finish,
-and damage during the remaining work. Before proceeding, lock the fixed guide
-geometry, record its critical spacing, and use the installed guides and those
-measurements when checking every nearby box and conduit clearance.
+and at least 1/4-inch clearance from the installed top bracing using the
+approved curtain and pull-slat envelope. Mark all matched track parts, then
+remove the curtain, removable loading sections, and end stops. Protect the
+fixed liners from debris, finish, and damage during the remaining work. Before
+proceeding, lock the fixed guide geometry, record its critical spacing, and use
+the installed guides and those measurements when checking every nearby box and
+conduit clearance.
 
 The build-step visualization shows the completed door in its nominal open
 position from this step onward; it does not depict this temporary removal.
@@ -306,7 +336,7 @@ New model objects:
 enclosure_tambour_door
 ```
 
-## 11. Add the street-light backing (`street-light-backing`)
+## 12. Add the street-light backing (`street-light-backing`)
 
 Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
 modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
@@ -324,35 +354,6 @@ New model objects:
 front_street_light_backer_bottom
 front_street_light_backer_lower
 front_street_light_backer_upper
-```
-
-## 12. Add the complete top bracing (`top-bracing`)
-
-Install the four top perimeter 2x4 braces, followed by the single stress-rated
-nominal 1x4 diagonal. The perimeter cuts are two at 20 1/2 inches and two at
-14 7/8 inches. The diagonal cut is 25 5/16 inches in the model. Its top remains
-flush with the 47-inch frame top, placing its underside at 46 1/4 inches and
-recovering 3/4 inch of interior clearance relative to the former 2x4
-diagonals.
-
-Before fastening the permanent bracing, reconfirm that every post is plumb,
-compare the frame diagonals, and verify the recorded tambour-guide spacing.
-Install the braces without pulling the frame or fixed guides out of alignment,
-then repeat the plumb, square, guide-spacing, and modeled curtain-clearance
-checks. Use only the species/grade and positive two-way connection approved
-against the 826-pound ASD brace demand in `TOP_BRACING.md`; ordinary deck
-screws, end-grain screws, and unverified toe-screw patterns are not acceptable.
-Remove temporary external bracing only after the permanent frame and its
-connections are approved and stable.
-
-New model objects:
-
-```text
-brace_fl_fr
-brace_fl_bl
-brace_bl_br
-brace_fr_br
-brace_bl_fr
 ```
 
 ## 13. Mount the EV charger with its cord and plug (`ev-charger-mounting`)

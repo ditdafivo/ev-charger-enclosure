@@ -59,6 +59,29 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertEqual(shopping_row["stock_length_in"], 72)
         self.assertEqual(shopping_row["qty"], 1)
 
+    def test_tambour_top_support_and_maximum_curtain_clear_bracing(self) -> None:
+        enclosure = build.default_build
+        brace_bottom = enclosure.members["brace_fl_bl"].min_on("z")
+
+        for name in ("rail_l_tambour", "rail_r_tambour"):
+            with self.subTest(name=name):
+                support = enclosure.members[name]
+                self.assertAlmostEqual(support.min_on("z"), 43.75)
+                self.assertAlmostEqual(support.max_on("z"), 45.25)
+                self.assertAlmostEqual(
+                    brace_bottom-support.max_on("z"),
+                    enclosure.TAMBOUR_BRACE_CLEARANCE,
+                )
+
+        maximum_curtain_top = (
+            enclosure.TAMBOUR_TOP_Z+enclosure.TAMBOUR_MAX_SLAT_DEPTH/2
+        )
+        self.assertAlmostEqual(maximum_curtain_top, 45.25)
+        self.assertAlmostEqual(
+            brace_bottom-maximum_curtain_top,
+            enclosure.TAMBOUR_BRACE_CLEARANCE,
+        )
+
 
 class BackRightOutletBuildTests(unittest.TestCase):
     def assertVectorAlmostEqual(
@@ -956,10 +979,10 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertEqual(taller.height, 55)
         self.assertEqual(taller.members["post_br"].length, 87)
         self.assertAlmostEqual(taller.members["brace_fl_fr"].max_on("z"), 55)
-        self.assertAlmostEqual(taller.members["rail_r_tambour"].center_on("z"), 53)
+        self.assertAlmostEqual(taller.members["rail_r_tambour"].center_on("z"), 52.5)
         self.assertAlmostEqual(taller.members["rail_rt"].center_on("z"), 51.5)
         self.assertAlmostEqual(taller.siding.frame_top_z, 55)
-        self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 53)
+        self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.5)
         self.assertAlmostEqual(taller.LOW_VOLTAGE_SERVICE_LOOP_TOP_Z, 50.9375)
 
         for name in (
@@ -1026,7 +1049,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         tambour = taller.tambours["enclosure_tambour_door"].resolved(taller.model)
         self.assertAlmostEqual(
             max(point[2] for point in tambour.left_points),
-            53,
+            52.5,
         )
 
     def test_dimensions_must_be_finite_and_positive(self) -> None:

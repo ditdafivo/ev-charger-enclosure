@@ -203,7 +203,14 @@ def build_enclosure(
     )
 
     CENTER_RAIL_OFFSET=-3
-    TAMBOUR_TOP_OFFSET=2
+    # Keep the top guide/support assembly below the perimeter braces.  The
+    # resulting one-inch gap from the guide centerline to the brace underside
+    # accommodates a 1.5-inch curtain envelope plus 1/4 inch of clearance.
+    TAMBOUR_MAX_SLAT_DEPTH=1.5
+    TAMBOUR_BRACE_CLEARANCE=0.25
+    TAMBOUR_TOP_OFFSET=(
+        HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_MAX_SLAT_DEPTH/2
+    )
     UPPER_RAIL_OFFSET=3.5
 
     for name,support_a,support_b,position,cross_offset,position_axis, rotated in [

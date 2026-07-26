@@ -21,12 +21,12 @@ the build record at the end of this guide.
 | Distance between left and right track centerlines | 26 1/2 in | Verify against the built frame |
 | Rear lower track endpoint | `y = 29`, `z = 3` in | Fixed enclosure interface |
 | Front lower track endpoint | `y = 5 1/2`, `z = 16` in | Fixed enclosure interface |
-| Top track centerline | `z = 45` in | Fixed enclosure interface |
+| Top track centerline | `z = 44 1/2` in | Fixed enclosure interface |
 | Bend centerline radius | 3 in | Prototype-controlled |
 | Curtain length | 44 in | Prototype-controlled |
 | Slat pitch | 1 in | Prototype-controlled |
 | Slat travel-direction width | 0.9 in | Prototype-controlled |
-| Slat face depth | 3/4 in | Prototype-controlled |
+| Slat face depth | 3/4 in modeled; 1 1/2 in maximum envelope | Prototype-controlled |
 | Rendered track diameter | 1/2 in | Visualization only |
 
 The model places 44 slats on the 44-inch curtain. It models the two tracks as
@@ -34,12 +34,12 @@ round centerlines; it does not define a groove, liner cross-section, running
 clearance, fastener pattern, or loading opening. Derive those details from the
 prototype rather than treating the rendered cylinders as stock material.
 
-The resolved geometry also leaves very little room for hardware above the
-door. On the top run, the nominal outside slat face reaches approximately
-`z = 45.375` inches while the top braces begin at `z = 45.5` inches. The
-resulting 1/8-inch nominal clearance is not a fabrication allowance. No handle,
-fastener, backing reinforcement, or track fixing may project beyond the
-approved slat envelope in this region.
+The top track centerline is 1 inch below the perimeter braces. This permits an
+approved curtain and pull-slat envelope up to 1 1/2 inches deep while retaining
+1/4 inch of clearance below the braces: `44.5 + 1.5 / 2 = 45.25` inches. No
+handle, fastener, backing reinforcement, or track fixing may project beyond
+that approved envelope in this region. A thinner production profile increases
+the clearance but does not permit the track centerline to be raised.
 
 ## Provisional construction
 
@@ -105,14 +105,15 @@ Side path and handle orientation (not to scale):
  y = 29                                                   y = 5.5
     |        top brace underside z = 45.5                    |
     |        ----------------------------------               |
+    |        1/4-in minimum clearance                         |
     |      / recessed pull rotates onto top run \             |
-    |     /======================================\            |
+    |     /======================================\ z = 44.5   |
     |     |                                      |            |
     |     |                                      |            |
  z = 3 --+                                      +-- z = 16
 
- Any proud handle rotates upward into the nominal 1/8-in top clearance.
- The recessed pull must remain inside the ordinary slat envelope.
+ Any proud handle reduces the required 1/4-in clearance.
+ The recessed pull must remain inside the approved 1 1/2-in envelope.
 ```
 
 Machine a continuous recessed finger channel across most of the usable span of
@@ -198,8 +199,8 @@ access.
 3. Allow the specified UHMW expansion clearance and keep every fixing outside
    the running surface.
 4. Load the completed curtain and cycle it fully. Confirm the recessed pulls
-   clear both bends, all installed framing, and either the installed top braces
-   or their verified modeled envelope when the permanent bracing is deferred.
+   clear both bends and all installed framing, including at least 1/4 inch of
+   clearance below the already installed top braces throughout their travel.
 5. Mark all matched parts, then remove the curtain, loading sections, and end
    stops. Cover the fixed liners against dust, cuttings, paint, finish, and
    adhesive during the remaining work.

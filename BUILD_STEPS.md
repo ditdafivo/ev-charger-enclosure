@@ -492,8 +492,8 @@ then add the three cable glands across the front portion of the bottom panel.
 
 Keep each fitting center at least 3/4 inch from the panel sides. Confirm that
 the riser remains plumb and clear of the 10-inch footing and that the existing
-cables have room to leave the forward glands; their final routing will be
-refined separately.
+cables have room to leave the forward glands in negative Z before sweeping
+toward the negative-X side of the framing.
 
 New model objects:
 
@@ -508,8 +508,12 @@ low_voltage_cable_gland_3
 ## 19. Mount and cable the Wi-Fi access point (`wifi-and-feed`)
 
 Mount the Wi-Fi access point near the top of `right_center_rail`. Route the
-center low-voltage gland's cable along the modeled droop and up the positive-y
-face of the rail into the bottom of the access point.
+center low-voltage gland's cable down from the gland, sweep it toward the
+negative-X face of `front_center_rail`, and carry it up that face. Bend around
+the positive-Y face of the rail near the top, cross in positive X along the
+positive-Y face of `rail_ft`, and descend the negative-X face of
+`right_center_rail`. Just below the access point, bend around the rail's
+positive-Y face and sweep upward into the existing bottom entry.
 
 Check that the cable retains at least the modeled 0.625-inch minimum bend
 radius and remains clear throughout the tambour door's travel.
@@ -523,13 +527,15 @@ low_voltage_wifi_feed
 
 ## 20. Route the street-light service cable (`light-service-cable`)
 
-Route the front low-voltage gland's cable up the negative-x face of `post_fr`,
-along the underside of `brace_fl_fr`, and into the modeled service loop above
-the street-light box stack.
+Route the front low-voltage gland's cable downward before sweeping toward and
+up the positive-X face of `post_fl`. Continue beneath `brace_fl_fr` and
+approach the mirrored service loop above the street-light box stack from the
+negative-X direction. The loop returns in that direction before terminating
+at the existing conduit entry.
 
 Check attachment clearances, the 1 1/4-inch service-loop radius, the overall
-0.625-inch minimum bend radius, and separation required by the approved wiring
-design.
+0.625-inch minimum bend radius, clearance from the street-light backing, and
+separation required by the approved wiring design.
 
 New model objects:
 
@@ -539,13 +545,16 @@ low_voltage_street_light_service
 
 ## 21. Route the charger low-voltage feed (`charger-low-voltage-feed`)
 
-Route the rear low-voltage gland's cable beneath the open front edge of the
-tambour door, up `right_center_rail`, under `rail_ft`, down
-`front_center_rail`, and into the bottom of the EV charger.
+Route the rear low-voltage gland's cable parallel to the Wi-Fi feed: down from
+the gland and up the negative-X face of `front_center_rail`. As it approaches
+the elevation of the EV charger's bottom plane, bend in positive Y to clear the
+positive-Y face of the rail, then sweep upward into the charger's unchanged
+bottom entry. Maintain the modeled one-cable-diameter separation between the
+two low-voltage lanes until the charger feed branches.
 
-Check its modeled U-turn, the 0.625-inch minimum bend radius, and clearance from
-the tambour door, power conduit, siding, and charger cord through the door's
-full travel.
+Check its direct entry sweep, the 0.625-inch minimum bend radius, and clearance
+from the tambour door, power conduit, siding, and charger cord through the
+door's full travel.
 
 New model objects:
 

@@ -593,16 +593,78 @@ class LowVoltageBuildTests(unittest.TestCase):
 
         service = build.cables["low_voltage_street_light_service"]
         self.assertAlmostEqual(min(point[2] for point in service.points[-50:]), 42.9375)
+        self.assertIn(build.path_1_post, service.points)
+        self.assertGreater(
+            build.path_1_post[0],
+            build.members["post_fl"].max_on("x"),
+        )
+        self.assertGreater(service.points[-2][0], service.points[-1][0])
+        light_backers = (
+            build.members["front_street_light_backer_lower"],
+            build.members["front_street_light_backer_upper"],
+        )
+        for point in service.points:
+            for backer in light_backers:
+                clearance = build.LOW_VOLTAGE_CABLE_DIAMETER/2
+                inside_backer = all(
+                    backer.min_on(axis)-clearance
+                    <= point[index]
+                    <= backer.max_on(axis)+clearance
+                    for index,axis in enumerate("xyz")
+                )
+                self.assertFalse(inside_backer)
+
+        wifi_feed = build.cables["low_voltage_wifi_feed"]
+        self.assertIn(build.path_2_front_rail, wifi_feed.points)
+        self.assertGreater(build.path_2_front_rail[0], build.path_2_start[0])
+        self.assertGreater(build.path_2_front_rail[1], build.path_2_start[1])
+        self.assertLess(
+            build.path_2_front_rail[0],
+            build.members["front_center_rail"].min_on("x"),
+        )
+        self.assertGreater(
+            build.path_2_top_clear[1],
+            build.members["rail_ft"].max_on("y"),
+        )
+        self.assertGreater(build.path_2_right_rail[0], build.path_2_top_clear[0])
+        self.assertLess(
+            build.path_2_right_rail[0],
+            build.members["right_center_rail"].min_on("x"),
+        )
+        self.assertGreater(
+            build.path_2_entry_sweep[1],
+            build.members["right_center_rail"].max_on("y"),
+        )
+        self.assertGreater(build.path_2_entry[0], build.path_2_entry_sweep[0])
+        self.assertGreater(build.path_2_entry[2], build.path_2_entry_sweep[2])
 
         ev_feed = build.cables["low_voltage_ev_charger_feed"]
-        descending_points = [
-            point
-            for point in ev_feed.points
-            if abs(point[0]-build.LOW_VOLTAGE_FRONT_RAIL_POS_X) < 1e-9
-            and point[2] > 25
-        ]
-        self.assertTrue(descending_points)
+        self.assertIn(build.path_3_front_rail, ev_feed.points)
+        self.assertGreater(build.path_3_front_rail[0], build.path_3_start[0])
+        self.assertGreater(build.path_3_front_rail[1], build.path_3_start[1])
+        self.assertAlmostEqual(
+            build.path_3_front_rail[1]-build.path_2_front_rail[1],
+            build.LOW_VOLTAGE_CABLE_DIAMETER,
+        )
+        self.assertLess(build.path_3_branch[2], build.path_3_entry[2])
+        self.assertGreater(
+            build.path_3_rail_clear[1],
+            build.members["front_center_rail"].max_on("y"),
+        )
+        self.assertLess(
+            max(point[2] for point in ev_feed.points),
+            build.members["rail_ft"].min_on("z"),
+        )
+        self.assertLess(
+            max(point[0] for point in ev_feed.points[:-1]),
+            build.members["right_center_rail"].min_on("x"),
+        )
+        self.assertGreater(build.path_3_entry[1], build.path_3_rail_clear[1])
+        self.assertGreater(build.path_3_entry[2], build.path_3_rail_clear[2])
         self.assertTrue(all(point[1] < build.path_3_entry[1] for point in ev_feed.points[:-1]))
+
+        for cable in (service, wifi_feed, ev_feed):
+            self.assertLess(cable.points[1][2], cable.points[0][2])
 
     def test_wifi_and_charger_droops_clear_open_tambour_edge(self) -> None:
         for name in ("low_voltage_wifi_feed", "low_voltage_ev_charger_feed"):

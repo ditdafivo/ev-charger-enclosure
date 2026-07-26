@@ -1184,35 +1184,41 @@ def build_enclosure(
     LOW_VOLTAGE_GLAND_END_Z=(
         LOW_VOLTAGE_BOX_BOTTOM_Z-ONE_INCH_CABLE_GLAND.size[0]
     )
-    LOW_VOLTAGE_POST_NEG_X=members["post_fr"].min_on("x")-LOW_VOLTAGE_CABLE_DIAMETER/2
-    LOW_VOLTAGE_RIGHT_RAIL_POS_Y=(
-        members["right_center_rail"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
+    LOW_VOLTAGE_POST_FL_POS_X=(
+        members["post_fl"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
     LOW_VOLTAGE_RIGHT_RAIL_NEG_X=(
         members["right_center_rail"].min_on("x")-LOW_VOLTAGE_CABLE_DIAMETER/2
     )
-    LOW_VOLTAGE_FRONT_RAIL_POS_X=(
-        members["front_center_rail"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
+    LOW_VOLTAGE_RIGHT_RAIL_POS_Y=(
+        members["right_center_rail"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
+    )
+    LOW_VOLTAGE_FRONT_RAIL_NEG_X=(
+        members["front_center_rail"].min_on("x")-LOW_VOLTAGE_CABLE_DIAMETER/2
+    )
+    LOW_VOLTAGE_RAIL_FT_POS_Y=(
+        members["rail_ft"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
     LOW_VOLTAGE_BRACE_UNDERSIDE_Z=(
         members["brace_fl_fr"].min_on("z")-LOW_VOLTAGE_CABLE_DIAMETER/2
     )
     LOW_VOLTAGE_SERVICE_LOOP_TOP_Z=LOW_VOLTAGE_BRACE_UNDERSIDE_Z-2.5
-    LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z=(
-        members["rail_ft"].min_on("z")-LOW_VOLTAGE_CABLE_DIAMETER/2
-    )
 
     path_1_start=(LOW_VOLTAGE_GLAND_XS[0], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
-    path_1_post=(LOW_VOLTAGE_POST_NEG_X, LOW_VOLTAGE_GLAND_Y, 16)
-    PATH_1_BRIDGE_RIGHT_X=LOW_VOLTAGE_POST_NEG_X-3.9375
-    PATH_1_LOOP_RIGHT_X=FRONT_STREET_LIGHT_CENTER_X+3.25
-    PATH_1_LOOP_INNER_X=FRONT_STREET_LIGHT_CENTER_X+1.75
-    PATH_1_LOOP_LEFT_X=FRONT_STREET_LIGHT_CENTER_X-1.75
+    path_1_post=(
+        LOW_VOLTAGE_POST_FL_POS_X,
+        members["post_fl"].center_on("y"),
+        16,
+    )
+    PATH_1_BRIDGE_LEFT_X=LOW_VOLTAGE_POST_FL_POS_X+3.9375
+    PATH_1_LOOP_LEFT_X=FRONT_STREET_LIGHT_CENTER_X-3.25
+    PATH_1_LOOP_INNER_X=FRONT_STREET_LIGHT_CENTER_X-1.75
+    PATH_1_LOOP_RIGHT_X=FRONT_STREET_LIGHT_CENTER_X+1.75
     path_1_points=_join_centerline_sections(
         cubic_bezier_points(
             path_1_start,
-            (path_1_start[0], path_1_start[1], path_1_start[2]+2.5),
-            (path_1_post[0], path_1_post[1], path_1_post[2]-2.5),
+            (path_1_start[0], path_1_start[1], path_1_start[2]-3),
+            (path_1_post[0], path_1_post[1], path_1_post[2]-5),
             path_1_post,
         ),
         rounded_cable_points(
@@ -1220,7 +1226,7 @@ def build_enclosure(
                 path_1_post,
                 (path_1_post[0], path_1_post[1], LOW_VOLTAGE_BRACE_UNDERSIDE_Z),
                 (
-                    PATH_1_BRIDGE_RIGHT_X,
+                    PATH_1_BRIDGE_LEFT_X,
                     path_1_post[1],
                     LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
                 ),
@@ -1229,22 +1235,22 @@ def build_enclosure(
         ),
         cubic_bezier_points(
             (
-                PATH_1_BRIDGE_RIGHT_X,
+                PATH_1_BRIDGE_LEFT_X,
                 path_1_post[1],
                 LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
             ),
             (
-                PATH_1_BRIDGE_RIGHT_X-1,
+                PATH_1_BRIDGE_LEFT_X+1,
                 path_1_post[1],
                 LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
             ),
             (
-                PATH_1_LOOP_RIGHT_X+1,
+                PATH_1_LOOP_LEFT_X-1,
                 FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
                 LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
             ),
             (
-                PATH_1_LOOP_RIGHT_X,
+                PATH_1_LOOP_LEFT_X,
                 FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
                 LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
             ),
@@ -1252,27 +1258,27 @@ def build_enclosure(
         rounded_cable_points(
             (
                 (
+                    PATH_1_LOOP_LEFT_X,
+                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
+                ),
+                (
+                    PATH_1_LOOP_INNER_X,
+                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
+                ),
+                (
+                    PATH_1_LOOP_INNER_X,
+                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+                    LOW_VOLTAGE_SERVICE_LOOP_TOP_Z,
+                ),
+                (
                     PATH_1_LOOP_RIGHT_X,
                     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-                (
-                    PATH_1_LOOP_INNER_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-                (
-                    PATH_1_LOOP_INNER_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
                     LOW_VOLTAGE_SERVICE_LOOP_TOP_Z,
                 ),
                 (
-                    PATH_1_LOOP_LEFT_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_SERVICE_LOOP_TOP_Z,
-                ),
-                (
-                    PATH_1_LOOP_LEFT_X,
+                    PATH_1_LOOP_RIGHT_X,
                     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
                     LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
                 ),
@@ -1286,118 +1292,113 @@ def build_enclosure(
         ),
     )
 
+    LOW_VOLTAGE_WIFI_LANE_OFFSET=-LOW_VOLTAGE_CABLE_DIAMETER/2
+    LOW_VOLTAGE_CHARGER_LANE_OFFSET=LOW_VOLTAGE_CABLE_DIAMETER/2
+
     wifi=components["front_wifi_access_point"].resolved(members["right_center_rail"])
     path_2_start=(LOW_VOLTAGE_GLAND_XS[1], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
-    path_2_rail=(
-        members["right_center_rail"].center_on("x"),
-        LOW_VOLTAGE_RIGHT_RAIL_POS_Y,
+    path_2_front_rail=(
+        LOW_VOLTAGE_FRONT_RAIL_NEG_X,
+        members["front_center_rail"].center_on("y")+LOW_VOLTAGE_WIFI_LANE_OFFSET,
         16,
+    )
+    path_2_top_clear=(
+        path_2_front_rail[0],
+        LOW_VOLTAGE_RAIL_FT_POS_Y,
+        members["rail_ft"].center_on("z")+LOW_VOLTAGE_WIFI_LANE_OFFSET,
+    )
+    path_2_right_rail=(
+        LOW_VOLTAGE_RIGHT_RAIL_NEG_X,
+        members["right_center_rail"].center_on("y")+LOW_VOLTAGE_WIFI_LANE_OFFSET,
+        path_2_top_clear[2],
     )
     path_2_entry=(
         wifi.box_min[0]+wifi.box_size[0]/2,
         wifi.box_min[1]+wifi.box_size[1]/2,
         wifi.box_min[2],
     )
-    path_2_transition=(path_2_rail[0], path_2_rail[1], 27)
+    path_2_entry_sweep=(
+        path_2_right_rail[0],
+        path_2_entry[1],
+        path_2_entry[2]-2,
+    )
+    path_2_entry_under=(path_2_entry[0], path_2_entry[1], path_2_entry_sweep[2])
     path_2_points=_join_centerline_sections(
         cubic_bezier_points(
             path_2_start,
             (path_2_start[0], path_2_start[1], path_2_start[2]-4),
-            (path_2_rail[0], path_2_rail[1], path_2_rail[2]-8),
-            path_2_rail,
+            (path_2_front_rail[0], path_2_front_rail[1], path_2_front_rail[2]-8),
+            path_2_front_rail,
         ),
-        (path_2_rail, path_2_transition),
-        cubic_bezier_points(
-            path_2_transition,
-            (path_2_transition[0], path_2_transition[1], path_2_transition[2]+3),
-            (path_2_entry[0], path_2_entry[1], path_2_entry[2]-3),
-            path_2_entry,
+        rounded_cable_points(
+            (
+                path_2_front_rail,
+                (path_2_front_rail[0], path_2_front_rail[1], 40),
+                (path_2_front_rail[0], path_2_top_clear[1], 40),
+                path_2_top_clear,
+                (path_2_right_rail[0], path_2_top_clear[1], path_2_top_clear[2]),
+                path_2_right_rail,
+                (path_2_right_rail[0], path_2_right_rail[1], path_2_entry_sweep[2]),
+                path_2_entry_sweep,
+                path_2_entry_under,
+                path_2_entry,
+            ),
+            {
+                1: 1.25,
+                2: 1.25,
+                3: 1.25,
+                4: 0.75,
+                5: 0.75,
+                6: 0.7,
+                7: 0.7,
+                8: 0.8,
+            },
         ),
     )
 
     charger=components["front_ev_charger_body"].resolved(members["front_center_rail"])
     path_3_start=(LOW_VOLTAGE_GLAND_XS[2], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
-    path_3_rail=(
-        LOW_VOLTAGE_RIGHT_RAIL_NEG_X,
-        members["right_center_rail"].center_on("y"),
+    path_3_front_rail=(
+        LOW_VOLTAGE_FRONT_RAIL_NEG_X,
+        members["front_center_rail"].center_on("y")+LOW_VOLTAGE_CHARGER_LANE_OFFSET,
         16,
     )
-    path_3_under_rail_y=members["rail_ft"].center_on("y")
-    path_3_side_y=members["front_center_rail"].max_on("y")-LOW_VOLTAGE_CABLE_DIAMETER/2
     path_3_entry=(
         charger.box_min[0]+charger.box_size[0]/2,
         charger.box_min[1]+charger.box_size[1]/2,
         charger.box_min[2],
     )
-    PATH_3_BRIDGE_RIGHT_X=LOW_VOLTAGE_RIGHT_RAIL_NEG_X-3.9375
-    PATH_3_BRIDGE_LEFT_X=LOW_VOLTAGE_FRONT_RAIL_POS_X+2.4375
-    path_3_u_turn_start=(LOW_VOLTAGE_FRONT_RAIL_POS_X, path_3_side_y, 25)
+    path_3_branch=(
+        path_3_front_rail[0],
+        path_3_front_rail[1],
+        path_3_entry[2]-1.65,
+    )
+    path_3_rail_clear=(
+        path_3_branch[0],
+        members["front_center_rail"].max_on("y")
+        + LOW_VOLTAGE_CABLE_DIAMETER/2,
+        path_3_branch[2],
+    )
     path_3_points=_join_centerline_sections(
         cubic_bezier_points(
             path_3_start,
             (path_3_start[0], path_3_start[1], path_3_start[2]-4),
-            (path_3_rail[0], path_3_rail[1], path_3_rail[2]-8),
-            path_3_rail,
+            (path_3_front_rail[0], path_3_front_rail[1], path_3_front_rail[2]-8),
+            path_3_front_rail,
         ),
         rounded_cable_points(
             (
-                path_3_rail,
-                (path_3_rail[0], path_3_rail[1], LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z),
-                (path_3_rail[0], path_3_under_rail_y, LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z),
-                (
-                    PATH_3_BRIDGE_RIGHT_X,
-                    path_3_under_rail_y,
-                    LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-                ),
+                path_3_front_rail,
+                path_3_branch,
+                path_3_rail_clear,
             ),
-            {1: 1.25, 2: 1.25},
+            {1: 0.8},
         ),
         cubic_bezier_points(
-            (
-                PATH_3_BRIDGE_RIGHT_X,
-                path_3_under_rail_y,
-                LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-            ),
-            (
-                PATH_3_BRIDGE_RIGHT_X-1,
-                path_3_under_rail_y,
-                LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-            ),
-            (
-                PATH_3_BRIDGE_LEFT_X+1,
-                path_3_side_y,
-                LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-            ),
-            (
-                PATH_3_BRIDGE_LEFT_X,
-                path_3_side_y,
-                LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-            ),
-        ),
-        rounded_cable_points(
-            (
-                (
-                    PATH_3_BRIDGE_LEFT_X,
-                    path_3_side_y,
-                    LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-                ),
-                (
-                    LOW_VOLTAGE_FRONT_RAIL_POS_X,
-                    path_3_side_y,
-                    LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-                ),
-                path_3_u_turn_start,
-            ),
-            {1: 2},
-        ),
-        rounded_cable_points(
-            (
-                path_3_u_turn_start,
-                (path_3_u_turn_start[0], path_3_u_turn_start[1], 19.75),
-                (path_3_entry[0], path_3_entry[1], 19.75),
-                path_3_entry,
-            ),
-            {1: 0.8, 2: 0.8},
+            path_3_rail_clear,
+            (path_3_rail_clear[0], path_3_rail_clear[1]+0.75, path_3_rail_clear[2]),
+            (path_3_entry[0]-0.5, path_3_entry[1]-0.5, path_3_entry[2]-0.5),
+            path_3_entry,
         ),
     )
 

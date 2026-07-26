@@ -94,32 +94,52 @@ the four 79-inch 4x4 posts on the 24-by-18 3/8-inch centerline rectangle. The
 model places each post 32 inches below grade and 47 inches above grade, leaving
 4 inches of gravel beneath it.
 
-Before powered excavation, complete the required utility locate and compare
-each entire footing circle with the preserved no-auger corridors and recorded
+**Before rental day:** Complete the required utility locate and compare each
+entire footing circle with the preserved no-auger corridors and recorded
 conduit and sweep locations. A marking system establishes location; it does not
-make an inadequate clearance safe. Use the auger only where the complete
-10-inch excavation, including a practical allowance for setup error, bit drift,
-and soil breakout, remains outside the marked corridor. Hand- or
-vacuum-excavate where a sweep is too close, the recorded clearance is
-insufficient, or the markings cannot be reliably reconstructed. Keep the auger
-and spoil loads off the restored conduit trench where practical, and stop if
-unexpected fill, warning tape, or movement of a riser is observed.
+make an inadequate clearance safe. Plan to use the auger only where the
+complete 10-inch excavation, including a practical allowance for setup error,
+bit drift, and soil breakout, remains outside the marked corridor. Plan to
+hand- or vacuum-excavate where a sweep is too close, the recorded clearance is
+insufficient, or the markings cannot be reliably reconstructed.
 
-Using the 10-inch bit, excavate and complete only one footing at a time. Place
-4 inches of compactable angular crushed aggregate beneath the post, set the
-post, and use temporary external bracing to hold it plumb. Place the remaining
-aggregate evenly around all four sides in thin lifts, tamping each lift with a
-narrow tool before adding the next. Complete the footing to grade and verify
-the post and both conduit risers have not moved before starting the next hole.
-Do not use rounded pea gravel.
+Obtain a sheet of structurally rated exterior plywood and prepare four
+individual covers with generous bearing beyond the 10-inch holes. Size and
+reinforce them to support at least twice the greatest person, equipment, or
+material load that could be placed on them. Prepare a way to secure each cover
+against wind and accidental displacement without driving an anchor into a
+conduit corridor. Mark each cover conspicuously with `HOLE` or `COVER`, and
+stage a barricade for the entire footing area. Individual covers are preferred
+to one broad panel because one person can handle them, each can be inspected
+and secured independently, and they do not have to pass over the conduit
+risers.
 
-As the posts are completed, check the center spacing in both directions,
-compare the two plan diagonals, and verify every post is plumb. Establish the
-front, back, left, and right orientation now; all later part names depend on
-it. Maintain the temporary external bracing until the installed rails and
-backers provide adequate stability and the permanent top bracing is installed
-in Step 12. Continue to protect the two conduit stub-ups throughout excavation,
-setting, and tamping.
+**Auger day:** Using the 10-inch bit, excavate all four holes during the rental
+period. Keep the auger and spoil loads off the restored conduit trench where
+practical, and stop if unexpected fill, warning tape, or movement of a riser is
+observed. Check every hole for center position, depth, bit drift, soil breakout,
+loose material, and wall collapse. Verify that the witness markings and both
+risers remain undisturbed. Install and secure each prepared cover as soon as
+its inspection is complete, erect the barricade, and return the auger. Do not
+leave an open hole unattended or rely on an unsecured sheet, tarp, or loose
+boards as a cover.
+
+**Post-installation day or days:** Inspect the covers and holes before resuming
+work, particularly after rain, irrigation, freezing, or other changed site
+conditions. Remove only the covers needed for active work. Place 4 inches of
+compactable angular crushed aggregate beneath each post, then set and
+temporarily brace all four posts so their spacing, diagonals, and plumb can be
+adjusted together. Place the remaining aggregate evenly around all four sides
+of each post in thin lifts, tamping each lift with a narrow tool before adding
+the next. Complete every footing to grade and verify that the posts and both
+conduit risers have not moved. Do not use rounded pea gravel.
+
+Check the center spacing in both directions, compare the two plan diagonals,
+and verify every post is plumb. Establish the front, back, left, and right
+orientation now; all later part names depend on it. Maintain the temporary
+external bracing until the installed rails and backers provide adequate
+stability and the permanent top bracing is installed in Step 12. Continue to
+protect the two conduit stub-ups throughout excavation, setting, and tamping.
 
 New model objects:
 

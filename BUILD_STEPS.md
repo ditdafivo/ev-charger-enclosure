@@ -46,7 +46,7 @@ reference points and mark all four 10-inch footing circles. Route both
 underground conduit runs through the enclosure interior and clear of the full
 footing excavations before sweeping them up to the risers. Bring the modeled
 1 1/4-inch power riser out of the ground beneath the back-left corner of the
-power junction box (x = 14.975 inches and y = 5.2125 inches in the default
+power junction box (x = 14.975 inches and y = 4.2125 inches in the default
 model) and bring the modeled 3/4-inch low-voltage riser out beneath the rear of
 its junction box.
 Its default axis is approximately x = 12.17 inches and y = 5.44 inches, clear
@@ -375,12 +375,14 @@ Before mounting the Carlon E987N power junction box, fit its bottom-facing
 charger outlet, and the two right-side 1/2-inch light and receptacle outlets.
 The light outlet is forward of the receptacle outlet. Then mount the connected
 box on `front_center_rail`, spanning x = 14 to 18 inches in the default model,
-with its bottom face 6 inches above the local modeled ground plane. Keep every
-fitting axis aligned with its conduit path.
+and y = 1.1875 to 5.1875 inches. Its bottom face remains at the modeled
+elevation of approximately z = 6.50 inches. Keep every fitting axis aligned
+with its conduit path.
 
 Check that the fittings are fully seated and clear of `front_center_rail`. The
-charger fitting is centered one inch from the positive-X and positive-Y edges
-of the box lid (x = 17 inches and y = 5.1875 inches in the default model).
+charger fitting is at x = 15.4075 inches and y = 4.1875 inches in the default
+model. This places the 1-inch conduit one-quarter inch from the positive-X face
+of `front_center_rail` while leaving the charger-body penetration unchanged.
 
 The incoming #6 and #12 groups enter through the bottom riser. The #12
 hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs,
@@ -437,6 +439,8 @@ the power junction box. Run toward positive X and make the first modeled
 required Y transition gradually on this long rising leg. At z = 40 inches,
 make the second 3-inch-radius sweep toward negative X and enter the
 positive-X-facing port of the WRB550B base box at x = 15.85 and y = 1.5 inches.
+The junction-box fitting center is at y = 2.1875 inches, leaving approximately
+1.14 inches between the conduit envelope and the closed tambour plane.
 
 Check that the box is centered at x = 13 3/4 inches and z = 40 inches, the
 unused ports are plugged, and the conduit stays forward of the open tambour
@@ -478,10 +482,11 @@ power_back_right_outlet_feed
 
 ## 18. Add the low-voltage termination (`low-voltage-termination`)
 
-Mount the low-voltage junction box to the same y-coordinate plane as the power
-junction box, spanning x = 9 to 13 inches and centered at y = 4.1875 inches
-and z = 13 inches. The power junction spans x = 14 to 18 inches, leaving a
-one-inch gap. Future backing lumber may be added but is not included. Connect
+Mount the low-voltage junction box in its unchanged position, spanning x = 9
+to 13 inches and y = 2.1875 to 6.1875 inches, centered at z = 13 inches. The
+power junction spans x = 14 to 18 inches and sits one inch farther forward in
+negative Y. The boxes retain a one-inch X gap. Future backing lumber may be
+added but is not included. Connect
 the rear portion of the bottom panel to the 3/4-inch riser installed in Step 1,
 then add the three cable glands across the front portion of the bottom panel.
 

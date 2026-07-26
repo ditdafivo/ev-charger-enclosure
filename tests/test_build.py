@@ -173,7 +173,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
 
         self.assertVectorAlmostEqual(
             box.box_min,
-            (14, 2.1875, build.POWER_JUNCTION_BOTTOM_Z),
+            (14, 1.1875, build.POWER_JUNCTION_BOTTOM_Z),
         )
         self.assertVectorAlmostEqual(box.box_size, (4, 4, 4))
         self.assertAlmostEqual(
@@ -182,7 +182,6 @@ class PowerJunctionBuildTests(unittest.TestCase):
         )
         self.assertEqual(build.POWER_JUNCTION_BOX_FILL.required_volume, 37)
         self.assertEqual(build.POWER_JUNCTION_BOX_FILL.remaining_volume, 12)
-        self.assertIsNone(build.POWER_EV_LB_FILL)
 
     def test_default_spline_fittings_and_route(self) -> None:
         expected_types = {
@@ -209,6 +208,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.POWER_JUNCTION_INPUT_PORT_X,
             build.POWER_JUNCTION_INPUT_PORT_Y,
         )
+        self.assertVectorAlmostEqual(input_port_xy, (14.975, 4.2125))
         riser = self.resolved_conduit("power_ground_riser")
         self.assertVectorAlmostEqual(riser.points[0][:2], input_port_xy)
         self.assertVectorAlmostEqual(riser.points[-1][:2], input_port_xy)
@@ -233,7 +233,13 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.POWER_JUNCTION_INPUT_EDGE_CLEARANCE,
         )
 
-        self.assertAlmostEqual(build.POWER_JUNCTION_SPLINE_PORT_X, box.box_min[0]+3)
+        rail = build.members["front_center_rail"]
+        self.assertAlmostEqual(
+            build.POWER_JUNCTION_SPLINE_PORT_X,
+            rail.max_on("x")
+            + CONDUIT_OD_BY_TRADE_SIZE["1"]/2
+            + build.POWER_EV_RAIL_CLEARANCE,
+        )
         self.assertAlmostEqual(build.POWER_JUNCTION_SPLINE_PORT_Y, box.box_min[1]+3)
 
         ev = self.resolved_conduit("power_ev_charger_feed")
@@ -258,68 +264,20 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.conduits["power_ev_charger_feed"].points[-1],
             ComponentAnchor,
         )
-
-    def test_t_body_and_junction_fittings_have_expected_materials(self) -> None:
-        enclosure = build.build_enclosure(power_conduit_layout="charger-riser")
-        expected_types = {
-            "power_ev_t_body": "carlon_e983g_conduit_t_body",
-            "power_junction_input_adapter": "carlon_e996g_box_adapter",
-            "power_junction_input_coupling": "carlon_e940g_coupling",
-            "power_ev_reducer": "carlon_e950gf_reducer_bushing",
-            "power_junction_light_adapter": "carlon_e996d_box_adapter",
-            "power_junction_light_coupling": "carlon_e940d_coupling",
-            "power_junction_outlet_adapter": "carlon_e996d_box_adapter",
-            "power_junction_outlet_coupling": "carlon_e940d_coupling",
-        }
-        for name, expected_type in expected_types.items():
-            with self.subTest(name=name):
-                self.assertEqual(
-                    enclosure.components[name].component_type.name,
-                    expected_type,
-                )
-
-        self.assertNotIn("power_junction_ev_adapter", enclosure.components)
-        self.assertNotIn("power_junction_ev_coupling", enclosure.components)
-        self.assertNotIn("power_ev_lb_body", enclosure.components)
-
-    def test_t_body_ports_and_reducer_align_with_charger(self) -> None:
-        enclosure = build.build_enclosure(power_conduit_layout="charger-riser")
-        box_instance = enclosure.components["power_junction_box"]
-        box = box_instance.resolved(enclosure.members[box_instance.member])
-        adapter_instance = enclosure.components["power_junction_input_adapter"]
-        adapter = adapter_instance.resolved(enclosure.members[adapter_instance.member])
-        t_instance = enclosure.components["power_ev_t_body"]
-        t_body = t_instance.resolved(enclosure.members[t_instance.member])
-        reducer_instance = enclosure.components["power_ev_reducer"]
-        reducer = reducer_instance.resolved(enclosure.members[reducer_instance.member])
-
-        self.assertEqual(adapter_instance.orientation, "inward")
-        self.assertEqual(t_instance.orientation, "down")
-        self.assertAlmostEqual(
-            adapter.box_min[1],
-            box.box_min[1]+box.box_size[1],
+        self.assertVectorAlmostEqual(
+            build.POWER_EV_ENTRY,
+            (16, 11.3375, 25.65),
         )
         self.assertAlmostEqual(
-            adapter.box_min[0]+adapter.box_size[0]/2,
-            enclosure.POWER_T_AXIS_X,
-        )
-        self.assertAlmostEqual(
-            adapter.box_min[2]+adapter.box_size[2]/2,
-            enclosure.POWER_T_CENTER_Z,
-        )
-        self.assertGreater(
-            min(t_body.box_min[0], reducer.box_min[0]),
-            enclosure.members["front_center_rail"].max_on("x"),
-        )
-        self.assertAlmostEqual(
-            reducer.box_min[2],
-            t_body.box_min[2]+t_body.box_size[2],
+            ev.points[0][0]
+            - CONDUIT_OD_BY_TRADE_SIZE["1"]/2
+            - rail.max_on("x"),
+            0.25,
         )
 
     def test_riser_and_equipment_feeds_use_relative_endpoints(self) -> None:
-        enclosure = build.build_enclosure(power_conduit_layout="charger-riser")
+        enclosure = build.default_build
         riser = self.resolved_conduit("power_ground_riser", enclosure)
-        branch = self.resolved_conduit("power_t_junction_feed", enclosure)
         ev = self.resolved_conduit("power_ev_charger_feed", enclosure)
         light = self.resolved_conduit("power_street_light_feed", enclosure)
 
@@ -327,32 +285,29 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertVectorAlmostEqual(
             riser.points[0],
             (
-                enclosure.POWER_T_AXIS_X,
-                enclosure.POWER_T_AXIS_Y,
-                enclosure.POWER_T_GROUND_Z,
+                enclosure.POWER_JUNCTION_INPUT_PORT_X,
+                enclosure.POWER_JUNCTION_INPUT_PORT_Y,
+                enclosure.POWER_JUNCTION_INPUT_GROUND_Z,
             ),
         )
         self.assertEqual(riser.points[0][:2], riser.points[-1][:2])
-        self.assertEqual(branch.trade_size, "1-1/4")
-        self.assertEqual(branch.points[0][0], branch.points[-1][0])
-        self.assertEqual(branch.points[0][2], branch.points[-1][2])
-        self.assertGreater(branch.points[0][1], branch.points[-1][1])
         self.assertEqual(ev.trade_size, "1")
         self.assertVectorAlmostEqual(ev.points[-1], enclosure.POWER_EV_ENTRY)
-        self.assertVectorAlmostEqual(ev.points[0][:2], ev.points[-1][:2])
 
-        for name in (
-            "power_ground_riser",
-            "power_t_junction_feed",
-            "power_ev_charger_feed",
-        ):
-            with self.subTest(name=name):
-                self.assertTrue(
-                    all(
-                        isinstance(point, (RelativeCoord, ComponentAnchor))
-                        for point in enclosure.conduits[name].points
-                    )
-                )
+        self.assertTrue(
+            all(
+                isinstance(point, RelativeCoord)
+                for point in enclosure.conduits["power_ground_riser"].points
+            )
+        )
+        self.assertIsInstance(
+            enclosure.conduits["power_ev_charger_feed"].points[0],
+            ComponentAnchor,
+        )
+        self.assertIsInstance(
+            enclosure.conduits["power_ev_charger_feed"].points[-1],
+            ComponentAnchor,
+        )
 
         self.assertEqual(light.trade_size, "1/2")
         self.assertVectorAlmostEqual(
@@ -362,8 +317,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             light.points[-1],
             enclosure.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(enclosure.members),
         )
-        self.assertEqual(ev.bends, ())
-        self.assertEqual(len(ev.points), 2)
+        self.assertEqual(len(ev.points), 25)
         self.assertEqual(light.bends, ((1, 3), (2, 3)))
         self.assertGreater(len(light.points), 20)
 
@@ -400,6 +354,12 @@ class PowerJunctionBuildTests(unittest.TestCase):
             max(point[0] for point in light.points),
             build.POWER_LIGHT_POST_X,
         )
+        self.assertGreaterEqual(
+            build.TAMBOUR_FRONT_Y
+            - max(point[1] for point in light.points)
+            - CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2,
+            1,
+        )
         self.assertGreater(light.points[-1][2], light.points[0][2])
 
         raw_points = build.conduits["power_street_light_feed"].points
@@ -416,34 +376,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
         )
 
-    def test_layout_tracks_resized_charger_and_preserves_legacy_route(self) -> None:
-        for enclosure in (
-            build.build_enclosure(
-                width=30,
-                depth=26,
-                power_conduit_layout="charger-riser",
-            ),
-            build.build_enclosure(
-                height=55,
-                power_conduit_layout="charger-riser",
-            ),
-        ):
-            riser = enclosure.conduits["power_ground_riser"].resolved(
-                enclosure.components.as_dict(),
-                enclosure.members.as_dict(),
-            )
-            branch = enclosure.conduits["power_t_junction_feed"].resolved(
-                enclosure.components.as_dict(),
-                enclosure.members.as_dict(),
-            )
-            ev = enclosure.conduits["power_ev_charger_feed"].resolved(
-                enclosure.components.as_dict(),
-                enclosure.members.as_dict(),
-            )
-            self.assertVectorAlmostEqual(riser.points[0][:2], ev.points[-1][:2])
-            self.assertAlmostEqual(branch.points[0][0], ev.points[-1][0])
-            self.assertGreater(branch.points[0][1], branch.points[-1][1])
-
+    def test_layout_tracks_resized_enclosures(self) -> None:
         for enclosure in (
             build.build_enclosure(width=30, depth=26),
             build.build_enclosure(height=55),
@@ -460,15 +393,6 @@ class PowerJunctionBuildTests(unittest.TestCase):
             self.assertVectorAlmostEqual(
                 enclosure.POWER_EV_OFFSET_CONTROL_B[:2], ev.points[-1][:2]
             )
-
-        legacy = build.build_enclosure(power_conduit_layout="junction-riser")
-        legacy.model.validate()
-        self.assertEqual(legacy.POWER_JUNCTION_BOX_FILL.required_volume, 37)
-        self.assertEqual(legacy.POWER_EV_LB_FILL.required_volume, 20)
-        self.assertIn("power_ev_lb_body", legacy.components)
-        self.assertNotIn("power_ev_t_body", legacy.components)
-        self.assertIn("power_ev_lb_feed", legacy.conduits)
-        self.assertNotIn("power_t_junction_feed", legacy.conduits)
 
     def test_outlet_feed_has_two_sweeps_and_clears_low_rail(self) -> None:
         outlet = self.resolved_conduit("power_back_right_outlet_feed")
@@ -517,7 +441,7 @@ class LowVoltageBuildTests(unittest.TestCase):
             build.members.as_dict(),
         )
 
-    def test_low_voltage_box_shares_power_box_plane_on_negative_x_side(self) -> None:
+    def test_low_voltage_box_stays_one_inch_behind_shifted_power_box(self) -> None:
         instance = build.components["low_voltage_termination_box"]
         box = self.resolved_component("low_voltage_termination_box")
 
@@ -531,8 +455,11 @@ class LowVoltageBuildTests(unittest.TestCase):
         box_min_y = box.box_min[1]
         box_max_y = box_min_y+box.box_size[1]
         power = self.resolved_component("power_junction_box")
-        self.assertAlmostEqual(box_min_y, power.box_min[1])
-        self.assertAlmostEqual(box_max_y, power.box_min[1]+power.box_size[1])
+        self.assertAlmostEqual(box_min_y, power.box_min[1]+1)
+        self.assertAlmostEqual(
+            box_max_y,
+            power.box_min[1]+power.box_size[1]+1,
+        )
         self.assertAlmostEqual(power.box_min[0]-(box.box_min[0]+box.box_size[0]), 1)
 
     def test_bottom_fittings_are_inside_the_box_and_do_not_overlap(self) -> None:
@@ -763,7 +690,11 @@ class ParameterizedBuildTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             junction.box_min[1]+junction.box_size[1],
-            front_center_rail.min_on("y"),
+            front_center_rail.min_on("y")+enclosure.POWER_JUNCTION_Y_SHIFT,
+        )
+        self.assertAlmostEqual(
+            low_voltage_box.box_min[1],
+            front_center_rail.min_on("y")-low_voltage_box.box_size[1],
         )
 
         outlet_feed = self.resolved_conduit(
@@ -918,28 +849,12 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertEqual(enclosure.width, 30.5)
         self.assertEqual(enclosure.depth, 26.25)
         self.assertEqual(enclosure.height, 55.5)
-        self.assertEqual(enclosure.power_conduit_layout, "junction-spline")
         deploy.assert_called_once_with(Path("output/model.scad"))
 
-    def test_main_accepts_legacy_power_conduit_layout(self) -> None:
-        with (
-            patch.object(build, "write_outputs") as write_outputs,
-            patch.object(build, "deploy_generated_model"),
-        ):
-            self.assertEqual(
-                build.main(
-                    [
-                        "--power-conduit-layout",
-                        "junction-riser",
-                        "--no-deploy",
-                    ]
-                ),
-                0,
-            )
-
-        enclosure = write_outputs.call_args.args[0]
-        self.assertEqual(enclosure.power_conduit_layout, "junction-riser")
-        self.assertIn("power_ev_lb_body", enclosure.components)
+    def test_main_rejects_removed_power_conduit_layout_option(self) -> None:
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaisesRegex(SystemExit, "2"):
+                build.main(["--power-conduit-layout", "junction-riser"])
 
     def test_main_can_skip_deployment(self) -> None:
         with (
@@ -1129,8 +1044,8 @@ class ParameterizedBuildTests(unittest.TestCase):
             with self.assertRaisesRegex(SystemExit, "2"):
                 build.main(["--width", "nan"])
 
-    def test_api_rejects_invalid_power_conduit_layout(self) -> None:
-        with self.assertRaisesRegex(ValueError, "power_conduit_layout"):
+    def test_api_rejects_removed_power_conduit_layout_argument(self) -> None:
+        with self.assertRaisesRegex(TypeError, "power_conduit_layout"):
             build.build_enclosure(power_conduit_layout="invalid")
 
     def test_write_outputs_uses_the_existing_filenames(self) -> None:

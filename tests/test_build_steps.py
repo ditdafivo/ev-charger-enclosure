@@ -172,36 +172,6 @@ class BuildStepModelTests(unittest.TestCase):
             scad,
         )
 
-    def test_alternate_layout_objects_keep_their_installation_steps(self) -> None:
-        expected_step_15 = {
-            "charger-riser": {
-                "power_ev_t_body",
-                "power_ev_reducer",
-                "power_t_junction_feed",
-                "power_ev_charger_feed",
-            },
-            "junction-riser": {
-                "power_ev_lb_body",
-                "power_ev_reducer",
-                "power_ev_lb_feed",
-                "power_ev_charger_feed",
-            },
-        }
-        for layout, expected in expected_step_15.items():
-            with self.subTest(layout=layout):
-                enclosure = build.build_enclosure(power_conduit_layout=layout)
-                enclosure.model.validate()
-                step_by_object = {
-                    name: step.number
-                    for step in enclosure.model.build_steps
-                    for name in step.object_names
-                }
-                self.assertTrue(all(step_by_object[name] == 15 for name in expected))
-
-                if layout == "junction-riser":
-                    self.assertEqual(step_by_object["power_junction_ev_adapter"], 14)
-                    self.assertEqual(step_by_object["power_junction_ev_coupling"], 14)
-
     def test_generic_and_parameterized_models_keep_normal_rendering(self) -> None:
         generic_scad = Model(self.sample_members()).to_scad()
         custom_scad = build.build_enclosure(width=30).model.to_scad()

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import math
+import struct
 import subprocess
 import tempfile
 import unittest
@@ -694,6 +696,35 @@ class LowVoltageBuildTests(unittest.TestCase):
             build.members.as_dict(),
         )
 
+    def test_center_gland_cat6_rendering_is_enabled(self) -> None:
+        scad=build.model.to_scad()
+        self.assertIn("center_gland_cat6 = true;", scad)
+        self.assertIn(
+            'center_gland_cat6\n                            '
+            '|| cable_name(c) != "low_voltage_ev_charger_feed"',
+            scad,
+        )
+
+    def test_right_gland_wifi_route_exact_regression(self) -> None:
+        points=build.cables["low_voltage_wifi_feed"].points
+        encoded=b"".join(struct.pack("!ddd", *point) for point in points)
+
+        self.assertEqual(len(points), 168)
+        self.assertEqual(
+            hashlib.sha256(encoded).hexdigest(),
+            "6336a34325615a64bebb5d30f3191cf8942f520afb3051deb55c0614a72bbce4",
+        )
+
+    def test_center_gland_charger_route_exact_regression(self) -> None:
+        points=build.cables["low_voltage_ev_charger_feed"].points
+        encoded=b"".join(struct.pack("!ddd", *point) for point in points)
+
+        self.assertEqual(len(points), 101)
+        self.assertEqual(
+            hashlib.sha256(encoded).hexdigest(),
+            "b60023f251362216e48b9fe96328aec742d96064621b3a7635327a5d5c59e591",
+        )
+
     def test_junction_boxes_share_positive_y_face_and_one_inch_x_gap(self) -> None:
         instance = build.components["low_voltage_termination_box"]
         box = self.resolved_component("low_voltage_termination_box")
@@ -827,8 +858,13 @@ class LowVoltageBuildTests(unittest.TestCase):
             "low_voltage_wifi_feed": build.LOW_VOLTAGE_CAT6_COLOR,
             "low_voltage_ev_charger_feed": build.LOW_VOLTAGE_CAT6_COLOR,
         }
+        expected_gland_indices = {
+            "low_voltage_street_light_service": 0,
+            "low_voltage_wifi_feed": 2,
+            "low_voltage_ev_charger_feed": 1,
+        }
 
-        for index, (name, endpoint) in enumerate(expected_endpoints.items()):
+        for name,endpoint in expected_endpoints.items():
             cable = build.cables[name]
             self.assertEqual(cable.assembly, "low_voltage_cabling")
             self.assertEqual(cable.diameter, 1/8)
@@ -836,8 +872,8 @@ class LowVoltageBuildTests(unittest.TestCase):
             self.assertVectorAlmostEqual(
                 cable.points[0],
                 (
-                build.LOW_VOLTAGE_GLAND_XS[index],
-                build.LOW_VOLTAGE_GLAND_Y,
+                    build.LOW_VOLTAGE_GLAND_XS[expected_gland_indices[name]],
+                    build.LOW_VOLTAGE_GLAND_Y,
                     build.LOW_VOLTAGE_GLAND_END_Z,
                 ),
             )
@@ -871,13 +907,66 @@ class LowVoltageBuildTests(unittest.TestCase):
                 self.assertFalse(inside_backer)
 
         wifi_feed = build.cables["low_voltage_wifi_feed"]
-        self.assertLess(build.path_2_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
+        self.assertEqual(
+            wifi_feed.points[:len(build.path_2_droop_points)],
+            build.path_2_droop_points,
+        )
+        self.assertGreater(build.path_2_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
+        self.assertTrue(
+            all(
+                start[0] <= end[0]
+                for start,end in zip(wifi_feed.points, wifi_feed.points[1:])
+            )
+        )
         self.assertIn(build.path_2_front_rail, wifi_feed.points)
         self.assertGreater(build.path_2_front_rail[0], build.path_2_start[0])
         self.assertGreater(build.path_2_front_rail[1], build.path_2_start[1])
-        self.assertLess(
+        self.assertGreater(
             build.path_2_front_rail[0],
-            build.members["front_center_rail"].min_on("x"),
+            build.members["front_center_rail"].max_on("x"),
+        )
+        self.assertAlmostEqual(
+            build.path_2_front_rail[1],
+            build.members["front_center_rail"].center_on("y"),
+        )
+        self.assertTrue(
+            all(
+                start[0] <= end[0]
+                for start,end in zip(build.path_2_x_sweep, build.path_2_x_sweep[1:])
+            )
+        )
+        face_start_index=next(
+            index
+            for index,point in enumerate(build.path_2_x_sweep)
+            if math.isclose(point[0], build.LOW_VOLTAGE_FRONT_RAIL_POS_X)
+        )
+        face_start=build.path_2_x_sweep[face_start_index]
+        self.assertGreaterEqual(
+            face_start[2],
+            build.LOW_VOLTAGE_WIFI_X_SWEEP_END_Z,
+        )
+        self.assertLess(face_start[2], build.LOW_VOLTAGE_WIFI_X_SWEEP_END_Z+0.5)
+        self.assertLess(face_start[1], build.path_2_front_rail[1])
+        self.assertTrue(
+            all(
+                math.isclose(point[0], build.LOW_VOLTAGE_FRONT_RAIL_POS_X)
+                for point in build.path_2_x_sweep[face_start_index:]
+            )
+        )
+        self.assertVectorAlmostEqual(build.path_2_x_sweep[-1], build.path_2_front_rail)
+        self.assertEqual(
+            build.path_2_front_rail[2],
+            build.LOW_VOLTAGE_WIFI_FACE_CENTER_Z,
+        )
+        vertical_points = tuple(
+            point
+            for point in wifi_feed.points
+            if build.path_2_front_rail[2] <= point[2] <= 40
+            and math.isclose(point[1], build.path_2_front_rail[1])
+        )
+        self.assertTrue(vertical_points)
+        self.assertTrue(
+            all(point[:2] == build.path_2_front_rail[:2] for point in vertical_points)
         )
         self.assertGreater(
             build.path_2_top_clear[1],
@@ -896,13 +985,32 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertGreater(build.path_2_entry[2], build.path_2_entry_sweep[2])
 
         ev_feed = build.cables["low_voltage_ev_charger_feed"]
-        self.assertGreater(build.path_3_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
+        lowest_index=min(
+            range(len(build.path_3_lower_points)),
+            key=lambda index: build.path_3_lower_points[index][2],
+        )
+        hold_end_index=next(
+            index
+            for index in range(lowest_index, len(build.path_3_lower_points))
+            if build.path_3_lower_points[index][2]
+            >= build.LOW_VOLTAGE_CENTER_GLAND_HOLD_X_UNTIL_Z
+        )
+        self.assertTrue(
+            all(
+                point[0] == build.path_3_start[0]
+                for point in build.path_3_lower_points[:hold_end_index+1]
+            )
+        )
         self.assertIn(build.path_3_front_rail, ev_feed.points)
-        self.assertLess(build.path_3_front_rail[0], build.path_3_start[0])
         self.assertGreater(build.path_3_front_rail[1], build.path_3_start[1])
-        self.assertAlmostEqual(
-            build.path_3_front_rail[1]-build.path_2_front_rail[1],
-            build.LOW_VOLTAGE_CABLE_DIAMETER,
+        self.assertVectorAlmostEqual(
+            build.path_3_front_rail,
+            (
+                build.LOW_VOLTAGE_FRONT_RAIL_NEG_X,
+                build.members["front_center_rail"].center_on("y")
+                +build.LOW_VOLTAGE_CHARGER_LANE_OFFSET,
+                16,
+            ),
         )
         self.assertLess(build.path_3_branch[2], build.path_3_entry[2])
         self.assertGreater(
@@ -929,11 +1037,14 @@ class LowVoltageBuildTests(unittest.TestCase):
             min(point[2] for point in service.points),
             build.LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z,
         )
-        for cable in (wifi_feed, ev_feed):
-            self.assertAlmostEqual(
-                minimum_cable_bend_radius(cable.points),
-                build.LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS,
-            )
+        self.assertGreaterEqual(
+            minimum_cable_bend_radius(wifi_feed.points),
+            build.LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS,
+        )
+        self.assertAlmostEqual(
+            minimum_cable_bend_radius(ev_feed.points),
+            build.LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS,
+        )
 
         rail_fb=build.members["rail_fb"]
         cable_radius=build.LOW_VOLTAGE_CABLE_DIAMETER/2

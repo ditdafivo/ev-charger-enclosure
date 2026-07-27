@@ -1314,6 +1314,69 @@ def build_enclosure(
         return tuple(joined)
 
 
+    def _sweep_centerline_x(
+        points: tuple[tuple[float, float, float], ...],
+        end_x: float,
+        end_z: float,
+    ) -> tuple[tuple[float, float, float], ...]:
+        lengths=[0.0]
+        for start,end in zip(points, points[1:]):
+            lengths.append(lengths[-1]+math.dist(start, end))
+        sweep_length=next(
+            length
+            for point,length in zip(points, lengths, strict=True)
+            if point[2] >= end_z
+        )
+        start_x=points[0][0]
+        swept=[]
+        for point,length in zip(points, lengths, strict=True):
+            progress=min(1, (length/sweep_length)**2)
+            eased=progress**3*(progress*(progress*6-15)+10)
+            swept.append(
+                (
+                    start_x+(end_x-start_x)*eased,
+                    point[1],
+                    point[2],
+                )
+            )
+        return tuple(swept)
+
+
+    def _hold_then_sweep_centerline_x(
+        points: tuple[tuple[float, float, float], ...],
+        hold_x: float,
+        end_x: float,
+        hold_until_z: float,
+    ) -> tuple[tuple[float, float, float], ...]:
+        lowest_index=min(range(len(points)), key=lambda index: points[index][2])
+        sweep_start_index=next(
+            index
+            for index in range(lowest_index, len(points))
+            if points[index][2] >= hold_until_z
+        )
+        sweep_lengths=[0.0]
+        for start,end in zip(points[sweep_start_index:], points[sweep_start_index+1:]):
+            sweep_lengths.append(sweep_lengths[-1]+math.dist(start, end))
+        sweep_length=sweep_lengths[-1]
+
+        held=[(hold_x, point[1], point[2]) for point in points[:sweep_start_index]]
+        for point,length in zip(
+            points[sweep_start_index:],
+            sweep_lengths,
+            strict=True,
+        ):
+            progress=length/sweep_length
+            eased=progress**3*(progress*(progress*6-15)+10)
+            held.append(
+                (
+                    hold_x+(end_x-hold_x)*eased,
+                    point[1],
+                    point[2],
+                )
+            )
+        return tuple(held)
+
+
     LOW_VOLTAGE_GLAND_END_Z=(
         LOW_VOLTAGE_BOX_BOTTOM_Z-ONE_INCH_CABLE_GLAND.size[0]
     )
@@ -1341,6 +1404,9 @@ def build_enclosure(
     )
     LOW_VOLTAGE_FRONT_RAIL_NEG_X=(
         members["front_center_rail"].min_on("x")-LOW_VOLTAGE_CABLE_DIAMETER/2
+    )
+    LOW_VOLTAGE_FRONT_RAIL_POS_X=(
+        members["front_center_rail"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
     LOW_VOLTAGE_RAIL_FT_POS_Y=(
         members["rail_ft"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
@@ -1473,11 +1539,16 @@ def build_enclosure(
 
     LOW_VOLTAGE_WIFI_LANE_OFFSET=-LOW_VOLTAGE_CABLE_DIAMETER/2
     LOW_VOLTAGE_CHARGER_LANE_OFFSET=LOW_VOLTAGE_CABLE_DIAMETER/2
+    LOW_VOLTAGE_WIFI_X_SWEEP_END_Z=10.25
+    LOW_VOLTAGE_WIFI_FACE_CENTER_Z=15
+    LOW_VOLTAGE_CENTER_GLAND_HOLD_X_UNTIL_Z=10
 
     wifi=components["front_wifi_access_point"].resolved(members["right_center_rail"])
-    path_2_start=(LOW_VOLTAGE_GLAND_XS[1], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
+    path_2_start=(LOW_VOLTAGE_GLAND_XS[2], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
     path_2_riser_bypass=(
-        LOW_VOLTAGE_INPUT_X-LOW_VOLTAGE_RISER_CABLE_CLEARANCE,
+        LOW_VOLTAGE_INPUT_X
+        + LOW_VOLTAGE_RISER_CABLE_CLEARANCE
+        + LOW_VOLTAGE_CABLE_DIAMETER,
         LOW_VOLTAGE_INPUT_Y,
         LOW_VOLTAGE_RISER_BYPASS_Z,
     )
@@ -1492,9 +1563,9 @@ def build_enclosure(
         LOW_VOLTAGE_RAIL_FB_CLEAR_Z,
     )
     path_2_front_rail=(
-        LOW_VOLTAGE_FRONT_RAIL_NEG_X,
-        members["front_center_rail"].center_on("y")+LOW_VOLTAGE_WIFI_LANE_OFFSET,
-        16,
+        LOW_VOLTAGE_FRONT_RAIL_POS_X,
+        members["front_center_rail"].center_on("y"),
+        LOW_VOLTAGE_WIFI_FACE_CENTER_Z,
     )
     path_2_top_clear=(
         path_2_front_rail[0],
@@ -1517,27 +1588,42 @@ def build_enclosure(
         path_2_entry[2]-2,
     )
     path_2_entry_under=(path_2_entry[0], path_2_entry[1], path_2_entry_sweep[2])
+    path_2_droop_points=cubic_bezier_points(
+        path_2_start,
+        (path_2_start[0], path_2_start[1], path_2_start[2]-2.5),
+        (
+            path_2_riser_approach[0],
+            path_2_riser_approach[1]-1.5,
+            path_2_riser_approach[2],
+        ),
+        path_2_riser_approach,
+    )
+    LOW_VOLTAGE_WIFI_RETURN_BEND_RADIUS=(
+        LOW_VOLTAGE_MINIMUM_BEND_RADIUS+0.001
+    )
+    path_2_return_yz=rounded_cable_points(
+        (path_2_riser_approach, path_2_riser_bypass, path_2_riser_climb),
+        {1: LOW_VOLTAGE_WIFI_RETURN_BEND_RADIUS},
+    )
+    path_2_front_rail_yz=(
+        path_2_riser_climb[0],
+        path_2_front_rail[1],
+        path_2_front_rail[2],
+    )
+    path_2_approach_yz=cubic_bezier_points(
+        path_2_riser_climb,
+        (path_2_riser_climb[0], path_2_riser_climb[1], path_2_riser_climb[2]+1.8),
+        (path_2_riser_climb[0], path_2_front_rail[1], path_2_front_rail[2]-4),
+        path_2_front_rail_yz,
+    )
+    path_2_x_sweep=_sweep_centerline_x(
+        _join_centerline_sections(path_2_return_yz, path_2_approach_yz),
+        LOW_VOLTAGE_FRONT_RAIL_POS_X,
+        LOW_VOLTAGE_WIFI_X_SWEEP_END_Z,
+    )
     path_2_points=_join_centerline_sections(
-        cubic_bezier_points(
-            path_2_start,
-            (path_2_start[0], path_2_start[1], path_2_start[2]-2.5),
-            (
-                path_2_riser_approach[0],
-                path_2_riser_approach[1]-1.5,
-                path_2_riser_approach[2],
-            ),
-            path_2_riser_approach,
-        ),
-        rounded_cable_points(
-            (path_2_riser_approach, path_2_riser_bypass, path_2_riser_climb),
-            {1: LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS},
-        ),
-        cubic_bezier_points(
-            path_2_riser_climb,
-            (path_2_riser_climb[0], path_2_riser_climb[1], path_2_riser_climb[2]+1.8),
-            (path_2_front_rail[0], path_2_front_rail[1], path_2_front_rail[2]-4),
-            path_2_front_rail,
-        ),
+        path_2_droop_points,
+        path_2_x_sweep,
         rounded_cable_points(
             (
                 path_2_front_rail,
@@ -1565,7 +1651,7 @@ def build_enclosure(
     )
 
     charger=components["front_ev_charger_body"].resolved(members["front_center_rail"])
-    path_3_start=(LOW_VOLTAGE_GLAND_XS[2], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
+    path_3_start=(LOW_VOLTAGE_GLAND_XS[1], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
     path_3_riser_bypass=(
         LOW_VOLTAGE_INPUT_X+LOW_VOLTAGE_RISER_CABLE_CLEARANCE,
         LOW_VOLTAGE_INPUT_Y,
@@ -1602,7 +1688,7 @@ def build_enclosure(
         + LOW_VOLTAGE_CABLE_DIAMETER/2,
         path_3_branch[2],
     )
-    path_3_points=_join_centerline_sections(
+    path_3_lower_yz=_join_centerline_sections(
         cubic_bezier_points(
             path_3_start,
             (path_3_start[0], path_3_start[1], path_3_start[2]-2.5),
@@ -1623,6 +1709,15 @@ def build_enclosure(
             (path_3_front_rail[0], path_3_front_rail[1], path_3_front_rail[2]-4),
             path_3_front_rail,
         ),
+    )
+    path_3_lower_points=_hold_then_sweep_centerline_x(
+        path_3_lower_yz,
+        path_3_start[0],
+        path_3_front_rail[0],
+        LOW_VOLTAGE_CENTER_GLAND_HOLD_X_UNTIL_Z,
+    )
+    path_3_points=_join_centerline_sections(
+        path_3_lower_points,
         rounded_cable_points(
             (
                 path_3_front_rail,

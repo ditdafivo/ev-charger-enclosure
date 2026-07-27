@@ -517,8 +517,8 @@ then add the three cable glands across the front portion of the bottom panel.
 Keep each fitting center at least 3/4 inch from the panel sides. Confirm that
 the riser remains plumb and clear of the 10-inch footing and that the existing
 cables have room to leave the forward glands in negative Z before sweeping
-toward the negative-X side of the framing. Route the blue Cat 6 feeds around
-opposite X sides of the 3/4-inch riser, retaining the modeled clearance. Use
+toward the center framing. Route the blue Cat 6 feeds beside the 3/4-inch
+riser, retaining the modeled clearance. Use
 the modeled 0.625-inch upward turn beneath the glands, remain on the negative-Y
 side of `rail_fb` until above it. Use the gentle departure spline modeled for
 the dark-brown street-light cable; it bottoms at z = 8.25 inches without a flat
@@ -537,8 +537,11 @@ low_voltage_cable_gland_3
 ## 19. Mount and cable the Wi-Fi access point (`wifi-and-feed`)
 
 Mount the Wi-Fi access point near the top of `right_center_rail`. Route the
-center low-voltage gland's cable down from the gland, sweep it toward the
-negative-X face of `front_center_rail`, and carry it up that face. Bend around
+highest-X low-voltage gland's cable through the modeled droop, then sweep it
+gradually in positive X as it rises toward `front_center_rail`. Reach the
+positive-X face near z = 10.25 inches, hold that X coordinate while sweeping to
+the rail's center Y coordinate near z = 15 inches, carry it straight upward,
+and bend around
 the positive-Y face of the rail near the top, cross in positive X along the
 positive-Y face of `rail_ft`, and descend the negative-X face of
 `right_center_rail`. Just below the access point, bend around the rail's
@@ -576,12 +579,13 @@ low_voltage_street_light_service
 
 ## 21. Route the charger low-voltage feed (`charger-low-voltage-feed`)
 
-Route the rear low-voltage gland's cable parallel to the Wi-Fi feed: down from
-the gland and up the negative-X face of `front_center_rail`. As it approaches
+Route the center low-voltage gland's cable down from the gland and up the
+negative-X face of `front_center_rail`. Hold the gland's X coordinate through
+the droop and ascending return until z = 10 inches, then sweep toward the rail.
+As it approaches
 the elevation of the EV charger's bottom plane, bend in positive Y to clear the
 positive-Y face of the rail, then sweep upward into the charger's unchanged
-bottom entry. Maintain the modeled one-cable-diameter separation between the
-two low-voltage lanes until the charger feed branches.
+bottom entry.
 Identify this run as blue Cat 6 cable in accordance with the model.
 
 Check its direct entry sweep, the 0.625-inch minimum bend radius, and clearance

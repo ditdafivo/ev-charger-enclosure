@@ -8,21 +8,18 @@ import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, Sequence
+from typing import Any, Sequence
 
 from lumber_model import (
     CARLON_E980DFN_HUB_DEPTH,
     CARLON_E980DFN_OUTLET_BOX,
     CARLON_E983G_CONDUIT_T_BODY,
-    CARLON_E986G_LB_CONDUIT_BODY,
+    CARLON_E950GF_REDUCER_BUSHING,
     CARLON_E940D_COUPLING,
-    CARLON_E940F_COUPLING,
     CARLON_E940G_COUPLING,
     CARLON_E943E_MALE_TERMINAL_ADAPTER,
-    CARLON_E950GF_REDUCER_BUSHING,
     CARLON_E987N_JUNCTION_BOX,
     CARLON_E996D_BOX_ADAPTER,
-    CARLON_E996F_BOX_ADAPTER,
     CARLON_E996G_BOX_ADAPTER,
     COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
     COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING,
@@ -34,10 +31,10 @@ from lumber_model import (
     WIFI_ACCESS_POINT,
     AbsoluteCoord,
     BoxFillCalculation,
-    BuildStep,
     CableCollection,
     ComponentCollection,
     ComponentAnchor,
+    ComponentType,
     CompositeSiding,
     ConduitBend,
     ConduitCollection,
@@ -61,86 +58,14 @@ from lumber_model import (
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 18.375
 DEFAULT_HEIGHT = 47
-PowerConduitLayout = Literal[
-    "junction-spline",
-    "charger-riser",
-    "junction-riser",
-]
-DEFAULT_POWER_CONDUIT_LAYOUT: PowerConduitLayout = "junction-spline"
-POWER_CONDUIT_LAYOUTS: tuple[PowerConduitLayout, ...] = (
-    "junction-spline",
-    "charger-riser",
-    "junction-riser",
-)
 BUILD_STEPS_PATH = Path(__file__).with_name("BUILD_STEPS.md")
-JUNCTION_SPLINE_BUILD_STEPS = parse_build_steps(BUILD_STEPS_PATH)
+BUILD_STEPS = parse_build_steps(BUILD_STEPS_PATH)
 PLAYGROUND_MODEL_URL = "https://ditdafivo.github.io/ev-charger-enclosure/"
 PLAYGROUND_DEPLOY_BRANCH = "pages-source"
 PLAYGROUND_DEPLOY_PATH = "pages/model.scad"
 PLAYGROUND_REMOTE = "origin"
 LOCAL_MESH_PATH = "../assets/components/ev_charger_plug/ev_charger_plug.stl"
 PLAYGROUND_MESH_PATH = "ev_charger_plug.stl"
-
-
-def _charger_riser_build_steps(
-    steps: tuple[BuildStep, ...],
-) -> tuple[BuildStep, ...]:
-    """Translate the default spline objects to the T-body layout."""
-
-    translated: list[BuildStep] = []
-    for step in steps:
-        object_names: list[str] = []
-        for name in step.object_names:
-            if name in (
-                "power_junction_ev_adapter",
-                "power_junction_ev_coupling",
-            ):
-                continue
-            if name == "power_ev_charger_feed":
-                object_names.extend(
-                    (
-                        "power_ev_t_body",
-                        "power_ev_reducer",
-                        "power_t_junction_feed",
-                        name,
-                    )
-                )
-            else:
-                object_names.append(name)
-        translated.append(BuildStep(step.number, tuple(object_names)))
-    return tuple(translated)
-
-
-def _junction_riser_build_steps(
-    steps: tuple[BuildStep, ...],
-) -> tuple[BuildStep, ...]:
-    """Translate the default spline objects to the legacy LB-based layout."""
-
-    translated: list[BuildStep] = []
-    for step in steps:
-        object_names: list[str] = []
-        for name in step.object_names:
-            if name == "power_ev_charger_feed":
-                object_names.extend(
-                    (
-                        "power_ev_lb_body",
-                        "power_ev_reducer",
-                        "power_ev_lb_feed",
-                        name,
-                    )
-                )
-            else:
-                object_names.append(name)
-        translated.append(BuildStep(step.number, tuple(object_names)))
-    return tuple(translated)
-
-
-CHARGER_RISER_BUILD_STEPS = _charger_riser_build_steps(
-    JUNCTION_SPLINE_BUILD_STEPS
-)
-JUNCTION_RISER_BUILD_STEPS = _junction_riser_build_steps(
-    JUNCTION_SPLINE_BUILD_STEPS
-)
 
 
 @dataclass(frozen=True)
@@ -150,7 +75,6 @@ class EnclosureBuild:
     width: float
     depth: float
     height: float
-    power_conduit_layout: PowerConduitLayout
     members: LumberCollection
     components: ComponentCollection
     conduits: ConduitCollection
@@ -182,19 +106,12 @@ def build_enclosure(
     width: float = DEFAULT_WIDTH,
     depth: float = DEFAULT_DEPTH,
     height: float = DEFAULT_HEIGHT,
-    power_conduit_layout: PowerConduitLayout = DEFAULT_POWER_CONDUIT_LAYOUT,
 ) -> EnclosureBuild:
     """Build an enclosure for the requested post centerline spacing, in inches."""
 
     width = _finite_positive_dimension(width, "width")
     depth = _finite_positive_dimension(depth, "depth")
     height = _finite_positive_dimension(height, "height")
-    if power_conduit_layout not in POWER_CONDUIT_LAYOUTS:
-        raise ValueError(
-            "power_conduit_layout must be one of "
-            f"{POWER_CONDUIT_LAYOUTS}, got {power_conduit_layout!r}"
-        )
-
     FRAME_DIMS=AbsoluteCoord(width, depth, height)
     BURIED_FRAME_Z=32
     FULL_POST_LEN=BURIED_FRAME_Z+FRAME_DIMS.z
@@ -205,6 +122,8 @@ def build_enclosure(
 
     HEIGHT_2x4=1.5
     HALF_HEIGHT_2x4=HEIGHT_2x4/2
+    HEIGHT_1x4=0.75
+    HALF_HEIGHT_1x4=HEIGHT_1x4/2
     WIDTH_4x4=3.5
 
     members = LumberCollection()
@@ -275,21 +194,34 @@ def build_enclosure(
             position=FRAME_DIMS.z-HALF_HEIGHT_2x4,
         )
 
-    for name,support_a,support_b in [
-        ("brace_bl_fr","post_bl","post_fr"),
-        ("brace_br_fl","post_br","post_fl"),
-    ]:
-        members.diagonal_between(
-            name,
-            assembly="frame",
-            type="2x4",
-            support_a=support_a,
-            support_b=support_b,
-            position=FRAME_DIMS.z-HALF_HEIGHT_2x4,
-        )
+    members.diagonal_between(
+        "brace_bl_fr",
+        assembly="frame",
+        type="1x4",
+        support_a="post_bl",
+        support_b="post_fr",
+        position=FRAME_DIMS.z-HALF_HEIGHT_1x4,
+    )
 
     CENTER_RAIL_OFFSET=-3
-    TAMBOUR_TOP_OFFSET=2
+    # Keep the top guide/support assembly below the perimeter braces.  The
+    # resulting one-inch gap from the guide centerline to the brace underside
+    # accommodates a 1.5-inch curtain envelope plus 1/4 inch of clearance.
+    TAMBOUR_MAX_SLAT_DEPTH=1.5
+    TAMBOUR_BRACE_CLEARANCE=0.25
+    TAMBOUR_TOP_OFFSET=(
+        HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_MAX_SLAT_DEPTH/2
+    )
+    TAMBOUR_TOP_Z=FRAME_DIMS.z-TAMBOUR_TOP_OFFSET
+    TAMBOUR_FRONT_Y=5
+    TAMBOUR_SLAT_TRACK_OFFSET=TAMBOUR_MAX_SLAT_DEPTH/4
+    TAMBOUR_TRACK_FRONT_Y=TAMBOUR_FRONT_Y+TAMBOUR_SLAT_TRACK_OFFSET
+    TAMBOUR_TRACK_TOP_Z=TAMBOUR_TOP_Z-TAMBOUR_SLAT_TRACK_OFFSET
+    TAMBOUR_VERTICAL_SUPPORT_CENTER_Y=TAMBOUR_FRONT_Y+0.5
+    TAMBOUR_FRONT_HEADER_TOP_Z=TAMBOUR_TOP_Z-2
+    TAMBOUR_FRONT_HEADER_CENTER_Z=(
+        TAMBOUR_FRONT_HEADER_TOP_Z-HEIGHT_2x4/2
+    )
     UPPER_RAIL_OFFSET=3.5
 
     for name,support_a,support_b,position,cross_offset,position_axis, rotated in [
@@ -305,15 +237,31 @@ def build_enclosure(
             "rail_ft",
             "rail_rt",
             "rail_lt",
-            FRAME_DIMS.z-UPPER_RAIL_OFFSET,
+            TAMBOUR_FRONT_HEADER_CENTER_Z,
             CENTER_RAIL_OFFSET,
             None,
             True,
         ),
         ("front_center_rail","rail_fb","rail_ft",(WIDTH_4x4+FRAME_DIMS.x)/2, 0, None, False),
         ("right_center_rail","rail_rbu","rail_rt",(WIDTH_4x4+FRAME_DIMS.y)/2, 0, "y", True),
-        ("right_tambour_rail","rail_rbu","rail_rt", 4.25, 0, "y", True),
-        ("left_tambour_rail","rail_lb","rail_lt", 4.25, 0, "y", True),
+        (
+            "right_tambour_rail",
+            "rail_rbu",
+            "rail_rt",
+            TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
+            0,
+            "y",
+            True,
+        ),
+        (
+            "left_tambour_rail",
+            "rail_lb",
+            "rail_lt",
+            TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
+            0,
+            "y",
+            True,
+        ),
     ]:
         members.between(
             name,
@@ -325,6 +273,28 @@ def build_enclosure(
             cross_offset=cross_offset,
             position_axis=position_axis,
             rotated=rotated,
+        )
+
+    TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z=members["rail_lt"].min_on("z")
+    TAMBOUR_FRONT_HEADER_SUPPORT_LENGTH=(
+        TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z-members["rail_ft"].min_on("z")
+    )
+    for name,x in (
+        ("rail_ft_left_support", members["rail_ft"].min_on("x")-HEIGHT_2x4),
+        ("rail_ft_right_support", members["rail_ft"].max_on("x")),
+    ):
+        members.add(
+            name,
+            assembly="frame",
+            type="2x4",
+            axis="z",
+            start=AbsoluteCoord(
+                x,
+                members["rail_ft"].min_on("y"),
+                members["rail_ft"].min_on("z"),
+            ),
+            length=TAMBOUR_FRONT_HEADER_SUPPORT_LENGTH,
+            rotated=False,
         )
 
     BACK_RIGHT_OUTLET_REAR_OFFSET=1.5
@@ -408,6 +378,11 @@ def build_enclosure(
 
     for name,position in [
         (
+            "front_street_light_backer_bottom",
+            FRONT_STREET_LIGHT_CENTER_Z
+            - 3 * FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
+        ),
+        (
             "front_street_light_backer_lower",
             FRONT_STREET_LIGHT_CENTER_Z - FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
         ),
@@ -427,20 +402,23 @@ def build_enclosure(
             rotated=False,
         )
 
-    FRONT_STREET_LIGHT_CONDUIT_ENTRY=_member_relative_coord(
-        "post_fl",
-        FRONT_STREET_LIGHT_CENTER_X,
-        (
-            FRONT_STREET_LIGHT_BOX_BACK_Y
-            - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2] / 2
-        ),
-        (
-            FRONT_STREET_LIGHT_CENTER_Z
-            - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1] / 2
+    FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR=ComponentAnchor(
+        "front_street_light_base_box",
+        position=(
+            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2,
+            0,
         ),
     )
     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT=(
-        FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(members)
+        FRONT_STREET_LIGHT_CENTER_X,
+        FRONT_STREET_LIGHT_BOX_BACK_Y
+        - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]/2,
+        FRONT_STREET_LIGHT_CENTER_Z
+        - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1]/2,
+    )
+    FRONT_STREET_LIGHT_CONDUIT_ENTRY=_member_relative_coord(
+        "post_fl",
+        *FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT,
     )
 
     FRONT_STREET_LIGHT_SIDING_OPENING=FrontSidingOpening(
@@ -503,10 +481,20 @@ def build_enclosure(
         + 1.25
         + POWER_JUNCTION_RIGHT_SHIFT
     )
-    POWER_JUNCTION_PORT_Y=(members["front_center_rail"].min_on("y")-1)
+    POWER_JUNCTION_Y_SHIFT=0
+    POWER_JUNCTION_PORT_Y=(
+        members["front_center_rail"].min_on("y")
+        - 1
+        + POWER_JUNCTION_Y_SHIFT
+    )
+    # Keep the box at its previous elevation while translating it in X and Y.
+    POWER_JUNCTION_GROUND_REFERENCE_X=POWER_JUNCTION_X+1
+    POWER_JUNCTION_GROUND_REFERENCE_Y=(
+        POWER_JUNCTION_PORT_Y-POWER_JUNCTION_Y_SHIFT
+    )
     POWER_JUNCTION_GROUND_Z=grounds[0].resolved(members).z_at(
-        POWER_JUNCTION_X,
-        POWER_JUNCTION_PORT_Y,
+        POWER_JUNCTION_GROUND_REFERENCE_X,
+        POWER_JUNCTION_GROUND_REFERENCE_Y,
     )
     POWER_JUNCTION_BOTTOM_Z=POWER_JUNCTION_GROUND_Z+6
     POWER_JUNCTION_TOP_Z=(
@@ -516,43 +504,26 @@ def build_enclosure(
     POWER_JUNCTION_CENTER_Y=(
         members["front_center_rail"].min_on("y")
         - CARLON_E987N_JUNCTION_BOX.size[1]/2
+        + POWER_JUNCTION_Y_SHIFT
     )
     POWER_JUNCTION_RIGHT_X=(
         POWER_JUNCTION_X + CARLON_E987N_JUNCTION_BOX.size[1]/2
     )
-    POWER_JUNCTION_EV_PORT_X=POWER_JUNCTION_X+0.875
-    POWER_JUNCTION_EV_PORT_Y=members["front_center_rail"].min_on("y")
-    POWER_JUNCTION_EV_PORT_Z=POWER_JUNCTION_CENTER_Z
-    POWER_JUNCTION_LIGHT_PORT_X=POWER_JUNCTION_X-1.25
     POWER_JUNCTION_LIGHT_PORT_Y=(POWER_JUNCTION_PORT_Y-2)
     POWER_JUNCTION_OUTLET_PORT_Z=POWER_JUNCTION_CENTER_Z
 
-    # In the charger-riser layout the #6 group bypasses the junction through the
-    # T body; only the #12 supply and branch-circuit groups enter this box.
-    if power_conduit_layout == "charger-riser":
-        POWER_JUNCTION_BOX_FILL=BoxFillCalculation(
-            marked_volume=49,
-            conductor_groups=((12, 7),),
-            equipment_grounding_awgs=(12, 12, 12),
-        )
-    else:
-        POWER_JUNCTION_BOX_FILL=BoxFillCalculation(
-            marked_volume=49,
-            conductor_groups=((6, 3), (12, 7)),
-            equipment_grounding_awgs=(6, 6, 12, 12, 12),
-        )
+    POWER_JUNCTION_BOX_FILL=BoxFillCalculation(
+        marked_volume=49,
+        conductor_groups=((12, 7),),
+        equipment_grounding_awgs=(12, 12, 12),
+    )
     POWER_JUNCTION_BOX_FILL.validate()
-    POWER_EV_LB_FILL=None
-    if power_conduit_layout == "junction-riser":
-        POWER_EV_LB_FILL=BoxFillCalculation(
-            marked_volume=32,
-            conductor_groups=((6, 3),),
-            equipment_grounding_awgs=(6,),
-        )
-        POWER_EV_LB_FILL.validate()
 
     LOW_VOLTAGE_BOX_CENTER_Z=13
-    LOW_VOLTAGE_BOX_CENTER_Y=POWER_JUNCTION_CENTER_Y
+    LOW_VOLTAGE_BOX_CENTER_Y=(
+        members["front_center_rail"].min_on("y")
+        - CARLON_E987N_JUNCTION_BOX.size[1]/2
+    )
     LOW_VOLTAGE_BOX_FRONT_SETBACK=(
         LOW_VOLTAGE_BOX_CENTER_Y
         - CARLON_E987N_JUNCTION_BOX.size[1]/2
@@ -596,18 +567,13 @@ def build_enclosure(
         if abs(LOW_VOLTAGE_POST_FL_Y_OFFSET) < 12
         else -math.inf
     )
+    # Translate the former riser axis one inch in positive X with both boxes.
+    # The old 12-inch post_fl clearance intentionally yields to the requested
+    # location; footing collision checks remain.
     LOW_VOLTAGE_INPUT_X=max(
         LOW_VOLTAGE_BOX_LEFT_X+LOW_VOLTAGE_PORT_EDGE_CLEARANCE,
         LOW_VOLTAGE_POST_FL_MIN_X,
     )
-    LOW_VOLTAGE_POST_FL_DISTANCE=math.hypot(
-        LOW_VOLTAGE_INPUT_X-LOW_VOLTAGE_POST_FL_CENTER[0],
-        LOW_VOLTAGE_INPUT_Y-LOW_VOLTAGE_POST_FL_CENTER[1],
-    )
-    if LOW_VOLTAGE_POST_FL_DISTANCE < 12:
-        raise ValueError(
-            "low-voltage riser cannot maintain 12-inch clearance from post_fl"
-        )
     if LOW_VOLTAGE_INPUT_X > (
         LOW_VOLTAGE_BOX_REAR_X-LOW_VOLTAGE_PORT_EDGE_CLEARANCE
     ):
@@ -636,6 +602,8 @@ def build_enclosure(
     )
     LOW_VOLTAGE_CABLE_DIAMETER=1/8
     LOW_VOLTAGE_MINIMUM_BEND_RADIUS=5*LOW_VOLTAGE_CABLE_DIAMETER
+    LOW_VOLTAGE_CAT6_COLOR=(0.05, 0.2, 0.8, 1.0)
+    LOW_VOLTAGE_STREET_LIGHT_COLOR=(0.18, 0.07, 0.025, 1.0)
 
     components = ComponentCollection()
 
@@ -761,7 +729,7 @@ def build_enclosure(
         assembly="electrical",
         component_type=EV_CHARGER_BODY,
         member="front_center_rail",
-        at=24.5,
+        at=22.5,
         face="wide_pos",
     )
 
@@ -816,7 +784,11 @@ def build_enclosure(
             - members["front_center_rail"].min_on("z")
         ),
         face="wide_neg",
-        offset=(0, POWER_JUNCTION_X-members["front_center_rail"].center_on("x"), 0),
+        offset=(
+            0,
+            POWER_JUNCTION_X-members["front_center_rail"].center_on("x"),
+            -POWER_JUNCTION_Y_SHIFT,
+        ),
     )
 
     ev_body = components["front_ev_charger_body"].resolved(
@@ -832,364 +804,155 @@ def build_enclosure(
         position=(0, EV_CHARGER_BODY.size[1]/2+2.25),
     )
 
-    if power_conduit_layout == "charger-riser":
-        # The T's local along axis is vertical. Its side channel points along
-        # negative Y, while the main channel is coaxial with the charger port.
-        POWER_T_MAIN_CHANNEL_WIDTH=2+5/16
-        POWER_T_AXIS_X=POWER_EV_ENTRY[0]
-        POWER_T_AXIS_Y=POWER_EV_ENTRY[1]
-        POWER_T_CENTER_Z=POWER_JUNCTION_CENTER_Z
-        POWER_T_ANCHOR_X=(
-            POWER_T_AXIS_X-CARLON_E983G_CONDUIT_T_BODY.size[2]/2
-        )
-        POWER_T_ANCHOR_Y=(
-            POWER_T_AXIS_Y
-            - (
-                CARLON_E983G_CONDUIT_T_BODY.size[1]
-                - POWER_T_MAIN_CHANNEL_WIDTH
-            )/2
-        )
-        components.add(
-            "power_ev_t_body",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E983G_CONDUIT_T_BODY,
-            member="front_center_rail",
-            at=POWER_T_CENTER_Z-members["front_center_rail"].min_on("z"),
-            face="narrow_pos",
-            offset=(
-                0,
-                members["front_center_rail"].center_on("y")-POWER_T_ANCHOR_Y,
-                POWER_T_ANCHOR_X-members["front_center_rail"].max_on("x"),
-            ),
-            orientation="down",
-        )
-        POWER_T_TOP_ANCHOR=ComponentAnchor(
-            "power_ev_t_body",
-            position=(0, POWER_T_MAIN_CHANNEL_WIDTH/2),
-        )
-        POWER_T_BOTTOM_ANCHOR=ComponentAnchor(
-            "power_ev_t_body",
-            position=(
-                CARLON_E983G_CONDUIT_T_BODY.size[0],
-                POWER_T_MAIN_CHANNEL_WIDTH/2,
-            ),
-        )
-        POWER_T_BRANCH_ANCHOR=ComponentAnchor(
-            "power_ev_t_body",
-            position=(
-                CARLON_E983G_CONDUIT_T_BODY.size[0]/2,
-                CARLON_E983G_CONDUIT_T_BODY.size[1],
-            ),
-        )
+    # Keep the T's vertical channel coaxial with the charger entry and raise
+    # its horizontal branch until the complete conduit envelope clears rail_fb.
+    POWER_T_MAIN_CHANNEL_WIDTH=2+5/16
+    POWER_T_AXIS_X=POWER_EV_ENTRY[0]
+    POWER_T_AXIS_Y=POWER_EV_ENTRY[1]
+    POWER_T_RAIL_CLEARANCE=0.25
+    POWER_T_CENTER_Z=(
+        members["rail_fb"].max_on("z")
+        + CONDUIT_OD_BY_TRADE_SIZE["1-1/4"]/2
+        + POWER_T_RAIL_CLEARANCE
+    )
+    POWER_T_ANCHOR_X=(
+        POWER_T_AXIS_X-CARLON_E983G_CONDUIT_T_BODY.size[2]/2
+    )
+    POWER_T_ANCHOR_Y=(
+        POWER_T_AXIS_Y
+        - (
+            CARLON_E983G_CONDUIT_T_BODY.size[1]
+            - POWER_T_MAIN_CHANNEL_WIDTH
+        )/2
+    )
+    components.add(
+        "power_ev_t_body",
+        assembly="electrical_conduit_fittings",
+        component_type=CARLON_E983G_CONDUIT_T_BODY,
+        member="front_center_rail",
+        at=POWER_T_CENTER_Z-members["front_center_rail"].min_on("z"),
+        face="narrow_pos",
+        offset=(
+            0,
+            members["front_center_rail"].center_on("y")-POWER_T_ANCHOR_Y,
+            POWER_T_ANCHOR_X-members["front_center_rail"].max_on("x"),
+        ),
+        orientation="down",
+    )
+    POWER_T_TOP_ANCHOR=ComponentAnchor(
+        "power_ev_t_body",
+        position=(0, POWER_T_MAIN_CHANNEL_WIDTH/2),
+    )
+    POWER_T_BOTTOM_ANCHOR=ComponentAnchor(
+        "power_ev_t_body",
+        position=(
+            CARLON_E983G_CONDUIT_T_BODY.size[0],
+            POWER_T_MAIN_CHANNEL_WIDTH/2,
+        ),
+    )
+    POWER_T_BRANCH_ANCHOR=ComponentAnchor(
+        "power_ev_t_body",
+        position=(
+            CARLON_E983G_CONDUIT_T_BODY.size[0]/2,
+            CARLON_E983G_CONDUIT_T_BODY.size[1],
+        ),
+    )
 
-        # The former input adapter/coupling move to the box's rear face and
-        # receive the T's 1-1/4-inch negative-Y branch.
-        POWER_JUNCTION_INPUT_PORT_X=POWER_T_AXIS_X
-        POWER_JUNCTION_INPUT_PORT_Y=members["front_center_rail"].min_on("y")
-        POWER_JUNCTION_INPUT_PORT_Z=POWER_T_CENTER_Z
-        components.add(
-            "power_junction_input_adapter",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E996G_BOX_ADAPTER,
-            member="front_center_rail",
-            at=(
-                POWER_JUNCTION_INPUT_PORT_Z
-                - members["front_center_rail"].min_on("z")
+    # The junction input is on its rear face, aligned with the raised branch.
+    POWER_JUNCTION_T_PORT_X=POWER_T_AXIS_X
+    POWER_JUNCTION_T_PORT_Y=(
+        POWER_JUNCTION_CENTER_Y+CARLON_E987N_JUNCTION_BOX.size[1]/2
+    )
+    POWER_JUNCTION_T_PORT_Z=POWER_T_CENTER_Z
+    POWER_JUNCTION_T_FACE_OFFSET=(
+        members["front_center_rail"].min_on("y")-POWER_JUNCTION_T_PORT_Y
+    )
+    components.add(
+        "power_junction_input_adapter",
+        assembly="electrical_conduit_fittings",
+        component_type=CARLON_E996G_BOX_ADAPTER,
+        member="front_center_rail",
+        at=POWER_JUNCTION_T_PORT_Z-members["front_center_rail"].min_on("z"),
+        face="wide_neg",
+        offset=(
+            -POWER_JUNCTION_T_FACE_OFFSET,
+            POWER_JUNCTION_T_PORT_X-members["front_center_rail"].center_on("x"),
+            0,
+        ),
+        orientation="inward",
+    )
+    components.add(
+        "power_junction_input_coupling",
+        assembly="electrical_conduit_fittings",
+        component_type=CARLON_E940G_COUPLING,
+        member="front_center_rail",
+        at=POWER_JUNCTION_T_PORT_Z-members["front_center_rail"].min_on("z"),
+        face="wide_neg",
+        offset=(
+            (
+                CARLON_E996G_BOX_ADAPTER.size[0]/2
+                - POWER_JUNCTION_T_FACE_OFFSET
             ),
-            face="wide_neg",
-            offset=(
-                0,
-                POWER_JUNCTION_INPUT_PORT_X
-                - members["front_center_rail"].center_on("x"),
-                0,
-            ),
-            orientation="inward",
-        )
-        components.add(
-            "power_junction_input_coupling",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E940G_COUPLING,
-            member="front_center_rail",
-            at=(
-                POWER_JUNCTION_INPUT_PORT_Z
-                - members["front_center_rail"].min_on("z")
-            ),
-            face="wide_neg",
-            offset=(
-                CARLON_E996G_BOX_ADAPTER.size[0]/2,
-                POWER_JUNCTION_INPUT_PORT_X
-                - members["front_center_rail"].center_on("x"),
-                0,
-            ),
-            orientation="inward",
-        )
-        POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR=ComponentAnchor(
-            "power_junction_input_coupling",
-            position=(
-                CARLON_E940G_COUPLING.size[0],
-                CARLON_E940G_COUPLING.size[1]/2,
-            ),
-        )
+            POWER_JUNCTION_T_PORT_X-members["front_center_rail"].center_on("x"),
+            0,
+        ),
+        orientation="inward",
+    )
+    POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR=ComponentAnchor(
+        "power_junction_input_coupling",
+        position=(
+            CARLON_E940G_COUPLING.size[0],
+            CARLON_E940G_COUPLING.size[1]/2,
+        ),
+    )
+    POWER_T_TOP_Z=(
+        POWER_T_CENTER_Z+CARLON_E983G_CONDUIT_T_BODY.size[0]/2
+    )
+    components.add(
+        "power_ev_reducer",
+        assembly="electrical_conduit_fittings",
+        component_type=CARLON_E950GF_REDUCER_BUSHING,
+        member="front_center_rail",
+        at=POWER_T_TOP_Z-members["front_center_rail"].min_on("z"),
+        face="narrow_pos",
+        offset=(
+            0,
+            POWER_T_AXIS_Y-members["front_center_rail"].center_on("y"),
+            POWER_T_AXIS_X-members["front_center_rail"].max_on("x"),
+        ),
+    )
 
-        POWER_T_TOP_Z=(
-            POWER_T_CENTER_Z+CARLON_E983G_CONDUIT_T_BODY.size[0]/2
-        )
-        components.add(
-            "power_ev_reducer",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E950GF_REDUCER_BUSHING,
-            member="front_center_rail",
-            at=POWER_T_TOP_Z-members["front_center_rail"].min_on("z"),
-            face="narrow_pos",
-            offset=(
-                0,
-                POWER_T_AXIS_Y-members["front_center_rail"].center_on("y"),
-                POWER_T_AXIS_X-members["front_center_rail"].max_on("x"),
-            ),
-        )
-    elif power_conduit_layout == "junction-spline":
-        # Keep the junction-riser's bottom 1-1/4-inch supply connection.
-        input_adapter_position=(
-            POWER_JUNCTION_BOTTOM_Z-members["front_center_rail"].min_on("z")
-        )
-        components.add(
-            "power_junction_input_adapter",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E996G_BOX_ADAPTER,
-            member="front_center_rail",
-            at=max(0, input_adapter_position),
-            face="wide_neg",
-            offset=(
-                max(0, -input_adapter_position),
-                -(POWER_JUNCTION_X-members["front_center_rail"].center_on("x")),
-                members["front_center_rail"].min_on("y")
-                - POWER_JUNCTION_CENTER_Y,
-            ),
-            orientation="down",
-        )
-        input_coupling_z=(
-            POWER_JUNCTION_BOTTOM_Z-CARLON_E996G_BOX_ADAPTER.size[0]/2
-        )
-        input_coupling_position=(
-            input_coupling_z-members["front_center_rail"].min_on("z")
-        )
-        components.add(
-            "power_junction_input_coupling",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E940G_COUPLING,
-            member="front_center_rail",
-            at=max(0, input_coupling_position),
-            face="wide_neg",
-            offset=(
-                max(0, -input_coupling_position),
-                -(POWER_JUNCTION_X-members["front_center_rail"].center_on("x")),
-                members["front_center_rail"].min_on("y")
-                - POWER_JUNCTION_CENTER_Y,
-            ),
-            orientation="down",
-        )
-
-        POWER_JUNCTION_SPLINE_PORT_X=POWER_JUNCTION_RIGHT_X-1
-        POWER_JUNCTION_SPLINE_PORT_Y=(
-            members["front_center_rail"].min_on("y")-1
-        )
-        POWER_JUNCTION_SPLINE_PORT_Z=POWER_JUNCTION_TOP_Z
-
-        components.add(
-            "power_junction_ev_adapter",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E996F_BOX_ADAPTER,
-            member="front_center_rail",
-            at=(
-                POWER_JUNCTION_SPLINE_PORT_Z
-                - members["front_center_rail"].min_on("z")
-            ),
-            face="wide_neg",
-            offset=(
-                0,
-                POWER_JUNCTION_SPLINE_PORT_X
-                - members["front_center_rail"].center_on("x"),
-                members["front_center_rail"].min_on("y")
-                - POWER_JUNCTION_SPLINE_PORT_Y,
-            ),
-        )
-        components.add(
-            "power_junction_ev_coupling",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E940F_COUPLING,
-            member="front_center_rail",
-            at=(
-                POWER_JUNCTION_SPLINE_PORT_Z
-                + CARLON_E996F_BOX_ADAPTER.size[0]/2
-                - members["front_center_rail"].min_on("z")
-            ),
-            face="wide_neg",
-            offset=(
-                0,
-                POWER_JUNCTION_SPLINE_PORT_X
-                - members["front_center_rail"].center_on("x"),
-                members["front_center_rail"].min_on("y")
-                - POWER_JUNCTION_SPLINE_PORT_Y,
-            ),
-        )
-        POWER_JUNCTION_EV_COUPLING_END_ANCHOR=ComponentAnchor(
-            "power_junction_ev_coupling",
-            position=(
-                CARLON_E940F_COUPLING.size[0],
-                CARLON_E940F_COUPLING.size[1]/2,
-            ),
-        )
-        POWER_JUNCTION_EV_COUPLING_END=(
-            POWER_JUNCTION_SPLINE_PORT_X,
-            POWER_JUNCTION_SPLINE_PORT_Y,
-            POWER_JUNCTION_SPLINE_PORT_Z
-            + CARLON_E996F_BOX_ADAPTER.size[0]/2
-            + CARLON_E940F_COUPLING.size[0],
-        )
-    else:
-        # Bottom 1-1/4-inch junction input. Clamp the member anchor at zero
-        # because the fitting connection planes sit below the raised rail.
-        input_adapter_position=(
-            POWER_JUNCTION_BOTTOM_Z-members["front_center_rail"].min_on("z")
-        )
-        components.add(
-            "power_junction_input_adapter",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E996G_BOX_ADAPTER,
-            member="front_center_rail",
-            at=max(0, input_adapter_position),
-            face="wide_neg",
-            offset=(
-                max(0, -input_adapter_position),
-                -(POWER_JUNCTION_X-members["front_center_rail"].center_on("x")),
-                1,
-            ),
-            orientation="down",
-        )
-        input_coupling_z=(
-            POWER_JUNCTION_BOTTOM_Z-CARLON_E996G_BOX_ADAPTER.size[0]/2
-        )
-        input_coupling_position=(
-            input_coupling_z-members["front_center_rail"].min_on("z")
-        )
-        components.add(
-            "power_junction_input_coupling",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E940G_COUPLING,
-            member="front_center_rail",
-            at=max(0, input_coupling_position),
-            face="wide_neg",
-            offset=(
-                max(0, -input_coupling_position),
-                -(POWER_JUNCTION_X-members["front_center_rail"].center_on("x")),
-                1,
-            ),
-            orientation="down",
-        )
-
-        components.add(
-            "power_junction_ev_adapter",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E996G_BOX_ADAPTER,
-            member="front_center_rail",
-            at=POWER_JUNCTION_EV_PORT_Z-members["front_center_rail"].min_on("z"),
-            face="wide_neg",
-            offset=(
-                0,
-                POWER_JUNCTION_EV_PORT_X
-                - members["front_center_rail"].center_on("x"),
-                0,
-            ),
-            orientation="inward",
-        )
-        components.add(
-            "power_junction_ev_coupling",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E940G_COUPLING,
-            member="front_center_rail",
-            at=POWER_JUNCTION_EV_PORT_Z-members["front_center_rail"].min_on("z"),
-            face="wide_neg",
-            offset=(
-                CARLON_E996G_BOX_ADAPTER.size[0]/2,
-                POWER_JUNCTION_EV_PORT_X
-                - members["front_center_rail"].center_on("x"),
-                0,
-            ),
-            orientation="inward",
-        )
-
-        POWER_EV_LB_OUTLET_OFFSET_Y=2+3/4-(1+63/64)/2
-        POWER_EV_LB_INLET=(
-            POWER_JUNCTION_EV_PORT_X,
-            POWER_EV_ENTRY[1]-POWER_EV_LB_OUTLET_OFFSET_Y,
-            POWER_JUNCTION_EV_PORT_Z,
-        )
-        components.add(
-            "power_ev_lb_body",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E986G_LB_CONDUIT_BODY,
-            member="front_center_rail",
-            at=POWER_JUNCTION_EV_PORT_Z-members["front_center_rail"].min_on("z"),
-            face="wide_neg",
-            offset=(
-                POWER_EV_LB_INLET[1]-POWER_JUNCTION_EV_PORT_Y,
-                POWER_JUNCTION_EV_PORT_X
-                - members["front_center_rail"].center_on("x"),
-                0,
-            ),
-            orientation="inward",
-        )
-
-        POWER_EV_LB_OUTLET=(
-            POWER_JUNCTION_EV_PORT_X,
-            POWER_EV_ENTRY[1],
-            POWER_JUNCTION_EV_PORT_Z+6,
-        )
-        components.add(
-            "power_ev_reducer",
-            assembly="electrical_conduit_fittings",
-            component_type=CARLON_E950GF_REDUCER_BUSHING,
-            member="front_center_rail",
-            at=POWER_EV_LB_OUTLET[2]-members["front_center_rail"].min_on("z"),
-            face="wide_neg",
-            offset=(
-                0,
-                POWER_EV_LB_OUTLET[0]
-                - members["front_center_rail"].center_on("x"),
-                members["front_center_rail"].min_on("y")-POWER_EV_LB_OUTLET[1],
-            ),
-        )
-
-    # Top-facing 1/2-inch street-light penetration.
+    # Positive-X-facing 1/2-inch street-light penetration.  It shares the
+    # right side with the outlet fitting but sits farther forward (negative Y).
     components.add(
         "power_junction_light_adapter",
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E996D_BOX_ADAPTER,
         member="front_center_rail",
-        at=POWER_JUNCTION_TOP_Z-members["front_center_rail"].min_on("z"),
+        at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
         face="wide_neg",
         offset=(
+            POWER_JUNCTION_RIGHT_X-members["front_center_rail"].center_on("x"),
             0,
-            POWER_JUNCTION_LIGHT_PORT_X-members["front_center_rail"].center_on("x"),
             members["front_center_rail"].min_on("y")-POWER_JUNCTION_LIGHT_PORT_Y,
         ),
+        orientation="left",
     )
     components.add(
         "power_junction_light_coupling",
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E940D_COUPLING,
         member="front_center_rail",
-        at=(
-            POWER_JUNCTION_TOP_Z
-            + CARLON_E996D_BOX_ADAPTER.size[0]/2
-            - members["front_center_rail"].min_on("z")
-        ),
+        at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
         face="wide_neg",
         offset=(
+            POWER_JUNCTION_RIGHT_X
+            + CARLON_E996D_BOX_ADAPTER.size[0]/2
+            - members["front_center_rail"].center_on("x"),
             0,
-            POWER_JUNCTION_LIGHT_PORT_X-members["front_center_rail"].center_on("x"),
             members["front_center_rail"].min_on("y")-POWER_JUNCTION_LIGHT_PORT_Y,
         ),
+        orientation="left",
     )
 
     # Right-side 1/2-inch outlet penetration.
@@ -1200,7 +963,11 @@ def build_enclosure(
         member="front_center_rail",
         at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
         face="wide_neg",
-        offset=(POWER_JUNCTION_RIGHT_X-members["front_center_rail"].center_on("x"), 0, 1),
+        offset=(
+            POWER_JUNCTION_RIGHT_X-members["front_center_rail"].center_on("x"),
+            0,
+            members["front_center_rail"].min_on("y")-POWER_JUNCTION_PORT_Y,
+        ),
         orientation="left",
     )
     components.add(
@@ -1215,200 +982,105 @@ def build_enclosure(
             + CARLON_E996D_BOX_ADAPTER.size[0]/2
             - members["front_center_rail"].center_on("x"),
             0,
-            1,
+            members["front_center_rail"].min_on("y")-POWER_JUNCTION_PORT_Y,
         ),
         orientation="left",
     )
 
     conduits = ConduitCollection()
 
-    if power_conduit_layout == "charger-riser":
-        POWER_T_GROUND_Z=grounds[0].resolved(members).z_at(
-            POWER_T_AXIS_X,
-            POWER_T_AXIS_Y,
-        )
-        conduits.add(
-            "power_ground_riser",
-            trade_size="1-1/4",
-            points=(
-                _member_relative_coord(
-                    "front_center_rail",
-                    POWER_T_AXIS_X,
-                    POWER_T_AXIS_Y,
-                    POWER_T_GROUND_Z,
-                ),
-                POWER_T_BOTTOM_ANCHOR,
+    POWER_T_GROUND_Z=grounds[0].resolved(members).z_at(
+        POWER_T_AXIS_X,
+        POWER_T_AXIS_Y,
+    )
+    conduits.add(
+        "power_ground_riser",
+        trade_size="1-1/4",
+        points=(
+            _member_relative_coord(
+                "front_center_rail",
+                POWER_T_AXIS_X,
+                POWER_T_AXIS_Y,
+                POWER_T_GROUND_Z,
             ),
-        )
-        conduits.add(
-            "power_t_junction_feed",
-            trade_size="1-1/4",
-            points=(
-                POWER_T_BRANCH_ANCHOR,
-                POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR,
-            ),
-        )
-        POWER_EV_REDUCER_END_ANCHOR=ComponentAnchor(
-            "power_ev_reducer",
-            position=(
-                CARLON_E950GF_REDUCER_BUSHING.size[0],
-                CARLON_E950GF_REDUCER_BUSHING.size[1]/2,
-            ),
-        )
-        conduits.add(
-            "power_ev_charger_feed",
-            trade_size="1",
-            points=(
-                POWER_EV_REDUCER_END_ANCHOR,
-                POWER_EV_ENTRY_ANCHOR,
-            ),
-        )
-    elif power_conduit_layout == "junction-spline":
-        POWER_JUNCTION_SPLINE_GROUND_Z=grounds[0].resolved(members).z_at(
-            POWER_JUNCTION_X,
-            POWER_JUNCTION_CENTER_Y,
-        )
-        POWER_INPUT_COUPLING_END_Z=(
-            POWER_JUNCTION_BOTTOM_Z
-            - CARLON_E996G_BOX_ADAPTER.size[0]/2
-            - CARLON_E940G_COUPLING.size[0]
-        )
-        conduits.add(
-            "power_ground_riser",
-            trade_size="1-1/4",
-            points=(
-                _member_relative_coord(
-                    "front_center_rail",
-                    POWER_JUNCTION_X,
-                    POWER_JUNCTION_CENTER_Y,
-                    POWER_JUNCTION_SPLINE_GROUND_Z,
-                ),
-                _member_relative_coord(
-                    "front_center_rail",
-                    POWER_JUNCTION_X,
-                    POWER_JUNCTION_CENTER_Y,
-                    POWER_INPUT_COUPLING_END_Z,
-                ),
-            ),
-        )
-
-        POWER_EV_OFFSET_CONTROL_A=(
-            POWER_JUNCTION_EV_COUPLING_END[0],
-            POWER_JUNCTION_EV_COUPLING_END[1],
-            POWER_JUNCTION_EV_COUPLING_END[2]+2,
-        )
-        POWER_EV_OFFSET_CONTROL_B=(
-            POWER_EV_ENTRY[0],
-            POWER_EV_ENTRY[1],
-            POWER_EV_ENTRY[2]-2,
-        )
-        power_ev_offset_points=list(
-            cubic_bezier_conduit_points(
-                POWER_JUNCTION_EV_COUPLING_END,
-                POWER_EV_OFFSET_CONTROL_A,
-                POWER_EV_OFFSET_CONTROL_B,
-                POWER_EV_ENTRY,
-            )
-        )
-        power_ev_offset_points[0]=POWER_JUNCTION_EV_COUPLING_END_ANCHOR
-        power_ev_offset_points[-1]=POWER_EV_ENTRY_ANCHOR
-        conduits.add(
-            "power_ev_charger_feed",
-            trade_size="1",
-            points=tuple(power_ev_offset_points),
-        )
-    else:
-        POWER_INPUT_COUPLING_END_Z=(
-            POWER_JUNCTION_BOTTOM_Z
-            - CARLON_E996G_BOX_ADAPTER.size[0]/2
-            - CARLON_E940G_COUPLING.size[0]
-        )
-        conduits.add(
-            "power_ground_riser",
-            trade_size="1-1/4",
-            points=(
-                _member_relative_coord(
-                    "front_center_rail",
-                    POWER_JUNCTION_X,
-                    POWER_JUNCTION_PORT_Y,
-                    POWER_JUNCTION_GROUND_Z,
-                ),
-                _member_relative_coord(
-                    "front_center_rail",
-                    POWER_JUNCTION_X,
-                    POWER_JUNCTION_PORT_Y,
-                    POWER_INPUT_COUPLING_END_Z,
-                ),
-            ),
-        )
-
-        POWER_EV_COUPLING_END=(
-            POWER_JUNCTION_EV_PORT_X,
-            POWER_JUNCTION_EV_PORT_Y
-            + CARLON_E996G_BOX_ADAPTER.size[0]/2
-            + CARLON_E940G_COUPLING.size[0],
-            POWER_JUNCTION_EV_PORT_Z,
-        )
-        conduits.add(
-            "power_ev_lb_feed",
-            trade_size="1-1/4",
-            points=(
-                AbsoluteCoord(*POWER_EV_COUPLING_END),
-                AbsoluteCoord(*POWER_EV_LB_INLET),
-            ),
-        )
-
-        POWER_EV_REDUCER_END=(
-            POWER_EV_LB_OUTLET[0],
-            POWER_EV_LB_OUTLET[1],
-            POWER_EV_LB_OUTLET[2]+CARLON_E950GF_REDUCER_BUSHING.size[0],
-        )
-        POWER_EV_OFFSET_CONTROL_A=(
-            POWER_EV_REDUCER_END[0],
-            POWER_EV_REDUCER_END[1],
-            POWER_EV_REDUCER_END[2]+2,
-        )
-        POWER_EV_OFFSET_CONTROL_B=(
-            POWER_EV_ENTRY[0],
-            POWER_EV_ENTRY[1],
-            POWER_EV_ENTRY[2]-2,
-        )
-        power_ev_offset_points=cubic_bezier_conduit_points(
-            POWER_EV_REDUCER_END,
-            POWER_EV_OFFSET_CONTROL_A,
-            POWER_EV_OFFSET_CONTROL_B,
-            POWER_EV_ENTRY,
-        )
-        conduits.add(
-            "power_ev_charger_feed",
-            trade_size="1",
-            points=power_ev_offset_points,
-        )
+            POWER_T_BOTTOM_ANCHOR,
+        ),
+    )
+    conduits.add(
+        "power_t_junction_feed",
+        trade_size="1-1/4",
+        points=(
+            POWER_T_BRANCH_ANCHOR,
+            POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR,
+        ),
+    )
+    POWER_EV_REDUCER_END_ANCHOR=ComponentAnchor(
+        "power_ev_reducer",
+        position=(
+            CARLON_E950GF_REDUCER_BUSHING.size[0],
+            CARLON_E950GF_REDUCER_BUSHING.size[1]/2,
+        ),
+    )
+    conduits.add(
+        "power_ev_charger_feed",
+        trade_size="1",
+        points=(
+            POWER_EV_REDUCER_END_ANCHOR,
+            POWER_EV_ENTRY_ANCHOR,
+        ),
+    )
 
     POWER_LIGHT_COUPLING_END=(
-        POWER_JUNCTION_LIGHT_PORT_X,
-        POWER_JUNCTION_LIGHT_PORT_Y,
-        POWER_JUNCTION_TOP_Z
+        POWER_JUNCTION_RIGHT_X
         + CARLON_E996D_BOX_ADAPTER.size[0]/2
         + CARLON_E940D_COUPLING.size[0],
+        POWER_JUNCTION_LIGHT_PORT_Y,
+        POWER_JUNCTION_OUTLET_PORT_Z,
     )
     power_light_entry=FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
+    POWER_LIGHT_POST_X=(
+        members["post_fr"].min_on("x")
+        - CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2
+    )
+    POWER_LIGHT_HORIZONTAL_RUN_Z=(
+        members["front_street_light_backer_bottom"].center_on("z")
+        - HEIGHT_2x4/2
+    )
     conduits.add(
         "power_street_light_feed",
         trade_size="1/2",
-        points=cubic_bezier_conduit_points(
-            POWER_LIGHT_COUPLING_END,
-            (
-                POWER_LIGHT_COUPLING_END[0],
-                POWER_LIGHT_COUPLING_END[1],
-                POWER_LIGHT_COUPLING_END[2]+8,
+        points=(
+            ComponentAnchor(
+                "power_junction_light_coupling",
+                position=(
+                    CARLON_E940D_COUPLING.size[0],
+                    CARLON_E940D_COUPLING.size[1]/2,
+                ),
             ),
-            (
+            _member_relative_coord(
+                "post_fr",
+                POWER_LIGHT_POST_X,
+                POWER_JUNCTION_LIGHT_PORT_Y,
+                POWER_JUNCTION_OUTLET_PORT_Z,
+            ),
+            _member_relative_coord(
+                "post_fr",
+                POWER_LIGHT_POST_X,
+                power_light_entry[1],
+                POWER_LIGHT_HORIZONTAL_RUN_Z,
+            ),
+            _member_relative_coord(
+                "front_street_light_backer_bottom",
                 power_light_entry[0],
                 power_light_entry[1],
-                power_light_entry[2]-8,
+                POWER_LIGHT_HORIZONTAL_RUN_Z,
             ),
-            power_light_entry,
+            FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
+        ),
+        bends=(
+            ConduitBend(point_index=1, radius=2.5),
+            ConduitBend(point_index=2, radius=3),
+            ConduitBend(point_index=3, radius=3),
         ),
     )
 
@@ -1479,11 +1151,10 @@ def build_enclosure(
     TAMBOUR_LEFT_X = members["post_fl"].max_on("x")
     TAMBOUR_RIGHT_X = members["post_fr"].min_on("x")
     TAMBOUR_BACK_Y = members["post_bl"].max_on("y") - 0.5
-    TAMBOUR_FRONT_Y = 3.75
-    TAMBOUR_TOP_Z = FRAME_DIMS.z-TAMBOUR_TOP_OFFSET
+    TAMBOUR_TRACK_BACK_Y = TAMBOUR_BACK_Y-TAMBOUR_SLAT_TRACK_OFFSET
     TAMBOUR_BACK_BOTTOM_Z = 3
     TAMBOUR_FRONT_BOTTOM_Z = 16
-    TAMBOUR_BEND_RADIUS = 3
+    TAMBOUR_BEND_RADIUS = 3-TAMBOUR_SLAT_TRACK_OFFSET
 
     tambours.add(
         "enclosure_tambour_door",
@@ -1492,26 +1163,51 @@ def build_enclosure(
             RelativeCoord(
                 "post_bl",
                 WIDTH_4x4,
-                WIDTH_4x4-0.5,
+                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
                 BURIED_FRAME_Z+TAMBOUR_BACK_BOTTOM_Z,
             ),
-            RelativeCoord("post_bl", WIDTH_4x4, WIDTH_4x4-0.5, BURIED_FRAME_Z+TAMBOUR_TOP_Z),
-            RelativeCoord("post_fl", WIDTH_4x4, TAMBOUR_FRONT_Y, BURIED_FRAME_Z+TAMBOUR_TOP_Z),
+            RelativeCoord(
+                "post_bl",
+                WIDTH_4x4,
+                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
+            ),
             RelativeCoord(
                 "post_fl",
                 WIDTH_4x4,
-                TAMBOUR_FRONT_Y,
+                TAMBOUR_TRACK_FRONT_Y,
+                BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
+            ),
+            RelativeCoord(
+                "post_fl",
+                WIDTH_4x4,
+                TAMBOUR_TRACK_FRONT_Y,
                 BURIED_FRAME_Z+TAMBOUR_FRONT_BOTTOM_Z,
             ),
         ),
         right_points=(
-            RelativeCoord("post_br", 0, WIDTH_4x4-0.5, BURIED_FRAME_Z+TAMBOUR_BACK_BOTTOM_Z),
-            RelativeCoord("post_br", 0, WIDTH_4x4-0.5, BURIED_FRAME_Z+TAMBOUR_TOP_Z),
-            RelativeCoord("post_fr", 0, TAMBOUR_FRONT_Y, BURIED_FRAME_Z+TAMBOUR_TOP_Z),
+            RelativeCoord(
+                "post_br",
+                0,
+                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                BURIED_FRAME_Z+TAMBOUR_BACK_BOTTOM_Z,
+            ),
+            RelativeCoord(
+                "post_br",
+                0,
+                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
+            ),
             RelativeCoord(
                 "post_fr",
                 0,
-                TAMBOUR_FRONT_Y,
+                TAMBOUR_TRACK_FRONT_Y,
+                BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
+            ),
+            RelativeCoord(
+                "post_fr",
+                0,
+                TAMBOUR_TRACK_FRONT_Y,
                 BURIED_FRAME_Z+TAMBOUR_FRONT_BOTTOM_Z,
             ),
         ),
@@ -1520,7 +1216,61 @@ def build_enclosure(
             TambourBend(point_index=2, radius=TAMBOUR_BEND_RADIUS),
         ),
         door_length=44,
+        slat_depth=TAMBOUR_MAX_SLAT_DEPTH,
+        slat_track_offset=TAMBOUR_SLAT_TRACK_OFFSET,
         slat_color=TAMBOUR_DOOR_COLOR,
+    )
+
+    TAMBOUR_CEILING_THICKNESS=0.25
+    TAMBOUR_CEILING_CLEARANCE=0.25
+    TAMBOUR_CEILING_BEND_INSET=0.75
+    TAMBOUR_CEILING_FRONT_Y=(
+        TAMBOUR_TRACK_FRONT_Y+TAMBOUR_BEND_RADIUS+TAMBOUR_CEILING_BEND_INSET
+    )
+    TAMBOUR_CEILING_REAR_Y=(
+        TAMBOUR_TRACK_BACK_Y-TAMBOUR_BEND_RADIUS-TAMBOUR_CEILING_BEND_INSET
+    )
+    TAMBOUR_CEILING_TOP_Z=(
+        TAMBOUR_TOP_Z
+        - TAMBOUR_MAX_SLAT_DEPTH/2
+        - TAMBOUR_CEILING_CLEARANCE
+    )
+    TAMBOUR_CEILING_BOTTOM_Z=(
+        TAMBOUR_CEILING_TOP_Z-TAMBOUR_CEILING_THICKNESS
+    )
+    TAMBOUR_CEILING_DEPTH=(
+        TAMBOUR_CEILING_REAR_Y-TAMBOUR_CEILING_FRONT_Y
+    )
+    TAMBOUR_CEILING_WIDTH=TAMBOUR_RIGHT_X-TAMBOUR_LEFT_X
+    if TAMBOUR_CEILING_DEPTH <= 0:
+        raise ValueError("enclosure depth leaves no room for the tambour ceiling")
+    tambour_ceiling_type=ComponentType(
+        name="quarter_inch_exterior_plywood_panel",
+        size=(
+            TAMBOUR_CEILING_DEPTH,
+            TAMBOUR_CEILING_THICKNESS,
+            TAMBOUR_CEILING_WIDTH,
+        ),
+        color=(0.72, 0.58, 0.38, 1.0),
+        default_face="wide_pos",
+        mount_point=(0, 0, 0),
+    )
+    components.add(
+        "tambour_ceiling_panel",
+        assembly="tambour_guard",
+        component_type=tambour_ceiling_type,
+        member="rail_l_tambour",
+        at=(
+            TAMBOUR_CEILING_FRONT_Y
+            - members["rail_l_tambour"].min_on("y")
+        ),
+        face="wide_pos",
+        offset=(
+            0,
+            TAMBOUR_CEILING_BOTTOM_Z
+            - members["rail_l_tambour"].center_on("z"),
+            0,
+        ),
     )
 
     siding = CompositeSiding(
@@ -1567,35 +1317,87 @@ def build_enclosure(
     LOW_VOLTAGE_GLAND_END_Z=(
         LOW_VOLTAGE_BOX_BOTTOM_Z-ONE_INCH_CABLE_GLAND.size[0]
     )
-    LOW_VOLTAGE_POST_NEG_X=members["post_fr"].min_on("x")-LOW_VOLTAGE_CABLE_DIAMETER/2
-    LOW_VOLTAGE_RIGHT_RAIL_POS_Y=(
-        members["right_center_rail"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
+    LOW_VOLTAGE_RISER_CABLE_CLEARANCE=(
+        LOW_VOLTAGE_CONDUIT_RADIUS
+        + LOW_VOLTAGE_CABLE_DIAMETER/2
+        + LOW_VOLTAGE_CABLE_DIAMETER
+    )
+    LOW_VOLTAGE_RISER_BYPASS_Z=LOW_VOLTAGE_GLAND_END_Z-4
+    LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z=LOW_VOLTAGE_GLAND_END_Z-2
+    LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS=LOW_VOLTAGE_MINIMUM_BEND_RADIUS
+    LOW_VOLTAGE_RAIL_FB_CLEAR_Z=(
+        members["rail_fb"].max_on("z")
+        + LOW_VOLTAGE_CABLE_DIAMETER/2
+        + LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS
+    )
+    LOW_VOLTAGE_POST_FL_POS_X=(
+        members["post_fl"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
     LOW_VOLTAGE_RIGHT_RAIL_NEG_X=(
         members["right_center_rail"].min_on("x")-LOW_VOLTAGE_CABLE_DIAMETER/2
     )
-    LOW_VOLTAGE_FRONT_RAIL_POS_X=(
-        members["front_center_rail"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
+    LOW_VOLTAGE_RIGHT_RAIL_POS_Y=(
+        members["right_center_rail"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
+    )
+    LOW_VOLTAGE_FRONT_RAIL_NEG_X=(
+        members["front_center_rail"].min_on("x")-LOW_VOLTAGE_CABLE_DIAMETER/2
+    )
+    LOW_VOLTAGE_RAIL_FT_POS_Y=(
+        members["rail_ft"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
     LOW_VOLTAGE_BRACE_UNDERSIDE_Z=(
         members["brace_fl_fr"].min_on("z")-LOW_VOLTAGE_CABLE_DIAMETER/2
     )
     LOW_VOLTAGE_SERVICE_LOOP_TOP_Z=LOW_VOLTAGE_BRACE_UNDERSIDE_Z-2.5
-    LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z=(
-        members["rail_ft"].min_on("z")-LOW_VOLTAGE_CABLE_DIAMETER/2
-    )
 
     path_1_start=(LOW_VOLTAGE_GLAND_XS[0], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
-    path_1_post=(LOW_VOLTAGE_POST_NEG_X, LOW_VOLTAGE_GLAND_Y, 16)
-    PATH_1_BRIDGE_RIGHT_X=LOW_VOLTAGE_POST_NEG_X-3.9375
-    PATH_1_LOOP_RIGHT_X=FRONT_STREET_LIGHT_CENTER_X+3.25
-    PATH_1_LOOP_INNER_X=FRONT_STREET_LIGHT_CENTER_X+1.75
-    PATH_1_LOOP_LEFT_X=FRONT_STREET_LIGHT_CENTER_X-1.75
+    path_1_post=(
+        LOW_VOLTAGE_POST_FL_POS_X,
+        members["post_fl"].center_on("y"),
+        16,
+    )
+    PATH_1_EXIT_SPLINE_HANDLE=1.5
+    path_1_exit_direction=(
+        path_1_post[0]-path_1_start[0],
+        path_1_post[1]-path_1_start[1],
+    )
+    path_1_exit_direction_length=math.hypot(*path_1_exit_direction)
+    path_1_exit_unit=(
+        path_1_exit_direction[0]/path_1_exit_direction_length,
+        path_1_exit_direction[1]/path_1_exit_direction_length,
+    )
+    path_1_spline_bottom=(
+        (path_1_start[0]+path_1_post[0])/2,
+        (path_1_start[1]+path_1_post[1])/2,
+        LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z,
+    )
+    PATH_1_BRIDGE_LEFT_X=LOW_VOLTAGE_POST_FL_POS_X+3.9375
+    PATH_1_LOOP_LEFT_X=FRONT_STREET_LIGHT_CENTER_X-3.25
+    PATH_1_LOOP_INNER_X=FRONT_STREET_LIGHT_CENTER_X-1.75
+    PATH_1_LOOP_RIGHT_X=FRONT_STREET_LIGHT_CENTER_X+1.75
     path_1_points=_join_centerline_sections(
         cubic_bezier_points(
             path_1_start,
-            (path_1_start[0], path_1_start[1], path_1_start[2]+2.5),
-            (path_1_post[0], path_1_post[1], path_1_post[2]-2.5),
+            (path_1_start[0], path_1_start[1], path_1_start[2]-2),
+            (
+                path_1_spline_bottom[0]
+                - path_1_exit_unit[0]*PATH_1_EXIT_SPLINE_HANDLE,
+                path_1_spline_bottom[1]
+                - path_1_exit_unit[1]*PATH_1_EXIT_SPLINE_HANDLE,
+                path_1_spline_bottom[2],
+            ),
+            path_1_spline_bottom,
+        ),
+        cubic_bezier_points(
+            path_1_spline_bottom,
+            (
+                path_1_spline_bottom[0]
+                + path_1_exit_unit[0]*PATH_1_EXIT_SPLINE_HANDLE,
+                path_1_spline_bottom[1]
+                + path_1_exit_unit[1]*PATH_1_EXIT_SPLINE_HANDLE,
+                path_1_spline_bottom[2],
+            ),
+            (path_1_post[0], path_1_post[1], path_1_post[2]-3),
             path_1_post,
         ),
         rounded_cable_points(
@@ -1603,7 +1405,7 @@ def build_enclosure(
                 path_1_post,
                 (path_1_post[0], path_1_post[1], LOW_VOLTAGE_BRACE_UNDERSIDE_Z),
                 (
-                    PATH_1_BRIDGE_RIGHT_X,
+                    PATH_1_BRIDGE_LEFT_X,
                     path_1_post[1],
                     LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
                 ),
@@ -1612,22 +1414,22 @@ def build_enclosure(
         ),
         cubic_bezier_points(
             (
-                PATH_1_BRIDGE_RIGHT_X,
+                PATH_1_BRIDGE_LEFT_X,
                 path_1_post[1],
                 LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
             ),
             (
-                PATH_1_BRIDGE_RIGHT_X-1,
+                PATH_1_BRIDGE_LEFT_X+1,
                 path_1_post[1],
                 LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
             ),
             (
-                PATH_1_LOOP_RIGHT_X+1,
+                PATH_1_LOOP_LEFT_X-1,
                 FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
                 LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
             ),
             (
-                PATH_1_LOOP_RIGHT_X,
+                PATH_1_LOOP_LEFT_X,
                 FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
                 LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
             ),
@@ -1635,27 +1437,27 @@ def build_enclosure(
         rounded_cable_points(
             (
                 (
+                    PATH_1_LOOP_LEFT_X,
+                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
+                ),
+                (
+                    PATH_1_LOOP_INNER_X,
+                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
+                ),
+                (
+                    PATH_1_LOOP_INNER_X,
+                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+                    LOW_VOLTAGE_SERVICE_LOOP_TOP_Z,
+                ),
+                (
                     PATH_1_LOOP_RIGHT_X,
                     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-                (
-                    PATH_1_LOOP_INNER_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-                (
-                    PATH_1_LOOP_INNER_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
                     LOW_VOLTAGE_SERVICE_LOOP_TOP_Z,
                 ),
                 (
-                    PATH_1_LOOP_LEFT_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_SERVICE_LOOP_TOP_Z,
-                ),
-                (
-                    PATH_1_LOOP_LEFT_X,
+                    PATH_1_LOOP_RIGHT_X,
                     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
                     LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
                 ),
@@ -1669,131 +1471,189 @@ def build_enclosure(
         ),
     )
 
+    LOW_VOLTAGE_WIFI_LANE_OFFSET=-LOW_VOLTAGE_CABLE_DIAMETER/2
+    LOW_VOLTAGE_CHARGER_LANE_OFFSET=LOW_VOLTAGE_CABLE_DIAMETER/2
+
     wifi=components["front_wifi_access_point"].resolved(members["right_center_rail"])
     path_2_start=(LOW_VOLTAGE_GLAND_XS[1], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
-    path_2_rail=(
-        members["right_center_rail"].center_on("x"),
-        LOW_VOLTAGE_RIGHT_RAIL_POS_Y,
+    path_2_riser_bypass=(
+        LOW_VOLTAGE_INPUT_X-LOW_VOLTAGE_RISER_CABLE_CLEARANCE,
+        LOW_VOLTAGE_INPUT_Y,
+        LOW_VOLTAGE_RISER_BYPASS_Z,
+    )
+    path_2_riser_approach=(
+        path_2_riser_bypass[0],
+        path_2_riser_bypass[1]-0.75,
+        path_2_riser_bypass[2],
+    )
+    path_2_riser_climb=(
+        path_2_riser_bypass[0],
+        path_2_riser_bypass[1],
+        LOW_VOLTAGE_RAIL_FB_CLEAR_Z,
+    )
+    path_2_front_rail=(
+        LOW_VOLTAGE_FRONT_RAIL_NEG_X,
+        members["front_center_rail"].center_on("y")+LOW_VOLTAGE_WIFI_LANE_OFFSET,
         16,
+    )
+    path_2_top_clear=(
+        path_2_front_rail[0],
+        LOW_VOLTAGE_RAIL_FT_POS_Y,
+        members["rail_ft"].center_on("z")+LOW_VOLTAGE_WIFI_LANE_OFFSET,
+    )
+    path_2_right_rail=(
+        LOW_VOLTAGE_RIGHT_RAIL_NEG_X,
+        members["right_center_rail"].center_on("y")+LOW_VOLTAGE_WIFI_LANE_OFFSET,
+        path_2_top_clear[2],
     )
     path_2_entry=(
         wifi.box_min[0]+wifi.box_size[0]/2,
         wifi.box_min[1]+wifi.box_size[1]/2,
         wifi.box_min[2],
     )
-    path_2_transition=(path_2_rail[0], path_2_rail[1], 27)
+    path_2_entry_sweep=(
+        path_2_right_rail[0],
+        path_2_entry[1],
+        path_2_entry[2]-2,
+    )
+    path_2_entry_under=(path_2_entry[0], path_2_entry[1], path_2_entry_sweep[2])
     path_2_points=_join_centerline_sections(
         cubic_bezier_points(
             path_2_start,
-            (path_2_start[0], path_2_start[1], path_2_start[2]-4),
-            (path_2_rail[0], path_2_rail[1], path_2_rail[2]-8),
-            path_2_rail,
+            (path_2_start[0], path_2_start[1], path_2_start[2]-2.5),
+            (
+                path_2_riser_approach[0],
+                path_2_riser_approach[1]-1.5,
+                path_2_riser_approach[2],
+            ),
+            path_2_riser_approach,
         ),
-        (path_2_rail, path_2_transition),
+        rounded_cable_points(
+            (path_2_riser_approach, path_2_riser_bypass, path_2_riser_climb),
+            {1: LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS},
+        ),
         cubic_bezier_points(
-            path_2_transition,
-            (path_2_transition[0], path_2_transition[1], path_2_transition[2]+3),
-            (path_2_entry[0], path_2_entry[1], path_2_entry[2]-3),
-            path_2_entry,
+            path_2_riser_climb,
+            (path_2_riser_climb[0], path_2_riser_climb[1], path_2_riser_climb[2]+1.8),
+            (path_2_front_rail[0], path_2_front_rail[1], path_2_front_rail[2]-4),
+            path_2_front_rail,
+        ),
+        rounded_cable_points(
+            (
+                path_2_front_rail,
+                (path_2_front_rail[0], path_2_front_rail[1], 40),
+                (path_2_front_rail[0], path_2_top_clear[1], 40),
+                path_2_top_clear,
+                (path_2_right_rail[0], path_2_top_clear[1], path_2_top_clear[2]),
+                path_2_right_rail,
+                (path_2_right_rail[0], path_2_right_rail[1], path_2_entry_sweep[2]),
+                path_2_entry_sweep,
+                path_2_entry_under,
+                path_2_entry,
+            ),
+            {
+                1: 1.25,
+                2: 1.25,
+                3: 1.25,
+                4: 0.75,
+                5: 0.75,
+                6: 0.7,
+                7: 0.7,
+                8: 0.8,
+            },
         ),
     )
 
     charger=components["front_ev_charger_body"].resolved(members["front_center_rail"])
     path_3_start=(LOW_VOLTAGE_GLAND_XS[2], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
-    path_3_rail=(
-        LOW_VOLTAGE_RIGHT_RAIL_NEG_X,
-        members["right_center_rail"].center_on("y"),
+    path_3_riser_bypass=(
+        LOW_VOLTAGE_INPUT_X+LOW_VOLTAGE_RISER_CABLE_CLEARANCE,
+        LOW_VOLTAGE_INPUT_Y,
+        LOW_VOLTAGE_RISER_BYPASS_Z,
+    )
+    path_3_riser_approach=(
+        path_3_riser_bypass[0],
+        path_3_riser_bypass[1]-0.75,
+        path_3_riser_bypass[2],
+    )
+    path_3_riser_climb=(
+        path_3_riser_bypass[0],
+        path_3_riser_bypass[1],
+        LOW_VOLTAGE_RAIL_FB_CLEAR_Z,
+    )
+    path_3_front_rail=(
+        LOW_VOLTAGE_FRONT_RAIL_NEG_X,
+        members["front_center_rail"].center_on("y")+LOW_VOLTAGE_CHARGER_LANE_OFFSET,
         16,
     )
-    path_3_under_rail_y=members["rail_ft"].center_on("y")
-    path_3_side_y=members["front_center_rail"].max_on("y")-LOW_VOLTAGE_CABLE_DIAMETER/2
     path_3_entry=(
         charger.box_min[0]+charger.box_size[0]/2,
         charger.box_min[1]+charger.box_size[1]/2,
         charger.box_min[2],
     )
-    PATH_3_BRIDGE_RIGHT_X=LOW_VOLTAGE_RIGHT_RAIL_NEG_X-3.9375
-    PATH_3_BRIDGE_LEFT_X=LOW_VOLTAGE_FRONT_RAIL_POS_X+2.4375
-    path_3_u_turn_start=(LOW_VOLTAGE_FRONT_RAIL_POS_X, path_3_side_y, 25)
+    path_3_branch=(
+        path_3_front_rail[0],
+        path_3_front_rail[1],
+        path_3_entry[2]-1.65,
+    )
+    path_3_rail_clear=(
+        path_3_branch[0],
+        members["front_center_rail"].max_on("y")
+        + LOW_VOLTAGE_CABLE_DIAMETER/2,
+        path_3_branch[2],
+    )
     path_3_points=_join_centerline_sections(
         cubic_bezier_points(
             path_3_start,
-            (path_3_start[0], path_3_start[1], path_3_start[2]-4),
-            (path_3_rail[0], path_3_rail[1], path_3_rail[2]-8),
-            path_3_rail,
+            (path_3_start[0], path_3_start[1], path_3_start[2]-2.5),
+            (
+                path_3_riser_approach[0],
+                path_3_riser_approach[1]-1.5,
+                path_3_riser_approach[2],
+            ),
+            path_3_riser_approach,
         ),
         rounded_cable_points(
-            (
-                path_3_rail,
-                (path_3_rail[0], path_3_rail[1], LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z),
-                (path_3_rail[0], path_3_under_rail_y, LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z),
-                (
-                    PATH_3_BRIDGE_RIGHT_X,
-                    path_3_under_rail_y,
-                    LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-                ),
-            ),
-            {1: 1.25, 2: 1.25},
+            (path_3_riser_approach, path_3_riser_bypass, path_3_riser_climb),
+            {1: LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS},
         ),
         cubic_bezier_points(
-            (
-                PATH_3_BRIDGE_RIGHT_X,
-                path_3_under_rail_y,
-                LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-            ),
-            (
-                PATH_3_BRIDGE_RIGHT_X-1,
-                path_3_under_rail_y,
-                LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-            ),
-            (
-                PATH_3_BRIDGE_LEFT_X+1,
-                path_3_side_y,
-                LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-            ),
-            (
-                PATH_3_BRIDGE_LEFT_X,
-                path_3_side_y,
-                LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-            ),
+            path_3_riser_climb,
+            (path_3_riser_climb[0], path_3_riser_climb[1], path_3_riser_climb[2]+1.8),
+            (path_3_front_rail[0], path_3_front_rail[1], path_3_front_rail[2]-4),
+            path_3_front_rail,
         ),
         rounded_cable_points(
             (
-                (
-                    PATH_3_BRIDGE_LEFT_X,
-                    path_3_side_y,
-                    LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-                ),
-                (
-                    LOW_VOLTAGE_FRONT_RAIL_POS_X,
-                    path_3_side_y,
-                    LOW_VOLTAGE_RAIL_FT_UNDERSIDE_Z,
-                ),
-                path_3_u_turn_start,
+                path_3_front_rail,
+                path_3_branch,
+                path_3_rail_clear,
             ),
-            {1: 2},
+            {1: 0.8},
         ),
-        rounded_cable_points(
-            (
-                path_3_u_turn_start,
-                (path_3_u_turn_start[0], path_3_u_turn_start[1], 19.75),
-                (path_3_entry[0], path_3_entry[1], 19.75),
-                path_3_entry,
-            ),
-            {1: 0.8, 2: 0.8},
+        cubic_bezier_points(
+            path_3_rail_clear,
+            (path_3_rail_clear[0], path_3_rail_clear[1]+0.75, path_3_rail_clear[2]),
+            (path_3_entry[0]-0.5, path_3_entry[1]-0.5, path_3_entry[2]-0.5),
+            path_3_entry,
         ),
     )
 
-    for name,points in (
-        ("low_voltage_street_light_service", path_1_points),
-        ("low_voltage_wifi_feed", path_2_points),
-        ("low_voltage_ev_charger_feed", path_3_points),
+    for name,points,color in (
+        (
+            "low_voltage_street_light_service",
+            path_1_points,
+            LOW_VOLTAGE_STREET_LIGHT_COLOR,
+        ),
+        ("low_voltage_wifi_feed", path_2_points, LOW_VOLTAGE_CAT6_COLOR),
+        ("low_voltage_ev_charger_feed", path_3_points, LOW_VOLTAGE_CAT6_COLOR),
     ):
         cables.add(
             name,
             assembly="low_voltage_cabling",
             diameter=LOW_VOLTAGE_CABLE_DIAMETER,
             points=points,
+            color=color,
         )
 
     model = Model(
@@ -1810,11 +1670,7 @@ def build_enclosure(
             members["post_fr"].min_on("y"),
         ),
         build_steps=(
-            {
-                "junction-spline": JUNCTION_SPLINE_BUILD_STEPS,
-                "charger-riser": CHARGER_RISER_BUILD_STEPS,
-                "junction-riser": JUNCTION_RISER_BUILD_STEPS,
-            }[power_conduit_layout]
+            BUILD_STEPS
             if (width, depth, height)
             == (DEFAULT_WIDTH, DEFAULT_DEPTH, DEFAULT_HEIGHT)
             else ()
@@ -1831,7 +1687,6 @@ def build_enclosure(
         width=width,
         depth=depth,
         height=height,
-        power_conduit_layout=power_conduit_layout,
         members=members,
         components=components,
         conduits=conduits,
@@ -2132,16 +1987,6 @@ def _argument_parser() -> argparse.ArgumentParser:
         help=f"above-grade frame height (default: {DEFAULT_HEIGHT:g})",
     )
     parser.add_argument(
-        "--power-conduit-layout",
-        choices=POWER_CONDUIT_LAYOUTS,
-        default=DEFAULT_POWER_CONDUIT_LAYOUT,
-        help=(
-            "power routing: a junction-box riser with a direct 1-inch spline, "
-            "a charger riser through a T body, or the legacy junction-box LB "
-            f"(default: {DEFAULT_POWER_CONDUIT_LAYOUT})"
-        ),
-    )
-    parser.add_argument(
         "--no-deploy",
         action="store_true",
         help="generate local outputs without publishing to GitHub Pages",
@@ -2157,7 +2002,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.width,
             args.depth,
             args.height,
-            args.power_conduit_layout,
         )
         write_outputs(enclosure)
         if not args.no_deploy:

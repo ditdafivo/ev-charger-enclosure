@@ -116,16 +116,23 @@ Three 1/8"-diameter low voltage cables exit the bottom cable glands. All
 turns have a centerline radius of at least five cable diameters (0.625"),
 using broader turns where the surrounding geometry allows.
 
-Path 1 rises along the negative-x face of post_fr, follows the underside of
-brace_fl_fr, and ends in a 1.25"-radius service loop centered directly above
-the WRB550B/WRE450G street light box stack.
+Path 1 leaves its gland downward, sweeps toward the positive-x face of post_fl,
+follows the underside of brace_fl_fr clear of the street-light backing, and
+ends in a mirrored 1.25"-radius service loop centered directly above the
+WRB550B/WRE450G street light box stack.
 
-Paths 2 and 3 droop beneath the open front edge of the tambour door in the
-positive-y direction. Path 2 then rises along the positive-y face of
-right_center_rail and enters the bottom center of wifi_access_point.
+Paths 2 and 3 are blue Cat 6 cables. They leave their glands downward, pass
+around opposite x sides of the 3/4-inch low-voltage ground riser, and sweep in
+positive y to adjacent lanes on the negative-x face of front_center_rail. A
+0.625-inch turn keeps their upward legs on the negative-y side of rail_fb until
+they clear its top. The dark-brown street-light cable leaves its gland on a
+gentle spline with a single low point at z=8.25 rather than a flat horizontal
+run between two bends.
 
-Path 3 rises along the negative-x face of right_center_rail, crosses the
-underside of rail_ft to front_center_rail, and descends the positive-x face
-of front_center_rail. A gentle U-turn enters the width-and-depth center of
-the bottom of ev_charger_body. The approach remains behind the EV charger
-cable and in front of front_center_rail until the equipment entry point.
+Path 2 continues to rail_ft, crosses its positive-y face in positive x,
+descends the negative-x face of right_center_rail, and turns around the rail's
+positive-y face just below the wifi access point. It then sweeps in positive x
+and z into the existing bottom entry. Path 3 branches from the shared
+front_center_rail climb near the bottom plane of ev_charger_body, clears the
+rail in positive y, and sweeps upward into the width-and-depth center of the
+charger's bottom entry.

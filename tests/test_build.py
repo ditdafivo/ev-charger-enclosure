@@ -19,6 +19,242 @@ from lumber_model import (
 )
 
 
+class TopBracingBuildTests(unittest.TestCase):
+    def test_default_uses_one_shallow_diagonal_at_the_existing_frame_top(self) -> None:
+        brace = build.members["brace_bl_fr"]
+
+        self.assertNotIn("brace_br_fl", build.members)
+        self.assertEqual(brace.type, "1x4")
+        self.assertAlmostEqual(brace.thickness, 0.75)
+        self.assertAlmostEqual(brace.min[2], 46.25)
+        self.assertAlmostEqual(brace.max[2], build.DEFAULT_HEIGHT)
+        self.assertAlmostEqual(brace.length, 25.3281587)
+        self.assertAlmostEqual(brace.cut_angle_deg, 35.965005)
+
+    def test_custom_dimensions_recalculate_shallow_diagonal(self) -> None:
+        enclosure = build.build_enclosure(width=36, depth=30, height=55)
+        brace = enclosure.members["brace_bl_fr"]
+
+        self.assertEqual(brace.type, "1x4")
+        self.assertAlmostEqual(brace.thickness, 0.75)
+        self.assertAlmostEqual(brace.max[2], 55)
+        self.assertAlmostEqual(brace.min[2], 54.25)
+        self.assertAlmostEqual(
+            brace.length,
+            math.hypot(36 - 3.5, 30 - 3.5),
+        )
+
+    def test_cut_and_shopping_lists_include_one_by_four_brace(self) -> None:
+        cut_row = next(
+            row
+            for row in build.model.cut_list_rows(rounding_increment=None)
+            if row["members"] == "brace_bl_fr"
+        )
+        shopping_row = next(
+            row for row in build.model.shopping_list_rows() if row["type"] == "1x4"
+        )
+
+        self.assertEqual(cut_row["type"], "1x4")
+        self.assertEqual(cut_row["qty"], 1)
+        self.assertEqual(shopping_row["stock_length_in"], 72)
+        self.assertEqual(shopping_row["qty"], 1)
+
+    def test_tambour_top_support_and_maximum_curtain_clear_bracing(self) -> None:
+        enclosure = build.default_build
+        brace_bottom = enclosure.members["brace_fl_bl"].min_on("z")
+
+        for name in ("rail_l_tambour", "rail_r_tambour"):
+            with self.subTest(name=name):
+                support = enclosure.members[name]
+                self.assertAlmostEqual(support.min_on("z"), 43.75)
+                self.assertAlmostEqual(support.max_on("z"), 45.25)
+                self.assertAlmostEqual(
+                    brace_bottom-support.max_on("z"),
+                    enclosure.TAMBOUR_BRACE_CLEARANCE,
+                )
+
+        maximum_curtain_top = (
+            enclosure.TAMBOUR_TOP_Z+enclosure.TAMBOUR_MAX_SLAT_DEPTH/2
+        )
+        self.assertAlmostEqual(maximum_curtain_top, 45.25)
+        self.assertAlmostEqual(
+            brace_bottom-maximum_curtain_top,
+            enclosure.TAMBOUR_BRACE_CLEARANCE,
+        )
+
+    def test_lowered_front_header_has_full_depth_end_supports(self) -> None:
+        header = build.members["rail_ft"]
+
+        self.assertEqual(header.type, "2x4")
+        self.assertAlmostEqual(header.min_on("z"), 41)
+        self.assertAlmostEqual(header.max_on("z"), 42.5)
+        self.assertAlmostEqual(
+            build.members["front_center_rail"].max_on("z"),
+            header.min_on("z"),
+        )
+
+        for name,header_x in (
+            ("rail_ft_left_support", header.min_on("x")),
+            ("rail_ft_right_support", header.max_on("x")),
+        ):
+            with self.subTest(name=name):
+                support = build.members[name]
+                self.assertEqual(support.type, "2x4")
+                self.assertAlmostEqual(support.min_on("z"), header.min_on("z"))
+                self.assertAlmostEqual(
+                    support.max_on("z"),
+                    build.members["rail_lt"].min_on("z"),
+                )
+                self.assertAlmostEqual(support.min_on("y"), header.min_on("y"))
+                self.assertAlmostEqual(support.max_on("y"), header.max_on("y"))
+                self.assertTrue(
+                    math.isclose(support.min_on("x"), header_x)
+                    or math.isclose(support.max_on("x"), header_x)
+                )
+
+
+class TambourClearanceBuildTests(unittest.TestCase):
+    @staticmethod
+    def _minimum_slat_z_over_y_interval(
+        enclosure: build.EnclosureBuild,
+        min_y: float,
+        max_y: float,
+    ) -> float:
+        tambour = enclosure.tambours["enclosure_tambour_door"].resolved(
+            enclosure.model
+        )
+        minimum = math.inf
+        for start,end in zip(tambour.left_points, tambour.left_points[1:]):
+            dy=end[1]-start[1]
+            dz=end[2]-start[2]
+            segment_length=math.hypot(dy, dz)
+            travel_y=dy/segment_length
+            travel_z=dz/segment_length
+            depth_y=-travel_z
+            depth_z=travel_y
+            for step in range(9):
+                fraction=step/8
+                center_y=(
+                    start[1]+fraction*dy
+                    -tambour.slat_track_offset*depth_y
+                )
+                center_z=(
+                    start[2]+fraction*dz
+                    -tambour.slat_track_offset*depth_z
+                )
+                vertices = [
+                    (
+                        center_y
+                        + travel_sign*tambour.slat_thickness/2*travel_y
+                        + depth_sign*tambour.slat_depth/2*depth_y,
+                        center_z
+                        + travel_sign*tambour.slat_thickness/2*travel_z
+                        + depth_sign*tambour.slat_depth/2*depth_z,
+                    )
+                    for travel_sign in (-1, 1)
+                    for depth_sign in (-1, 1)
+                ]
+                mean_y=sum(vertex[0] for vertex in vertices)/4
+                mean_z=sum(vertex[1] for vertex in vertices)/4
+                vertices.sort(
+                    key=lambda vertex: math.atan2(
+                        vertex[1]-mean_z,
+                        vertex[0]-mean_y,
+                    )
+                )
+                candidates = [
+                    z for y,z in vertices if min_y <= y <= max_y
+                ]
+                for a,b in zip(vertices, vertices[1:]+vertices[:1]):
+                    for boundary_y in (min_y, max_y):
+                        if (a[0]-boundary_y)*(b[0]-boundary_y) > 0:
+                            continue
+                        if math.isclose(a[0], b[0]):
+                            continue
+                        edge_fraction=(boundary_y-a[0])/(b[0]-a[0])
+                        if 0 <= edge_fraction <= 1:
+                            candidates.append(
+                                a[1]+edge_fraction*(b[1]-a[1])
+                            )
+                if candidates:
+                    minimum=min(minimum, *candidates)
+        return minimum
+
+    def test_front_path_clears_backers_and_lowered_header(self) -> None:
+        tambour = build.tambours["enclosure_tambour_door"].resolved(build.model)
+        self.assertEqual(tambour.slat_depth, 1.5)
+        self.assertEqual(tambour.slat_track_offset, 0.375)
+        self.assertEqual(tambour.bends, ((1, 2.625), (2, 2.625)))
+        self.assertEqual(build.TAMBOUR_FRONT_Y, 5)
+        self.assertEqual(build.TAMBOUR_TRACK_FRONT_Y, 5.375)
+        self.assertEqual(build.TAMBOUR_TRACK_TOP_Z, 44.125)
+        self.assertEqual(build.TAMBOUR_TRACK_BACK_Y, 21)
+        for name in ("left_tambour_rail", "right_tambour_rail"):
+            self.assertAlmostEqual(build.members[name].center_on("y"), 5.5)
+
+        backer_rear=max(
+            build.members[name].max_on("y")
+            for name in (
+                "front_street_light_backer_bottom",
+                "front_street_light_backer_lower",
+                "front_street_light_backer_upper",
+            )
+        )
+        self.assertGreaterEqual(
+            build.TAMBOUR_FRONT_Y-tambour.slat_depth/2-backer_rear,
+            build.TAMBOUR_BRACE_CLEARANCE,
+        )
+
+        header=build.members["rail_ft"]
+        minimum_slat_z=self._minimum_slat_z_over_y_interval(
+            build.default_build,
+            header.min_on("y"),
+            header.max_on("y"),
+        )
+        self.assertGreaterEqual(
+            minimum_slat_z-header.max_on("z"),
+            build.TAMBOUR_BRACE_CLEARANCE,
+        )
+
+    def test_removable_ceiling_guards_horizontal_run(self) -> None:
+        panel_instance=build.components["tambour_ceiling_panel"]
+        panel=panel_instance.resolved(build.members[panel_instance.member])
+
+        self.assertEqual(panel_instance.assembly, "tambour_guard")
+        self.assertEqual(panel.type_name, "quarter_inch_exterior_plywood_panel")
+        self.assertEqual(panel.box_min, (3.5, 8.75, 43.25))
+        self.assertEqual(panel.box_size, (20.5, 8.875, 0.25))
+        self.assertAlmostEqual(
+            build.TAMBOUR_TOP_Z-build.TAMBOUR_MAX_SLAT_DEPTH/2
+            -(panel.box_min[2]+panel.box_size[2]),
+            build.TAMBOUR_CEILING_CLEARANCE,
+        )
+        self.assertGreaterEqual(
+            panel.box_min[2]-build.members["rail_ft"].max_on("z"),
+            build.TAMBOUR_CEILING_BEND_INSET,
+        )
+
+    def test_charger_riser_stays_below_or_behind_front_curtain(self) -> None:
+        branch=build.conduits["power_t_junction_feed"].resolved(
+            build.components.as_dict(),
+            build.members.as_dict(),
+        )
+        self.assertLess(
+            max(point[2] for point in branch.points)+branch.od/2,
+            build.TAMBOUR_FRONT_BOTTOM_Z-0.25,
+        )
+        charger_feed=build.conduits["power_ev_charger_feed"].resolved(
+            build.components.as_dict(),
+            build.members.as_dict(),
+        )
+        self.assertGreaterEqual(
+            min(point[1] for point in charger_feed.points)
+            - charger_feed.od/2
+            - (build.TAMBOUR_FRONT_Y+build.TAMBOUR_MAX_SLAT_DEPTH/2),
+            0.25,
+        )
+
+
 class BackRightOutletBuildTests(unittest.TestCase):
     def assertVectorAlmostEqual(
         self,
@@ -91,8 +327,9 @@ class FrontStreetLightBuildTests(unittest.TestCase):
         for a, e in zip(actual, expected, strict=True):
             self.assertAlmostEqual(a, e)
 
-    def test_backers_span_front_posts_and_form_centered_backing_field(self) -> None:
+    def test_backers_span_front_posts_and_form_contiguous_backing_field(self) -> None:
         for name, expected_z in (
+            ("front_street_light_backer_bottom", 34.75),
             ("front_street_light_backer_lower", 38.25),
             ("front_street_light_backer_upper", 41.75),
         ):
@@ -103,6 +340,14 @@ class FrontStreetLightBuildTests(unittest.TestCase):
                 self.assertFalse(backer.rotated)
                 self.assertAlmostEqual(backer.min_on("y"), 2.30)
                 self.assertAlmostEqual(backer.center_on("z"), expected_z)
+
+        bottom = build.members["front_street_light_backer_bottom"]
+        lower = build.members["front_street_light_backer_lower"]
+        upper = build.members["front_street_light_backer_upper"]
+        self.assertAlmostEqual(bottom.min_on("z"), 33)
+        self.assertAlmostEqual(bottom.max_on("z"), lower.min_on("z"))
+        self.assertAlmostEqual(lower.max_on("z"), upper.min_on("z"))
+        self.assertAlmostEqual(upper.max_on("z"), 43.5)
 
     def test_box_stack_and_light_have_finished_position(self) -> None:
         lower_backer = build.members["front_street_light_backer_lower"]
@@ -128,10 +373,14 @@ class FrontStreetLightBuildTests(unittest.TestCase):
             build.siding.min_y - build.siding.board_thickness,
         )
 
-    def test_bottom_hub_entry_is_available_for_future_conduit(self) -> None:
+    def test_bottom_port_receives_conduit(self) -> None:
         self.assertVectorAlmostEqual(
             build.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(build.members),
             (13.75, 1.5, 37.3),
+        )
+        self.assertIsInstance(
+            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
+            ComponentAnchor,
         )
 
     def test_siding_is_cut_out_around_extension_ring(self) -> None:
@@ -176,16 +425,15 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.POWER_JUNCTION_BOTTOM_Z-build.POWER_JUNCTION_GROUND_Z,
             6,
         )
-        self.assertEqual(build.POWER_JUNCTION_BOX_FILL.required_volume, 37)
-        self.assertEqual(build.POWER_JUNCTION_BOX_FILL.remaining_volume, 12)
-        self.assertIsNone(build.POWER_EV_LB_FILL)
+        self.assertEqual(build.POWER_JUNCTION_BOX_FILL.required_volume, 18)
+        self.assertEqual(build.POWER_JUNCTION_BOX_FILL.remaining_volume, 31)
 
-    def test_default_spline_fittings_and_route(self) -> None:
+    def test_default_charger_riser_fittings_and_route(self) -> None:
         expected_types = {
             "power_junction_input_adapter": "carlon_e996g_box_adapter",
             "power_junction_input_coupling": "carlon_e940g_coupling",
-            "power_junction_ev_adapter": "carlon_e996f_box_adapter",
-            "power_junction_ev_coupling": "carlon_e940f_coupling",
+            "power_ev_t_body": "carlon_e983g_conduit_t_body",
+            "power_ev_reducer": "carlon_e950gf_reducer_bushing",
         }
         for name, expected_type in expected_types.items():
             with self.subTest(name=name):
@@ -194,49 +442,52 @@ class PowerJunctionBuildTests(unittest.TestCase):
                     expected_type,
                 )
 
-        for name in ("power_ev_t_body", "power_ev_lb_body", "power_ev_reducer"):
-            self.assertNotIn(name, build.components)
-        self.assertNotIn("power_t_junction_feed", build.conduits)
+        self.assertNotIn("power_ev_lb_body", build.components)
         self.assertNotIn("power_ev_lb_feed", build.conduits)
+        self.assertNotIn("power_junction_ev_adapter", build.components)
+        self.assertNotIn("power_junction_ev_coupling", build.components)
 
+        riser = self.resolved_conduit("power_ground_riser")
+        branch = self.resolved_conduit("power_t_junction_feed")
+        ev = self.resolved_conduit("power_ev_charger_feed")
+        self.assertVectorAlmostEqual(riser.points[0][:2], build.POWER_EV_ENTRY[:2])
+        self.assertVectorAlmostEqual(riser.points[-1][:2], build.POWER_EV_ENTRY[:2])
+        self.assertEqual(branch.trade_size, "1-1/4")
+        self.assertEqual(branch.points[0][0], branch.points[-1][0])
+        self.assertAlmostEqual(branch.points[0][0], 16)
+        self.assertEqual(branch.points[0][2], branch.points[-1][2])
+        self.assertLess(branch.points[0][1]-branch.points[-1][1], 0.25)
+        self.assertAlmostEqual(
+            branch.points[0][2]-branch.od/2,
+            build.members["rail_fb"].max_on("z")+build.POWER_T_RAIL_CLEARANCE,
+        )
+        self.assertEqual(
+            build.conduits["power_t_junction_feed"].points,
+            (
+                build.POWER_T_BRANCH_ANCHOR,
+                build.POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR,
+            ),
+        )
         box_instance = build.components["power_junction_box"]
         box = box_instance.resolved(build.members[box_instance.member])
-        box_center_xy = (
-            box.box_min[0]+box.box_size[0]/2,
-            box.box_min[1]+box.box_size[1]/2,
+        adapter_instance = build.components["power_junction_input_adapter"]
+        adapter = adapter_instance.resolved(build.members[adapter_instance.member])
+        coupling_instance = build.components["power_junction_input_coupling"]
+        coupling = coupling_instance.resolved(
+            build.members[coupling_instance.member]
         )
-        riser = self.resolved_conduit("power_ground_riser")
-        self.assertVectorAlmostEqual(riser.points[0][:2], box_center_xy)
-        self.assertVectorAlmostEqual(riser.points[-1][:2], box_center_xy)
-        for name in (
-            "power_junction_input_adapter",
-            "power_junction_input_coupling",
-        ):
-            instance = build.components[name]
-            fitting = instance.resolved(build.members[instance.member])
-            fitting_center_xy = (
-                fitting.box_min[0]+fitting.box_size[0]/2,
-                fitting.box_min[1]+fitting.box_size[1]/2,
-            )
-            self.assertVectorAlmostEqual(fitting_center_xy, box_center_xy)
+        self.assertAlmostEqual(
+            adapter.box_min[1],
+            box.box_min[1]+box.box_size[1],
+        )
+        self.assertAlmostEqual(adapter.box_min[0]+adapter.box_size[0]/2, 16)
+        self.assertLess(adapter.box_min[1], coupling.box_min[1])
+        self.assertLess(coupling.box_min[1], branch.points[-1][1])
 
-        self.assertAlmostEqual(build.POWER_JUNCTION_SPLINE_PORT_X, box.box_min[0]+3)
-        self.assertAlmostEqual(build.POWER_JUNCTION_SPLINE_PORT_Y, box.box_min[1]+3)
-
-        ev = self.resolved_conduit("power_ev_charger_feed")
         self.assertEqual(ev.trade_size, "1")
-        self.assertEqual(len(ev.points), 25)
-        self.assertVectorAlmostEqual(
-            ev.points[0],
-            build.POWER_JUNCTION_EV_COUPLING_END,
-        )
+        self.assertEqual(len(ev.points), 2)
         self.assertVectorAlmostEqual(ev.points[-1], build.POWER_EV_ENTRY)
-        self.assertVectorAlmostEqual(
-            build.POWER_EV_OFFSET_CONTROL_A[:2], ev.points[0][:2]
-        )
-        self.assertVectorAlmostEqual(
-            build.POWER_EV_OFFSET_CONTROL_B[:2], ev.points[-1][:2]
-        )
+        self.assertVectorAlmostEqual(ev.points[0][:2], ev.points[-1][:2])
         self.assertIsInstance(
             build.conduits["power_ev_charger_feed"].points[0],
             ComponentAnchor,
@@ -245,66 +496,21 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.conduits["power_ev_charger_feed"].points[-1],
             ComponentAnchor,
         )
-
-    def test_t_body_and_junction_fittings_have_expected_materials(self) -> None:
-        enclosure = build.build_enclosure(power_conduit_layout="charger-riser")
-        expected_types = {
-            "power_ev_t_body": "carlon_e983g_conduit_t_body",
-            "power_junction_input_adapter": "carlon_e996g_box_adapter",
-            "power_junction_input_coupling": "carlon_e940g_coupling",
-            "power_ev_reducer": "carlon_e950gf_reducer_bushing",
-            "power_junction_light_adapter": "carlon_e996d_box_adapter",
-            "power_junction_light_coupling": "carlon_e940d_coupling",
-            "power_junction_outlet_adapter": "carlon_e996d_box_adapter",
-            "power_junction_outlet_coupling": "carlon_e940d_coupling",
-        }
-        for name, expected_type in expected_types.items():
-            with self.subTest(name=name):
-                self.assertEqual(
-                    enclosure.components[name].component_type.name,
-                    expected_type,
-                )
-
-        self.assertNotIn("power_junction_ev_adapter", enclosure.components)
-        self.assertNotIn("power_junction_ev_coupling", enclosure.components)
-        self.assertNotIn("power_ev_lb_body", enclosure.components)
-
-    def test_t_body_ports_and_reducer_align_with_charger(self) -> None:
-        enclosure = build.build_enclosure(power_conduit_layout="charger-riser")
-        box_instance = enclosure.components["power_junction_box"]
-        box = box_instance.resolved(enclosure.members[box_instance.member])
-        adapter_instance = enclosure.components["power_junction_input_adapter"]
-        adapter = adapter_instance.resolved(enclosure.members[adapter_instance.member])
-        t_instance = enclosure.components["power_ev_t_body"]
-        t_body = t_instance.resolved(enclosure.members[t_instance.member])
-        reducer_instance = enclosure.components["power_ev_reducer"]
-        reducer = reducer_instance.resolved(enclosure.members[reducer_instance.member])
-
-        self.assertEqual(adapter_instance.orientation, "inward")
-        self.assertEqual(t_instance.orientation, "down")
-        self.assertAlmostEqual(
-            adapter.box_min[1],
-            box.box_min[1]+box.box_size[1],
+        self.assertVectorAlmostEqual(
+            build.POWER_EV_ENTRY,
+            (16, 11.3375, 23.65),
         )
-        self.assertAlmostEqual(
-            adapter.box_min[0]+adapter.box_size[0]/2,
-            enclosure.POWER_T_AXIS_X,
+        charger = build.components["front_ev_charger_body"].resolved(
+            build.members["front_center_rail"]
         )
-        self.assertAlmostEqual(
-            adapter.box_min[2]+adapter.box_size[2]/2,
-            enclosure.POWER_T_CENTER_Z,
+        holster = build.components["front_ev_charger_plug"].resolved(
+            build.members["front_center_rail"]
         )
-        self.assertGreater(
-            min(t_body.box_min[0], reducer.box_min[0]),
-            enclosure.members["front_center_rail"].max_on("x"),
-        )
-        self.assertAlmostEqual(
-            reducer.box_min[2],
-            t_body.box_min[2]+t_body.box_size[2],
-        )
+        self.assertAlmostEqual(charger.box_min[2], 23.65)
+        self.assertAlmostEqual(holster.box_min[2], 28.33492125984252)
 
     def test_riser_and_equipment_feeds_use_relative_endpoints(self) -> None:
-        enclosure = build.build_enclosure(power_conduit_layout="charger-riser")
+        enclosure = build.default_build
         riser = self.resolved_conduit("power_ground_riser", enclosure)
         branch = self.resolved_conduit("power_t_junction_feed", enclosure)
         ev = self.resolved_conduit("power_ev_charger_feed", enclosure)
@@ -320,26 +526,30 @@ class PowerJunctionBuildTests(unittest.TestCase):
             ),
         )
         self.assertEqual(riser.points[0][:2], riser.points[-1][:2])
-        self.assertEqual(branch.trade_size, "1-1/4")
-        self.assertEqual(branch.points[0][0], branch.points[-1][0])
-        self.assertEqual(branch.points[0][2], branch.points[-1][2])
-        self.assertGreater(branch.points[0][1], branch.points[-1][1])
         self.assertEqual(ev.trade_size, "1")
         self.assertVectorAlmostEqual(ev.points[-1], enclosure.POWER_EV_ENTRY)
-        self.assertVectorAlmostEqual(ev.points[0][:2], ev.points[-1][:2])
 
-        for name in (
-            "power_ground_riser",
-            "power_t_junction_feed",
-            "power_ev_charger_feed",
-        ):
-            with self.subTest(name=name):
-                self.assertTrue(
-                    all(
-                        isinstance(point, (RelativeCoord, ComponentAnchor))
-                        for point in enclosure.conduits[name].points
-                    )
-                )
+        self.assertTrue(
+            all(
+                isinstance(point, (RelativeCoord, ComponentAnchor))
+                for point in enclosure.conduits["power_ground_riser"].points
+            )
+        )
+        self.assertTrue(
+            all(
+                isinstance(point, ComponentAnchor)
+                for point in enclosure.conduits["power_t_junction_feed"].points
+            )
+        )
+        self.assertEqual(branch.points[0][0], enclosure.POWER_EV_ENTRY[0])
+        self.assertIsInstance(
+            enclosure.conduits["power_ev_charger_feed"].points[0],
+            ComponentAnchor,
+        )
+        self.assertIsInstance(
+            enclosure.conduits["power_ev_charger_feed"].points[-1],
+            ComponentAnchor,
+        )
 
         self.assertEqual(light.trade_size, "1/2")
         self.assertVectorAlmostEqual(
@@ -349,63 +559,93 @@ class PowerJunctionBuildTests(unittest.TestCase):
             light.points[-1],
             enclosure.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(enclosure.members),
         )
-        self.assertEqual(ev.bends, ())
         self.assertEqual(len(ev.points), 2)
+        self.assertEqual(light.bends, ((1, 2.5), (2, 3), (3, 3)))
         self.assertGreater(len(light.points), 20)
 
-    def test_layout_tracks_resized_charger_and_preserves_legacy_route(self) -> None:
-        for enclosure in (
-            build.build_enclosure(
-                width=30,
-                depth=26,
-                power_conduit_layout="charger-riser",
-            ),
-            build.build_enclosure(
-                height=55,
-                power_conduit_layout="charger-riser",
-            ),
-        ):
-            riser = enclosure.conduits["power_ground_riser"].resolved(
-                enclosure.components.as_dict(),
-                enclosure.members.as_dict(),
-            )
-            branch = enclosure.conduits["power_t_junction_feed"].resolved(
-                enclosure.components.as_dict(),
-                enclosure.members.as_dict(),
-            )
-            ev = enclosure.conduits["power_ev_charger_feed"].resolved(
-                enclosure.components.as_dict(),
-                enclosure.members.as_dict(),
-            )
-            self.assertVectorAlmostEqual(riser.points[0][:2], ev.points[-1][:2])
-            self.assertAlmostEqual(branch.points[0][0], ev.points[-1][0])
-            self.assertGreater(branch.points[0][1], branch.points[-1][1])
+    def test_street_light_feed_sweeps_left_into_bottom_port(self) -> None:
+        light = self.resolved_conduit("power_street_light_feed")
+        adapter = build.components["power_junction_light_adapter"].resolved(
+            build.members["front_center_rail"]
+        )
+        outlet = build.components["power_junction_outlet_adapter"].resolved(
+            build.members["front_center_rail"]
+        )
 
+        self.assertEqual(
+            build.components["power_junction_light_adapter"].orientation,
+            "left",
+        )
+        self.assertAlmostEqual(adapter.box_min[0], build.POWER_JUNCTION_RIGHT_X)
+        self.assertLess(
+            adapter.box_min[1]+adapter.box_size[1]/2,
+            outlet.box_min[1]+outlet.box_size[1]/2,
+        )
+        self.assertAlmostEqual(
+            adapter.box_min[2]+adapter.box_size[2]/2,
+            outlet.box_min[2]+outlet.box_size[2]/2,
+        )
+        self.assertVectorAlmostEqual(
+            light.points[0],
+            build.POWER_LIGHT_COUPLING_END,
+        )
+        self.assertVectorAlmostEqual(
+            light.points[-1], build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
+        )
+        self.assertAlmostEqual(
+            max(point[0] for point in light.points),
+            build.POWER_LIGHT_POST_X,
+        )
+        self.assertGreaterEqual(
+            build.TAMBOUR_FRONT_Y
+            - max(point[1] for point in light.points)
+            - CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2,
+            1,
+        )
+        self.assertGreater(light.points[-1][2], light.points[0][2])
+        self.assertAlmostEqual(
+            light.points[-1][0],
+            build.FRONT_STREET_LIGHT_CENTER_X,
+        )
+
+        raw_points = build.conduits["power_street_light_feed"].points
+        lower_post_point = raw_points[1].resolve(build.members)
+        upper_post_point = raw_points[2].resolve(build.members)
+        horizontal_end = raw_points[3].resolve(build.members)
+        self.assertAlmostEqual(lower_post_point[0], build.POWER_LIGHT_POST_X)
+        self.assertAlmostEqual(upper_post_point[0], build.POWER_LIGHT_POST_X)
+        self.assertAlmostEqual(
+            lower_post_point[1],
+            build.POWER_JUNCTION_LIGHT_PORT_Y,
+        )
+        self.assertAlmostEqual(
+            upper_post_point[1],
+            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
+        )
+        self.assertAlmostEqual(
+            upper_post_point[2],
+            build.POWER_LIGHT_HORIZONTAL_RUN_Z,
+        )
+        self.assertAlmostEqual(
+            horizontal_end[2],
+            build.POWER_LIGHT_HORIZONTAL_RUN_Z,
+        )
+        self.assertGreater(upper_post_point[0], horizontal_end[0])
+        self.assertAlmostEqual(
+            horizontal_end[0],
+            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[0],
+        )
+
+    def test_layout_tracks_resized_enclosures(self) -> None:
         for enclosure in (
             build.build_enclosure(width=30, depth=26),
             build.build_enclosure(height=55),
         ):
             ev = self.resolved_conduit("power_ev_charger_feed", enclosure)
-            self.assertVectorAlmostEqual(
-                ev.points[0],
-                enclosure.POWER_JUNCTION_EV_COUPLING_END,
-            )
             self.assertVectorAlmostEqual(ev.points[-1], enclosure.POWER_EV_ENTRY)
-            self.assertVectorAlmostEqual(
-                enclosure.POWER_EV_OFFSET_CONTROL_A[:2], ev.points[0][:2]
-            )
-            self.assertVectorAlmostEqual(
-                enclosure.POWER_EV_OFFSET_CONTROL_B[:2], ev.points[-1][:2]
-            )
-
-        legacy = build.build_enclosure(power_conduit_layout="junction-riser")
-        legacy.model.validate()
-        self.assertEqual(legacy.POWER_JUNCTION_BOX_FILL.required_volume, 37)
-        self.assertEqual(legacy.POWER_EV_LB_FILL.required_volume, 20)
-        self.assertIn("power_ev_lb_body", legacy.components)
-        self.assertNotIn("power_ev_t_body", legacy.components)
-        self.assertIn("power_ev_lb_feed", legacy.conduits)
-        self.assertNotIn("power_t_junction_feed", legacy.conduits)
+            self.assertVectorAlmostEqual(ev.points[0][:2], ev.points[-1][:2])
+            riser = self.resolved_conduit("power_ground_riser", enclosure)
+            self.assertVectorAlmostEqual(riser.points[0][:2], ev.points[-1][:2])
 
     def test_outlet_feed_has_two_sweeps_and_clears_low_rail(self) -> None:
         outlet = self.resolved_conduit("power_back_right_outlet_feed")
@@ -454,7 +694,7 @@ class LowVoltageBuildTests(unittest.TestCase):
             build.members.as_dict(),
         )
 
-    def test_low_voltage_box_shares_power_box_plane_on_negative_x_side(self) -> None:
+    def test_junction_boxes_share_positive_y_face_and_one_inch_x_gap(self) -> None:
         instance = build.components["low_voltage_termination_box"]
         box = self.resolved_component("low_voltage_termination_box")
 
@@ -556,12 +796,10 @@ class LowVoltageBuildTests(unittest.TestCase):
         )
         self.assertEqual(riser.points[0][:2], riser.points[-1][:2])
 
-        post_fl = build.members["post_fl"]
-        distance_from_post_fl = math.hypot(
-            riser.points[0][0]-post_fl.center_on("x"),
-            riser.points[0][1]-post_fl.center_on("y"),
+        self.assertAlmostEqual(
+            riser.points[0][0],
+            build.LOW_VOLTAGE_POST_FL_MIN_X,
         )
-        self.assertGreaterEqual(distance_from_post_fl, 12)
 
         for footing in build.footings:
             resolved = footing.resolved(build.model)
@@ -584,11 +822,17 @@ class LowVoltageBuildTests(unittest.TestCase):
             "low_voltage_wifi_feed": build.path_2_entry,
             "low_voltage_ev_charger_feed": build.path_3_entry,
         }
+        expected_colors = {
+            "low_voltage_street_light_service": build.LOW_VOLTAGE_STREET_LIGHT_COLOR,
+            "low_voltage_wifi_feed": build.LOW_VOLTAGE_CAT6_COLOR,
+            "low_voltage_ev_charger_feed": build.LOW_VOLTAGE_CAT6_COLOR,
+        }
 
         for index, (name, endpoint) in enumerate(expected_endpoints.items()):
             cable = build.cables[name]
             self.assertEqual(cable.assembly, "low_voltage_cabling")
             self.assertEqual(cable.diameter, 1/8)
+            self.assertEqual(cable.color, expected_colors[name])
             self.assertVectorAlmostEqual(
                 cable.points[0],
                 (
@@ -605,16 +849,155 @@ class LowVoltageBuildTests(unittest.TestCase):
 
         service = build.cables["low_voltage_street_light_service"]
         self.assertAlmostEqual(min(point[2] for point in service.points[-50:]), 42.9375)
+        self.assertIn(build.path_1_post, service.points)
+        self.assertGreater(
+            build.path_1_post[0],
+            build.members["post_fl"].max_on("x"),
+        )
+        self.assertGreater(service.points[-2][0], service.points[-1][0])
+        light_backers = (
+            build.members["front_street_light_backer_lower"],
+            build.members["front_street_light_backer_upper"],
+        )
+        for point in service.points:
+            for backer in light_backers:
+                clearance = build.LOW_VOLTAGE_CABLE_DIAMETER/2
+                inside_backer = all(
+                    backer.min_on(axis)-clearance
+                    <= point[index]
+                    <= backer.max_on(axis)+clearance
+                    for index,axis in enumerate("xyz")
+                )
+                self.assertFalse(inside_backer)
+
+        wifi_feed = build.cables["low_voltage_wifi_feed"]
+        self.assertLess(build.path_2_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
+        self.assertIn(build.path_2_front_rail, wifi_feed.points)
+        self.assertGreater(build.path_2_front_rail[0], build.path_2_start[0])
+        self.assertGreater(build.path_2_front_rail[1], build.path_2_start[1])
+        self.assertLess(
+            build.path_2_front_rail[0],
+            build.members["front_center_rail"].min_on("x"),
+        )
+        self.assertGreater(
+            build.path_2_top_clear[1],
+            build.members["rail_ft"].max_on("y"),
+        )
+        self.assertGreater(build.path_2_right_rail[0], build.path_2_top_clear[0])
+        self.assertLess(
+            build.path_2_right_rail[0],
+            build.members["right_center_rail"].min_on("x"),
+        )
+        self.assertGreater(
+            build.path_2_entry_sweep[1],
+            build.members["right_center_rail"].max_on("y"),
+        )
+        self.assertGreater(build.path_2_entry[0], build.path_2_entry_sweep[0])
+        self.assertGreater(build.path_2_entry[2], build.path_2_entry_sweep[2])
 
         ev_feed = build.cables["low_voltage_ev_charger_feed"]
-        descending_points = [
-            point
-            for point in ev_feed.points
-            if abs(point[0]-build.LOW_VOLTAGE_FRONT_RAIL_POS_X) < 1e-9
-            and point[2] > 25
-        ]
-        self.assertTrue(descending_points)
+        self.assertGreater(build.path_3_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
+        self.assertIn(build.path_3_front_rail, ev_feed.points)
+        self.assertLess(build.path_3_front_rail[0], build.path_3_start[0])
+        self.assertGreater(build.path_3_front_rail[1], build.path_3_start[1])
+        self.assertAlmostEqual(
+            build.path_3_front_rail[1]-build.path_2_front_rail[1],
+            build.LOW_VOLTAGE_CABLE_DIAMETER,
+        )
+        self.assertLess(build.path_3_branch[2], build.path_3_entry[2])
+        self.assertGreater(
+            build.path_3_rail_clear[1],
+            build.members["front_center_rail"].max_on("y"),
+        )
+        self.assertLess(
+            max(point[2] for point in ev_feed.points),
+            build.members["rail_ft"].min_on("z"),
+        )
+        self.assertLess(
+            max(point[0] for point in ev_feed.points[:-1]),
+            build.members["right_center_rail"].min_on("x"),
+        )
+        self.assertGreater(build.path_3_entry[1], build.path_3_rail_clear[1])
+        self.assertGreater(build.path_3_entry[2], build.path_3_rail_clear[2])
         self.assertTrue(all(point[1] < build.path_3_entry[1] for point in ev_feed.points[:-1]))
+
+        for cable in (service, wifi_feed, ev_feed):
+            self.assertLess(cable.points[1][2], cable.points[0][2])
+
+        self.assertIn(build.path_1_spline_bottom, service.points)
+        self.assertAlmostEqual(
+            min(point[2] for point in service.points),
+            build.LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z,
+        )
+        for cable in (wifi_feed, ev_feed):
+            self.assertAlmostEqual(
+                minimum_cable_bend_radius(cable.points),
+                build.LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS,
+            )
+
+        rail_fb=build.members["rail_fb"]
+        cable_radius=build.LOW_VOLTAGE_CABLE_DIAMETER/2
+        rail_min=tuple(rail_fb.min_on(axis)-cable_radius for axis in "xyz")
+        rail_max=tuple(rail_fb.max_on(axis)+cable_radius for axis in "xyz")
+
+        def segment_intersects_rail(
+            start: tuple[float,float,float],
+            end: tuple[float,float,float],
+        ) -> bool:
+            interval_min=0.0
+            interval_max=1.0
+            for index in range(3):
+                delta=end[index]-start[index]
+                if abs(delta) < 1e-12:
+                    if not rail_min[index] <= start[index] <= rail_max[index]:
+                        return False
+                    continue
+                near=(rail_min[index]-start[index])/delta
+                far=(rail_max[index]-start[index])/delta
+                if near > far:
+                    near,far=far,near
+                interval_min=max(interval_min, near)
+                interval_max=min(interval_max, far)
+                if interval_min > interval_max:
+                    return False
+            return True
+
+        for cable in (wifi_feed, ev_feed):
+            self.assertFalse(
+                any(
+                    segment_intersects_rail(start, end)
+                    for start,end in zip(cable.points, cable.points[1:])
+                )
+            )
+
+        required_riser_clearance = (
+            build.LOW_VOLTAGE_CONDUIT_RADIUS
+            + build.LOW_VOLTAGE_CABLE_DIAMETER/2
+        )
+        for cable in (wifi_feed, ev_feed):
+            for start,end in zip(cable.points, cable.points[1:]):
+                if min(start[2], end[2]) > build.LOW_VOLTAGE_INPUT_ADAPTER_END_Z:
+                    continue
+                segment_x=end[0]-start[0]
+                segment_y=end[1]-start[1]
+                segment_length_squared=segment_x**2+segment_y**2
+                projection=(
+                    (
+                        (build.LOW_VOLTAGE_INPUT_X-start[0])*segment_x
+                        +(build.LOW_VOLTAGE_INPUT_Y-start[1])*segment_y
+                    )/segment_length_squared
+                    if segment_length_squared
+                    else 0
+                )
+                projection=max(0, min(1, projection))
+                center_distance = math.hypot(
+                    start[0]+projection*segment_x-build.LOW_VOLTAGE_INPUT_X,
+                    start[1]+projection*segment_y-build.LOW_VOLTAGE_INPUT_Y,
+                )
+                self.assertGreaterEqual(
+                    center_distance,
+                    required_riser_clearance-1e-9,
+                )
 
     def test_wifi_and_charger_droops_clear_open_tambour_edge(self) -> None:
         for name in ("low_voltage_wifi_feed", "low_voltage_ev_charger_feed"):
@@ -702,7 +1085,11 @@ class ParameterizedBuildTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             junction.box_min[1]+junction.box_size[1],
-            front_center_rail.min_on("y"),
+            front_center_rail.min_on("y")+enclosure.POWER_JUNCTION_Y_SHIFT,
+        )
+        self.assertAlmostEqual(
+            low_voltage_box.box_min[1],
+            front_center_rail.min_on("y")-low_voltage_box.box_size[1],
         )
 
         outlet_feed = self.resolved_conduit(
@@ -726,8 +1113,8 @@ class ParameterizedBuildTests(unittest.TestCase):
         tambour = enclosure.tambours["enclosure_tambour_door"].resolved(
             enclosure.model
         )
-        self.assertAlmostEqual(tambour.left_points[0][1], 29)
-        self.assertAlmostEqual(tambour.right_points[0][1], 29)
+        self.assertAlmostEqual(tambour.left_points[0][1], 28.625)
+        self.assertAlmostEqual(tambour.right_points[0][1], 28.625)
         self.assertAlmostEqual(tambour.left_points[0][0], 3.5)
         self.assertAlmostEqual(tambour.right_points[0][0], 30)
 
@@ -751,10 +1138,10 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertEqual(taller.height, 55)
         self.assertEqual(taller.members["post_br"].length, 87)
         self.assertAlmostEqual(taller.members["brace_fl_fr"].max_on("z"), 55)
-        self.assertAlmostEqual(taller.members["rail_r_tambour"].center_on("z"), 53)
+        self.assertAlmostEqual(taller.members["rail_r_tambour"].center_on("z"), 52.5)
         self.assertAlmostEqual(taller.members["rail_rt"].center_on("z"), 51.5)
         self.assertAlmostEqual(taller.siding.frame_top_z, 55)
-        self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 53)
+        self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.5)
         self.assertAlmostEqual(taller.LOW_VOLTAGE_SERVICE_LOOP_TOP_Z, 50.9375)
 
         for name in (
@@ -821,7 +1208,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         tambour = taller.tambours["enclosure_tambour_door"].resolved(taller.model)
         self.assertAlmostEqual(
             max(point[2] for point in tambour.left_points),
-            53,
+            taller.TAMBOUR_TRACK_TOP_Z,
         )
 
     def test_dimensions_must_be_finite_and_positive(self) -> None:
@@ -857,28 +1244,12 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertEqual(enclosure.width, 30.5)
         self.assertEqual(enclosure.depth, 26.25)
         self.assertEqual(enclosure.height, 55.5)
-        self.assertEqual(enclosure.power_conduit_layout, "junction-spline")
         deploy.assert_called_once_with(Path("output/model.scad"))
 
-    def test_main_accepts_legacy_power_conduit_layout(self) -> None:
-        with (
-            patch.object(build, "write_outputs") as write_outputs,
-            patch.object(build, "deploy_generated_model"),
-        ):
-            self.assertEqual(
-                build.main(
-                    [
-                        "--power-conduit-layout",
-                        "junction-riser",
-                        "--no-deploy",
-                    ]
-                ),
-                0,
-            )
-
-        enclosure = write_outputs.call_args.args[0]
-        self.assertEqual(enclosure.power_conduit_layout, "junction-riser")
-        self.assertIn("power_ev_lb_body", enclosure.components)
+    def test_main_rejects_removed_power_conduit_layout_option(self) -> None:
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaisesRegex(SystemExit, "2"):
+                build.main(["--power-conduit-layout", "junction-riser"])
 
     def test_main_can_skip_deployment(self) -> None:
         with (
@@ -1068,8 +1439,8 @@ class ParameterizedBuildTests(unittest.TestCase):
             with self.assertRaisesRegex(SystemExit, "2"):
                 build.main(["--width", "nan"])
 
-    def test_api_rejects_invalid_power_conduit_layout(self) -> None:
-        with self.assertRaisesRegex(ValueError, "power_conduit_layout"):
+    def test_api_rejects_removed_power_conduit_layout_argument(self) -> None:
+        with self.assertRaisesRegex(TypeError, "power_conduit_layout"):
             build.build_enclosure(power_conduit_layout="invalid")
 
     def test_write_outputs_uses_the_existing_filenames(self) -> None:

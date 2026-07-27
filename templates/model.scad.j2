@@ -138,6 +138,7 @@ function f_top_z(f) = f[4];
 function f_color(f) = f[5];
 
 function l_dims(type) =
+    type == "1x4" ? [0.75, 3.5] :
     type == "2x4" ? [1.5, 3.5] :
     type == "4x4" ? [3.5, 3.5] :
     [1, 1];
@@ -269,10 +270,11 @@ function t_track_diameter(t) = t[4];
 function t_slat_pitch(t) = t[5];
 function t_slat_thickness(t) = t[6];
 function t_slat_depth(t) = t[7];
-function t_left_points(t) = t[8];
-function t_right_points(t) = t[9];
-function t_bends(t) = t[10];
-function t_slats(t, is_open) = is_open ? t[11] : t[12];
+function t_slat_track_offset(t) = t[8];
+function t_left_points(t) = t[9];
+function t_right_points(t) = t[10];
+function t_bends(t) = t[11];
+function t_slats(t, is_open) = is_open ? t[12] : t[13];
 
 function ts_left(s) = s[0];
 function ts_right(s) = s[1];

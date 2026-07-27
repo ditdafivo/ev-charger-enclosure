@@ -113,7 +113,7 @@ class BuildStepModelTests(unittest.TestCase):
         }
 
         self.assertEqual(len(model.build_steps), 25)
-        self.assertEqual(len(assigned), 134)
+        self.assertEqual(len(assigned), 138)
         self.assertEqual(set(assigned), set(model.renderable_object_names()))
         self.assertEqual(
             model.build_steps[0].object_names,
@@ -125,18 +125,26 @@ class BuildStepModelTests(unittest.TestCase):
         )
         self.assertEqual(step_by_object["post_fl"], 2)
         self.assertEqual(step_by_object["footing_fl"], 2)
-        self.assertEqual(step_by_object["front_street_light_backer_lower"], 11)
-        self.assertEqual(step_by_object["brace_fl_fr"], 12)
-        self.assertEqual(step_by_object["brace_br_fl"], 12)
+        self.assertEqual(step_by_object["rail_l_tambour"], 10)
+        self.assertEqual(step_by_object["enclosure_tambour_door"], 11)
+        self.assertEqual(step_by_object["front_street_light_backer_lower"], 12)
+        self.assertEqual(step_by_object["front_street_light_backer_bottom"], 12)
+        self.assertEqual(step_by_object["brace_fl_fr"], 3)
+        self.assertEqual(step_by_object["brace_bl_fr"], 3)
+        self.assertNotIn("brace_br_fl", step_by_object)
         self.assertEqual(step_by_object["front_ev_charger_body"], 13)
         self.assertEqual(step_by_object["front_ev_charger_plug"], 13)
         self.assertEqual(step_by_object["front_ev_charger_cable"], 13)
         self.assertEqual(step_by_object["power_junction_box"], 14)
         self.assertEqual(step_by_object["power_ground_riser"], 1)
         self.assertEqual(step_by_object["low_voltage_ground_riser"], 1)
-        self.assertEqual(step_by_object["power_junction_ev_adapter"], 14)
-        self.assertEqual(step_by_object["power_junction_ev_coupling"], 14)
         self.assertEqual(step_by_object["power_ev_charger_feed"], 15)
+        self.assertEqual(step_by_object["power_ev_t_body"], 15)
+        self.assertEqual(step_by_object["power_t_junction_feed"], 15)
+        self.assertEqual(step_by_object["power_ev_reducer"], 15)
+        self.assertEqual(step_by_object["rail_ft_left_support"], 7)
+        self.assertEqual(step_by_object["rail_ft_right_support"], 7)
+        self.assertEqual(step_by_object["tambour_ceiling_panel"], 23)
         self.assertEqual(step_by_object["back_right_outlet_backer_lower"], 17)
         self.assertEqual(step_by_object["back_right_outlet"], 17)
 
@@ -149,13 +157,16 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn('["low_voltage_ground_riser", 1]', scad)
         self.assertIn('["post_fl", 2]', scad)
         self.assertIn('["footing_fl", 2]', scad)
-        self.assertIn('["brace_fl_fr", 12]', scad)
+        self.assertIn('["brace_fl_fr", 3]', scad)
+        self.assertIn('["rail_l_tambour", 10]', scad)
+        self.assertIn('["enclosure_tambour_door", 11]', scad)
         self.assertIn('["front_ev_charger_body", 13]', scad)
         self.assertIn('["front_ev_charger_cable", 13]', scad)
         self.assertIn('["power_junction_box", 14]', scad)
-        self.assertIn('["power_junction_ev_adapter", 14]', scad)
-        self.assertIn('["power_junction_ev_coupling", 14]', scad)
         self.assertIn('["power_ev_charger_feed", 15]', scad)
+        self.assertIn('["power_ev_t_body", 15]', scad)
+        self.assertIn('["power_t_junction_feed", 15]', scad)
+        self.assertIn('["tambour_ceiling_panel", 23]', scad)
         self.assertIn('["back_right_outlet_backer_lower", 17]', scad)
         self.assertIn('["back_right_outlet", 17]', scad)
         self.assertIn('["back_right_outlet_cover", 25]', scad)
@@ -171,36 +182,6 @@ class BuildStepModelTests(unittest.TestCase):
             "render_siding_part(s, object_is_highlighted(s_name(s)))",
             scad,
         )
-
-    def test_alternate_layout_objects_keep_their_installation_steps(self) -> None:
-        expected_step_15 = {
-            "charger-riser": {
-                "power_ev_t_body",
-                "power_ev_reducer",
-                "power_t_junction_feed",
-                "power_ev_charger_feed",
-            },
-            "junction-riser": {
-                "power_ev_lb_body",
-                "power_ev_reducer",
-                "power_ev_lb_feed",
-                "power_ev_charger_feed",
-            },
-        }
-        for layout, expected in expected_step_15.items():
-            with self.subTest(layout=layout):
-                enclosure = build.build_enclosure(power_conduit_layout=layout)
-                enclosure.model.validate()
-                step_by_object = {
-                    name: step.number
-                    for step in enclosure.model.build_steps
-                    for name in step.object_names
-                }
-                self.assertTrue(all(step_by_object[name] == 15 for name in expected))
-
-                if layout == "junction-riser":
-                    self.assertEqual(step_by_object["power_junction_ev_adapter"], 14)
-                    self.assertEqual(step_by_object["power_junction_ev_coupling"], 14)
 
     def test_generic_and_parameterized_models_keep_normal_rendering(self) -> None:
         generic_scad = Model(self.sample_members()).to_scad()

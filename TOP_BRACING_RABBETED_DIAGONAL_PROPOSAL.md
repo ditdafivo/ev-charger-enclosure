@@ -13,16 +13,17 @@ checks remain in [`TOP_BRACING.md`](TOP_BRACING.md).
 - The front and rear perimeter members remain top-flush 2x4s.
 - `post_bl` and `post_fr` are 3/4 inch shorter than the other posts and stop at
   `z = 46.25`. They are not rabbeted.
-- The full 3/4-by-3 1/2-inch diagonal occupies `z = 46.25` through `z = 47.00`.
-  Its square-cut ends extend over the shortened posts without allowing any
-  part of the board to cross the posts' exterior XY faces. The default modeled
-  cut length is 31.437 inches.
+- The diagonal is ripped from nominal 1x6 stock to a calculated 4.907-inch
+  default finished width and occupies `z = 46.25` through `z = 47.00`. Its
+  35.133-inch rectangular blank follows the post-center line at 37.44 degrees.
+  Both ends are jigsawed to the modeled six-sided footprint, fully covering
+  both post tops without crossing their exterior XY faces.
 - The diagonal's footprint is routed 3/4 inch into the four intersected side
   braces. There are no routed post seats.
 
-The angled board does not fill either shortened post's complete top footprint.
-The resulting small open areas from `z = 46.25` to `z = 47.00` are intentional
-and remain below the shimmed roof boards.
+The angled board fills both shortened posts' complete top footprints. Its
+minimum width is recalculated from post spacing as the square-post projection
+normal to the center-to-center brace axis.
 
 ## Custom gusset
 
@@ -82,7 +83,7 @@ Before removing temporary bracing, verify:
 - both gussets sit flat across the modeled intersection;
 - every screw location has solid wood below it;
 - the selected fasteners and custom plate have an approved capacity for the
-  826-pound ASD diagonal demand documented in `TOP_BRACING.md`;
+  798-pound ASD diagonal demand documented in `TOP_BRACING.md`;
 - roof shims bridge the plates and heads without rocking while preserving
   drainage; and
 - tambour, wiring, siding, and service clearances remain unobstructed.
@@ -91,7 +92,8 @@ Before removing temporary bracing, verify:
 
 | Date | Decision | Result |
 |---|---|---|
-| 2026-07-27 | Remove the diagonal extensions beyond the posts. | Implemented with the longest square-cut board whose complete width stays inside the posts' exterior XY faces. |
+| 2026-07-27 | Fully cover both shortened post tops with the diagonal. | The brace now follows the post-center line, is ripped from 1x6 stock to the calculated minimum width, and has jigsaw-profiled ends. |
+| 2026-07-27 | Remove the former diagonal extensions beyond the posts. | Superseded by the full-post, jigsaw-profiled detail above. |
 | 2026-07-27 | Shorten the involved posts instead of rabbeting them. | `post_bl` and `post_fr` stop 3/4 inch below the frame top. |
 | 2026-07-27 | Retain rabbets only at intersected side braces. | Four routed seats remain. |
 | 2026-07-27 | Replace HTP37Z hardware with custom gussets. | Two identical 6-by-6-by-0.074-inch G90 plates with sixteen-hole grids are modeled. |

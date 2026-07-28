@@ -218,6 +218,48 @@ class ComponentResolutionTests(unittest.TestCase):
         self.assertEqual(brace.thickness, 0.75)
         self.assertEqual(brace.bom_row()["size_z"], 0.75)
 
+    def test_profiled_diagonal_uses_ripped_stock_width_and_polygon(self) -> None:
+        members = LumberCollection()
+        post_a = members.add(
+            "post_a",
+            assembly="frame",
+            type="4x4",
+            axis="z",
+            start=AbsoluteCoord(0, 20, 0),
+            length=48,
+        )
+        post_b = members.add(
+            "post_b",
+            assembly="frame",
+            type="4x4",
+            axis="z",
+            start=AbsoluteCoord(24, 0, 0),
+            length=48,
+        )
+
+        brace = members.diagonal_between(
+            "brace",
+            assembly="frame",
+            type="1x6",
+            support_a=post_a,
+            support_b=post_b,
+            position=46.625,
+            cover_supports_xy=True,
+        )
+
+        self.assertEqual(brace.stock_width, 5.5)
+        self.assertLess(brace.width, brace.stock_width)
+        self.assertEqual(len(brace.footprint or ()), 6)
+        self.assertEqual(brace.bom_row()["start_cut_angle_deg"], "")
+        self.assertEqual(brace.bom_row()["stock_width_in"], 5.5)
+        self.assertAlmostEqual(
+            brace.bom_row()["finished_width_in"], brace.width, places=4
+        )
+
+        scad = Model(members).to_scad()
+        self.assertIn("function l_footprint(l)", scad)
+        self.assertIn("polygon(points = l_footprint(l));", scad)
+
     def test_angled_lumber_bom_row_includes_cut_angles(self) -> None:
         brace = AngledLumber(
             name="brace",

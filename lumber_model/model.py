@@ -446,7 +446,15 @@ class Model:
 
     def fabrication_rows(self) -> list[dict[str, Any]]:
         self.validate()
-        return [seat.fabrication_row() for seat in self.routed_seats]
+        rows = [seat.fabrication_row() for seat in self.routed_seats]
+        rows.extend(
+            row
+            for piece in self.pieces
+            if isinstance(piece, AngledLumber)
+            for row in [piece.fabrication_row()]
+            if row is not None
+        )
+        return rows
 
     def write_fabrication_csv(self, path: str | Path) -> None:
         self._write_csv(path, self.fabrication_rows())
@@ -465,11 +473,12 @@ class Model:
           - None keeps exact modeled length.
           - 1/16 can be passed as 0.0625.
           - 1/8 can be passed as 0.125.
+          - Profiled blanks round upward so the end cuts cannot uncover a support.
         """
         self.validate()
 
         grouped: dict[
-            tuple[str, str, float, object, object],
+            tuple[str, str, float, float, float, object, object, str],
             list[LumberPiece],
         ] = defaultdict(list)
 
@@ -477,17 +486,32 @@ class Model:
             length = piece.length
 
             if rounding_increment is not None:
-                length = round_to_increment(length, rounding_increment)
+                if isinstance(piece, AngledLumber) and piece.footprint is not None:
+                    length = (
+                        math.ceil(length / rounding_increment - 1e-12)
+                        * rounding_increment
+                    )
+                else:
+                    length = round_to_increment(length, rounding_increment)
 
             key = (
                 piece.assembly,
                 piece.type,
                 round(length, 4),
-                round(piece.cut_angle_deg, 2)
+                round(piece.stock_width, 4)
                 if isinstance(piece, AngledLumber)
+                else round(piece.dims[1] if piece.rotated else piece.dims[0], 4),
+                round(piece.width, 4)
+                if isinstance(piece, AngledLumber)
+                else round(piece.dims[1] if piece.rotated else piece.dims[0], 4),
+                round(piece.cut_angle_deg, 2)
+                if isinstance(piece, AngledLumber) and piece.footprint is None
                 else "",
                 round(piece.cut_angle_deg, 2)
-                if isinstance(piece, AngledLumber)
+                if isinstance(piece, AngledLumber) and piece.footprint is None
+                else "",
+                "jigsaw profiled ends"
+                if isinstance(piece, AngledLumber) and piece.footprint is not None
                 else "",
             )
 
@@ -499,8 +523,11 @@ class Model:
             assembly,
             lumber_type,
             length,
+            stock_width,
+            finished_width,
             start_cut_angle,
             end_cut_angle,
+            end_profile,
         ), pieces in sorted(grouped.items()):
             rows.append(
                 {
@@ -508,8 +535,11 @@ class Model:
                     "type": lumber_type,
                     "length_in": length,
                     "length_display": inches_to_fraction_text(length),
+                    "stock_width_in": stock_width,
+                    "finished_width_in": finished_width,
                     "start_cut_angle_deg": start_cut_angle,
                     "end_cut_angle_deg": end_cut_angle,
+                    "end_profile": end_profile,
                     "qty": len(pieces),
                     "members": ", ".join(piece.name for piece in pieces),
                 }
@@ -534,6 +564,7 @@ class Model:
         if stock_lengths is None:
             stock_lengths = {
                 "1x4": [72, 96, 120, 144, 168, 192],
+                "1x6": [72, 96, 120, 144, 168, 192],
                 "2x4": [96, 120, 144, 168, 192],
                 "4x4": [96, 120, 144, 168, 192],
             }
@@ -743,6 +774,15 @@ class Model:
 
         for piece in self.pieces:
             if isinstance(piece, AngledLumber):
+                if piece.footprint is not None:
+                    _include_xy_box(
+                        bounds,
+                        piece.min[0],
+                        piece.max[0],
+                        piece.min[1],
+                        piece.max[1],
+                    )
+                    continue
                 dx = piece.end[0] - piece.start[0]
                 dy = piece.end[1] - piece.start[1]
                 perpendicular_x = -dy / piece.length

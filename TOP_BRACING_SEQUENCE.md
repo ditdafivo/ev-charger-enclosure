@@ -62,7 +62,7 @@ clearance.
 
 ### Improved access from the shallow diagonal
 
-The rabbeted nominal 1x4 diagonal has an underside at `z = 46.25` inches.
+The rabbeted, ripped nominal 1x6 diagonal has an underside at `z = 46.25` inches.
 The maximum approved tambour envelope reaches `z = 45.25` inches on its top
 run, leaving approximately:
 

@@ -22,36 +22,50 @@ from lumber_model import (
 
 
 class TopBracingBuildTests(unittest.TestCase):
-    def test_diagonal_stays_inside_involved_post_xy_profiles(self) -> None:
+    def test_diagonal_covers_both_posts_and_stays_inside_outer_profiles(self) -> None:
         brace = build.members["brace_bl_fr"]
 
         self.assertNotIn("brace_br_fl", build.members)
-        self.assertEqual(brace.type, "1x4")
+        self.assertEqual(brace.type, "1x6")
         self.assertAlmostEqual(brace.thickness, 0.75)
+        self.assertAlmostEqual(brace.stock_width, 5.5)
+        self.assertAlmostEqual(brace.width, 4.9067062005)
         self.assertAlmostEqual(brace.min[2], 46.25)
         self.assertAlmostEqual(brace.max[2], build.DEFAULT_HEIGHT)
-        self.assertAlmostEqual(brace.start[0], 1.0277592726)
-        self.assertAlmostEqual(brace.start[1], 20.1688819912)
-        self.assertAlmostEqual(brace.end[0], 26.4722407274)
-        self.assertAlmostEqual(brace.end[1], 1.7061180088)
-        self.assertAlmostEqual(brace.length, 31.4371641592)
-        self.assertAlmostEqual(brace.cut_angle_deg, 35.965005)
+        self.assertAlmostEqual(brace.length, 35.1331949976)
+        self.assertAlmostEqual(brace.cut_angle_deg, 37.4385715723)
+        self.assertIsNotNone(brace.footprint)
 
-        dx = (brace.end[0] - brace.start[0]) / brace.length
-        dy = (brace.end[1] - brace.start[1]) / brace.length
-        normal = (-dy, dx)
-        footprint = tuple(
-            (
-                endpoint[0] + sign * normal[0] * brace.width / 2,
-                endpoint[1] + sign * normal[1] * brace.width / 2,
+        post_corners = {
+            (x, y)
+            for name in ("post_bl", "post_fr")
+            for x in (build.members[name].min_on("x"), build.members[name].max_on("x"))
+            for y in (build.members[name].min_on("y"), build.members[name].max_on("y"))
+        }
+        footprint = brace.footprint
+        assert footprint is not None
+        for corner in post_corners:
+            cross_products = (
+                (end[0] - start[0]) * (corner[1] - start[1])
+                - (end[1] - start[1]) * (corner[0] - start[0])
+                for start, end in zip(footprint, footprint[1:] + footprint[:1])
             )
-            for endpoint in (brace.start, brace.end)
-            for sign in (-1, 1)
-        )
+            self.assertTrue(
+                all(value >= -1e-9 for value in cross_products),
+                f"post corner {corner} is not covered by {footprint}",
+            )
+
         self.assertAlmostEqual(min(point[0] for point in footprint), 0)
         self.assertAlmostEqual(max(point[0] for point in footprint), 27.5)
-        self.assertGreaterEqual(min(point[1] for point in footprint), 0)
-        self.assertLessEqual(max(point[1] for point in footprint), 21.875)
+        self.assertAlmostEqual(min(point[1] for point in footprint), 0)
+        self.assertAlmostEqual(max(point[1] for point in footprint), 21.875)
+
+        post_a = build.members["post_bl"].center
+        post_b = build.members["post_fr"].center
+        self.assertAlmostEqual(
+            (brace.end[1] - brace.start[1]) / (brace.end[0] - brace.start[0]),
+            (post_b[1] - post_a[1]) / (post_b[0] - post_a[0]),
+        )
 
     def test_involved_posts_stop_below_diagonal(self) -> None:
         for name in ("post_bl", "post_fr"):
@@ -64,26 +78,47 @@ class TopBracingBuildTests(unittest.TestCase):
         enclosure = build.build_enclosure(width=36, depth=30, height=55)
         brace = enclosure.members["brace_bl_fr"]
 
-        self.assertEqual(brace.type, "1x4")
+        self.assertEqual(brace.type, "1x6")
         self.assertAlmostEqual(brace.thickness, 0.75)
         self.assertAlmostEqual(brace.max[2], 55)
         self.assertAlmostEqual(brace.min[2], 54.25)
-        self.assertAlmostEqual(brace.length, 48.1126668109)
+        self.assertAlmostEqual(brace.length, 51.7909179329)
+        self.assertAlmostEqual(brace.width, 4.9294198774)
 
-    def test_cut_and_shopping_lists_include_one_by_four_brace(self) -> None:
+        square = build.build_enclosure(width=24, depth=24, height=47)
+        square_brace = square.members["brace_bl_fr"]
+        self.assertAlmostEqual(square_brace.cut_angle_deg, 45)
+        self.assertAlmostEqual(square_brace.width, 3.5 / math.cos(math.radians(45)))
+
+    def test_reports_include_ripped_one_by_six_brace(self) -> None:
         cut_row = next(
             row
             for row in build.model.cut_list_rows(rounding_increment=None)
             if row["members"] == "brace_bl_fr"
         )
+        rounded_cut_row = next(
+            row
+            for row in build.model.cut_list_rows(rounding_increment=1 / 16)
+            if row["members"] == "brace_bl_fr"
+        )
         shopping_row = next(
-            row for row in build.model.shopping_list_rows() if row["type"] == "1x4"
+            row for row in build.model.shopping_list_rows() if row["type"] == "1x6"
+        )
+        fabrication_row = next(
+            row for row in build.model.fabrication_rows()
+            if row["member"] == "brace_bl_fr"
         )
 
-        self.assertEqual(cut_row["type"], "1x4")
+        self.assertEqual(cut_row["type"], "1x6")
+        self.assertEqual(cut_row["start_cut_angle_deg"], "")
+        self.assertEqual(cut_row["end_cut_angle_deg"], "")
         self.assertEqual(cut_row["qty"], 1)
+        self.assertEqual(rounded_cut_row["length_in"], 35.1875)
         self.assertEqual(shopping_row["stock_length_in"], 72)
         self.assertEqual(shopping_row["qty"], 1)
+        self.assertIn("at least 35.1332", fabrication_row["operation"])
+        self.assertIn("1x6 no narrower than 4.9067", fabrication_row["operation"])
+        self.assertIn("jigsaw", fabrication_row["operation"])
 
     def test_side_brace_rabbets_and_custom_gusset_hardware_are_explicit(self) -> None:
         self.assertEqual(len(build.routed_seats), 4)

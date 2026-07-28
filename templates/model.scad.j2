@@ -133,6 +133,7 @@ function l_end(l) = len(l) > 7 ? l[7] : l_start(l);
 function l_width(l) = len(l) > 8 ? l[8] : 0;
 function l_thickness(l) = len(l) > 9 ? l[9] : 0;
 function l_angle(l) = len(l) > 10 ? l[10] : 0;
+function l_footprint(l) = len(l) > 11 ? l[11] : [];
 function l_is_angled(l) = l_axis(l) == "angled";
 
 function rs_name(r) = r[0];
@@ -150,17 +151,24 @@ function f_color(f) = f[5];
 
 function l_dims(type) =
     type == "1x4" ? [0.75, 3.5] :
+    type == "1x6" ? [0.75, 5.5] :
     type == "2x4" ? [1.5, 3.5] :
     type == "4x4" ? [3.5, 3.5] :
     [1, 1];
 
 function l_size(l) =
     l_is_angled(l) ?
-        [
-            abs(l_end(l)[0] - l_start(l)[0]) + l_width(l),
-            abs(l_end(l)[1] - l_start(l)[1]) + l_width(l),
-            l_thickness(l)
-        ] :
+        len(l_footprint(l)) > 0 ?
+            [
+                max([for (p = l_footprint(l)) p[0]]) - min([for (p = l_footprint(l)) p[0]]),
+                max([for (p = l_footprint(l)) p[1]]) - min([for (p = l_footprint(l)) p[1]]),
+                l_thickness(l)
+            ] :
+            [
+                abs(l_end(l)[0] - l_start(l)[0]) + l_width(l),
+                abs(l_end(l)[1] - l_start(l)[1]) + l_width(l),
+                l_thickness(l)
+            ] :
     l_axis(l) == "x" ?
         [
             l_len(l),
@@ -213,19 +221,31 @@ function v_mid(a, b) =
 
 function l_min(l) =
     l_is_angled(l) ?
-        [
-            min(l_start(l)[0], l_end(l)[0]) - l_width(l) / 2,
-            min(l_start(l)[1], l_end(l)[1]) - l_width(l) / 2,
-            l_start(l)[2] - l_thickness(l) / 2
-        ] :
+        len(l_footprint(l)) > 0 ?
+            [
+                min([for (p = l_footprint(l)) p[0]]),
+                min([for (p = l_footprint(l)) p[1]]),
+                l_start(l)[2] - l_thickness(l) / 2
+            ] :
+            [
+                min(l_start(l)[0], l_end(l)[0]) - l_width(l) / 2,
+                min(l_start(l)[1], l_end(l)[1]) - l_width(l) / 2,
+                l_start(l)[2] - l_thickness(l) / 2
+            ] :
         l_start(l);
 function l_max(l) =
     l_is_angled(l) ?
-        [
-            max(l_start(l)[0], l_end(l)[0]) + l_width(l) / 2,
-            max(l_start(l)[1], l_end(l)[1]) + l_width(l) / 2,
-            l_start(l)[2] + l_thickness(l) / 2
-        ] :
+        len(l_footprint(l)) > 0 ?
+            [
+                max([for (p = l_footprint(l)) p[0]]),
+                max([for (p = l_footprint(l)) p[1]]),
+                l_start(l)[2] + l_thickness(l) / 2
+            ] :
+            [
+                max(l_start(l)[0], l_end(l)[0]) + l_width(l) / 2,
+                max(l_start(l)[1], l_end(l)[1]) + l_width(l) / 2,
+                l_start(l)[2] + l_thickness(l) / 2
+            ] :
         v_add(l_start(l), l_size(l));
 function l_center(l) =
     l_is_angled(l) ? v_mid(l_start(l), l_end(l)) : v_mid(l_min(l), l_max(l));
@@ -346,10 +366,15 @@ module routed_seat_volume(r) {
 module render_lumber(l, highlighted = false) {
     color(highlighted ? build_step_highlight_color() : lumber_color) difference() {
         if (l_is_angled(l)) {
-            translate(l_start(l))
-                rotate([0, 0, l_angle(l)])
-                    translate([0, -l_width(l) / 2, -l_thickness(l) / 2])
-                        cube([l_len(l), l_width(l), l_thickness(l)]);
+            if (len(l_footprint(l)) > 0)
+                translate([0, 0, l_start(l)[2] - l_thickness(l) / 2])
+                    linear_extrude(height = l_thickness(l))
+                        polygon(points = l_footprint(l));
+            else
+                translate(l_start(l))
+                    rotate([0, 0, l_angle(l)])
+                        translate([0, -l_width(l) / 2, -l_thickness(l) / 2])
+                            cube([l_len(l), l_width(l), l_thickness(l)]);
         } else {
             translate(l_start(l))
                 cube(l_size(l));

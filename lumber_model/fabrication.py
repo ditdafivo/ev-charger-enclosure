@@ -48,7 +48,19 @@ def clip_polygon_to_box(
                 )
                 clipped.append(intersection)
         points = clipped
-    return tuple(points)
+    deduplicated: list[Point2] = []
+    for point in points:
+        if not deduplicated or not (
+            math.isclose(point[0], deduplicated[-1][0], abs_tol=1e-10)
+            and math.isclose(point[1], deduplicated[-1][1], abs_tol=1e-10)
+        ):
+            deduplicated.append(point)
+    if len(deduplicated) > 1 and (
+        math.isclose(deduplicated[0][0], deduplicated[-1][0], abs_tol=1e-10)
+        and math.isclose(deduplicated[0][1], deduplicated[-1][1], abs_tol=1e-10)
+    ):
+        deduplicated.pop()
+    return tuple(deduplicated)
 
 
 @dataclass(frozen=True)
@@ -79,6 +91,8 @@ class PurchasedItem:
             "size_x": "",
             "size_y": "",
             "size_z": "",
+            "stock_width_in": "",
+            "finished_width_in": "",
             "start_cut_angle_deg": "",
             "end_cut_angle_deg": "",
             "total_linear_ft": "",

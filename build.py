@@ -135,8 +135,8 @@ def build_enclosure(
 
     HEIGHT_2x4=1.5
     HALF_HEIGHT_2x4=HEIGHT_2x4/2
-    HEIGHT_1x4=0.75
-    HALF_HEIGHT_1x4=HEIGHT_1x4/2
+    HEIGHT_1X_BOARD=0.75
+    HALF_HEIGHT_1X_BOARD=HEIGHT_1X_BOARD/2
     WIDTH_4x4=3.5
 
     members = LumberCollection()
@@ -154,7 +154,7 @@ def build_enclosure(
             axis="z",
             start=AbsoluteCoord(x, y, -BURIED_FRAME_Z),
             length=(
-                FULL_POST_LEN - HEIGHT_1x4
+                FULL_POST_LEN - HEIGHT_1X_BOARD
                 if name in {"post_bl", "post_fr"}
                 else FULL_POST_LEN
             ),
@@ -197,11 +197,11 @@ def build_enclosure(
     members.diagonal_between(
         "brace_bl_fr",
         assembly="frame",
-        type="1x4",
+        type="1x6",
         support_a="post_bl",
         support_b="post_fr",
-        position=FRAME_DIMS.z-HALF_HEIGHT_1x4,
-        extend_within_support_xy=True,
+        position=FRAME_DIMS.z-HALF_HEIGHT_1X_BOARD,
+        cover_supports_xy=True,
     )
 
     diagonal = members["brace_bl_fr"]
@@ -210,24 +210,9 @@ def build_enclosure(
         (diagonal.end[1]-diagonal.start[1])/diagonal.length,
     )
     diagonal_normal = (-diagonal_unit[1], diagonal_unit[0])
-    diagonal_footprint = (
-        (
-            diagonal.start[0]-diagonal_normal[0]*diagonal.width/2,
-            diagonal.start[1]-diagonal_normal[1]*diagonal.width/2,
-        ),
-        (
-            diagonal.end[0]-diagonal_normal[0]*diagonal.width/2,
-            diagonal.end[1]-diagonal_normal[1]*diagonal.width/2,
-        ),
-        (
-            diagonal.end[0]+diagonal_normal[0]*diagonal.width/2,
-            diagonal.end[1]+diagonal_normal[1]*diagonal.width/2,
-        ),
-        (
-            diagonal.start[0]+diagonal_normal[0]*diagonal.width/2,
-            diagonal.start[1]+diagonal_normal[1]*diagonal.width/2,
-        ),
-    )
+    diagonal_footprint = diagonal.footprint
+    if diagonal_footprint is None:
+        raise ValueError("brace_bl_fr: expected a profiled diagonal footprint")
     routed_seats = tuple(
         RoutedSeat(
             name=f"route_{member_name}_for_brace_bl_fr",

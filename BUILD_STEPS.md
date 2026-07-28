@@ -164,9 +164,12 @@ Install 2x4 front and back perimeter braces and top-flush 4x4 left and right
 braces. The back-left and front-right posts stop at `z = 46.25`; do not rabbet
 them. Route only the four side-brace regions listed in
 `output/fabrication.csv` to a uniform 3/4-inch depth. Dry-fit the approximately
-31 7/16-inch stress-rated nominal 1x4. Its full section must occupy
-`z = 46.25` to `47.00`, and its footprint must not extend beyond the exterior
-XY faces of either involved post.
+35.133-inch-long rectangular blank cut from a stress-rated nominal 1x6; cut it
+slightly long rather than rounding the minimum downward. Rip it slightly proud
+of the calculated 4.907-inch minimum finished width, fit it on the modeled
+post-center line, and jigsaw the end profiles listed in `output/fabrication.csv`.
+Its full section must occupy `z = 46.25` to `47.00`, cover both complete post
+tops, and stop at their exterior XY faces.
 
 Install one laser-cut 6-by-6-by-0.074-inch G90 galvanized-steel gusset at each
 involved corner. Orient each square from the two exterior post faces toward the
@@ -179,7 +182,7 @@ overdriving and verify that every screw location has solid wood beneath it.
 Before fastening the permanent bracing, reconfirm that every post is plumb and
 compare the frame diagonals. Install the braces without pulling the posts out
 of alignment, then repeat the plumb and square checks. Use the species and
-grade specified against the 826-pound ASD brace demand in `TOP_BRACING.md`.
+grade specified against the 798-pound ASD brace demand in `TOP_BRACING.md`.
 Reject split routed edges, stripped screws, raised plate edges, or rocking
 hardware. Remove temporary external bracing only after the permanent frame and
 both complete gusset assemblies are inspected and stable.

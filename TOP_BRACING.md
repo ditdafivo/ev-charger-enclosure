@@ -2,15 +2,16 @@
 
 ## Decision
 
-Use one stress-rated nominal 1x4 diagonal across the back-left and front-right
-corners. The member is 31.437 inches overall in the default model, retains the
-25.328-inch clear span, and occupies `z = 46.25` to `47.00`. Its square-cut
-ends extend only as far as the complete 3.5-inch board width can remain inside
-the exterior XY faces of the involved posts.
+Use one stress-rated nominal 1x6 diagonal across the back-left and front-right
+posts. Rip it from its 5.5-inch stock width to the calculated 4.907-inch
+finished width. The default rectangular blank is 35.133 inches long, runs
+post-center to post-center at 37.44 degrees, retains a 25.320-inch clear span,
+and occupies `z = 46.25` to `47.00`. Jigsaw the two end profiles to the modeled
+six-sided footprint. The finished member fully covers both shortened post tops
+without crossing their exterior XY faces.
 
 Shorten `post_bl` and `post_fr` by the diagonal depth so their tops are at
-`z = 46.25`; the unfilled parts of those post footprints remain open below the
-roof. Route 3/4-inch seats only where the diagonal crosses the four side
+`z = 46.25`. Route 3/4-inch seats only where the diagonal crosses the four side
 braces. Connect each corner with one custom 6-by-6-by-0.074-inch G90
 galvanized-steel gusset and a 4-by-4 grid of #9 pan-head screws. Fastener length
 is deliberately unspecified.
@@ -52,12 +53,12 @@ Using a deliberately high net force coefficient of 1.8 gives 44.1 psf.  On
 the larger 27.5-inch by 48-inch projected face, the resulting top-level shear
 screen is 404 pounds ultimate, or 242 pounds ASD after the 0.6 wind factor.
 Doubling that ASD result for model and load-path uncertainty gives a 485-pound
-design shear.  The default clear opening is 20.5 by 14.875 inches and its
-diagonal is 25.32 inches at 35.96 degrees, producing a maximum screened axial
-brace demand of:
+design shear. The post-center diagonal is 30.226 inches at 37.44 degrees; the
+clear span between post profiles is 25.320 inches. This produces a maximum
+screened axial brace demand of:
 
 ```text
-P = 485 / sin(35.96 degrees) = 826 pounds ASD
+P = 485 / sin(37.44 degrees) = 798 pounds ASD
 ```
 
 The 40 psf snow load governs the gravity support check of the composite roof
@@ -65,35 +66,36 @@ and perimeter members, not the in-plane axial force in this diagonal.  The
 brace also does not improve whole-enclosure overturning or the lateral
 capacity of the gravel footings.
 
-### 1x4 member screen
+### Ripped 1x6 member screen
 
 The American Wood Council permits a stress-rated nominal 1-inch board to use
 the corresponding dimension-lumber design values. For Douglas fir-larch No. 2,
 use `Fc = 1,400 psi`, `Ft = 500 psi`, and `Emin = 580,000 psi`. Conservatively
 apply wet-service factors of 0.80 to compression and 0.90 to `Emin`, the 1.60
-wind-duration factor, no size increase, a pinned 25.328-inch effective length,
+wind-duration factor, no size increase, a pinned 25.320-inch effective length,
 and the NDS sawn-lumber column constant of 0.8.
 
 ```text
-area       = 0.75(3.5) = 2.625 square inches
-Le / d     = 25.328 / 0.75 = 33.77
+area       = 0.75(4.907) = 3.680 square inches
+Le / d     = 25.320 / 0.75 = 33.76
 Fc*        = 1,400(0.80)(1.60) = 1,792 psi
-FcE        = 0.822(580,000)(0.90) / 33.77^2 = 376 psi
+FcE        = 0.822(580,000)(0.90) / 33.76^2 = 376 psi
 Cp         = 0.200
-Pcompression = Fc* Cp area = 941 pounds ASD
-Ptension     = 500(1.60)(2.625) = 2,100 pounds ASD
+Pcompression = Fc* Cp area = 1,319 pounds ASD
+Ptension     = 500(1.60)(3.680) = 2,944 pounds ASD
 ```
 
-The screened 1x4 therefore passes member compression by 14 percent and member
-tension by a larger margin after the wind demand has already been doubled for
-uncertainty. Because the compression margin is not large, substituting a lower
-species/grade, an incised member, a longer unsupported brace, or a connection
-that reduces the net section requires a new calculation.
+The screened ripped 1x6 therefore passes member compression by approximately
+65 percent and member tension by a larger margin after the wind demand has
+already been doubled for uncertainty. Substituting a lower species/grade, an
+incised member, a longer unsupported brace, or a connection that reduces the
+net section requires a new calculation.
 
 ## Member and connection requirements
 
-Use a stress-rated, exterior-suitable nominal 1x4 with actual dimensions of
-3/4 by 3 1/2 inches.  Specify Douglas fir-larch No. 2 or a species/grade with
+Use a stress-rated, exterior-suitable nominal 1x6 with actual dimensions of
+3/4 by 5 1/2 inches and rip it slightly proud of the modeled 4.907-inch minimum
+before final fitting. Specify Douglas fir-larch No. 2 or a species/grade with
 equal or greater published compression, tension, and minimum-modulus values.
 Reject a board with slope-of-grain defects, checks, splits, or wane in either
 end-connection region.
@@ -101,7 +103,7 @@ end-connection region.
 The accepted detail and its installation must provide all of the following for
 both load directions:
 
-- at least 826 pounds ASD axial capacity in the member and at each end;
+- at least 798 pounds ASD axial capacity in the member and at each end;
 - compression stability about the 3/4-inch weak axis over the modeled length;
 - tension capacity at the minimum net section;
 - full seating of both plates and all thirty-two #9 pan-head screws in solid wood;

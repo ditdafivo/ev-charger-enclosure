@@ -313,6 +313,8 @@ class Lumber:
             "size_x": round(self.size[0], 4),
             "size_y": round(self.size[1], 4),
             "size_z": round(self.size[2], 4),
+            "stock_width_in": round(self.dims[1] if self.rotated else self.dims[0], 4),
+            "finished_width_in": round(self.dims[1] if self.rotated else self.dims[0], 4),
             "start_cut_angle_deg": "",
             "end_cut_angle_deg": "",
         }
@@ -336,11 +338,14 @@ class Lumber:
 @dataclass(frozen=True)
 class AngledLumber:
     """
-    A horizontal lumber member modeled from a centerline start/end.
+    A horizontal lumber blank modeled from a centerline start/end.
 
     The member is rendered with its long axis along the centerline, its wide face
     horizontal in XY, and its narrow dimension vertical. This is intended for
-    flat diagonal bracing in the top-rail plane.
+    flat diagonal bracing in the top-rail plane. finished_width records a rip
+    narrower than the nominal stock. footprint optionally replaces the rectangular
+    rendering with a final, profiled XY polygon while start/end continue to define
+    the required rectangular blank length and angle.
     """
 
     name: str
@@ -349,6 +354,8 @@ class AngledLumber:
     start: Vector3
     end: Vector3
     rotated: bool = True
+    finished_width: float | None = None
+    footprint: tuple[tuple[float, float], ...] | None = None
 
     def __post_init__(self) -> None:
         if self.type not in ACTUAL_DIMS:
@@ -369,12 +376,42 @@ class AngledLumber:
                 f"got start z={self.start[2]} and end z={self.end[2]}"
             )
 
+        if self.finished_width is not None:
+            if self.finished_width <= 0:
+                raise ValueError(f"{self.name}: finished width must be positive")
+            if self.finished_width > self.stock_width:
+                raise ValueError(
+                    f"{self.name}: finished width {self.finished_width} exceeds "
+                    f"stock width {self.stock_width}"
+                )
+
+        if self.footprint is not None:
+            if len(self.footprint) < 3:
+                raise ValueError(f"{self.name}: footprint needs at least three points")
+            doubled_area = abs(
+                sum(
+                    start[0] * end[1] - end[0] * start[1]
+                    for start, end in zip(
+                        self.footprint,
+                        self.footprint[1:] + self.footprint[:1],
+                    )
+                )
+            )
+            if math.isclose(doubled_area, 0):
+                raise ValueError(f"{self.name}: footprint must have area")
+
     @property
     def dims(self) -> tuple[float, float]:
         return ACTUAL_DIMS[self.type]
 
     @property
     def width(self) -> float:
+        narrow, wide = self.dims
+        stock_width = wide if self.rotated else narrow
+        return self.finished_width if self.finished_width is not None else stock_width
+
+    @property
+    def stock_width(self) -> float:
         narrow, wide = self.dims
         return wide if self.rotated else narrow
 
@@ -405,6 +442,12 @@ class AngledLumber:
 
     @property
     def min(self) -> Vector3:
+        if self.footprint is not None:
+            return (
+                min(point[0] for point in self.footprint),
+                min(point[1] for point in self.footprint),
+                self.start[2] - self.thickness / 2,
+            )
         half_width = self.width / 2
         half_thickness = self.thickness / 2
         return (
@@ -415,6 +458,12 @@ class AngledLumber:
 
     @property
     def max(self) -> Vector3:
+        if self.footprint is not None:
+            return (
+                max(point[0] for point in self.footprint),
+                max(point[1] for point in self.footprint),
+                self.start[2] + self.thickness / 2,
+            )
         half_width = self.width / 2
         half_thickness = self.thickness / 2
         return (
@@ -450,8 +499,38 @@ class AngledLumber:
             "size_x": round(self.size[0], 4),
             "size_y": round(self.size[1], 4),
             "size_z": round(self.size[2], 4),
-            "start_cut_angle_deg": round(self.cut_angle_deg, 2),
-            "end_cut_angle_deg": round(self.cut_angle_deg, 2),
+            "stock_width_in": round(self.stock_width, 4),
+            "finished_width_in": round(self.width, 4),
+            "start_cut_angle_deg": (
+                "" if self.footprint is not None else round(self.cut_angle_deg, 2)
+            ),
+            "end_cut_angle_deg": (
+                "" if self.footprint is not None else round(self.cut_angle_deg, 2)
+            ),
+        }
+
+    def fabrication_row(self) -> dict[str, Any] | None:
+        if self.footprint is None:
+            return None
+        return {
+            "name": f"profile_{self.name}",
+            "member": self.name,
+            "operation": (
+                f"cut blank at least {self.length:.4f} in long; "
+                f"rip {self.type} no narrower than {self.width:.4f} in; "
+                "jigsaw end profiles to polygon"
+            ),
+            "depth_in": "",
+            "depth_display": "",
+            "area_sq_in": "",
+            "top_z": "",
+            "min_x": round(self.min[0], 4),
+            "max_x": round(self.max[0], 4),
+            "min_y": round(self.min[1], 4),
+            "max_y": round(self.max[1], 4),
+            "polygon_xy": "; ".join(
+                f"{point[0]:.4f} {point[1]:.4f}" for point in self.footprint
+            ),
         }
 
     def scad_record(self) -> str:
@@ -470,7 +549,17 @@ class AngledLumber:
             f"[{fmt_float(ex)}, {fmt_float(ey)}, {fmt_float(ez)}], "
             f"{fmt_float(self.width)}, "
             f"{fmt_float(self.thickness)}, "
-            f"{fmt_float(self.angle_deg)}"
+            f"{fmt_float(self.angle_deg)}, "
+            "["
+            + (
+                ", ".join(
+                    f"[{fmt_float(point[0])}, {fmt_float(point[1])}]"
+                    for point in self.footprint
+                )
+                if self.footprint is not None
+                else ""
+            )
+            + "]"
             "]"
         )
 

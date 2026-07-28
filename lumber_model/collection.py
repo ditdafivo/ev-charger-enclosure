@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator, Mapping
+import math
 from typing import overload
 
-from lumber_model.constants import Axis, LumberType
+from lumber_model.constants import ACTUAL_DIMS, Axis, LumberType
 from lumber_model.coordinates import Coordinate, resolve_coordinate
+from lumber_model.fabrication import clip_polygon_to_box
 from lumber_model.geometry import Vector3
 from lumber_model.lumber import AngledLumber, Lumber, LumberPiece
 
@@ -106,19 +108,30 @@ class LumberCollection(Mapping[str, LumberPiece]):
         support_b: LumberRef,
         position: float,
         rotated: bool = True,
+        extend_within_support_xy: bool = False,
+        cover_supports_xy: bool = False,
     ) -> AngledLumber:
         """
         Create a horizontal diagonal member between the inside corners of posts.
 
         The endpoint on each support is chosen from the support corner facing
         the opposite support, so the member butts into the clear top-frame
-        opening rather than running post-center to post-center.
+        opening rather than running post-center to post-center. With
+        cover_supports_xy, the member instead follows the support-center line,
+        is ripped to their maximum projected width, extends across both support
+        profiles, and is clipped to their combined exterior XY bounds.
         """
         a = self.resolve(support_a)
         b = self.resolve(support_b)
 
         if isinstance(a, AngledLumber) or isinstance(b, AngledLumber):
             raise ValueError(f"{name}: diagonal supports must be axis-aligned lumber")
+
+        if extend_within_support_xy and cover_supports_xy:
+            raise ValueError(
+                f"{name}: extension modes extend_within_support_xy and "
+                "cover_supports_xy are mutually exclusive"
+            )
 
         a_center = a.center
         b_center = b.center
@@ -128,6 +141,104 @@ class LumberCollection(Mapping[str, LumberPiece]):
         b_x = b.max_on("x") if a_center[0] >= b_center[0] else b.min_on("x")
         b_y = b.max_on("y") if a_center[1] >= b_center[1] else b.min_on("y")
 
+        finished_width: float | None = None
+        footprint: tuple[tuple[float, float], ...] | None = None
+
+        if cover_supports_xy:
+            dx = b_center[0] - a_center[0]
+            dy = b_center[1] - a_center[1]
+            center_length = math.hypot(dx, dy)
+            if math.isclose(center_length, 0):
+                raise ValueError(f"{name}: cannot cover coincident supports")
+
+            along = (dx / center_length, dy / center_length)
+            normal = (-along[1], along[0])
+
+            def projected_extent(support: Lumber, direction: tuple[float, float]) -> float:
+                return (
+                    abs(direction[0]) * (support.max_on("x") - support.min_on("x"))
+                    + abs(direction[1]) * (support.max_on("y") - support.min_on("y"))
+                )
+
+            finished_width = max(
+                projected_extent(a, normal),
+                projected_extent(b, normal),
+            )
+            stock_width = ACTUAL_DIMS[type][1 if rotated else 0]
+            if finished_width > stock_width:
+                raise ValueError(
+                    f"{name}: required finished width {finished_width} exceeds "
+                    f"{type} stock width {stock_width}"
+                )
+
+            a_extension = projected_extent(a, along) / 2
+            b_extension = projected_extent(b, along) / 2
+            a_x = a_center[0] - along[0] * a_extension
+            a_y = a_center[1] - along[1] * a_extension
+            b_x = b_center[0] + along[0] * b_extension
+            b_y = b_center[1] + along[1] * b_extension
+
+            half_width = finished_width / 2
+            raw_footprint = (
+                (a_x - normal[0] * half_width, a_y - normal[1] * half_width),
+                (b_x - normal[0] * half_width, b_y - normal[1] * half_width),
+                (b_x + normal[0] * half_width, b_y + normal[1] * half_width),
+                (a_x + normal[0] * half_width, a_y + normal[1] * half_width),
+            )
+            footprint = clip_polygon_to_box(
+                raw_footprint,
+                min_x=min(a.min_on("x"), b.min_on("x")),
+                max_x=max(a.max_on("x"), b.max_on("x")),
+                min_y=min(a.min_on("y"), b.min_on("y")),
+                max_y=max(a.max_on("y"), b.max_on("y")),
+            )
+        elif extend_within_support_xy:
+            dx = b_x - a_x
+            dy = b_y - a_y
+            clear_length = math.hypot(dx, dy)
+            if math.isclose(clear_length, 0):
+                raise ValueError(f"{name}: cannot extend a zero-length diagonal")
+
+            along = (dx / clear_length, dy / clear_length)
+            normal = (-along[1], along[0])
+            half_width = ACTUAL_DIMS[type][1] / 2
+
+            def extended_endpoint(
+                point: tuple[float, float],
+                support: Lumber,
+                direction: tuple[float, float],
+            ) -> tuple[float, float]:
+                """Extend a square-cut end without crossing outward support faces."""
+
+                limits: list[float] = []
+                for axis, axis_name in enumerate(("x", "y")):
+                    padding = abs(normal[axis]) * half_width
+                    rate = direction[axis]
+                    if math.isclose(rate, 0):
+                        continue
+                    if rate < 0:
+                        limit = (
+                            point[axis] - support.min_on(axis_name) - padding
+                        ) / -rate
+                    else:
+                        limit = (
+                            support.max_on(axis_name) - padding - point[axis]
+                        ) / rate
+                    limits.append(limit)
+
+                distance = min(limits)
+                if distance < 0:
+                    raise ValueError(
+                        f"{name}: diagonal width does not fit on {support.name}"
+                    )
+                return (
+                    point[0] + direction[0] * distance,
+                    point[1] + direction[1] * distance,
+                )
+
+            a_x, a_y = extended_endpoint((a_x, a_y), a, (-along[0], -along[1]))
+            b_x, b_y = extended_endpoint((b_x, b_y), b, along)
+
         return self._store(
             AngledLumber(
                 name=name,
@@ -136,6 +247,8 @@ class LumberCollection(Mapping[str, LumberPiece]):
                 start=(a_x, a_y, position),
                 end=(b_x, b_y, position),
                 rotated=rotated,
+                finished_width=finished_width,
+                footprint=footprint,
             )
         )
 

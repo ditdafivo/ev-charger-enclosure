@@ -44,16 +44,28 @@ from lumber_model import (
     FrontSidingOpening,
     LumberCollection,
     Model,
+    PurchasedItem,
     RelativeCoord,
+    RoutedSeat,
     RightSidingOpening,
     TambourBend,
     TambourCollection,
     cubic_bezier_conduit_points,
     cubic_bezier_points,
+    clip_polygon_to_box,
     ev_charger_cable_points,
     parse_build_steps,
     rounded_cable_points,
 )
+from lumber_model.gusset import (
+    GUSSET_FASTENER_COUNT,
+    GUSSET_MATERIAL,
+    GUSSET_SCREW_HEAD_HEIGHT_IN,
+    GUSSET_SIZE_IN,
+    GUSSET_THICKNESS_IN,
+    pan_head_cylinder_primitives,
+)
+from lumber_model.gusset_dxf import generate_gusset_dxf
 
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 18.375
@@ -83,6 +95,7 @@ class EnclosureBuild:
     footings: list[Footing]
     tambours: TambourCollection
     siding: CompositeSiding
+    routed_seats: tuple[RoutedSeat, ...]
     model: Model
     anchors: dict[str, Any]
 
@@ -122,47 +135,30 @@ def build_enclosure(
 
     HEIGHT_2x4=1.5
     HALF_HEIGHT_2x4=HEIGHT_2x4/2
-    HEIGHT_1x4=0.75
-    HALF_HEIGHT_1x4=HEIGHT_1x4/2
+    HEIGHT_1X_BOARD=0.75
+    HALF_HEIGHT_1X_BOARD=HEIGHT_1X_BOARD/2
     WIDTH_4x4=3.5
 
     members = LumberCollection()
 
-    members.add(
-        "post_fl",
-        assembly="posts",
-        type="4x4",
-        axis="z",
-        start=AbsoluteCoord(0, 0, -BURIED_FRAME_Z),
-        length=FULL_POST_LEN,
-    )
-
-    members.add(
-        "post_fr",
-        assembly="posts",
-        type="4x4",
-        axis="z",
-        start=RelativeCoord("post_fl", FRAME_DIMS.x, 0, 0),
-        length=FULL_POST_LEN,
-    )
-
-    members.add(
-        "post_bl",
-        assembly="posts",
-        type="4x4",
-        axis="z",
-        start=RelativeCoord("post_fl", 0, FRAME_DIMS.y, 0),
-        length=FULL_POST_LEN,
-    )
-
-    members.add(
-        "post_br",
-        assembly="posts",
-        type="4x4",
-        axis="z",
-        start=RelativeCoord("post_fl", FRAME_DIMS.x, FRAME_DIMS.y, 0),
-        length=FULL_POST_LEN,
-    )
+    for name, x, y in (
+        ("post_fl", 0, 0),
+        ("post_fr", FRAME_DIMS.x, 0),
+        ("post_bl", 0, FRAME_DIMS.y),
+        ("post_br", FRAME_DIMS.x, FRAME_DIMS.y),
+    ):
+        members.add(
+            name,
+            assembly="posts",
+            type="4x4",
+            axis="z",
+            start=AbsoluteCoord(x, y, -BURIED_FRAME_Z),
+            length=(
+                FULL_POST_LEN - HEIGHT_1X_BOARD
+                if name in {"post_bl", "post_fr"}
+                else FULL_POST_LEN
+            ),
+        )
 
     def _member_relative_coord(
         reference: str,
@@ -179,28 +175,64 @@ def build_enclosure(
         )
 
 
-    for name,support_a,support_b in [
-        ("brace_fl_fr","post_fl","post_fr"),
-        ("brace_fl_bl","post_fl","post_bl"),
-        ("brace_bl_br","post_bl","post_br"),
-        ("brace_fr_br","post_fr","post_br"),
+    for name,support_a,support_b,lumber_type in [
+        ("brace_fl_fr","post_fl","post_fr", "2x4"),
+        ("brace_fl_bl","post_fl","post_bl", "4x4"),
+        ("brace_bl_br","post_bl","post_br", "2x4"),
+        ("brace_fr_br","post_fr","post_br", "4x4"),
     ]:
         members.between(
             name,
             assembly="frame",
-            type="2x4",
+            type=lumber_type,
             support_a=support_a,
             support_b=support_b,
-            position=FRAME_DIMS.z-HALF_HEIGHT_2x4,
+            position=(
+                FRAME_DIMS.z-WIDTH_4x4/2
+                if lumber_type == "4x4"
+                else FRAME_DIMS.z-HALF_HEIGHT_2x4
+            ),
         )
 
     members.diagonal_between(
         "brace_bl_fr",
         assembly="frame",
-        type="1x4",
+        type="1x6",
         support_a="post_bl",
         support_b="post_fr",
-        position=FRAME_DIMS.z-HALF_HEIGHT_1x4,
+        position=FRAME_DIMS.z-HALF_HEIGHT_1X_BOARD,
+        cover_supports_xy=True,
+    )
+
+    diagonal = members["brace_bl_fr"]
+    diagonal_unit = (
+        (diagonal.end[0]-diagonal.start[0])/diagonal.length,
+        (diagonal.end[1]-diagonal.start[1])/diagonal.length,
+    )
+    diagonal_normal = (-diagonal_unit[1], diagonal_unit[0])
+    diagonal_footprint = diagonal.footprint
+    if diagonal_footprint is None:
+        raise ValueError("brace_bl_fr: expected a profiled diagonal footprint")
+    routed_seats = tuple(
+        RoutedSeat(
+            name=f"route_{member_name}_for_brace_bl_fr",
+            member=member_name,
+            polygon=clip_polygon_to_box(
+                diagonal_footprint,
+                min_x=members[member_name].min_on("x"),
+                max_x=members[member_name].max_on("x"),
+                min_y=members[member_name].min_on("y"),
+                max_y=members[member_name].max_on("y"),
+            ),
+            depth=diagonal.thickness,
+            top_z=FRAME_DIMS.z,
+        )
+        for member_name in (
+            "brace_fl_bl",
+            "brace_bl_br",
+            "brace_fr_br",
+            "brace_fl_fr",
+        )
     )
 
     CENTER_RAIL_OFFSET=-3
@@ -229,25 +261,21 @@ def build_enclosure(
         ("rail_lb","post_fl","post_bl", 7, 0, None, True),
         ("rail_fb","rail_lb","rail_rb", 7, CENTER_RAIL_OFFSET, None, True),
         ("rail_rbu","post_fr","post_br", 13, 0, None, True),
-        ("rail_r_tambour","post_fr","post_br", FRAME_DIMS.z-TAMBOUR_TOP_OFFSET, 0, None, True),
-        ("rail_l_tambour","post_fl","post_bl", FRAME_DIMS.z-TAMBOUR_TOP_OFFSET, 0, None, True),
-        ("rail_rt","post_fr","post_br", FRAME_DIMS.z-UPPER_RAIL_OFFSET, 0, None, True),
-        ("rail_lt","post_fl","post_bl", FRAME_DIMS.z-UPPER_RAIL_OFFSET, 0, None, True),
         (
             "rail_ft",
-            "rail_rt",
-            "rail_lt",
+            "brace_fr_br",
+            "brace_fl_bl",
             TAMBOUR_FRONT_HEADER_CENTER_Z,
             CENTER_RAIL_OFFSET,
             None,
             True,
         ),
         ("front_center_rail","rail_fb","rail_ft",(WIDTH_4x4+FRAME_DIMS.x)/2, 0, None, False),
-        ("right_center_rail","rail_rbu","rail_rt",(WIDTH_4x4+FRAME_DIMS.y)/2, 0, "y", True),
+        ("right_center_rail","rail_rbu","brace_fr_br",(WIDTH_4x4+FRAME_DIMS.y)/2, 0, "y", True),
         (
             "right_tambour_rail",
             "rail_rbu",
-            "rail_rt",
+            "brace_fr_br",
             TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
             0,
             "y",
@@ -256,7 +284,7 @@ def build_enclosure(
         (
             "left_tambour_rail",
             "rail_lb",
-            "rail_lt",
+            "brace_fl_bl",
             TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
             0,
             "y",
@@ -275,7 +303,7 @@ def build_enclosure(
             rotated=rotated,
         )
 
-    TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z=members["rail_lt"].min_on("z")
+    TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z=members["brace_fl_bl"].min_on("z")
     TAMBOUR_FRONT_HEADER_SUPPORT_LENGTH=(
         TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z-members["rail_ft"].min_on("z")
     )
@@ -606,6 +634,93 @@ def build_enclosure(
     LOW_VOLTAGE_STREET_LIGHT_COLOR=(0.18, 0.07, 0.025, 1.0)
 
     components = ComponentCollection()
+
+    GUSSET_HARDWARE_PROJECTION=(
+        GUSSET_THICKNESS_IN+GUSSET_SCREW_HEAD_HEIGHT_IN
+    )
+    ROOF_SHIM_THICKNESS=math.ceil(GUSSET_HARDWARE_PROJECTION*8)/8
+    gusset_with_screws_type=ComponentType(
+        name="custom_6x6_g90_gusset_with_number_9_pan_head_screws",
+        size=(GUSSET_SIZE_IN, GUSSET_SIZE_IN, GUSSET_HARDWARE_PROJECTION),
+        color=(0.62, 0.66, 0.68, 1.0),
+        default_face="wide_pos",
+        mount_point=(0, 0, 0),
+        shape="primitive_union",
+        box_primitives=(
+            ((0, 0, 0), (GUSSET_SIZE_IN, GUSSET_SIZE_IN, GUSSET_THICKNESS_IN)),
+        ),
+        cylinder_primitives=pan_head_cylinder_primitives(),
+        include_primitive_envelope=True,
+    )
+    # The four holes nearest each supported plate corner form a 1.5-inch
+    # square.  Center that fastener profile on the post in both plan axes.
+    for name, member_name, face, across_offset in (
+        ("gusset_back_left", "post_bl", "wide_neg", -4.5),
+        ("gusset_front_right", "post_fr", "wide_pos", -1.5),
+    ):
+        components.add(
+            name,
+            assembly="top_bracing_hardware",
+            component_type=gusset_with_screws_type,
+            member=member_name,
+            at=members[member_name].length,
+            face=face,
+            orientation="inward",
+            offset=(0.25, across_offset, diagonal.thickness),
+        )
+
+    # Stop each shim at the resolved hardware envelope.  The shim establishes a
+    # support plane above the gusset; placing it on the gusset would instead
+    # stack the two parts and raise the decking locally.
+    for member_name, gusset_name, keep_side, end_post_name in (
+        ("brace_fl_fr", "gusset_front_right", "before", "post_fl"),
+        ("brace_fl_bl", "gusset_back_left", "before", None),
+        ("brace_bl_br", "gusset_back_left", "after", "post_br"),
+        ("brace_fr_br", "gusset_front_right", "after", None),
+    ):
+        member=members[member_name]
+        gusset=components[gusset_name]
+        resolved_gusset=gusset.resolved(members[gusset.member])
+        along_index={"x": 0, "y": 1}[member.axis]
+        gusset_min=resolved_gusset.box_min[along_index]
+        gusset_max=gusset_min+resolved_gusset.box_size[along_index]
+        member_min=member.min_on(member.axis)
+        member_max=member.max_on(member.axis)
+        if keep_side == "before":
+            shim_start=(
+                members[end_post_name].min_on(member.axis)
+                if end_post_name is not None
+                else member_min
+            )
+            shim_end=min(gusset_min, member_max)
+        else:
+            shim_start=max(gusset_max, member_min)
+            shim_end=(
+                members[end_post_name].max_on(member.axis)
+                if end_post_name is not None
+                else member_max
+            )
+        shim_length=shim_end-shim_start
+        if shim_length <= 0:
+            raise ValueError(
+                f"{gusset_name} leaves no roof-shim support on {member_name}"
+            )
+        shim_type=ComponentType(
+            name=f"continuous_pt_roof_shim_{member_name}",
+            size=(shim_length, 3.5, ROOF_SHIM_THICKNESS),
+            color=(0.44, 0.26, 0.11, 1.0),
+            default_face="narrow_pos",
+            mount_point=(0, 1.75, 0),
+        )
+        components.add(
+            f"roof_shim_{member_name}",
+            assembly="roof_shims",
+            component_type=shim_type,
+            member=member_name,
+            at=max(shim_start-member_min, 0),
+            face="narrow_pos",
+            offset=(min(shim_start-member_min, 0), 0, 0),
+        )
 
     components.add(
         "low_voltage_termination_box",
@@ -1259,16 +1374,16 @@ def build_enclosure(
         "tambour_ceiling_panel",
         assembly="tambour_guard",
         component_type=tambour_ceiling_type,
-        member="rail_l_tambour",
+        member="brace_fl_bl",
         at=(
             TAMBOUR_CEILING_FRONT_Y
-            - members["rail_l_tambour"].min_on("y")
+            - members["brace_fl_bl"].min_on("y")
         ),
         face="wide_pos",
         offset=(
             0,
             TAMBOUR_CEILING_BOTTOM_Z
-            - members["rail_l_tambour"].center_on("z"),
+            - members["brace_fl_bl"].center_on("z"),
             0,
         ),
     )
@@ -1280,6 +1395,7 @@ def build_enclosure(
         min_y=0,
         max_y=FRAME_DIMS.y + WIDTH_4x4,
         frame_top_z=FRAME_DIMS.z,
+        roof_support_z=FRAME_DIMS.z+ROOF_SHIM_THICKNESS,
         bottom_z=SIDING_BOTTOM_Z,
         rear_opening_min_x=TAMBOUR_LEFT_X,
         rear_opening_max_x=TAMBOUR_RIGHT_X,
@@ -1760,6 +1876,27 @@ def build_enclosure(
         footings=footings,
         tambours=tambours,
         sidings=[siding],
+        routed_seats=routed_seats,
+        purchased_items=(
+            PurchasedItem(
+                "custom_6x6_g90_gusset_plate",
+                "top_bracing_hardware",
+                f"laser-cut 6 x 6 x {GUSSET_THICKNESS_IN:.3f} in {GUSSET_MATERIAL}",
+                2,
+            ),
+            PurchasedItem(
+                "number_9_pan_head_screw",
+                "top_bracing_hardware",
+                "#9 pan-head screw; length intentionally unspecified",
+                2 * GUSSET_FASTENER_COUNT,
+            ),
+            PurchasedItem(
+                "continuous_pt_roof_shim",
+                "roof_shims",
+                f"continuous ripped PT lumber, {ROOF_SHIM_THICKNESS:g} in thick",
+                4,
+            ),
+        ),
         xygrid_origin=(
             members["post_fr"].max_on("x"),
             members["post_fr"].min_on("y"),
@@ -1790,6 +1927,7 @@ def build_enclosure(
         footings=footings,
         tambours=tambours,
         siding=siding,
+        routed_seats=routed_seats,
         model=model,
         anchors=anchors,
     )
@@ -1804,6 +1942,7 @@ grounds = default_build.grounds
 footings = default_build.footings
 tambours = default_build.tambours
 siding = default_build.siding
+routed_seats = default_build.routed_seats
 model = default_build.model
 globals().update(default_build.anchors)
 
@@ -1820,6 +1959,9 @@ def write_outputs(
     enclosure.model.write_cut_list_json(output_dir / "cut_list.json")
     enclosure.model.write_shopping_list_csv(output_dir / "shopping_list.csv")
     enclosure.model.write_shopping_list_json(output_dir / "shopping_list.json")
+    enclosure.model.write_fabrication_csv(output_dir / "fabrication.csv")
+    enclosure.model.write_fabrication_json(output_dir / "fabrication.json")
+    generate_gusset_dxf(output_dir / "gusset_plate_6x6.dxf")
 
 
 def _playground_model_text(model_path: Path) -> str:

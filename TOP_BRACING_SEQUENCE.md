@@ -2,52 +2,30 @@
 
 ## Question
 
-Evaluate whether the simplified top bracing currently assigned to Build Step
-12 can and should be moved to immediately after Build Step 2.
+Record why the accepted rabbeted top bracing is installed immediately after
+the posts rather than after the intermediate framing.
 
 ## Conclusion
 
-Install the permanent top bracing directly after the posts, subject to approval
-of the structural member and connection design described in
-[`TOP_BRACING.md`](TOP_BRACING.md). The former conflict has been resolved by
-lowering the tambour top supports and track centerline by 1/2 inch.
+Install the accepted rabbeted top bracing directly after the posts using the
+detail in [`TOP_BRACING.md`](TOP_BRACING.md). Keep temporary external bracing
+until the routed seats, custom gusset plates, complete #9 screw grids, and frame
+have been inspected.
 
-## Resolved geometry conflict
+## Consolidated geometry
 
-The modeled left and right top perimeter 2x4 braces occupy the following
-vertical range:
+The left and right top perimeter members are now 4x4s spanning `z = 43.50` to
+`47.00`. Their inside faces and undersides replace `rail_l_tambour`,
+`rail_r_tambour`, `rail_lt`, and `rail_rt`. The removable ceiling remains at
+`z = 43.25` to `43.50`, directly against the 4x4 undersides, while the curtain
+and guides remain inside the clear opening.
 
-```text
-z = 45.50 to 47.00 inches
-```
-
-The former left and right tambour top-support 2x4 rails occupied:
-
-```text
-z = 44.25 to 45.75 inches
-```
-
-Each perimeter brace and corresponding tambour support spans between the same
-two posts and occupies the same plan footprint. Their former vertical ranges
-overlapped by 1/4 inch:
-
-```text
-45.75 - 45.50 = 0.25 inch
-```
-
-The tambour top supports now occupy `z = 43.75` to `45.25` inches. The slat
-center path remains at `z = 44.50` inches, while the track centerline is offset
-3/8 inch inward at `z = 44.125` inches. This leaves 1/4 inch between the support
-rails and perimeter braces and accommodates a curtain and recessed-pull
-envelope up to 1 1/2 inches deep while retaining the same clearance:
-
-```text
-45.50 - (44.125 + 0.375 + 1.50 / 2) = 0.25 inch
-```
-
-Handles, finger pulls, fasteners, and reinforcement must remain within that
-envelope. The perimeter brace geometry and structural connections are
-unchanged.
+The full-section diagonal remains at `z = 46.25` to `47.00`. The two involved
+posts stop at its underside, and only the four intersected side braces are
+routed. Custom 0.074-inch gusset plates and modeled screw heads project 0.184
+inch above the frame. The 1/4-inch shims cover the exposed perimeter framing
+and both non-gusseted corner posts, stop at the gusset envelopes, and establish
+the roof support plane at `z = 47.25`.
 
 ## Reasons for moving the bracing after Step 2
 
@@ -83,9 +61,9 @@ This is preferable because the installed braces, connections, and permitted
 construction tolerances—not their idealized model envelopes—control the real
 clearance.
 
-### Improved access from the simplified diagonal
+### Improved access from the shallow diagonal
 
-The simplified nominal 1x4 diagonal has an underside at `z = 46.25` inches.
+The rabbeted, ripped nominal 1x6 diagonal has an underside at `z = 46.25` inches.
 The maximum approved tambour envelope reaches `z = 45.25` inches on its top
 run, leaving approximately:
 
@@ -97,9 +75,9 @@ This 1-inch minimum clearance beneath the diagonal is substantially greater
 than under the former 2x4 diagonals. It makes early installation less likely
 to obstruct later tambour work.
 
-The four perimeter 2x4 braces begin at `z = 45.50`, leaving 1/4 inch above the
-maximum curtain envelope. Verify this minimum with the production tracks,
-curtain, recessed pulls, fasteners, and approved support detail.
+The side 4x4s occupy the former side-support footprint rather than crossing the
+clear curtain opening. Verify the production tracks, curtain, recessed pulls,
+fasteners, and ceiling retainers against their actual inside faces.
 
 ## Temporary-bracing limitation
 
@@ -112,20 +90,13 @@ The build guide should continue to require temporary support until the
 installed rails and other permanent framing provide adequate stability in
 every direction and the permanent top-brace connections have been approved.
 
-## Structural-connection limitation
+## Structural-connection installation
 
-Reordering the work does not resolve the unspecified structural connections.
-The approved detail must still provide the member and connection capacity
-required by [`TOP_BRACING.md`](TOP_BRACING.md), including positive load
-transfer through the diagonal, perimeter frame, and posts in both loading
-directions.
-
-Ordinary deck screws, end-grain screws, or an unverified toe-screw pattern
-must not be substituted for the approved connection. Applicable NDS connection
-provisions or the [American Wood Council Connection
-Calculator](https://awc.org/resources/connection-calculator/) can support the
-connection design, but the final detail remains subject to the project-specific
-engineering and authority approval already required by the bracing evaluation.
+Route and dry-fit the four side-brace seats before installing hardware. Place
+each 6-by-6 gusset against the two exterior faces of its post and fill its
+sixteen-hole grid with #9 pan-head screws. The model intentionally leaves screw
+length unspecified. Inspect plate seating, wood splitting, screw clearance,
+and the post/perimeter load path before removing temporary support.
 
 ## Revised sequence
 

@@ -19,70 +19,253 @@ from lumber_model import (
     RelativeCoord,
     minimum_cable_bend_radius,
 )
+from lumber_model.gusset import GUSSET_HOLE_CENTERS_IN
 
 
 class TopBracingBuildTests(unittest.TestCase):
-    def test_default_uses_one_shallow_diagonal_at_the_existing_frame_top(self) -> None:
+    def test_diagonal_covers_both_posts_and_stays_inside_outer_profiles(self) -> None:
         brace = build.members["brace_bl_fr"]
 
         self.assertNotIn("brace_br_fl", build.members)
-        self.assertEqual(brace.type, "1x4")
+        self.assertEqual(brace.type, "1x6")
         self.assertAlmostEqual(brace.thickness, 0.75)
+        self.assertAlmostEqual(brace.stock_width, 5.5)
+        self.assertAlmostEqual(brace.width, 4.9067062005)
         self.assertAlmostEqual(brace.min[2], 46.25)
         self.assertAlmostEqual(brace.max[2], build.DEFAULT_HEIGHT)
-        self.assertAlmostEqual(brace.length, 25.3281587)
-        self.assertAlmostEqual(brace.cut_angle_deg, 35.965005)
+        self.assertAlmostEqual(brace.length, 35.1331949976)
+        self.assertAlmostEqual(brace.cut_angle_deg, 37.4385715723)
+        self.assertIsNotNone(brace.footprint)
+
+        post_corners = {
+            (x, y)
+            for name in ("post_bl", "post_fr")
+            for x in (build.members[name].min_on("x"), build.members[name].max_on("x"))
+            for y in (build.members[name].min_on("y"), build.members[name].max_on("y"))
+        }
+        footprint = brace.footprint
+        assert footprint is not None
+        for corner in post_corners:
+            cross_products = (
+                (end[0] - start[0]) * (corner[1] - start[1])
+                - (end[1] - start[1]) * (corner[0] - start[0])
+                for start, end in zip(footprint, footprint[1:] + footprint[:1])
+            )
+            self.assertTrue(
+                all(value >= -1e-9 for value in cross_products),
+                f"post corner {corner} is not covered by {footprint}",
+            )
+
+        self.assertAlmostEqual(min(point[0] for point in footprint), 0)
+        self.assertAlmostEqual(max(point[0] for point in footprint), 27.5)
+        self.assertAlmostEqual(min(point[1] for point in footprint), 0)
+        self.assertAlmostEqual(max(point[1] for point in footprint), 21.875)
+
+        post_a = build.members["post_bl"].center
+        post_b = build.members["post_fr"].center
+        self.assertAlmostEqual(
+            (brace.end[1] - brace.start[1]) / (brace.end[0] - brace.start[0]),
+            (post_b[1] - post_a[1]) / (post_b[0] - post_a[0]),
+        )
+
+    def test_involved_posts_stop_below_diagonal(self) -> None:
+        for name in ("post_bl", "post_fr"):
+            self.assertAlmostEqual(build.members[name].max_on("z"), 46.25)
+            self.assertAlmostEqual(build.members[name].length, 78.25)
+        for name in ("post_fl", "post_br"):
+            self.assertAlmostEqual(build.members[name].max_on("z"), 47)
 
     def test_custom_dimensions_recalculate_shallow_diagonal(self) -> None:
         enclosure = build.build_enclosure(width=36, depth=30, height=55)
         brace = enclosure.members["brace_bl_fr"]
 
-        self.assertEqual(brace.type, "1x4")
+        self.assertEqual(brace.type, "1x6")
         self.assertAlmostEqual(brace.thickness, 0.75)
         self.assertAlmostEqual(brace.max[2], 55)
         self.assertAlmostEqual(brace.min[2], 54.25)
-        self.assertAlmostEqual(
-            brace.length,
-            math.hypot(36 - 3.5, 30 - 3.5),
-        )
+        self.assertAlmostEqual(brace.length, 51.7909179329)
+        self.assertAlmostEqual(brace.width, 4.9294198774)
 
-    def test_cut_and_shopping_lists_include_one_by_four_brace(self) -> None:
+        square = build.build_enclosure(width=24, depth=24, height=47)
+        square_brace = square.members["brace_bl_fr"]
+        self.assertAlmostEqual(square_brace.cut_angle_deg, 45)
+        self.assertAlmostEqual(square_brace.width, 3.5 / math.cos(math.radians(45)))
+
+    def test_reports_include_ripped_one_by_six_brace(self) -> None:
         cut_row = next(
             row
             for row in build.model.cut_list_rows(rounding_increment=None)
             if row["members"] == "brace_bl_fr"
         )
+        rounded_cut_row = next(
+            row
+            for row in build.model.cut_list_rows(rounding_increment=1 / 16)
+            if row["members"] == "brace_bl_fr"
+        )
         shopping_row = next(
-            row for row in build.model.shopping_list_rows() if row["type"] == "1x4"
+            row for row in build.model.shopping_list_rows() if row["type"] == "1x6"
+        )
+        fabrication_row = next(
+            row for row in build.model.fabrication_rows()
+            if row["member"] == "brace_bl_fr"
         )
 
-        self.assertEqual(cut_row["type"], "1x4")
+        self.assertEqual(cut_row["type"], "1x6")
+        self.assertEqual(cut_row["start_cut_angle_deg"], "")
+        self.assertEqual(cut_row["end_cut_angle_deg"], "")
         self.assertEqual(cut_row["qty"], 1)
+        self.assertEqual(rounded_cut_row["length_in"], 35.1875)
         self.assertEqual(shopping_row["stock_length_in"], 72)
         self.assertEqual(shopping_row["qty"], 1)
+        self.assertIn("at least 35.1332", fabrication_row["operation"])
+        self.assertIn("1x6 no narrower than 4.9067", fabrication_row["operation"])
+        self.assertIn("jigsaw", fabrication_row["operation"])
 
-    def test_tambour_top_support_and_maximum_curtain_clear_bracing(self) -> None:
-        enclosure = build.default_build
-        brace_bottom = enclosure.members["brace_fl_bl"].min_on("z")
+    def test_side_brace_rabbets_and_custom_gusset_hardware_are_explicit(self) -> None:
+        self.assertEqual(len(build.routed_seats), 4)
+        self.assertEqual({seat.depth for seat in build.routed_seats}, {0.75})
+        self.assertEqual({seat.top_z for seat in build.routed_seats}, {47})
+        self.assertEqual(
+            {seat.member for seat in build.routed_seats},
+            {"brace_fl_bl", "brace_bl_br", "brace_fr_br", "brace_fl_fr"},
+        )
+        for name in ("gusset_back_left", "gusset_front_right"):
+            hardware = build.components[name]
+            self.assertIn(hardware.member, {"post_bl", "post_fr"})
+            self.assertEqual(hardware.component_type.size, (6, 6, 0.184))
+            primitives = hardware.component_type.cylinder_primitives
+            self.assertEqual(len(primitives), 64)
+            self.assertTrue(all(length <= 0.045 for _, _, length, _ in primitives))
+            self.assertTrue(
+                all(origin[2] >= 0.074 for origin, _, _, _ in primitives)
+            )
+            resolved = hardware.resolved(build.members[hardware.member])
+            self.assertAlmostEqual(resolved.box_min[2], 47)
+            self.assertAlmostEqual(resolved.box_size[0], 6)
+            self.assertAlmostEqual(resolved.box_size[1], 6)
+            self.assertAlmostEqual(resolved.box_size[2], 0.184)
 
-        for name in ("rail_l_tambour", "rail_r_tambour"):
-            with self.subTest(name=name):
-                support = enclosure.members[name]
-                self.assertAlmostEqual(support.min_on("z"), 43.75)
-                self.assertAlmostEqual(support.max_on("z"), 45.25)
+            post = build.members[hardware.member]
+            hole_centers = [
+                (
+                    resolved.origin[0]
+                    + local_x * resolved.along_vec[0]
+                    + local_y * resolved.across_vec[0],
+                    resolved.origin[1]
+                    + local_x * resolved.along_vec[1]
+                    + local_y * resolved.across_vec[1],
+                )
+                for local_x, local_y in GUSSET_HOLE_CENTERS_IN
+            ]
+            post_hole_centers = [
+                center
+                for center in hole_centers
+                if post.min_on("x") <= center[0] <= post.max_on("x")
+                and post.min_on("y") <= center[1] <= post.max_on("y")
+            ]
+            self.assertEqual(len(post_hole_centers), 4)
+            self.assertAlmostEqual(
+                (
+                    min(x for x, _ in post_hole_centers)
+                    + max(x for x, _ in post_hole_centers)
+                )
+                / 2,
+                post.center_on("x"),
+            )
+            self.assertAlmostEqual(
+                (
+                    min(y for _, y in post_hole_centers)
+                    + max(y for _, y in post_hole_centers)
+                )
+                / 2,
+                post.center_on("y"),
+            )
+
+        hardware_rows = {
+            row["name"]: row for row in build.model.bom_rows()
+            if row["category"] == "hardware"
+        }
+        self.assertEqual(hardware_rows["custom_6x6_g90_gusset_plate"]["qty"], 2)
+        self.assertEqual(hardware_rows["number_9_pan_head_screw"]["qty"], 32)
+        self.assertNotIn("2-1/2", hardware_rows["number_9_pan_head_screw"]["type"])
+
+    def test_roof_shims_raise_only_top_boards(self) -> None:
+        self.assertEqual(build.ROOF_SHIM_THICKNESS, 0.25)
+        self.assertEqual(build.siding.frame_top_z, 47)
+        self.assertEqual(build.siding.roof_support_z, 47.25)
+        self.assertEqual(build.siding.finished_top_z, 48)
+        self.assertEqual(build.siding.roof_finished_top_z, 48.25)
+        for part in build.siding.parts:
+            if part.name.startswith("enclosure_siding_top_"):
+                self.assertEqual(part.start[2], 47.25)
+
+    def test_roof_shims_stop_at_gusset_envelopes(self) -> None:
+        for enclosure in (
+            build.default_build,
+            build.build_enclosure(width=36, depth=30, height=55),
+        ):
+            gussets = [
+                enclosure.components[name].resolved(
+                    enclosure.members[enclosure.components[name].member]
+                )
+                for name in ("gusset_back_left", "gusset_front_right")
+            ]
+            shim_names = (
+                "roof_shim_brace_fl_fr", "roof_shim_brace_fl_bl",
+                "roof_shim_brace_bl_br", "roof_shim_brace_fr_br",
+            )
+            shims = []
+            for name in shim_names:
+                shim_instance = enclosure.components[name]
+                shim = shim_instance.resolved(
+                    enclosure.members[shim_instance.member]
+                )
+                shims.append(shim)
+                self.assertAlmostEqual(shim.box_min[2], enclosure.height)
                 self.assertAlmostEqual(
-                    brace_bottom-support.max_on("z"),
-                    enclosure.TAMBOUR_BRACE_CLEARANCE,
+                    shim.box_min[2] + shim.box_size[2],
+                    enclosure.height + build.ROOF_SHIM_THICKNESS,
+                )
+                for gusset in gussets:
+                    overlap_x = min(
+                        shim.box_min[0] + shim.box_size[0],
+                        gusset.box_min[0] + gusset.box_size[0],
+                    ) - max(shim.box_min[0], gusset.box_min[0])
+                    overlap_y = min(
+                        shim.box_min[1] + shim.box_size[1],
+                        gusset.box_min[1] + gusset.box_size[1],
+                    ) - max(shim.box_min[1], gusset.box_min[1])
+                    self.assertFalse(
+                        overlap_x > 1e-9 and overlap_y > 1e-9,
+                        f"{name} overlaps {gusset.name}",
+                    )
+
+            for post_name in ("post_fl", "post_br"):
+                post = enclosure.members[post_name]
+                covering_shims = [
+                    shim for shim in shims
+                    if shim.box_min[0] <= post.min_on("x") + 1e-9
+                    and shim.box_min[0] + shim.box_size[0]
+                    >= post.max_on("x") - 1e-9
+                    and shim.box_min[1] <= post.min_on("y") + 1e-9
+                    and shim.box_min[1] + shim.box_size[1]
+                    >= post.max_on("y") - 1e-9
+                ]
+                self.assertTrue(
+                    covering_shims,
+                    f"no roof shim covers non-gusseted {post_name}",
                 )
 
-        maximum_curtain_top = (
-            enclosure.TAMBOUR_TOP_Z+enclosure.TAMBOUR_MAX_SLAT_DEPTH/2
-        )
-        self.assertAlmostEqual(maximum_curtain_top, 45.25)
-        self.assertAlmostEqual(
-            brace_bottom-maximum_curtain_top,
-            enclosure.TAMBOUR_BRACE_CLEARANCE,
-        )
+    def test_side_4x4s_consolidate_top_and_tambour_supports(self) -> None:
+        enclosure = build.default_build
+        for name in ("brace_fl_bl", "brace_fr_br"):
+            with self.subTest(name=name):
+                support = enclosure.members[name]
+                self.assertEqual(support.type, "4x4")
+                self.assertAlmostEqual(support.min_on("z"), 43.5)
+                self.assertAlmostEqual(support.max_on("z"), 47)
+        for name in ("rail_l_tambour", "rail_r_tambour", "rail_lt", "rail_rt"):
+            self.assertNotIn(name, enclosure.members)
 
     def test_lowered_front_header_has_full_depth_end_supports(self) -> None:
         header = build.members["rail_ft"]
@@ -105,7 +288,7 @@ class TopBracingBuildTests(unittest.TestCase):
                 self.assertAlmostEqual(support.min_on("z"), header.min_on("z"))
                 self.assertAlmostEqual(
                     support.max_on("z"),
-                    build.members["rail_lt"].min_on("z"),
+                    build.members["brace_fl_bl"].min_on("z"),
                 )
                 self.assertAlmostEqual(support.min_on("y"), header.min_on("y"))
                 self.assertAlmostEqual(support.max_on("y"), header.max_on("y"))
@@ -712,7 +895,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 168)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "6336a34325615a64bebb5d30f3191cf8942f520afb3051deb55c0614a72bbce4",
+            "fc971e0f7b9f9670c958191956d8ca4e96b7d5151f4867d5567eb3749d021e34",
         )
 
     def test_center_gland_charger_route_exact_regression(self) -> None:
@@ -1249,9 +1432,11 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertEqual(taller.height, 55)
         self.assertEqual(taller.members["post_br"].length, 87)
         self.assertAlmostEqual(taller.members["brace_fl_fr"].max_on("z"), 55)
-        self.assertAlmostEqual(taller.members["rail_r_tambour"].center_on("z"), 52.5)
-        self.assertAlmostEqual(taller.members["rail_rt"].center_on("z"), 51.5)
+        self.assertAlmostEqual(taller.members["brace_fr_br"].min_on("z"), 51.5)
+        self.assertNotIn("rail_r_tambour", taller.members)
+        self.assertNotIn("rail_rt", taller.members)
         self.assertAlmostEqual(taller.siding.frame_top_z, 55)
+        self.assertAlmostEqual(taller.siding.roof_support_z, 55.25)
         self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.5)
         self.assertAlmostEqual(taller.LOW_VOLTAGE_SERVICE_LOOP_TOP_Z, 50.9375)
 
@@ -1568,6 +1753,9 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "cut_list.json",
                     "shopping_list.csv",
                     "shopping_list.json",
+                    "fabrication.csv",
+                    "fabrication.json",
+                    "gusset_plate_6x6.dxf",
                 },
             )
 

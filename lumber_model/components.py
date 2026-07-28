@@ -9,7 +9,7 @@ from typing import Literal, overload
 from lumber_model.constants import AXIS_INDEX, Axis
 from lumber_model.formatting import fmt_float, scad_string
 from lumber_model.geometry import Vector3, other_axis, replace_axis
-from lumber_model.lumber import Lumber
+from lumber_model.lumber import AngledLumber, Lumber, LumberPiece
 
 
 FaceName = Literal["wide_pos", "wide_neg", "narrow_pos", "narrow_neg"]
@@ -261,6 +261,7 @@ class ComponentType:
     mesh_matrix: Matrix4 | None = None
     box_primitives: tuple[BoxPrimitive, ...] = ()
     cylinder_primitives: tuple[CylinderPrimitive, ...] = ()
+    include_primitive_envelope: bool = False
 
     def __post_init__(self) -> None:
         _validate_vector3(f"{self.name}: size", self.size)
@@ -344,7 +345,7 @@ class ComponentInstance:
                 f"one of {COMPONENT_ORIENTATIONS}"
             )
 
-    def resolved(self, member: Lumber) -> ResolvedComponent:
+    def resolved(self, member: LumberPiece) -> ResolvedComponent:
         if self.at > member.length:
             raise ValueError(
                 f"{self.name}: at={self.at} is outside member {member.name!r} "
@@ -352,21 +353,41 @@ class ComponentInstance:
             )
 
         face = self.face if self.face is not None else self.component_type.default_face
-        face_axis, sign = _face_axis_and_sign(member, face)
-        across_axis = other_axis(member.axis, face_axis)
+        if isinstance(member, AngledLumber):
+            dx = member.end[0] - member.start[0]
+            dy = member.end[1] - member.start[1]
+            along_vec = (dx / member.length, dy / member.length, 0.0)
+            lateral_vec = (-along_vec[1], along_vec[0], 0.0)
+            vertical_vec = (0.0, 0.0, 1.0)
+            sign = 1 if face.endswith("_pos") else -1
+            if face.startswith("wide_"):
+                across_vec = lateral_vec
+                out_vec = _v_scale(vertical_vec, sign)
+                face_offset = member.thickness / 2
+            else:
+                across_vec = vertical_vec
+                out_vec = _v_scale(lateral_vec, sign)
+                face_offset = member.width / 2
+            anchor = _v_mul_add(member.start, along_vec, self.at)
+            anchor = _v_mul_add(anchor, out_vec, face_offset)
+        else:
+            face_axis, sign = _face_axis_and_sign(member, face)
+            across_axis = other_axis(member.axis, face_axis)
 
-        anchor = (0.0, 0.0, 0.0)
-        anchor = replace_axis(anchor, member.axis, member.min_on(member.axis) + self.at)
-        anchor = replace_axis(anchor, across_axis, member.center_on(across_axis))
-        anchor = replace_axis(
-            anchor,
-            face_axis,
-            member.max_on(face_axis) if sign > 0 else member.min_on(face_axis),
-        )
+            anchor = (0.0, 0.0, 0.0)
+            anchor = replace_axis(
+                anchor, member.axis, member.min_on(member.axis) + self.at
+            )
+            anchor = replace_axis(anchor, across_axis, member.center_on(across_axis))
+            anchor = replace_axis(
+                anchor,
+                face_axis,
+                member.max_on(face_axis) if sign > 0 else member.min_on(face_axis),
+            )
 
-        along_vec = _unit(member.axis)
-        across_vec = _unit(across_axis)
-        out_vec = _unit(face_axis, sign)
+            along_vec = _unit(member.axis)
+            across_vec = _unit(across_axis)
+            out_vec = _unit(face_axis, sign)
         along_vec, across_vec, out_vec = _oriented_axes(
             self.orientation,
             along_vec,
@@ -388,6 +409,35 @@ class ComponentInstance:
         origin = _v_sub(origin, _v_scale(out_vec, mount_point[2]))
 
         size = self.component_type.size
+        local_min = [0.0, 0.0, 0.0]
+        local_max = [size[0], size[1], size[2]]
+        if (
+            self.component_type.shape == "primitive_union"
+            and self.component_type.include_primitive_envelope
+        ):
+            for primitive_min, primitive_size in self.component_type.box_primitives:
+                for index in range(3):
+                    local_min[index] = min(local_min[index], primitive_min[index])
+                    local_max[index] = max(
+                        local_max[index], primitive_min[index] + primitive_size[index]
+                    )
+            local_axis_index = {"along": 0, "across": 1, "out": 2}
+            for primitive_origin, primitive_axis, length, diameter in (
+                self.component_type.cylinder_primitives
+            ):
+                axis_index = local_axis_index[primitive_axis]
+                radius = diameter / 2
+                for index in range(3):
+                    padding = 0 if index == axis_index else radius
+                    local_min[index] = min(
+                        local_min[index], primitive_origin[index] - padding
+                    )
+                    local_max[index] = max(
+                        local_max[index],
+                        primitive_origin[index]
+                        + (length if index == axis_index else 0)
+                        + padding,
+                    )
         corners = [
             _v_add(
                 origin,
@@ -396,9 +446,9 @@ class ComponentInstance:
                     _v_scale(out_vec, out),
                 ),
             )
-            for along in (0.0, size[0])
-            for across in (0.0, size[1])
-            for out in (0.0, size[2])
+            for along in (local_min[0], local_max[0])
+            for across in (local_min[1], local_max[1])
+            for out in (local_min[2], local_max[2])
         ]
 
         box_min = tuple(min(corner[i] for corner in corners) for i in range(3))
@@ -481,7 +531,7 @@ class ResolvedComponent:
 
 
 ComponentRef = str | ComponentInstance
-LumberRef = str | Lumber
+LumberRef = str | LumberPiece
 
 
 class ComponentCollection(Mapping[str, ComponentInstance]):
@@ -521,7 +571,7 @@ class ComponentCollection(Mapping[str, ComponentInstance]):
         offset: Vector3 = (0.0, 0.0, 0.0),
         orientation: ComponentOrientation = "up",
     ) -> ComponentInstance:
-        member_name = member.name if isinstance(member, Lumber) else member
+        member_name = member.name if isinstance(member, (Lumber, AngledLumber)) else member
 
         return self._store(
             ComponentInstance(

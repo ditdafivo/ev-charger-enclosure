@@ -4,7 +4,7 @@ from collections.abc import Iterable, Iterator, Mapping
 import math
 from typing import overload
 
-from lumber_model.constants import Axis, LumberType
+from lumber_model.constants import ACTUAL_DIMS, Axis, LumberType
 from lumber_model.coordinates import Coordinate, resolve_coordinate
 from lumber_model.geometry import Vector3
 from lumber_model.lumber import AngledLumber, Lumber, LumberPiece
@@ -107,7 +107,7 @@ class LumberCollection(Mapping[str, LumberPiece]):
         support_b: LumberRef,
         position: float,
         rotated: bool = True,
-        extend_to_outside_x: bool = False,
+        extend_within_support_xy: bool = False,
     ) -> AngledLumber:
         """
         Create a horizontal diagonal member between the inside corners of posts.
@@ -130,17 +130,52 @@ class LumberCollection(Mapping[str, LumberPiece]):
         b_x = b.max_on("x") if a_center[0] >= b_center[0] else b.min_on("x")
         b_y = b.max_on("y") if a_center[1] >= b_center[1] else b.min_on("y")
 
-        if extend_to_outside_x:
+        if extend_within_support_xy:
             dx = b_x - a_x
-            if math.isclose(dx, 0):
-                raise ValueError(f"{name}: cannot extend a diagonal with no x span")
-            outside_a_x = a.min_on("x") if b_center[0] >= a_center[0] else a.max_on("x")
-            outside_b_x = b.max_on("x") if b_center[0] >= a_center[0] else b.min_on("x")
-            slope = (b_y - a_y) / dx
-            a_y += slope * (outside_a_x - a_x)
-            b_y += slope * (outside_b_x - b_x)
-            a_x = outside_a_x
-            b_x = outside_b_x
+            dy = b_y - a_y
+            clear_length = math.hypot(dx, dy)
+            if math.isclose(clear_length, 0):
+                raise ValueError(f"{name}: cannot extend a zero-length diagonal")
+
+            along = (dx / clear_length, dy / clear_length)
+            normal = (-along[1], along[0])
+            half_width = ACTUAL_DIMS[type][1] / 2
+
+            def extended_endpoint(
+                point: tuple[float, float],
+                support: Lumber,
+                direction: tuple[float, float],
+            ) -> tuple[float, float]:
+                """Extend a square-cut end without crossing outward support faces."""
+
+                limits: list[float] = []
+                for axis, axis_name in enumerate(("x", "y")):
+                    padding = abs(normal[axis]) * half_width
+                    rate = direction[axis]
+                    if math.isclose(rate, 0):
+                        continue
+                    if rate < 0:
+                        limit = (
+                            point[axis] - support.min_on(axis_name) - padding
+                        ) / -rate
+                    else:
+                        limit = (
+                            support.max_on(axis_name) - padding - point[axis]
+                        ) / rate
+                    limits.append(limit)
+
+                distance = min(limits)
+                if distance < 0:
+                    raise ValueError(
+                        f"{name}: diagonal width does not fit on {support.name}"
+                    )
+                return (
+                    point[0] + direction[0] * distance,
+                    point[1] + direction[1] * distance,
+                )
+
+            a_x, a_y = extended_endpoint((a_x, a_y), a, (-along[0], -along[1]))
+            b_x, b_y = extended_endpoint((b_x, b_y), b, along)
 
         return self._store(
             AngledLumber(

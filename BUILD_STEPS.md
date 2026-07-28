@@ -14,8 +14,8 @@ the generated material outputs.
 The top-plane bracing decision, site load screen, and required connection
 capacity are documented in [`TOP_BRACING.md`](TOP_BRACING.md).
 
-Except for the accepted HTP37Z/SD9212 top-bracing detail, this guide does not
-define fasteners, structural connections, concrete work, or the means and
+Except for the modeled custom top-bracing detail, this guide does not define
+fastener length, structural connection capacity, concrete work, or the means and
 methods for excavation or underground work. It does require
 the modeled underground conduit and site restoration to be completed before
 the enclosure posts are installed. Have the structure, electrical design,
@@ -161,16 +161,20 @@ footing_br
 ## 3. Add the complete top bracing (`top-bracing`)
 
 Install 2x4 front and back perimeter braces and top-flush 4x4 left and right
-braces. Lay out the accepted diagonal centerline, then route the six seat
-regions listed in `output/fabrication.csv` to a uniform 3/4-inch depth. Dry-fit
-the approximately 33 15/16-inch stress-rated nominal 1x4 from the frame's
-outside x-faces; its full section must occupy `z = 46.25` to `47.00`.
+braces. The back-left and front-right posts stop at `z = 46.25`; do not rabbet
+them. Route only the four side-brace regions listed in
+`output/fabrication.csv` to a uniform 3/4-inch depth. Dry-fit the approximately
+31 7/16-inch stress-rated nominal 1x4. Its full section must occupy
+`z = 46.25` to `47.00`, and its footprint must not extend beyond the exterior
+XY faces of either involved post.
 
-Center one HTP37Z over each routed end region with its long axis aligned to the
-diagonal. Fill all twenty holes in each plate with SD9212 #9-by-2 1/2-inch
-Strong-Drive SD Connector screws. Seat every head without overdriving, do not
-enlarge holes or mix fasteners, and verify that every screw has solid wood
-beneath it and no tip enters tambour, electrical, or service space.
+Install one laser-cut 6-by-6-by-0.074-inch G90 galvanized-steel gusset at each
+involved corner. Orient each square from the two exterior post faces toward the
+frame interior so it covers the post, both adjoining side braces, and the
+diagonal. Install #9 pan-head screws in all sixteen modeled holes per plate.
+Fastener length is intentionally not specified by this model; select it as part
+of the approved structural connection detail. Seat every head without
+overdriving and verify that every screw location has solid wood beneath it.
 
 Before fastening the permanent bracing, reconfirm that every post is plumb and
 compare the frame diagonals. Install the braces without pulling the posts out
@@ -178,7 +182,7 @@ of alignment, then repeat the plumb and square checks. Use the species and
 grade specified against the 826-pound ASD brace demand in `TOP_BRACING.md`.
 Reject split routed edges, stripped screws, raised plate edges, or rocking
 hardware. Remove temporary external bracing only after the permanent frame and
-both complete HTP37Z assemblies are inspected and stable.
+both complete gusset assemblies are inspected and stable.
 
 New model objects:
 
@@ -188,8 +192,8 @@ brace_fl_bl
 brace_bl_br
 brace_fr_br
 brace_bl_fr
-htp37z_back_left
-htp37z_front_right
+gusset_back_left
+gusset_front_right
 ```
 
 ## 4. Add the lower side rails (`lower-side-rails`)
@@ -603,7 +607,7 @@ low_voltage_ev_charger_feed
 
 Before placing the top boards, install continuous 1/4-inch ripped
 pressure-treated shims over all four perimeter members. Keep the shims level,
-bridge completely over the HTP37Z plates and SD9212 heads without rocking, and
+bridge completely over the custom gusset plates and pan heads without rocking, and
 leave drainage paths at the plate edges. Use roof fasteners long enough to
 retain the originally required penetration after passing through the shims.
 

@@ -40,6 +40,14 @@ deployment reports that Pages is not enabled, open **Settings → Pages**, choos
 **GitHub Actions** under **Build and deployment → Source**, and rerun
 `uv run build.py`.
 
+The build also writes `output/gusset_plate_6x6.dxf`, an inch-unit laser-cut
+file for the custom G90 top-bracing gusset. To regenerate the committed
+fabrication copy directly, run:
+
+```bash
+uv run python tools/generate_gusset_dxf.py
+```
+
 The workflow builds directly from the pinned public OpenSCAD Playground
 submodule. No NAS, container runtime, deployment key, personal access token, or
 committed WASM output is required.

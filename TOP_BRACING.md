@@ -2,13 +2,19 @@
 
 ## Decision
 
-Use one stress-rated nominal 1x4 diagonal extended across the back-left and
-front-right post tops in 3/4-inch-deep routed seats. The member is 33.977
-inches overall in the default model, retains the 25.328-inch clear span, and
-occupies `z = 46.25` to `47.00`.
+Use one stress-rated nominal 1x4 diagonal across the back-left and front-right
+corners. The member is 31.437 inches overall in the default model, retains the
+25.328-inch clear span, and occupies `z = 46.25` to `47.00`. Its square-cut
+ends extend only as far as the complete 3.5-inch board width can remain inside
+the exterior XY faces of the involved posts.
 
-Connect each end with one Simpson Strong-Tie HTP37Z plate aligned to the
-diagonal and twenty SD9212 #9-by-2 1/2-inch Strong-Drive SD Connector screws.
+Shorten `post_bl` and `post_fr` by the diagonal depth so their tops are at
+`z = 46.25`; the unfilled parts of those post footprints remain open below the
+roof. Route 3/4-inch seats only where the diagonal crosses the four side
+braces. Connect each corner with one custom 6-by-6-by-0.074-inch G90
+galvanized-steel gusset and a 4-by-4 grid of #9 pan-head screws. Fastener length
+is deliberately unspecified.
+
 The two side perimeter members are top-flush 4x4s occupying `z = 43.50` to
 `47.00`; they replace the former upper and tambour side rails.
 
@@ -98,15 +104,15 @@ both load directions:
 - at least 826 pounds ASD axial capacity in the member and at each end;
 - compression stability about the 3/4-inch weak axis over the modeled length;
 - tension capacity at the minimum net section;
-- full seating of both plates and all forty SD9212 screws in solid wood;
+- full seating of both plates and all thirty-two #9 pan-head screws in solid wood;
 - positive transfer from the diagonal through the perimeter-frame/post joints;
 - corrosion compatibility with treated lumber and the outdoor environment.
 
-The model includes the routed cuts, plates, screw envelopes, and roof shims.
-Do not enlarge connector holes or substitute ordinary deck screws, SDS screws,
-nails, or an incomplete fastener schedule. Inspect the routed residual sections,
-plate seating, screw installation, and complete post load path before removing
-temporary bracing.
+The model includes the four side-brace routed cuts, plates, screw-head
+envelopes, and roof shims. It does not select screw length or establish a
+published capacity for the custom connection. A qualified engineer must check
+plate thickness, hole pattern, screw specification, wood edge distances, and
+the complete post load path before temporary bracing is removed.
 
 ## Superseded thin-metal option
 
@@ -117,12 +123,12 @@ Nailing a horizontal strap into the tops of the vertical posts would use end
 grain, while wrapping, field-bending, or adding custom corner blocks would no
 longer be the simple catalog installation being evaluated.
 
-Metal straps are not part of the accepted design. The HTP37Z/SD9212 assemblies
-are the modeled connection.
+Metal straps are not part of the modeled design. The custom gussets are the
+modeled connection.
 
 ## Roof interface
 
-The modeled HTP37Z plate and SD9212 head projection is 0.18 inch above the
+The modeled 0.074-inch plate and pan-head projection is 0.184 inch above the
 47-inch frame plane. Continuous 1/4-inch ripped PT-lumber shims raise the
 composite roof support plane to `z = 47.25` and the finished roof to
 `z = 48.25`. Preserve drainage around both plates and increase roof-fastener
@@ -135,3 +141,4 @@ length by the shim thickness so the original substrate penetration is retained.
 - [American Wood Council guidance for stress-rated nominal boards](https://awc.org/faq/where-can-i-find-information-for-nominal-1-1-1-4-and-1-1-2-stress-rated-boards/)
 - [American Wood Council 2024 NDS Supplement](https://awc.org/resources/2024-nds-supplement/)
 - [Simpson Strong-Tie coil-strap installation requirements](https://www.strongtie.com/resources/product-installers-guide/cs-csmst14-installation)
+- [SendCutSend G90 galvanized steel thicknesses](https://sendcutsend.com/materials/g90-steel/)

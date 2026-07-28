@@ -57,6 +57,15 @@ from lumber_model import (
     parse_build_steps,
     rounded_cable_points,
 )
+from lumber_model.gusset import (
+    GUSSET_FASTENER_COUNT,
+    GUSSET_MATERIAL,
+    GUSSET_SCREW_HEAD_HEIGHT_IN,
+    GUSSET_SIZE_IN,
+    GUSSET_THICKNESS_IN,
+    pan_head_cylinder_primitives,
+)
+from lumber_model.gusset_dxf import generate_gusset_dxf
 
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 18.375
@@ -132,41 +141,24 @@ def build_enclosure(
 
     members = LumberCollection()
 
-    members.add(
-        "post_fl",
-        assembly="posts",
-        type="4x4",
-        axis="z",
-        start=AbsoluteCoord(0, 0, -BURIED_FRAME_Z),
-        length=FULL_POST_LEN,
-    )
-
-    members.add(
-        "post_fr",
-        assembly="posts",
-        type="4x4",
-        axis="z",
-        start=RelativeCoord("post_fl", FRAME_DIMS.x, 0, 0),
-        length=FULL_POST_LEN,
-    )
-
-    members.add(
-        "post_bl",
-        assembly="posts",
-        type="4x4",
-        axis="z",
-        start=RelativeCoord("post_fl", 0, FRAME_DIMS.y, 0),
-        length=FULL_POST_LEN,
-    )
-
-    members.add(
-        "post_br",
-        assembly="posts",
-        type="4x4",
-        axis="z",
-        start=RelativeCoord("post_fl", FRAME_DIMS.x, FRAME_DIMS.y, 0),
-        length=FULL_POST_LEN,
-    )
+    for name, x, y in (
+        ("post_fl", 0, 0),
+        ("post_fr", FRAME_DIMS.x, 0),
+        ("post_bl", 0, FRAME_DIMS.y),
+        ("post_br", FRAME_DIMS.x, FRAME_DIMS.y),
+    ):
+        members.add(
+            name,
+            assembly="posts",
+            type="4x4",
+            axis="z",
+            start=AbsoluteCoord(x, y, -BURIED_FRAME_Z),
+            length=(
+                FULL_POST_LEN - HEIGHT_1x4
+                if name in {"post_bl", "post_fr"}
+                else FULL_POST_LEN
+            ),
+        )
 
     def _member_relative_coord(
         reference: str,
@@ -209,7 +201,7 @@ def build_enclosure(
         support_a="post_bl",
         support_b="post_fr",
         position=FRAME_DIMS.z-HALF_HEIGHT_1x4,
-        extend_to_outside_x=True,
+        extend_within_support_xy=True,
     )
 
     diagonal = members["brace_bl_fr"]
@@ -251,10 +243,8 @@ def build_enclosure(
             top_z=FRAME_DIMS.z,
         )
         for member_name in (
-            "post_bl",
             "brace_fl_bl",
             "brace_bl_br",
-            "post_fr",
             "brace_fr_br",
             "brace_fl_fr",
         )
@@ -660,60 +650,36 @@ def build_enclosure(
 
     components = ComponentCollection()
 
-    HTP37Z_LENGTH=7.0
-    HTP37Z_WIDTH=3.0
-    HTP37Z_THICKNESS=0.06
-    SD9212_LENGTH=2.5
-    SD9212_SHANK_DIAMETER=0.131
-    SD9212_HEAD_DIAMETER=0.37
-    SD9212_HEAD_HEIGHT=0.12
-    HTP37Z_HARDWARE_PROJECTION=HTP37Z_THICKNESS+SD9212_HEAD_HEIGHT
-    ROOF_SHIM_THICKNESS=math.ceil(HTP37Z_HARDWARE_PROJECTION*8)/8
-    htp_hole_centers=tuple(
-        (x, y)
-        for x in (0.45, 1.15, 1.85, 2.55, 3.25, 3.75, 4.45, 5.15, 5.85, 6.55)
-        for y in (0.75, 2.25)
+    GUSSET_HARDWARE_PROJECTION=(
+        GUSSET_THICKNESS_IN+GUSSET_SCREW_HEAD_HEIGHT_IN
     )
-    htp37z_with_sd9212_type=ComponentType(
-        name="HTP37Z_with_20_SD9212",
-        size=(HTP37Z_LENGTH, HTP37Z_WIDTH, HTP37Z_HARDWARE_PROJECTION),
+    ROOF_SHIM_THICKNESS=math.ceil(GUSSET_HARDWARE_PROJECTION*8)/8
+    gusset_with_screws_type=ComponentType(
+        name="custom_6x6_g90_gusset_with_number_9_pan_head_screws",
+        size=(GUSSET_SIZE_IN, GUSSET_SIZE_IN, GUSSET_HARDWARE_PROJECTION),
         color=(0.62, 0.66, 0.68, 1.0),
         default_face="wide_pos",
-        mount_point=(HTP37Z_LENGTH/2, HTP37Z_WIDTH/2, 0),
+        mount_point=(0, 0, 0),
         shape="primitive_union",
         box_primitives=(
-            ((0, 0, 0), (HTP37Z_LENGTH, HTP37Z_WIDTH, HTP37Z_THICKNESS)),
+            ((0, 0, 0), (GUSSET_SIZE_IN, GUSSET_SIZE_IN, GUSSET_THICKNESS_IN)),
         ),
-        cylinder_primitives=tuple(
-            (
-                (x, y, HTP37Z_THICKNESS-SD9212_LENGTH),
-                "out",
-                SD9212_LENGTH,
-                SD9212_SHANK_DIAMETER,
-            )
-            for x,y in htp_hole_centers
-        ) + tuple(
-            (
-                (x, y, HTP37Z_THICKNESS),
-                "out",
-                SD9212_HEAD_HEIGHT,
-                SD9212_HEAD_DIAMETER,
-            )
-            for x,y in htp_hole_centers
-        ),
+        cylinder_primitives=pan_head_cylinder_primitives(),
         include_primitive_envelope=True,
     )
-    for name,at in (
-        ("htp37z_back_left", HTP37Z_LENGTH/2),
-        ("htp37z_front_right", diagonal.length-HTP37Z_LENGTH/2),
+    for name, member_name, face, across_offset in (
+        ("gusset_back_left", "post_bl", "wide_neg", -4.25),
+        ("gusset_front_right", "post_fr", "wide_pos", -1.75),
     ):
         components.add(
             name,
             assembly="top_bracing_hardware",
-            component_type=htp37z_with_sd9212_type,
-            member="brace_bl_fr",
-            at=at,
-            face="wide_pos",
+            component_type=gusset_with_screws_type,
+            member=member_name,
+            at=members[member_name].length,
+            face=face,
+            orientation="inward",
+            offset=(0, across_offset, diagonal.thickness),
         )
 
     for member_name in ("brace_fl_fr", "brace_fl_bl", "brace_bl_br", "brace_fr_br"):
@@ -1891,16 +1857,16 @@ def build_enclosure(
         routed_seats=routed_seats,
         purchased_items=(
             PurchasedItem(
-                "htp37z_heavy_tie_plate",
+                "custom_6x6_g90_gusset_plate",
                 "top_bracing_hardware",
-                "Simpson Strong-Tie HTP37Z ZMAX heavy tie plate",
+                f"laser-cut 6 x 6 x {GUSSET_THICKNESS_IN:.3f} in {GUSSET_MATERIAL}",
                 2,
             ),
             PurchasedItem(
-                "sd9212_connector_screw",
+                "number_9_pan_head_screw",
                 "top_bracing_hardware",
-                "Simpson Strong-Tie SD9212 #9 x 2-1/2 in connector screw",
-                40,
+                "#9 pan-head screw; length intentionally unspecified",
+                2 * GUSSET_FASTENER_COUNT,
             ),
             PurchasedItem(
                 "continuous_pt_roof_shim",
@@ -1973,6 +1939,7 @@ def write_outputs(
     enclosure.model.write_shopping_list_json(output_dir / "shopping_list.json")
     enclosure.model.write_fabrication_csv(output_dir / "fabrication.csv")
     enclosure.model.write_fabrication_json(output_dir / "fabrication.json")
+    generate_gusset_dxf(output_dir / "gusset_plate_6x6.dxf")
 
 
 def _playground_model_text(model_path: Path) -> str:

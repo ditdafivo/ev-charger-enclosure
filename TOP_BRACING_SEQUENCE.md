@@ -9,7 +9,7 @@ the posts rather than after the intermediate framing.
 
 Install the accepted rabbeted top bracing directly after the posts using the
 detail in [`TOP_BRACING.md`](TOP_BRACING.md). Keep temporary external bracing
-until the routed seats, HTP37Z plates, full SD9212 schedule, and complete frame
+until the routed seats, custom gusset plates, complete #9 screw grids, and frame
 have been inspected.
 
 ## Consolidated geometry
@@ -20,10 +20,11 @@ The left and right top perimeter members are now 4x4s spanning `z = 43.50` to
 `z = 43.25` to `43.50`, directly against the 4x4 undersides, while the curtain
 and guides remain inside the clear opening.
 
-The full-section diagonal remains at `z = 46.25` to `47.00`; its routed end
-regions overlap the posts and perimeter framing. HTP37Z plates and screw heads
-project 0.18 inch above the frame, and continuous 1/4-inch shims establish the
-roof support plane at `z = 47.25`.
+The full-section diagonal remains at `z = 46.25` to `47.00`. The two involved
+posts stop at its underside, and only the four intersected side braces are
+routed. Custom 0.074-inch gusset plates and modeled screw heads project 0.184
+inch above the frame, and continuous 1/4-inch shims establish the roof support
+plane at `z = 47.25`.
 
 ## Reasons for moving the bracing after Step 2
 
@@ -90,11 +91,11 @@ every direction and the permanent top-brace connections have been approved.
 
 ## Structural-connection installation
 
-Route and dry-fit both seats before installing hardware. Center and align each
-HTP37Z, then fill all twenty holes with SD9212 screws. Ordinary deck screws,
-SDS screws, nails, mixed fasteners, omitted holes, and enlarged holes are not
-permitted. Inspect plate seating, wood splitting, screw-tip clearance, and the
-post/perimeter load path before removing temporary support.
+Route and dry-fit the four side-brace seats before installing hardware. Place
+each 6-by-6 gusset against the two exterior faces of its post and fill its
+sixteen-hole grid with #9 pan-head screws. The model intentionally leaves screw
+length unspecified. Inspect plate seating, wood splitting, screw clearance,
+and the post/perimeter load path before removing temporary support.
 
 ## Revised sequence
 

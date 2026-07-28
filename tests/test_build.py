@@ -22,7 +22,7 @@ from lumber_model import (
 
 
 class TopBracingBuildTests(unittest.TestCase):
-    def test_default_uses_extended_rabbeted_diagonal_at_frame_top(self) -> None:
+    def test_diagonal_stays_inside_involved_post_xy_profiles(self) -> None:
         brace = build.members["brace_bl_fr"]
 
         self.assertNotIn("brace_br_fl", build.members)
@@ -30,12 +30,35 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertAlmostEqual(brace.thickness, 0.75)
         self.assertAlmostEqual(brace.min[2], 46.25)
         self.assertAlmostEqual(brace.max[2], build.DEFAULT_HEIGHT)
-        self.assertAlmostEqual(brace.start[0], 0)
-        self.assertAlmostEqual(brace.start[1], 20.9146341)
-        self.assertAlmostEqual(brace.end[0], 27.5)
-        self.assertAlmostEqual(brace.end[1], 0.9603659)
-        self.assertAlmostEqual(brace.length, 33.9767983)
+        self.assertAlmostEqual(brace.start[0], 1.0277592726)
+        self.assertAlmostEqual(brace.start[1], 20.1688819912)
+        self.assertAlmostEqual(brace.end[0], 26.4722407274)
+        self.assertAlmostEqual(brace.end[1], 1.7061180088)
+        self.assertAlmostEqual(brace.length, 31.4371641592)
         self.assertAlmostEqual(brace.cut_angle_deg, 35.965005)
+
+        dx = (brace.end[0] - brace.start[0]) / brace.length
+        dy = (brace.end[1] - brace.start[1]) / brace.length
+        normal = (-dy, dx)
+        footprint = tuple(
+            (
+                endpoint[0] + sign * normal[0] * brace.width / 2,
+                endpoint[1] + sign * normal[1] * brace.width / 2,
+            )
+            for endpoint in (brace.start, brace.end)
+            for sign in (-1, 1)
+        )
+        self.assertAlmostEqual(min(point[0] for point in footprint), 0)
+        self.assertAlmostEqual(max(point[0] for point in footprint), 27.5)
+        self.assertGreaterEqual(min(point[1] for point in footprint), 0)
+        self.assertLessEqual(max(point[1] for point in footprint), 21.875)
+
+    def test_involved_posts_stop_below_diagonal(self) -> None:
+        for name in ("post_bl", "post_fr"):
+            self.assertAlmostEqual(build.members[name].max_on("z"), 46.25)
+            self.assertAlmostEqual(build.members[name].length, 78.25)
+        for name in ("post_fl", "post_br"):
+            self.assertAlmostEqual(build.members[name].max_on("z"), 47)
 
     def test_custom_dimensions_recalculate_shallow_diagonal(self) -> None:
         enclosure = build.build_enclosure(width=36, depth=30, height=55)
@@ -45,10 +68,7 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertAlmostEqual(brace.thickness, 0.75)
         self.assertAlmostEqual(brace.max[2], 55)
         self.assertAlmostEqual(brace.min[2], 54.25)
-        self.assertAlmostEqual(
-            brace.length,
-            math.hypot(36 - 3.5, 30 - 3.5) * (36 + 3.5) / (36 - 3.5),
-        )
+        self.assertAlmostEqual(brace.length, 48.1126668109)
 
     def test_cut_and_shopping_lists_include_one_by_four_brace(self) -> None:
         cut_row = next(
@@ -65,30 +85,37 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertEqual(shopping_row["stock_length_in"], 72)
         self.assertEqual(shopping_row["qty"], 1)
 
-    def test_routed_seats_and_htp37z_sd9212_hardware_are_explicit(self) -> None:
-        self.assertEqual(len(build.routed_seats), 6)
+    def test_side_brace_rabbets_and_custom_gusset_hardware_are_explicit(self) -> None:
+        self.assertEqual(len(build.routed_seats), 4)
         self.assertEqual({seat.depth for seat in build.routed_seats}, {0.75})
         self.assertEqual({seat.top_z for seat in build.routed_seats}, {47})
-        for name in ("htp37z_back_left", "htp37z_front_right"):
+        self.assertEqual(
+            {seat.member for seat in build.routed_seats},
+            {"brace_fl_bl", "brace_bl_br", "brace_fr_br", "brace_fl_fr"},
+        )
+        for name in ("gusset_back_left", "gusset_front_right"):
             hardware = build.components[name]
-            self.assertEqual(hardware.member, "brace_bl_fr")
-            self.assertEqual(hardware.component_type.size, (7, 3, 0.18))
+            self.assertIn(hardware.member, {"post_bl", "post_fr"})
+            self.assertEqual(hardware.component_type.size, (6, 6, 0.184))
             primitives = hardware.component_type.cylinder_primitives
-            self.assertEqual(len(primitives), 40)
-            self.assertEqual(sum(length == 2.5 for _,_,length,_ in primitives), 20)
-            resolved = hardware.resolved(build.members[hardware.member])
-            self.assertAlmostEqual(resolved.box_min[2], 44.56)
-            self.assertAlmostEqual(
-                resolved.box_min[2] + resolved.box_size[2],
-                47.18,
+            self.assertEqual(len(primitives), 64)
+            self.assertTrue(all(length <= 0.045 for _, _, length, _ in primitives))
+            self.assertTrue(
+                all(origin[2] >= 0.074 for origin, _, _, _ in primitives)
             )
+            resolved = hardware.resolved(build.members[hardware.member])
+            self.assertAlmostEqual(resolved.box_min[2], 47)
+            self.assertAlmostEqual(resolved.box_size[0], 6)
+            self.assertAlmostEqual(resolved.box_size[1], 6)
+            self.assertAlmostEqual(resolved.box_size[2], 0.184)
 
         hardware_rows = {
             row["name"]: row for row in build.model.bom_rows()
             if row["category"] == "hardware"
         }
-        self.assertEqual(hardware_rows["htp37z_heavy_tie_plate"]["qty"], 2)
-        self.assertEqual(hardware_rows["sd9212_connector_screw"]["qty"], 40)
+        self.assertEqual(hardware_rows["custom_6x6_g90_gusset_plate"]["qty"], 2)
+        self.assertEqual(hardware_rows["number_9_pan_head_screw"]["qty"], 32)
+        self.assertNotIn("2-1/2", hardware_rows["number_9_pan_head_screw"]["type"])
 
     def test_roof_shims_raise_only_top_boards(self) -> None:
         self.assertEqual(build.ROOF_SHIM_THICKNESS, 0.25)
@@ -1599,6 +1626,7 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "shopping_list.json",
                     "fabrication.csv",
                     "fabrication.json",
+                    "gusset_plate_6x6.dxf",
                 },
             )
 

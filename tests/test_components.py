@@ -393,7 +393,7 @@ class ComponentValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "outside member"):
             Model(members, components=components).validate()
 
-    def test_model_rejects_component_on_angled_lumber(self) -> None:
+    def test_model_resolves_component_on_angled_lumber(self) -> None:
         members = LumberCollection()
         members.diagonal_between(
             "brace",
@@ -425,8 +425,11 @@ class ComponentValidationTests(unittest.TestCase):
             at=1,
         )
 
-        with self.assertRaisesRegex(ValueError, "cannot mount to angled lumber"):
-            Model(members, components=components).validate()
+        model = Model(members, components=components)
+        model.validate()
+        resolved = components["outlet"].resolved(members["brace"])
+        self.assertAlmostEqual(sum(value * value for value in resolved.along_vec), 1)
+        self.assertEqual(tuple(abs(value) for value in resolved.out_vec), (0, 0, 1))
 
     def test_component_type_rejects_invalid_dimensions(self) -> None:
         with self.assertRaisesRegex(ValueError, "positive"):

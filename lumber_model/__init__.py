@@ -70,6 +70,7 @@ from lumber_model.footing import (
     Footing,
     ResolvedFooting,
 )
+from lumber_model.fabrication import PurchasedItem, RoutedSeat, clip_polygon_to_box
 from lumber_model.geometry import cubic_bezier_points
 from lumber_model.lumber import AngledLumber, Lumber, LumberPiece
 from lumber_model.model import Model
@@ -150,6 +151,8 @@ __all__ = [
     "FrontSidingOpening",
     "Footing",
     "RightSidingOpening",
+    "PurchasedItem",
+    "RoutedSeat",
     "GroundPlane",
     "Lumber",
     "LumberCollection",
@@ -173,6 +176,7 @@ __all__ = [
     "TambourCollection",
     "TambourDoor",
     "cable_centerline_length",
+    "clip_polygon_to_box",
     "conductor_fill_volume",
     "cubic_bezier_conduit_points",
     "cubic_bezier_points",

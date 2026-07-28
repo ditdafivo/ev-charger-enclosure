@@ -208,6 +208,7 @@ class CompositeSiding:
     rear_opening_min_x: float
     rear_opening_max_x: float
     rear_opening_top_z: float
+    roof_support_z: float | None = None
     board_width: float = 5.5
     board_thickness: float = 1.0
     gap: float = 3 / 16
@@ -225,6 +226,12 @@ class CompositeSiding:
             raise ValueError(f"{self.name}: siding envelope must have positive area")
         if self.frame_top_z <= self.bottom_z:
             raise ValueError(f"{self.name}: frame top must be above siding bottom")
+        if self.roof_support_z is None:
+            object.__setattr__(self, "roof_support_z", self.frame_top_z)
+        elif self.roof_support_z < self.frame_top_z:
+            raise ValueError(
+                f"{self.name}: roof support must not be below the frame top"
+            )
         for field_name in (
             "board_width",
             "board_thickness",
@@ -325,6 +332,11 @@ class CompositeSiding:
     def finished_top_z(self) -> float:
         return self.frame_top_z + self.board_thickness
 
+    @property
+    def roof_finished_top_z(self) -> float:
+        assert self.roof_support_z is not None
+        return self.roof_support_z + self.board_thickness
+
     def _board_parts(self) -> tuple[SidingPart, ...]:
         parts: list[SidingPart] = []
         frame_width = self.max_x - self.min_x
@@ -338,7 +350,7 @@ class CompositeSiding:
                 SidingPart(
                     name=f"{self.name}_top_{index}",
                     material="composite_decking",
-                    start=(self.min_x, y, self.frame_top_z),
+                    start=(self.min_x, y, self.roof_support_z),
                     size=(frame_width, width, self.board_thickness),
                     color=self.decking_color,
                     cut_length=frame_width,

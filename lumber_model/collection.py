@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator, Mapping
+import math
 from typing import overload
 
 from lumber_model.constants import Axis, LumberType
@@ -106,6 +107,7 @@ class LumberCollection(Mapping[str, LumberPiece]):
         support_b: LumberRef,
         position: float,
         rotated: bool = True,
+        extend_to_outside_x: bool = False,
     ) -> AngledLumber:
         """
         Create a horizontal diagonal member between the inside corners of posts.
@@ -127,6 +129,18 @@ class LumberCollection(Mapping[str, LumberPiece]):
         a_y = a.max_on("y") if b_center[1] >= a_center[1] else a.min_on("y")
         b_x = b.max_on("x") if a_center[0] >= b_center[0] else b.min_on("x")
         b_y = b.max_on("y") if a_center[1] >= b_center[1] else b.min_on("y")
+
+        if extend_to_outside_x:
+            dx = b_x - a_x
+            if math.isclose(dx, 0):
+                raise ValueError(f"{name}: cannot extend a diagonal with no x span")
+            outside_a_x = a.min_on("x") if b_center[0] >= a_center[0] else a.max_on("x")
+            outside_b_x = b.max_on("x") if b_center[0] >= a_center[0] else b.min_on("x")
+            slope = (b_y - a_y) / dx
+            a_y += slope * (outside_a_x - a_x)
+            b_y += slope * (outside_b_x - b_x)
+            a_x = outside_a_x
+            b_x = outside_b_x
 
         return self._store(
             AngledLumber(

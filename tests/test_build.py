@@ -22,7 +22,7 @@ from lumber_model import (
 
 
 class TopBracingBuildTests(unittest.TestCase):
-    def test_default_uses_one_shallow_diagonal_at_the_existing_frame_top(self) -> None:
+    def test_default_uses_extended_rabbeted_diagonal_at_frame_top(self) -> None:
         brace = build.members["brace_bl_fr"]
 
         self.assertNotIn("brace_br_fl", build.members)
@@ -30,7 +30,11 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertAlmostEqual(brace.thickness, 0.75)
         self.assertAlmostEqual(brace.min[2], 46.25)
         self.assertAlmostEqual(brace.max[2], build.DEFAULT_HEIGHT)
-        self.assertAlmostEqual(brace.length, 25.3281587)
+        self.assertAlmostEqual(brace.start[0], 0)
+        self.assertAlmostEqual(brace.start[1], 20.9146341)
+        self.assertAlmostEqual(brace.end[0], 27.5)
+        self.assertAlmostEqual(brace.end[1], 0.9603659)
+        self.assertAlmostEqual(brace.length, 33.9767983)
         self.assertAlmostEqual(brace.cut_angle_deg, 35.965005)
 
     def test_custom_dimensions_recalculate_shallow_diagonal(self) -> None:
@@ -43,7 +47,7 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertAlmostEqual(brace.min[2], 54.25)
         self.assertAlmostEqual(
             brace.length,
-            math.hypot(36 - 3.5, 30 - 3.5),
+            math.hypot(36 - 3.5, 30 - 3.5) * (36 + 3.5) / (36 - 3.5),
         )
 
     def test_cut_and_shopping_lists_include_one_by_four_brace(self) -> None:
@@ -61,28 +65,51 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertEqual(shopping_row["stock_length_in"], 72)
         self.assertEqual(shopping_row["qty"], 1)
 
-    def test_tambour_top_support_and_maximum_curtain_clear_bracing(self) -> None:
-        enclosure = build.default_build
-        brace_bottom = enclosure.members["brace_fl_bl"].min_on("z")
+    def test_routed_seats_and_htp37z_sd9212_hardware_are_explicit(self) -> None:
+        self.assertEqual(len(build.routed_seats), 6)
+        self.assertEqual({seat.depth for seat in build.routed_seats}, {0.75})
+        self.assertEqual({seat.top_z for seat in build.routed_seats}, {47})
+        for name in ("htp37z_back_left", "htp37z_front_right"):
+            hardware = build.components[name]
+            self.assertEqual(hardware.member, "brace_bl_fr")
+            self.assertEqual(hardware.component_type.size, (7, 3, 0.18))
+            primitives = hardware.component_type.cylinder_primitives
+            self.assertEqual(len(primitives), 40)
+            self.assertEqual(sum(length == 2.5 for _,_,length,_ in primitives), 20)
+            resolved = hardware.resolved(build.members[hardware.member])
+            self.assertAlmostEqual(resolved.box_min[2], 44.56)
+            self.assertAlmostEqual(
+                resolved.box_min[2] + resolved.box_size[2],
+                47.18,
+            )
 
-        for name in ("rail_l_tambour", "rail_r_tambour"):
+        hardware_rows = {
+            row["name"]: row for row in build.model.bom_rows()
+            if row["category"] == "hardware"
+        }
+        self.assertEqual(hardware_rows["htp37z_heavy_tie_plate"]["qty"], 2)
+        self.assertEqual(hardware_rows["sd9212_connector_screw"]["qty"], 40)
+
+    def test_roof_shims_raise_only_top_boards(self) -> None:
+        self.assertEqual(build.ROOF_SHIM_THICKNESS, 0.25)
+        self.assertEqual(build.siding.frame_top_z, 47)
+        self.assertEqual(build.siding.roof_support_z, 47.25)
+        self.assertEqual(build.siding.finished_top_z, 48)
+        self.assertEqual(build.siding.roof_finished_top_z, 48.25)
+        for part in build.siding.parts:
+            if part.name.startswith("enclosure_siding_top_"):
+                self.assertEqual(part.start[2], 47.25)
+
+    def test_side_4x4s_consolidate_top_and_tambour_supports(self) -> None:
+        enclosure = build.default_build
+        for name in ("brace_fl_bl", "brace_fr_br"):
             with self.subTest(name=name):
                 support = enclosure.members[name]
-                self.assertAlmostEqual(support.min_on("z"), 43.75)
-                self.assertAlmostEqual(support.max_on("z"), 45.25)
-                self.assertAlmostEqual(
-                    brace_bottom-support.max_on("z"),
-                    enclosure.TAMBOUR_BRACE_CLEARANCE,
-                )
-
-        maximum_curtain_top = (
-            enclosure.TAMBOUR_TOP_Z+enclosure.TAMBOUR_MAX_SLAT_DEPTH/2
-        )
-        self.assertAlmostEqual(maximum_curtain_top, 45.25)
-        self.assertAlmostEqual(
-            brace_bottom-maximum_curtain_top,
-            enclosure.TAMBOUR_BRACE_CLEARANCE,
-        )
+                self.assertEqual(support.type, "4x4")
+                self.assertAlmostEqual(support.min_on("z"), 43.5)
+                self.assertAlmostEqual(support.max_on("z"), 47)
+        for name in ("rail_l_tambour", "rail_r_tambour", "rail_lt", "rail_rt"):
+            self.assertNotIn(name, enclosure.members)
 
     def test_lowered_front_header_has_full_depth_end_supports(self) -> None:
         header = build.members["rail_ft"]
@@ -105,7 +132,7 @@ class TopBracingBuildTests(unittest.TestCase):
                 self.assertAlmostEqual(support.min_on("z"), header.min_on("z"))
                 self.assertAlmostEqual(
                     support.max_on("z"),
-                    build.members["rail_lt"].min_on("z"),
+                    build.members["brace_fl_bl"].min_on("z"),
                 )
                 self.assertAlmostEqual(support.min_on("y"), header.min_on("y"))
                 self.assertAlmostEqual(support.max_on("y"), header.max_on("y"))
@@ -712,7 +739,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 168)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "6336a34325615a64bebb5d30f3191cf8942f520afb3051deb55c0614a72bbce4",
+            "fc971e0f7b9f9670c958191956d8ca4e96b7d5151f4867d5567eb3749d021e34",
         )
 
     def test_center_gland_charger_route_exact_regression(self) -> None:
@@ -1249,9 +1276,11 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertEqual(taller.height, 55)
         self.assertEqual(taller.members["post_br"].length, 87)
         self.assertAlmostEqual(taller.members["brace_fl_fr"].max_on("z"), 55)
-        self.assertAlmostEqual(taller.members["rail_r_tambour"].center_on("z"), 52.5)
-        self.assertAlmostEqual(taller.members["rail_rt"].center_on("z"), 51.5)
+        self.assertAlmostEqual(taller.members["brace_fr_br"].min_on("z"), 51.5)
+        self.assertNotIn("rail_r_tambour", taller.members)
+        self.assertNotIn("rail_rt", taller.members)
         self.assertAlmostEqual(taller.siding.frame_top_z, 55)
+        self.assertAlmostEqual(taller.siding.roof_support_z, 55.25)
         self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.5)
         self.assertAlmostEqual(taller.LOW_VOLTAGE_SERVICE_LOOP_TOP_Z, 50.9375)
 
@@ -1568,6 +1597,8 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "cut_list.json",
                     "shopping_list.csv",
                     "shopping_list.json",
+                    "fabrication.csv",
+                    "fabrication.json",
                 },
             )
 

@@ -2,10 +2,15 @@
 
 ## Decision
 
-Keep a positive top-plane brace, but replace the two intersecting flat 2x4
-diagonals with one stress-rated nominal 1x4 diagonal.  The new member is 3/4
-inch thick and preserves the 47-inch exterior frame height, so its underside is
-at `z = 46.25` instead of `z = 45.5`.
+Use one stress-rated nominal 1x4 diagonal extended across the back-left and
+front-right post tops in 3/4-inch-deep routed seats. The member is 33.977
+inches overall in the default model, retains the 25.328-inch clear span, and
+occupies `z = 46.25` to `47.00`.
+
+Connect each end with one Simpson Strong-Tie HTP37Z plate aligned to the
+diagonal and twenty SD9212 #9-by-2 1/2-inch Strong-Drive SD Connector screws.
+The two side perimeter members are top-flush 4x4s occupying `z = 43.50` to
+`47.00`; they replace the former upper and tambour side rails.
 
 The brace is still required because none of the other modeled construction is
 a defined structural diaphragm.  The four perimeter rails have unspecified
@@ -87,24 +92,23 @@ equal or greater published compression, tension, and minimum-modulus values.
 Reject a board with slope-of-grain defects, checks, splits, or wane in either
 end-connection region.
 
-Before construction, the approved structural detail must demonstrate all of
-the following for both load directions:
+The accepted detail and its installation must provide all of the following for
+both load directions:
 
 - at least 826 pounds ASD axial capacity in the member and at each end;
 - compression stability about the 3/4-inch weak axis over the modeled length;
 - tension capacity at the minimum net section;
-- fastener edge/end distances and no reliance on withdrawal from post end
-  grain;
+- full seating of both plates and all forty SD9212 screws in solid wood;
 - positive transfer from the diagonal through the perimeter-frame/post joints;
 - corrosion compatibility with treated lumber and the outdoor environment.
 
-The model continues to show member geometry, not a fabricated joint.  Do not
-install the 1x4 with ordinary deck screws, end-grain screws, or an unverified
-toe-screw pattern.  A Colorado-licensed structural engineer or the authority
-having jurisdiction must approve the connection and confirm the assumptions
-above before the permanent brace replaces temporary bracing.
+The model includes the routed cuts, plates, screw envelopes, and roof shims.
+Do not enlarge connector holes or substitute ordinary deck screws, SDS screws,
+nails, or an incomplete fastener schedule. Inspect the routed residual sections,
+plate seating, screw installation, and complete post load path before removing
+temporary bracing.
 
-## Thin-metal option
+## Superseded thin-metal option
 
 A tension-only metal solution requires an X.  A pair of coil straps would
 recover almost the full 1.5 inches, but the current frame does not provide the
@@ -113,10 +117,16 @@ Nailing a horizontal strap into the tops of the vertical posts would use end
 grain, while wrapping, field-bending, or adding custom corner blocks would no
 longer be the simple catalog installation being evaluated.
 
-Accordingly, metal straps are not part of the modeled design.  They remain a
-valid future engineered alternative if a connection detail supplies rated
-side-grain anchorage and an ASD capacity of at least 826 pounds per active
-diagonal without interfering with the roof boards.
+Metal straps are not part of the accepted design. The HTP37Z/SD9212 assemblies
+are the modeled connection.
+
+## Roof interface
+
+The modeled HTP37Z plate and SD9212 head projection is 0.18 inch above the
+47-inch frame plane. Continuous 1/4-inch ripped PT-lumber shims raise the
+composite roof support plane to `z = 47.25` and the finished roof to
+`z = 48.25`. Preserve drainage around both plates and increase roof-fastener
+length by the shim thickness so the original substrate penetration is retained.
 
 ## Sources
 

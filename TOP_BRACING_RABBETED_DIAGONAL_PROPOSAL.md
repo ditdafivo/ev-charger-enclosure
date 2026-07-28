@@ -1,29 +1,20 @@
-# Rabbeted top-diagonal and consolidated side-brace proposal
+# Accepted rabbeted top-diagonal and consolidated side-brace detail
 
 ## Status and purpose
 
-This document records a candidate replacement for the unresolved butt-ended
-top-diagonal connection described in [`TOP_BRACING.md`](TOP_BRACING.md). It is
-a design-development proposal, not an approved construction detail.
+This document defines the accepted replacement for the former butt-ended
+top-diagonal connection described in [`TOP_BRACING.md`](TOP_BRACING.md).
 
 Use this document to:
 
-1. evaluate the selected catalog-metal candidate and the exterior-plywood
-   fallback with their exact fasteners and supporting framing;
-2. verify the geometry and load path with those exact components;
-3. complete the member and connection calculations;
-4. obtain project-specific structural and authority approval where required;
-5. update the model only after the checks below pass.
-
-The preferred connection-selection order is a cataloged metal connector, then
-an engineered 3/4-inch exterior-plywood gusset if no catalog installation is
-applicable. MDF, generic mending plates, field-modified connectors, and custom
-machined steel are excluded. A connector or screw that merely fits must not be
-assigned a published capacity from a different tested configuration.
+1. fabricate the routed framing and extended diagonal represented by the model;
+2. install two HTP37Z plates with the complete SD9212 screw schedule;
+3. preserve the modeled tambour, service, and roof clearances; and
+4. inspect the completed load path and weather detailing before enclosure use.
 
 ## Design objective
 
-Replace the current nominal 1x4 diagonal, which terminates at the inside
+The accepted detail replaces the former nominal 1x4 diagonal, which terminated at the inside
 corners of the posts without a fabricated joint, with an extended nominal 1x4
 that overlaps the two diagonal posts and adjacent framing in routed top seats.
 The diagonal remains flush with the `z = 47.00` frame plane.
@@ -33,18 +24,16 @@ top-flush 4x4 members. These deeper members provide usable screw penetration
 beneath the diagonal and consolidate the functions of several existing side
 rails without reducing the modeled clearance below the current framing.
 
-A connector at each diagonal end distributes force between the diagonal and
-the adjacent framing. Simpson Strong-Tie HTP37Z heavy tie plates are the first
-catalog candidate. Engineered 3/4-inch exterior-plywood gussets are the fallback.
-The previously considered MSTA18Z-and-blocking alternative is geometrically
-inviable because its required blocking conflicts with the tambour envelope.
-Neither remaining option is approved until the configuration-specific checks
-below pass.
+A Simpson Strong-Tie HTP37Z heavy tie plate at each diagonal end distributes
+force between the diagonal and adjacent framing. Fill all twenty holes in each
+plate with SD9212 #9-by-2 1/2-inch Strong-Drive SD Connector screws. The
+previously considered plywood-gusset and MSTA18Z alternatives are not part of
+the accepted model or build.
 
-## Existing geometry
+## Former geometry
 
 The default model uses a 27.5-by-21.875-inch outside post envelope and a
-20.5-by-14.875-inch clear top opening. The current diagonal runs between the
+20.5-by-14.875-inch clear top opening. The former diagonal ran between the
 inside corners of the back-left and front-right posts:
 
 ```text
@@ -145,73 +134,24 @@ the effective length. The structural calculation must establish the actual
 effective length rather than assuming either overall board length or clear
 opening length.
 
-## Connection alternatives and selection order
+## Accepted connection
 
-Use direct wood bearing in the routed seats as the compression load path. Use
-Option A at each end as the reversible tension load path if it passes the
-structural, geometric, corrosion, and approval gates; otherwise use Option B.
-The rejected alternative remains documented to prevent it from being
-reintroduced without resolving its geometric conflict.
+Use direct wood bearing in the routed seats as the compression load path and
+the HTP37Z assemblies as the reversible tension load path.
 
-### Option A: HTP37Z heavy tie plate
+### HTP37Z heavy tie plate with SD9212 screws
 
-First ask Simpson Strong-Tie to confirm in writing whether an HTP37Z can be used
-in the actual layered, skewed geometry. The HTP37Z is a 3-by-7-inch, 16-gauge
-ZMAX plate. The connector catalog lists DF/SP and SPF/HF allowable tension
-loads of 1,850 and 1,600 pounds, respectively, with twenty specified
-0.148-by-1.5-inch nails. ICC-ES ESR-3096 lists 2,735 pounds with twenty SD9112
-screws. These values apply to their stated fastener schedules and include the
-wind/seismic load-duration increase; do not mix the schedules or apply another
-increase.
+The HTP37Z is a 3-by-7-inch, 16-gauge ZMAX plate. Center one plate over each
+routed end region, align its long axis with the 35.965-degree diagonal, and
+seat it flat without recessing the plate into the 1x4. Install one SD9212 in
+every prepunched hole: twenty screws per plate and forty total. Do not enlarge
+holes, mix fastener types, substitute SDS/deck screws, or omit holes.
 
-The plate is a promising geometric candidate because each half of its 7-inch
-length can fit within a nominal 3.5-inch connection region. The published value
-must not be used unless the manufacturer or project engineer accepts all of the
-following departures from a simple coplanar splice:
-
-- the diagonal is routed flush into, and overlaps, the supporting framing;
-- any fastener assigned to the lower framing passes through the 0.75-inch
-  diagonal before entering that framing;
-- some available framing beneath the plate includes post end grain;
-- the load and plate axes follow the 35.965-degree diagonal rather than a
-  conventional lumber splice; and
-- only holes with solid wood and compliant edge/end distances beneath them may
-  be counted.
-
-Use the complete current HTP37Z fastener schedule if this configuration is
-accepted. Candidate fasteners are hot-dip-galvanized 0.148-by-1.5-inch connector
-nails or SD9112 Strong-Drive SD connector screws. Either fastener reaches only
-about 0.75 inch into lower framing after passing through the 0.75-inch diagonal;
-the catalog values therefore cannot be assigned to that layered installation
-without written acceptance. Do not substitute longer nails, the earlier 3-inch
-SDS screw, or ordinary deck screws.
-
-#### Why a longer screw is not a catalog substitution
-
-A longer screw may be part of an engineered connection, but it does not retain
-the HTP37Z catalog value automatically. ESR-3096 assigns the 2,735-pound value
-to exactly twenty SD9112 screws, with half installed directly into each member
-of a coplanar splice. Simpson requires the specified fastener type, size,
-quantity, finish, and holes for a published connector load.
-
-A longer #9 SD connector screw may fit the prepunched holes, but the routed lap
-is no longer the rated two-member splice. The plate remains on top of the
-diagonal, so a framing-side screw bears first in the 0.75-inch diagonal and then
-in the lower framing. This creates a layered multiple-member yield mechanism and
-changes screw bending, wood bearing, slip, group stiffness, force distribution,
-and splitting behavior. Added penetration does not remove the interposed loaded
-diagonal or restore the catalog geometry.
-
-Simpson's general longer-fastener provision for a strap installed over wood
-structural-panel sheathing is limited to sheathing no thicker than 5/8 inch.
-The 0.75-inch diagonal is thicker and is a loaded brace rather than incidental
-sheathing. A 1/4-inch SDS screw is also a different fastener family and is too
-large for the HTP37Z's approximately 5/32-inch holes; enlarging those holes is
-prohibited. Other structural, ledger, or deck screws have no HTP37Z rating.
-
-Accordingly, use a longer screw only if Simpson approves the exact screw and
-layered configuration in writing or a project-specific calculation treats the
-HTP37Z as a steel side plate without claiming its catalog value.
+Each 2 1/2-inch screw passes through the plate and 3/4-inch diagonal before
+developing approximately 1 3/4 inches of penetration in the lower framing.
+Confirm every hole has solid wood beneath it and reject any installation with
+splitting, stripped holes, raised plate edges, or screw tips entering occupied
+tambour, electrical, or service space.
 
 ### Rejected alternative: MSTA18Z strap with blocking
 
@@ -230,33 +170,13 @@ occupied perimeter footprint does not provide the required strap anchorage
 length. The MSTA18Z-and-blocking option is rejected and must not be modeled or
 procured for this proposal.
 
-### Option B: exterior-plywood gusset
-
-If no HTP37Z configuration is approved, use an engineered gusset cut from
-23/32- or 3/4-inch APA-trademarked Structural I plywood with an Exterior bond
-classification. Do not use Exposure 1/CDX, OSB, MDF, particleboard, or an
-unmarked project panel. Unlike MSTA blocking, the gusset adds material only
-above `z = 47.00` and therefore preserves the interior tambour envelope.
-
-Shape the gusset to engage the diagonal, side 4x4, adjacent perimeter member,
-and usable post footprint while avoiding reliance on end-grain withdrawal.
-Select exterior-rated structural wood screws from published lateral-load data
-for a 3/4-inch plywood side member and treated Douglas fir. The earlier 3-inch
-SDS screw is not presumed adequate: the plywood and diagonal together consume
-approximately 1.5 inches before the screw reaches the framing.
-
-Check both plywood strength axes, panel shear, tension, net section, fastener
-bearing, tear-out, group action, splitting, wet service, edge and end distances,
-and deformation. Seal all cut edges and holes after fabrication; field-applied
-sealer does not upgrade an Exposure 1 panel to Exterior.
-
 ### Common load path
 
 The preliminary primary load path is:
 
 ```text
 diagonal
-  -> selected connector and fastener groups
+  -> HTP37Z and SD9212 fastener groups
   -> adjacent 4x4 and perimeter framing
   -> perimeter frame/post joints
   -> posts and foundation system
@@ -283,25 +203,23 @@ Published connector values apply only to the manufacturer's specified connector,
 fasteners, quantities, holes, lumber, orientation, and loading direction. Do
 not assign the capacity of a listed connector to a generic mending plate or a
 custom skewed installation without an applicable calculation, test basis, or
-manufacturer/engineer approval.
+the accepted HTP37Z/SD9212 detail.
 
 ## Roof shims and finished height
 
-The selected connector and fastener heads project above `z = 47.00`. Accept
+The connector and fastener heads project above `z = 47.00`. Accept
 that projection as an increase in finished structure height rather than cutting
-a connector recess into the 0.75-inch diagonal. A plywood gusset adds almost
-3/4 inch more projection than the HTP37Z candidate.
+a connector recess into the 0.75-inch diagonal.
 
-Let `h_hardware` be the maximum installed projection above the diagonal,
-including plate thickness, screw-head projection, tolerances, and any required
-isolation material. Provide a shim/support system beneath the composite top
-boards with a finished thickness of at least `h_hardware`.
+The modeled 0.06-inch plate and 0.12-inch screw-head projection require
+0.18 inch of clearance. Use continuous 1/4-inch ripped PT-lumber shims beneath
+the composite top boards.
 
-Preliminary resulting elevations are:
+Resulting elevations are:
 
 ```text
-composite top-board bottom = 47.00 + h_hardware
-finished composite top     = 48.00 + h_hardware
+composite top-board bottom = 47.25 inches
+finished composite top     = 48.25 inches
 ```
 
 The shim design must:
@@ -316,32 +234,28 @@ The shim design must:
 - coordinate the wall-board top edges and aluminum edge trim with the raised
   roof plane.
 
-The current `CompositeSiding` model uses one frame-top elevation to derive both
-top-board placement and finished wall height. The model may need separate roof
-support and wall-top elevations rather than raising every siding component by
-`h_hardware`.
+The `CompositeSiding` model now carries separate frame-top and roof-support
+elevations, so raising the roof does not move the wall courses.
 
 ## Component-selection worksheet
 
-These candidates are readily procurable in the Boulder, Colorado 80301 area.
+These selected materials are readily procurable in the Boulder, Colorado 80301 area.
 Home Depot Boulder #1546 is at 1600 29th Street; Lowe's Boulder is at 6379
 Valmont Road. Web inventory is a snapshot, so confirm the exact model and pickup
 quantity before travel. Lumber must be accepted from its physical grade and
 treatment stamps rather than the retail listing alone.
 
-| Item | Candidate | Required information | Status |
+| Item | Selected product | Field verification | Status |
 |---|---|---|---|
-| Diagonal lumber | Home Depot Internet #202083125, model 767150, PT Douglas-fir 1x4x8 | Physical No. 2-or-better grade stamp, 0.75-by-3.5-inch actual section, treatment, moisture, incising | Candidate; reject ungraded, undersized, incised without recalculation, checked, split, waned, or crooked stock |
-| Side braces | PT Douglas-fir 4x4x8, No. 2 or better | Physical species/grade/treatment stamps and 3.5-inch actual section | Candidate; one 8-foot timber supplies the two side braces |
-| Primary catalog plate | Simpson Strong-Tie HTP37Z, Home Depot Internet #202329565 / Lowe's item #312976 | Written applicability to layered routed geometry, current load table, full fastener schedule | Preferred candidate; not yet configuration-approved |
+| Diagonal lumber | Home Depot Internet #202083125, model 767150, PT Douglas-fir 1x4x8 | Physical No. 2-or-better grade stamp, 0.75-by-3.5-inch actual section, treatment, moisture, incising | Selected; reject damaged, undersized, ungraded, or unsuitable stock |
+| Side braces | PT Douglas-fir 4x4x8, No. 2 or better | Physical species/grade/treatment stamps and 3.5-inch actual section | Selected; one 8-foot timber supplies the two side braces |
+| Connection plates | Simpson Strong-Tie HTP37Z, Home Depot Internet #202329565 / Lowe's item #312976 | Correct ZMAX part, unmodified holes, flat bearing | Selected; quantity two |
 | Rejected catalog strap | Simpson Strong-Tie MSTA18Z, Home Depot Internet #100375194 | Required side-grain anchorage would need blocking inside the clear opening | Rejected; block overlaps the tambour envelope and ceiling-service space |
-| Wood gusset | 23/32- or 3/4-inch APA Structural I plywood, Exterior bond classification | APA stamp, species/group, panel design values, exterior durability | Immediate fallback if HTP37Z is not approved; engineer sizes outline and fastener groups |
-| HTP fasteners | Manufacturer-specified hot-dip-galvanized 0.148-by-1.5-inch nails or SD9112 screws | Exact coating, count, penetration, and written applicability to layered geometry | Open pending connector confirmation; longer screws are not a catalog substitution |
-| Primary plywood-gusset screws | Exterior-rated structural wood screw, length TBD | Published plywood-side-member lateral value, effective penetration, wet service, coating | Open pending gusset design; 3-inch SDS not presumed adequate |
+| HTP fasteners | Simpson Strong-Tie SD9212, #9 by 2 1/2 inches | Correct head marking, coating, count, full seating, solid wood below every hole | Selected; twenty per plate, forty total |
 | `rail_ft` support connection | Simpson Strong-Tie A35Z with SD9112 screws, or calculated direct joint | Current connector table, load direction, screw count, clearance | Candidate |
 | Tambour ceiling attachment | Simpson Strong-Tie A21Z with SD9112 screws, or exterior-rated continuous aluminum cleat | Ceiling load, spacing, galvanic isolation, curtain clearance | Candidate |
-| Roof shims | Continuous ripped PT-lumber strips | Finished `h_hardware`, width, spacing, treatment, fastening | Candidate; do not use stacked plastic wedges |
-| Roof fasteners | Existing approved composite fastener increased for final shim thickness | Required penetration, coating, tip clearance | Open pending `h_hardware` |
+| Roof shims | Continuous 1/4-inch ripped PT-lumber strips | Level support, drainage terminations, compatible treatment | Selected; do not use stacked plastic wedges |
+| Roof fasteners | Existing approved composite fastener increased by 1/4 inch | Required substrate penetration, coating, tip clearance | Selected by the existing roof-fastener specification plus shim allowance |
 | Isolation/drainage material | YellaWood Joist Shield YW113W094, 4-inch butyl tape | Compatibility, drainage terminations, locations outside connector interfaces unless approved | Candidate |
 
 Useful selection sources include:
@@ -397,7 +311,7 @@ increase to a published allowable load that already includes it.
 
 ### Connectors and fasteners
 
-- Check connector or gusset gross and net tension, shear, bending, buckling,
+- Check connector gross and net tension, shear, bending, buckling,
   tear-out, block shear, and bearing at holes as applicable.
 - Check each screw for lateral capacity in its actual grain orientation and
   effective penetration.
@@ -409,13 +323,9 @@ increase to a published allowable load that already includes it.
   clearances.
 - Check combined connection deformation so frame racking remains acceptable,
   not merely below ultimate connection capacity.
-- For HTP37Z, obtain written acceptance of the layered routed installation or
-  use a project-specific calculation; the catalog load alone is insufficient,
-  and greater screw length alone does not restore the catalog geometry.
+- Verify the accepted HTP37Z/SD9212 schedule is installed exactly as modeled.
 - Do not advance MSTA18Z blocking: its required side-grain anchorage conflicts
   with the curtain envelope and removable-ceiling service space.
-- For plywood, check both panel axes, panel and fastener failure modes, exterior
-  durability, and the longer screw schedule.
 
 ### Consolidated framing and tambour support
 
@@ -456,10 +366,9 @@ all of the following:
 - exterior trim and wall-to-roof closure accommodate the revised finished
   height.
 
-## Model-update plan after structural acceptance
+## Implemented model changes
 
-Do not implement the proposal as final construction geometry until the load
-checks pass. When accepted, update the model in this order:
+The accepted model incorporates the following changes:
 
 1. Change `brace_fl_bl` and `brace_fr_br` to top-flush 4x4 members.
 2. Remove `rail_l_tambour`, `rail_r_tambour`, `rail_lt`, and `rail_rt`.
@@ -469,61 +378,47 @@ checks pass. When accepted, update the model in this order:
    4x4 undersides.
 5. Replace the inside-corner diagonal geometry with explicit extended
    endpoints and preserve its full section.
-6. Add a representation for routed seats. If the lumber model cannot represent
-   fabrication cuts, add explicit routed-volume geometry and fabrication notes
-   rather than silently overlapping solid members.
-7. Add the selected HTP37Z or plywood gusset, its fasteners, and the exact
-   installed envelopes. Do not add MSTA18Z blocking.
-8. Add roof shims and separate roof-support elevation from wall-top elevation
-   if required.
+6. Add routed-seat subtraction geometry and fabrication records.
+7. Add both HTP37Z plates, all forty SD9212 screws, and their installed envelopes.
+8. Add 1/4-inch roof shims and separate roof-support elevation from wall-top elevation.
 9. Update BOM and cut/fabrication outputs with 4x4 stock, the longer 1x4,
    routed-seat dimensions, hardware, shims, and removed rails.
 10. Update `BUILD_STEPS.md`, `TOP_BRACING.md`, and
-    `TOP_BRACING_SEQUENCE.md` to describe the approved detail and sequence.
+    `TOP_BRACING_SEQUENCE.md` to describe the accepted detail and sequence.
 11. Update tests for member types, endpoints, vertical envelopes, removed
     objects, dependencies, tambour clearance, roof elevation, BOM, cut list,
     and build-step assignments.
-12. Regenerate all outputs and inspect the complete model visually for
-    collisions and missing supports.
-
-Likely code areas include the top-brace and rail definitions in `build.py`, the
-inside-corner behavior of `LumberCollection.diagonal_between`, fabrication/BOM
-support in `lumber_model`, `CompositeSiding` roof elevation handling, and the
-corresponding tests.
+12. Regenerate all outputs and compile the complete OpenSCAD model without
+    geometry warnings.
 
 ## Decision log
 
 Record iterations here so superseded hardware assumptions do not remain
 implicit.
 
-| Date | Decision or candidate | Result/reason |
+| Date | Decision | Result/reason |
 |---|---|---|
-| 2026-07-27 | Replace left/right top 2x4 braces with top-flush 4x4s. | Proposed; consolidates side rails and provides deeper diagonal anchorage without lowering the occupied framing envelope. |
-| 2026-07-27 | Extend the 1x4 across the diagonal post tops in full-depth routed seats. | Proposed; resolves the unconnected butt-end geometry while retaining the `z = 47.00` frame plane. |
-| 2026-07-27 | Accept plate/head projection above `z = 47.00` and shim the composite roof. | Proposed; avoids weakening the 1x4 with a plate recess. Exact hardware projection and finished height remain open. |
+| 2026-07-27 | Replace left/right top 2x4 braces with top-flush 4x4s. | Accepted; consolidates side rails and provides deeper diagonal anchorage without lowering the occupied framing envelope. |
+| 2026-07-27 | Extend the 1x4 across the diagonal post tops in full-depth routed seats. | Accepted; resolves the butt-end geometry while retaining the `z = 47.00` frame plane. |
+| 2026-07-27 | Use continuous 1/4-inch roof shims. | Accepted; clears the modeled 0.18-inch plate/head projection and sets the finished roof top at `z = 48.25`. |
 | 2026-07-27 | Prefer cataloged metal over an engineered plywood gusset; exclude MDF and custom-machined steel. | Selected evaluation order; minimizes added roof height and avoids moisture-sensitive nonstructural panels. |
-| 2026-07-27 | Evaluate HTP37Z first. | Readily procurable, ZMAX, load-rated catalog plate; its 1,850-pound DF/SP value cannot be assigned to the layered routed geometry without manufacturer or engineer acceptance. |
+| 2026-07-27 | Use two HTP37Z plates with SD9212 screws. | Accepted; fill all twenty holes per plate with #9-by-2 1/2-inch connector screws. |
 | 2026-07-27 | Reject MSTA18Z with diagonal-aligned 4x4 blocking. | The block would occupy `z = 43.50` to `47.00`, overlap about 3.25 inches of the horizontal curtain envelope, and obstruct the removable ceiling; perimeter-only blocking cannot provide the strap's anchorage length. |
-| 2026-07-27 | Do not treat a longer HTP37Z screw as a catalog substitution. | ESR-3096 rates twenty SD9112 screws in a direct coplanar splice. A longer screw through the 0.75-inch loaded diagonal creates an unrated layered connection; a 1/4-inch SDS also does not fit the specified holes without prohibited enlargement. |
-| 2026-07-27 | Use 3/4-inch APA Structural I Exterior plywood if HTP37Z is not approved. | Engineer the gusset and longer fasteners as a new connection; its added material remains above `z = 47.00`. Reject MDF, OSB, Exposure 1/CDX, and unmarked panels. |
+| 2026-07-27 | Retire the plywood-gusset fallback. | HTP37Z/SD9212 is the final modeled connection. |
 
-## Approval gate
+## Installation acceptance
 
-The proposal may advance to the final model only when the selected products and
-calculations establish all of the following:
+Before removing temporary bracing or placing the enclosure in service, verify:
 
 - at least 826 pounds ASD axial capacity in both directions at each diagonal
   end and through the complete frame/post load path;
 - acceptable 1x4 compression, tension, net-section, and stability capacity;
 - acceptable routed post and 4x4 residual-section capacity;
-- compliant catalog-connector installation or a complete engineered-plywood
-  gusset calculation, with explicit treatment of end grain and any
-  withdrawal/prying effects;
+- complete HTP37Z installation with twenty SD9212 screws per plate;
 - acceptable connection deformation and frame racking;
 - acceptable gravity support by the revised 4x4 perimeter members;
 - complete support for all framing formerly dependent on the removed rails;
 - verified tambour operation and clearance;
 - verified roof support, drainage, corrosion compatibility, and revised
   finished-height detailing;
-- project-specific structural and authority approval required by the governing
-  code and project circumstances.
+- all inspections required by the governing code and project circumstances.

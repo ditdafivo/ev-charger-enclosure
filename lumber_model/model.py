@@ -24,6 +24,7 @@ from lumber_model.formatting import (
 )
 from lumber_model.geometry import Vector3
 from lumber_model.footing import Footing
+from lumber_model.fabrication import PurchasedItem, RoutedSeat
 from lumber_model.ground import GroundPlane
 from lumber_model.lumber import AngledLumber, LumberPiece
 from lumber_model.siding import CompositeSiding
@@ -79,6 +80,8 @@ class Model:
     footings: list[Footing]
     tambours: list[TambourDoor]
     sidings: list[CompositeSiding]
+    routed_seats: list[RoutedSeat]
+    purchased_items: list[PurchasedItem]
     build_steps: tuple[BuildStep, ...]
     xygrid_origin: XYOrigin
 
@@ -96,6 +99,8 @@ class Model:
         sidings: Mapping[str, CompositeSiding]
         | Iterable[CompositeSiding]
         | None = None,
+        routed_seats: Iterable[RoutedSeat] | None = None,
+        purchased_items: Iterable[PurchasedItem] | None = None,
         build_steps: Iterable[BuildStep] | None = None,
         xygrid_origin: XYOrigin = (0, 0),
     ):
@@ -152,6 +157,9 @@ class Model:
             self.sidings = list(sidings.values())
         else:
             self.sidings = list(sidings)
+
+        self.routed_seats = list(routed_seats or ())
+        self.purchased_items = list(purchased_items or ())
 
         self.build_steps = tuple(build_steps or ())
         self.xygrid_origin = xygrid_origin
@@ -228,13 +236,14 @@ class Model:
                     f"{component.member!r}"
                 ) from exc
 
-            if isinstance(member, AngledLumber):
-                raise ValueError(
-                    f"{component.name}: components cannot mount to angled lumber "
-                    f"{member.name!r}"
-                )
-
             component.resolved(member)
+
+        routed_seat_names = [seat.name for seat in self.routed_seats]
+        if len(routed_seat_names) != len(set(routed_seat_names)):
+            raise ValueError("Duplicate routed-seat names")
+        for seat in self.routed_seats:
+            if seat.member not in member_by_name:
+                raise KeyError(f"{seat.name}: unknown lumber member {seat.member!r}")
 
         conduit_names = [conduit.name for conduit in self.conduits]
         duplicate_conduits = sorted(
@@ -432,7 +441,18 @@ class Model:
         ]
         for siding in self.sidings:
             rows.extend(siding.bom_rows())
+        rows.extend(item.bom_row() for item in self.purchased_items)
         return rows
+
+    def fabrication_rows(self) -> list[dict[str, Any]]:
+        self.validate()
+        return [seat.fabrication_row() for seat in self.routed_seats]
+
+    def write_fabrication_csv(self, path: str | Path) -> None:
+        self._write_csv(path, self.fabrication_rows())
+
+    def write_fabrication_json(self, path: str | Path) -> None:
+        self._write_json(path, self.fabrication_rows())
 
     def cut_list_rows(
         self,
@@ -607,6 +627,9 @@ class Model:
 
     def scad_piece_records(self) -> list[str]:
         return [piece.scad_record() for piece in self.pieces]
+
+    def scad_routed_seat_records(self) -> list[str]:
+        return [seat.scad_record() for seat in self.routed_seats]
 
     def scad_assemblies(self) -> list[dict[str, str]]:
         return [
@@ -866,6 +889,7 @@ class Model:
         return template.render(
             assemblies=self.scad_assemblies(),
             piece_records=self.scad_piece_records(),
+            routed_seat_records=self.scad_routed_seat_records(),
             component_assemblies=self.scad_component_assemblies(),
             component_records=self.scad_component_records(scad_dir),
             conduit_assemblies=self.scad_conduit_assemblies(),

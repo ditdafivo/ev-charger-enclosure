@@ -13,6 +13,7 @@ tambour_door_open = true;
 siding = true;
 ground = false;
 footings = true;
+center_gland_cat6 = true;
 xygrid_zloc = -1; // [-1:1:48]
 {% if build_step_count %}
 build_step = {{ build_step_count + 1 }}; // [{{ range(0, build_step_count + 2) | map('string') | join(', ') }}]
@@ -44,6 +45,10 @@ lumber_color = [0.50, 0.18, 0.08, 1.0];
 
 pieces = [
     {{ piece_records | join(',\n    ') }}
+];
+
+routed_seats = [
+    {{ routed_seat_records | join(',\n    ') }}
 ];
 
 components = [
@@ -129,6 +134,12 @@ function l_width(l) = len(l) > 8 ? l[8] : 0;
 function l_thickness(l) = len(l) > 9 ? l[9] : 0;
 function l_angle(l) = len(l) > 10 ? l[10] : 0;
 function l_is_angled(l) = l_axis(l) == "angled";
+
+function rs_name(r) = r[0];
+function rs_member(r) = r[1];
+function rs_points(r) = r[2];
+function rs_depth(r) = r[3];
+function rs_top_z(r) = r[4];
 
 function f_name(f) = f[0];
 function f_center(f) = f[1];
@@ -326,8 +337,14 @@ module lumber_name(l) {
         );
 }
 
+module routed_seat_volume(r) {
+    translate([0, 0, rs_top_z(r) - rs_depth(r) - 0.001])
+        linear_extrude(height = rs_depth(r) + 0.002)
+            polygon(points = rs_points(r));
+}
+
 module render_lumber(l, highlighted = false) {
-    color(highlighted ? build_step_highlight_color() : lumber_color) {
+    color(highlighted ? build_step_highlight_color() : lumber_color) difference() {
         if (l_is_angled(l)) {
             translate(l_start(l))
                 rotate([0, 0, l_angle(l)])
@@ -337,6 +354,9 @@ module render_lumber(l, highlighted = false) {
             translate(l_start(l))
                 cube(l_size(l));
         }
+        for (r = routed_seats)
+            if (rs_member(r) == l_name(l))
+                routed_seat_volume(r);
     }
 
     if (lumber_labels)
@@ -575,6 +595,10 @@ module render_cable_assembly(assembly_name, enabled) {
             if (
                 cable_assembly(c) == assembly_name
                     && object_is_visible(cable_name(c))
+                    && (
+                        center_gland_cat6
+                            || cable_name(c) != "low_voltage_ev_charger_feed"
+                    )
             ) {
                 render_cable(c, object_is_highlighted(cable_name(c)));
             }

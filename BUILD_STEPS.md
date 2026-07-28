@@ -14,8 +14,9 @@ the generated material outputs.
 The top-plane bracing decision, site load screen, and required connection
 capacity are documented in [`TOP_BRACING.md`](TOP_BRACING.md).
 
-This guide does not define fasteners, structural connections, concrete work,
-or the means and methods for excavation or underground work. It does require
+Except for the accepted HTP37Z/SD9212 top-bracing detail, this guide does not
+define fasteners, structural connections, concrete work, or the means and
+methods for excavation or underground work. It does require
 the modeled underground conduit and site restoration to be completed before
 the enclosure posts are installed. Have the structure, electrical design,
 conductor ampacity, grounding and bonding, box fill, permits, and installation
@@ -159,21 +160,25 @@ footing_br
 
 ## 3. Add the complete top bracing (`top-bracing`)
 
-Install the four top perimeter 2x4 braces, followed by the single stress-rated
-nominal 1x4 diagonal. The perimeter cuts are two at 20 1/2 inches and two at
-14 7/8 inches. The diagonal cut is 25 5/16 inches in the model. Its top remains
-flush with the 47-inch frame top, placing its underside at 46 1/4 inches and
-recovering 3/4 inch of interior clearance relative to the former 2x4
-diagonals.
+Install 2x4 front and back perimeter braces and top-flush 4x4 left and right
+braces. Lay out the accepted diagonal centerline, then route the six seat
+regions listed in `output/fabrication.csv` to a uniform 3/4-inch depth. Dry-fit
+the approximately 33 15/16-inch stress-rated nominal 1x4 from the frame's
+outside x-faces; its full section must occupy `z = 46.25` to `47.00`.
+
+Center one HTP37Z over each routed end region with its long axis aligned to the
+diagonal. Fill all twenty holes in each plate with SD9212 #9-by-2 1/2-inch
+Strong-Drive SD Connector screws. Seat every head without overdriving, do not
+enlarge holes or mix fasteners, and verify that every screw has solid wood
+beneath it and no tip enters tambour, electrical, or service space.
 
 Before fastening the permanent bracing, reconfirm that every post is plumb and
 compare the frame diagonals. Install the braces without pulling the posts out
-of alignment, then repeat the plumb and square checks. Use only the
-species/grade and positive two-way connection approved against the 826-pound
-ASD brace demand in `TOP_BRACING.md`; ordinary deck screws, end-grain screws,
-and unverified toe-screw patterns are not acceptable. Remove temporary
-external bracing only after the permanent frame and its connections are
-approved and stable.
+of alignment, then repeat the plumb and square checks. Use the species and
+grade specified against the 826-pound ASD brace demand in `TOP_BRACING.md`.
+Reject split routed edges, stripped screws, raised plate edges, or rocking
+hardware. Remove temporary external bracing only after the permanent frame and
+both complete HTP37Z assemblies are inspected and stable.
 
 New model objects:
 
@@ -183,6 +188,8 @@ brace_fl_bl
 brace_bl_br
 brace_fr_br
 brace_bl_fr
+htp37z_back_left
+htp37z_front_right
 ```
 
 ## 4. Add the lower side rails (`lower-side-rails`)
@@ -219,11 +226,9 @@ rail_fb
 
 ## 6. Add the upper side rails (`upper-side-rails`)
 
-Install the three 14 7/8-inch rails: the right intermediate receiver rail and
-the upper left and right rails. Keep their modeled wide faces horizontal.
+Install the right intermediate receiver rail. Keep its modeled wide face horizontal.
 
-Check that `rail_lt` and `rail_rt` are level with each other and 42 3/4 inches
-above the nominal ground datum at their lower faces. Check `rail_rbu` at its
+Check `rail_rbu` at its
 modeled lower-face elevation of 11 1/4 inches; it receives the right-side
 vertical rails in Step 8 and Step 9. Reconfirm post plumbness and the frame
 diagonals as these rails are fastened.
@@ -232,15 +237,13 @@ New model objects:
 
 ```text
 rail_rbu
-rail_lt
-rail_rt
 ```
 
 ## 7. Add the upper front cross rail (`upper-front-rail`)
 
 Install the 20 1/2-inch 2x4 `rail_ft` with its lower and upper faces at
 z = 41 and 42 1/2 inches. Install the two 1 3/4-inch vertical 2x4 support
-blocks between its ends and the undersides of `rail_lt` and `rail_rt`.
+blocks between its ends and the undersides of the top side 4x4s.
 
 Check the header for level and square, obtain full bearing from the support
 blocks, and verify that the assembly is positioned to receive
@@ -257,8 +260,8 @@ rail_ft_right_support
 
 ## 8. Add the main vertical rails (`main-vertical-rails`)
 
-Install the 33 1/4-inch `front_center_rail` between the lower and upper front cross
-rails. Install the 30-inch `right_center_rail` between `rail_rbu` and `rail_rt`.
+Install `front_center_rail` between the lower and upper front cross rails.
+Install `right_center_rail` between `rail_rbu` and the right top side 4x4.
 
 Check both rails for plumb. Their face orientation matters: the front center
 rail supports the power junction box and EV charger, while the right center
@@ -273,8 +276,8 @@ right_center_rail
 
 ## 9. Add the tambour vertical supports (`tambour-vertical-rails`)
 
-Install the 39-inch `left_tambour_rail` between `rail_lb` and `rail_lt` and the
-30-inch `right_tambour_rail` between `rail_rbu` and `rail_rt`.
+Install `left_tambour_rail` between `rail_lb` and the left top side 4x4 and
+`right_tambour_rail` between `rail_rbu` and the right top side 4x4.
 
 These lumber members support the custom guide liners; they are not themselves
 the finished tracks. Check both for plumb and verify their inside spacing and
@@ -290,23 +293,21 @@ left_tambour_rail
 right_tambour_rail
 ```
 
-## 10. Add the tambour top supports (`tambour-top-rails`)
+## 10. Verify the consolidated tambour top supports (`tambour-top-rails`)
 
-Install the left and right 14 7/8-inch top rails at the modeled lower-face
-elevation of 43 3/4 inches. Their upper faces are at 45 1/4 inches, leaving
-1/4 inch below the perimeter braces. These lumber members support the guide
-liners that define the upper path of the door.
+Verify that the inside faces and undersides of the two top side 4x4s provide
+continuous, level attachment surfaces for the guide liners and removable
+ceiling retainers. Preserve the modeled rear and front bend clearances and
+confirm the support geometry against the prototype alignment gauges.
 
-Check that the two rails are level, parallel, and aligned with the vertical
-tambour supports. Preserve the modeled rear and front bend clearances and
-verify the completed support geometry against the prototype alignment gauges
-before fabricating or mounting the production liners.
+Trial-fit the removable ceiling panel against its independent retainers, then
+remove it until the services and tambour have passed their later clearance
+checks.
 
 New model objects:
 
 ```text
-rail_l_tambour
-rail_r_tambour
+tambour_ceiling_panel
 ```
 
 ## 11. Install and set the tracks; trial-fit the tambour (`tambour-door`)
@@ -600,6 +601,12 @@ low_voltage_ev_charger_feed
 
 ## 22. Install the composite siding (`composite-siding`)
 
+Before placing the top boards, install continuous 1/4-inch ripped
+pressure-treated shims over all four perimeter members. Keep the shims level,
+bridge completely over the HTP37Z plates and SD9212 heads without rocking, and
+leave drainage paths at the plate edges. Use roof fasteners long enough to
+retain the originally required penetration after passing through the shims.
+
 Install the composite boards only after the framing, tambour guides, interior
 equipment, conduit, and cable routes are installed, inspected, and proven clear
 through the door's full travel. Only siding trim, tambour reloading, and the
@@ -617,6 +624,10 @@ and confirm the electrical boxes' finish projections. The current BOM totals
 New model objects:
 
 ```text
+roof_shim_brace_fl_fr
+roof_shim_brace_fl_bl
+roof_shim_brace_bl_br
+roof_shim_brace_fr_br
 enclosure_siding_top_1
 enclosure_siding_top_2
 enclosure_siding_top_3
@@ -712,7 +723,6 @@ enclosure_siding_angle_tambour_right_a
 enclosure_siding_angle_tambour_right_b
 enclosure_siding_angle_tambour_header_face
 enclosure_siding_angle_tambour_header_bottom
-tambour_ceiling_panel
 ```
 
 ## 24. Finish the street-light assembly (`street-light-finish`)

@@ -131,8 +131,10 @@ modeled connection.
 ## Roof interface
 
 The modeled 0.074-inch plate and pan-head projection is 0.184 inch above the
-47-inch frame plane. Continuous 1/4-inch ripped PT-lumber shims raise the
-composite roof support plane to `z = 47.25` and the finished roof to
+47-inch frame plane. The 1/4-inch ripped PT-lumber shims cover the exposed
+perimeter framing and both non-gusseted corner posts, but stop at the gusset
+envelopes. They raise the composite roof support plane to `z = 47.25`; the
+decking spans the short interruptions above the plates and finishes at
 `z = 48.25`. Preserve drainage around both plates and increase roof-fastener
 length by the shim thickness so the original substrate penetration is retained.
 

@@ -608,10 +608,12 @@ low_voltage_ev_charger_feed
 
 ## 22. Install the composite siding (`composite-siding`)
 
-Before placing the top boards, install continuous 1/4-inch ripped
-pressure-treated shims over all four perimeter members. Keep the shims level,
-bridge completely over the custom gusset plates and pan heads without rocking, and
-leave drainage paths at the plate edges. Use roof fasteners long enough to
+Before placing the top boards, install 1/4-inch ripped pressure-treated shims
+on the exposed portions of all four perimeter members and across both
+non-gusseted corner posts. Keep the shims level and terminate them at the custom
+gusset envelopes so no shim rests on a plate or pan head. Let the decking span
+these short interruptions, and leave drainage paths at the plate edges. Use
+roof fasteners long enough to
 retain the originally required penetration after passing through the shims.
 
 Install the composite boards only after the framing, tambour guides, interior

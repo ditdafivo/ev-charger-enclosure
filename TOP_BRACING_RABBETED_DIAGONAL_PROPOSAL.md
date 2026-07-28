@@ -68,8 +68,10 @@ published capacity.
 ## Roof interface
 
 The plate plus modeled screw head projects 0.184 inch above `z = 47.00`.
-Continuous 1/4-inch ripped pressure-treated shims retain the roof support plane
-at `z = 47.25` and the finished roof at `z = 48.25`.
+The 1/4-inch ripped pressure-treated shims cover the exposed perimeter framing
+and both non-gusseted corner posts, stop at the gusset envelopes, and retain the
+roof support plane at `z = 47.25`. The decking spans the short interruptions and
+finishes at `z = 48.25`.
 
 ## Acceptance checks
 
@@ -84,8 +86,7 @@ Before removing temporary bracing, verify:
 - every screw location has solid wood below it;
 - the selected fasteners and custom plate have an approved capacity for the
   798-pound ASD diagonal demand documented in `TOP_BRACING.md`;
-- roof shims bridge the plates and heads without rocking while preserving
-  drainage; and
+- roof shims stop clear of the plates and heads while preserving drainage; and
 - tambour, wiring, siding, and service clearances remain unobstructed.
 
 ## Decision log

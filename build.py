@@ -669,11 +669,45 @@ def build_enclosure(
             offset=(0.25, across_offset, diagonal.thickness),
         )
 
-    for member_name in ("brace_fl_fr", "brace_fl_bl", "brace_bl_br", "brace_fr_br"):
+    # Stop each shim at the resolved hardware envelope.  The shim establishes a
+    # support plane above the gusset; placing it on the gusset would instead
+    # stack the two parts and raise the decking locally.
+    for member_name, gusset_name, keep_side, end_post_name in (
+        ("brace_fl_fr", "gusset_front_right", "before", "post_fl"),
+        ("brace_fl_bl", "gusset_back_left", "before", None),
+        ("brace_bl_br", "gusset_back_left", "after", "post_br"),
+        ("brace_fr_br", "gusset_front_right", "after", None),
+    ):
         member=members[member_name]
+        gusset=components[gusset_name]
+        resolved_gusset=gusset.resolved(members[gusset.member])
+        along_index={"x": 0, "y": 1}[member.axis]
+        gusset_min=resolved_gusset.box_min[along_index]
+        gusset_max=gusset_min+resolved_gusset.box_size[along_index]
+        member_min=member.min_on(member.axis)
+        member_max=member.max_on(member.axis)
+        if keep_side == "before":
+            shim_start=(
+                members[end_post_name].min_on(member.axis)
+                if end_post_name is not None
+                else member_min
+            )
+            shim_end=min(gusset_min, member_max)
+        else:
+            shim_start=max(gusset_max, member_min)
+            shim_end=(
+                members[end_post_name].max_on(member.axis)
+                if end_post_name is not None
+                else member_max
+            )
+        shim_length=shim_end-shim_start
+        if shim_length <= 0:
+            raise ValueError(
+                f"{gusset_name} leaves no roof-shim support on {member_name}"
+            )
         shim_type=ComponentType(
             name=f"continuous_pt_roof_shim_{member_name}",
-            size=(member.length, 3.5, ROOF_SHIM_THICKNESS),
+            size=(shim_length, 3.5, ROOF_SHIM_THICKNESS),
             color=(0.44, 0.26, 0.11, 1.0),
             default_face="narrow_pos",
             mount_point=(0, 1.75, 0),
@@ -683,8 +717,9 @@ def build_enclosure(
             assembly="roof_shims",
             component_type=shim_type,
             member=member_name,
-            at=0,
+            at=max(shim_start-member_min, 0),
             face="narrow_pos",
+            offset=(min(shim_start-member_min, 0), 0, 0),
         )
 
     components.add(

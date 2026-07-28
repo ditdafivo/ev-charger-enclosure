@@ -23,8 +23,9 @@ and guides remain inside the clear opening.
 The full-section diagonal remains at `z = 46.25` to `47.00`. The two involved
 posts stop at its underside, and only the four intersected side braces are
 routed. Custom 0.074-inch gusset plates and modeled screw heads project 0.184
-inch above the frame, and continuous 1/4-inch shims establish the roof support
-plane at `z = 47.25`.
+inch above the frame. The 1/4-inch shims cover the exposed perimeter framing
+and both non-gusseted corner posts, stop at the gusset envelopes, and establish
+the roof support plane at `z = 47.25`.
 
 ## Reasons for moving the bracing after Step 2
 

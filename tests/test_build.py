@@ -199,6 +199,63 @@ class TopBracingBuildTests(unittest.TestCase):
             if part.name.startswith("enclosure_siding_top_"):
                 self.assertEqual(part.start[2], 47.25)
 
+    def test_roof_shims_stop_at_gusset_envelopes(self) -> None:
+        for enclosure in (
+            build.default_build,
+            build.build_enclosure(width=36, depth=30, height=55),
+        ):
+            gussets = [
+                enclosure.components[name].resolved(
+                    enclosure.members[enclosure.components[name].member]
+                )
+                for name in ("gusset_back_left", "gusset_front_right")
+            ]
+            shim_names = (
+                "roof_shim_brace_fl_fr", "roof_shim_brace_fl_bl",
+                "roof_shim_brace_bl_br", "roof_shim_brace_fr_br",
+            )
+            shims = []
+            for name in shim_names:
+                shim_instance = enclosure.components[name]
+                shim = shim_instance.resolved(
+                    enclosure.members[shim_instance.member]
+                )
+                shims.append(shim)
+                self.assertAlmostEqual(shim.box_min[2], enclosure.height)
+                self.assertAlmostEqual(
+                    shim.box_min[2] + shim.box_size[2],
+                    enclosure.height + build.ROOF_SHIM_THICKNESS,
+                )
+                for gusset in gussets:
+                    overlap_x = min(
+                        shim.box_min[0] + shim.box_size[0],
+                        gusset.box_min[0] + gusset.box_size[0],
+                    ) - max(shim.box_min[0], gusset.box_min[0])
+                    overlap_y = min(
+                        shim.box_min[1] + shim.box_size[1],
+                        gusset.box_min[1] + gusset.box_size[1],
+                    ) - max(shim.box_min[1], gusset.box_min[1])
+                    self.assertFalse(
+                        overlap_x > 1e-9 and overlap_y > 1e-9,
+                        f"{name} overlaps {gusset.name}",
+                    )
+
+            for post_name in ("post_fl", "post_br"):
+                post = enclosure.members[post_name]
+                covering_shims = [
+                    shim for shim in shims
+                    if shim.box_min[0] <= post.min_on("x") + 1e-9
+                    and shim.box_min[0] + shim.box_size[0]
+                    >= post.max_on("x") - 1e-9
+                    and shim.box_min[1] <= post.min_on("y") + 1e-9
+                    and shim.box_min[1] + shim.box_size[1]
+                    >= post.max_on("y") - 1e-9
+                ]
+                self.assertTrue(
+                    covering_shims,
+                    f"no roof shim covers non-gusseted {post_name}",
+                )
+
     def test_side_4x4s_consolidate_top_and_tambour_supports(self) -> None:
         enclosure = build.default_build
         for name in ("brace_fl_bl", "brace_fr_br"):

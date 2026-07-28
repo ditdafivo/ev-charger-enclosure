@@ -652,9 +652,11 @@ def build_enclosure(
         cylinder_primitives=pan_head_cylinder_primitives(),
         include_primitive_envelope=True,
     )
+    # The four holes nearest each supported plate corner form a 1.5-inch
+    # square.  Center that fastener profile on the post in both plan axes.
     for name, member_name, face, across_offset in (
-        ("gusset_back_left", "post_bl", "wide_neg", -4.25),
-        ("gusset_front_right", "post_fr", "wide_pos", -1.75),
+        ("gusset_back_left", "post_bl", "wide_neg", -4.5),
+        ("gusset_front_right", "post_fr", "wide_pos", -1.5),
     ):
         components.add(
             name,
@@ -664,7 +666,7 @@ def build_enclosure(
             at=members[member_name].length,
             face=face,
             orientation="inward",
-            offset=(0, across_offset, diagonal.thickness),
+            offset=(0.25, across_offset, diagonal.thickness),
         )
 
     for member_name in ("brace_fl_fr", "brace_fl_bl", "brace_bl_br", "brace_fr_br"):

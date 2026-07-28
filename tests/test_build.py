@@ -19,6 +19,7 @@ from lumber_model import (
     RelativeCoord,
     minimum_cable_bend_radius,
 )
+from lumber_model.gusset import GUSSET_HOLE_CENTERS_IN
 
 
 class TopBracingBuildTests(unittest.TestCase):
@@ -143,6 +144,42 @@ class TopBracingBuildTests(unittest.TestCase):
             self.assertAlmostEqual(resolved.box_size[0], 6)
             self.assertAlmostEqual(resolved.box_size[1], 6)
             self.assertAlmostEqual(resolved.box_size[2], 0.184)
+
+            post = build.members[hardware.member]
+            hole_centers = [
+                (
+                    resolved.origin[0]
+                    + local_x * resolved.along_vec[0]
+                    + local_y * resolved.across_vec[0],
+                    resolved.origin[1]
+                    + local_x * resolved.along_vec[1]
+                    + local_y * resolved.across_vec[1],
+                )
+                for local_x, local_y in GUSSET_HOLE_CENTERS_IN
+            ]
+            post_hole_centers = [
+                center
+                for center in hole_centers
+                if post.min_on("x") <= center[0] <= post.max_on("x")
+                and post.min_on("y") <= center[1] <= post.max_on("y")
+            ]
+            self.assertEqual(len(post_hole_centers), 4)
+            self.assertAlmostEqual(
+                (
+                    min(x for x, _ in post_hole_centers)
+                    + max(x for x, _ in post_hole_centers)
+                )
+                / 2,
+                post.center_on("x"),
+            )
+            self.assertAlmostEqual(
+                (
+                    min(y for _, y in post_hole_centers)
+                    + max(y for _, y in post_hole_centers)
+                )
+                / 2,
+                post.center_on("y"),
+            )
 
         hardware_rows = {
             row["name"]: row for row in build.model.bom_rows()

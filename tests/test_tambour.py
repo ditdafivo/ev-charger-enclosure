@@ -209,6 +209,18 @@ class TambourTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "at least one"):
             resolved.track_samples(subdivisions=0)
 
+    def test_inward_hardware_projection_covers_webbing(self) -> None:
+        with self.assertRaisesRegex(ValueError, "cannot be less than webbing"):
+            TambourInstalledDetails(
+                channel_internal_width=0.54,
+                channel_wall_thickness=0.095,
+                mounting_flange_thickness=0.19,
+                flange_extension=0.39,
+                slat_end_engagement=0.47,
+                webbing_thickness=0.1,
+                inward_hardware_projection=0.09,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

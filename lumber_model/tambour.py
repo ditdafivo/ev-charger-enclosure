@@ -51,6 +51,7 @@ class TambourInstalledDetails:
     handle_projection: float = 0.625
     webbing_color: TambourColor = (0.08, 0.08, 0.08, 1.0)
     handle_color: TambourColor = (0.28, 0.30, 0.32, 1.0)
+    inward_hardware_projection: float = 1 / 16
 
     def __post_init__(self) -> None:
         positive_fields = (
@@ -64,6 +65,7 @@ class TambourInstalledDetails:
             "handle_width",
             "handle_height",
             "handle_projection",
+            "inward_hardware_projection",
         )
         for field_name in positive_fields:
             value = getattr(self, field_name)
@@ -81,6 +83,10 @@ class TambourInstalledDetails:
             raise ValueError("segment seams must be sorted and unique")
         if any(index < 0 for index in self.pull_slat_indices):
             raise ValueError("pull slat indices cannot be negative")
+        if self.inward_hardware_projection < self.webbing_thickness:
+            raise ValueError(
+                "inward_hardware_projection cannot be less than webbing_thickness"
+            )
         if len(self.webbing_color) != 4 or len(self.handle_color) != 4:
             raise ValueError("installed-detail colors must be RGBA 4-tuples")
 
@@ -533,6 +539,7 @@ class ResolvedTambourDoor:
                     fmt_float(details.handle_projection),
                     _format_vector(details.webbing_color),
                     _format_vector(details.handle_color),
+                    fmt_float(details.inward_hardware_projection),
                 )
             )
             + "]"

@@ -107,9 +107,16 @@ class TambourFabricationTests(unittest.TestCase):
         self.assertLessEqual(size.X, 350)
         self.assertAlmostEqual(size.Z, config.handle_projection)
         self.assertLessEqual(
-            config.slat_depth + size.Z,
+            config.slat_depth + size.Z + config.inward_hardware_projection,
             config.swept_envelope_depth,
         )
+
+    def test_inward_hardware_is_part_of_swept_depth(self) -> None:
+        with self.assertRaisesRegex(ValueError, "inward hardware"):
+            replace(
+                TambourFabricationConfig(),
+                inward_hardware_projection=0.376 * 25.4,
+            )
 
     def test_invalid_four_perimeter_wall_is_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "four nozzle widths"):

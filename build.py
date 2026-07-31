@@ -241,8 +241,9 @@ def build_enclosure(
 
     CENTER_RAIL_OFFSET=-3
     # Keep the top guide/support assembly below the perimeter braces.  The
-    # resulting one-inch gap from the guide centerline to the brace underside
-    # accommodates a 1.5-inch curtain envelope plus 1/4 inch of clearance.
+    # swept envelope is asymmetric about the groove centerline: the handle is
+    # proud of the outward slat face, while webbing and its fastener heads are
+    # on the inward face.
     TAMBOUR_MAX_ENVELOPE_DEPTH=1.5
     TAMBOUR_SLAT_DEPTH=0.5
     TAMBOUR_SLAT_HEIGHT=0.75
@@ -250,9 +251,22 @@ def build_enclosure(
     TAMBOUR_SLAT_PITCH=TAMBOUR_SLAT_HEIGHT+TAMBOUR_SLAT_GAP
     TAMBOUR_FABRICATION=TambourFabricationConfig()
     MM_PER_INCH=25.4
+    TAMBOUR_OUTWARD_ENVELOPE_DEPTH=(
+        TAMBOUR_SLAT_DEPTH/2
+        +TAMBOUR_FABRICATION.handle_projection/MM_PER_INCH
+    )
+    TAMBOUR_INWARD_ENVELOPE_DEPTH=(
+        TAMBOUR_SLAT_DEPTH/2
+        +TAMBOUR_FABRICATION.inward_hardware_projection/MM_PER_INCH
+    )
+    if (
+        TAMBOUR_OUTWARD_ENVELOPE_DEPTH+TAMBOUR_INWARD_ENVELOPE_DEPTH
+        > TAMBOUR_MAX_ENVELOPE_DEPTH
+    ):
+        raise ValueError("tambour hardware exceeds the 1.5-inch swept envelope")
     TAMBOUR_BRACE_CLEARANCE=0.25
     TAMBOUR_TOP_OFFSET=(
-        HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_MAX_ENVELOPE_DEPTH/2
+        HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_OUTWARD_ENVELOPE_DEPTH
     )
     TAMBOUR_TOP_Z=FRAME_DIMS.z-TAMBOUR_TOP_OFFSET
     TAMBOUR_FRONT_Y=5
@@ -1376,6 +1390,9 @@ def build_enclosure(
         handle_width=TAMBOUR_FABRICATION.handle_width/MM_PER_INCH,
         handle_height=TAMBOUR_FABRICATION.handle_height/MM_PER_INCH,
         handle_projection=TAMBOUR_FABRICATION.handle_projection/MM_PER_INCH,
+        inward_hardware_projection=(
+            TAMBOUR_FABRICATION.inward_hardware_projection/MM_PER_INCH
+        ),
     )
 
     tambours.add(
@@ -1456,11 +1473,7 @@ def build_enclosure(
     TAMBOUR_CEILING_REAR_Y=(
         TAMBOUR_TRACK_BACK_Y-TAMBOUR_BEND_RADIUS-TAMBOUR_CEILING_BEND_INSET
     )
-    TAMBOUR_CEILING_TOP_Z=(
-        TAMBOUR_TOP_Z
-        - TAMBOUR_MAX_ENVELOPE_DEPTH/2
-        - TAMBOUR_CEILING_CLEARANCE
-    )
+    TAMBOUR_CEILING_TOP_Z=FRAME_DIMS.z-3.5
     TAMBOUR_CEILING_BOTTOM_Z=(
         TAMBOUR_CEILING_TOP_Z-TAMBOUR_CEILING_THICKNESS
     )

@@ -272,8 +272,8 @@ class TopBracingBuildTests(unittest.TestCase):
         header = build.members["rail_ft"]
 
         self.assertEqual(header.type, "2x4")
-        self.assertAlmostEqual(header.min_on("z"), 41)
-        self.assertAlmostEqual(header.max_on("z"), 42.5)
+        self.assertAlmostEqual(header.min_on("z"), 40.875)
+        self.assertAlmostEqual(header.max_on("z"), 42.375)
         self.assertAlmostEqual(
             build.members["front_center_rail"].max_on("z"),
             header.min_on("z"),
@@ -300,6 +300,23 @@ class TopBracingBuildTests(unittest.TestCase):
 
 
 class TambourClearanceBuildTests(unittest.TestCase):
+    @staticmethod
+    def _convex_polygons_overlap(
+        first: list[tuple[float, float]],
+        second: list[tuple[float, float]],
+    ) -> bool:
+        """Return true for positive-area overlap; touching edges are clear."""
+        for polygon in (first, second):
+            for start, end in zip(polygon, polygon[1:] + polygon[:1]):
+                axis = (-(end[1] - start[1]), end[0] - start[0])
+                first_projection = [y * axis[0] + z * axis[1] for y, z in first]
+                second_projection = [y * axis[0] + z * axis[1] for y, z in second]
+                if min(max(first_projection), max(second_projection)) <= max(
+                    min(first_projection), min(second_projection)
+                ) + 1e-9:
+                    return False
+        return True
+
     @staticmethod
     def _minimum_slat_z_over_y_interval(
         enclosure: build.EnclosureBuild,
@@ -391,12 +408,13 @@ class TambourClearanceBuildTests(unittest.TestCase):
         self.assertEqual(details.webbing_count, 3)
         self.assertEqual(details.pull_slat_indices, (0, 23))
         self.assertAlmostEqual(details.handle_width, 300/25.4)
+        self.assertAlmostEqual(details.inward_hardware_projection, 1/16)
         self.assertEqual(len(tambour.slats), 56)
         self.assertEqual(len(tambour.installed_seams), len(details.segment_seams))
         self.assertEqual(tambour.bends, ((1, 2.625), (2, 2.625)))
         self.assertEqual(build.TAMBOUR_FRONT_Y, 5)
         self.assertEqual(build.TAMBOUR_TRACK_FRONT_Y, 5.5)
-        self.assertEqual(build.TAMBOUR_TRACK_TOP_Z, 44.5)
+        self.assertEqual(build.TAMBOUR_TRACK_TOP_Z, 44.375)
         self.assertEqual(build.TAMBOUR_TRACK_BACK_Y, 21)
         for name in ("left_tambour_rail", "right_tambour_rail"):
             self.assertAlmostEqual(build.members[name].center_on("y"), 5.5)
@@ -426,6 +444,88 @@ class TambourClearanceBuildTests(unittest.TestCase):
             minimum_slat_z-header.max_on("z"),
             build.TAMBOUR_BRACE_CLEARANCE,
         )
+
+    def test_asymmetric_hardware_envelope_clears_fixed_material(self) -> None:
+        tambour = build.tambours["enclosure_tambour_door"].resolved(build.model)
+        details = tambour.installed_details
+        assert details is not None
+        outward_depth = tambour.slat_depth / 2 + details.handle_projection
+        self.assertAlmostEqual(outward_depth, build.TAMBOUR_OUTWARD_ENVELOPE_DEPTH)
+        self.assertAlmostEqual(
+            tambour.slat_depth / 2
+            + build.TAMBOUR_FABRICATION.inward_hardware_projection / 25.4,
+            build.TAMBOUR_INWARD_ENVELOPE_DEPTH,
+        )
+
+        ceiling_instance = build.components["tambour_ceiling_panel"]
+        ceiling = ceiling_instance.resolved(build.members[ceiling_instance.member])
+        obstacles = [
+            (name, member.min, member.max)
+            for name, member in build.members.items()
+        ] + [
+            (
+                part.name,
+                part.start,
+                tuple(a + b for a, b in zip(part.start, part.size, strict=True)),
+            )
+            for part in build.siding.board_parts
+        ] + [
+            (
+                "tambour_ceiling_panel",
+                ceiling.box_min,
+                tuple(
+                    a + b
+                    for a, b in zip(ceiling.box_min, ceiling.box_size, strict=True)
+                ),
+            )
+        ]
+        handle_center_x = (
+            tambour.left_points[0][0] + tambour.right_points[0][0]
+        ) / 2
+        handle_min_x = handle_center_x - details.handle_width / 2
+        handle_max_x = handle_center_x + details.handle_width / 2
+
+        for side, depth_sign, envelope_depth in (
+            ("outward handle", -1, outward_depth),
+            ("inward hardware", 1, build.TAMBOUR_INWARD_ENVELOPE_DEPTH),
+        ):
+            for left, right, tangent in tambour.track_samples(subdivisions=8):
+                center_y = (left[1] + right[1]) / 2
+                center_z = (left[2] + right[2]) / 2
+                travel_y, travel_z = tangent[1], tangent[2]
+                depth_y, depth_z = -travel_z, travel_y
+                envelope = [
+                    (
+                        center_y
+                        + travel_sign * tambour.slat_thickness / 2 * travel_y
+                        + depth_sign * depth_fraction * envelope_depth * depth_y,
+                        center_z
+                        + travel_sign * tambour.slat_thickness / 2 * travel_z
+                        + depth_sign * depth_fraction * envelope_depth * depth_z,
+                    )
+                    for travel_sign, depth_fraction in (
+                        (-1, 0),
+                        (1, 0),
+                        (1, 1),
+                        (-1, 1),
+                    )
+                ]
+                for name, minimum, maximum in obstacles:
+                    if min(handle_max_x, maximum[0]) <= max(
+                        handle_min_x, minimum[0]
+                    ):
+                        continue
+                    obstacle = [
+                        (minimum[1], minimum[2]),
+                        (maximum[1], minimum[2]),
+                        (maximum[1], maximum[2]),
+                        (minimum[1], maximum[2]),
+                    ]
+                    self.assertFalse(
+                        self._convex_polygons_overlap(envelope, obstacle),
+                        f"{side} sweep conflicts with "
+                        f"{name} at {(center_y, center_z)}",
+                    )
 
     def test_slats_run_between_both_track_walls(self) -> None:
         tambour=build.tambours["enclosure_tambour_door"].resolved(build.model)
@@ -568,8 +668,8 @@ class TambourClearanceBuildTests(unittest.TestCase):
         self.assertEqual(panel.type_name, "quarter_inch_exterior_plywood_panel")
         self.assertEqual(panel.box_min, (3.5, 8.875, 43.25))
         self.assertEqual(panel.box_size, (20.5, 8.75, 0.25))
-        self.assertAlmostEqual(
-            build.TAMBOUR_TOP_Z-build.TAMBOUR_MAX_ENVELOPE_DEPTH/2
+        self.assertGreaterEqual(
+            build.TAMBOUR_TOP_Z-build.TAMBOUR_INWARD_ENVELOPE_DEPTH
             -(panel.box_min[2]+panel.box_size[2]),
             build.TAMBOUR_CEILING_CLEARANCE,
         )
@@ -851,7 +951,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.members["front_center_rail"]
         )
         self.assertAlmostEqual(charger.box_min[2], 23.65)
-        self.assertAlmostEqual(holster.box_min[2], 28.33492125984252)
+        self.assertAlmostEqual(holster.box_min[2], 28.20992125984252)
 
     def test_riser_and_equipment_feeds_use_relative_endpoints(self) -> None:
         enclosure = build.default_build
@@ -1054,7 +1154,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 168)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "fc971e0f7b9f9670c958191956d8ca4e96b7d5151f4867d5567eb3749d021e34",
+            "a735cde76c68d5507a4fa96882f2ef20fc40acd31d5356ce3c0302ad8a176f7a",
         )
 
     def test_center_gland_charger_route_exact_regression(self) -> None:
@@ -1596,7 +1696,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertNotIn("rail_rt", taller.members)
         self.assertAlmostEqual(taller.siding.frame_top_z, 55)
         self.assertAlmostEqual(taller.siding.roof_support_z, 55.25)
-        self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.5)
+        self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.375)
         self.assertAlmostEqual(taller.LOW_VOLTAGE_SERVICE_LOOP_TOP_Z, 50.9375)
 
         for name in (

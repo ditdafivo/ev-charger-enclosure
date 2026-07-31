@@ -2,11 +2,11 @@
 
 ## Conclusion
 
-The modeled 1.5-inch tambour envelope clears the fixed front framing,
-street-light backers, revised charger-feed conduit, and removable plywood
-ceiling by at least the intended 1/4 inch. The model renders the actual
-1/2-inch wooden slat and independently regression-tests the 1 1/2-inch complete
-hardware envelope through the front straight run and bend.
+The modeled tambour clears the fixed front framing, street-light backers,
+revised charger-feed conduit, and removable plywood ceiling. The model renders
+the actual 1/2-inch wooden slat and attached webbing inside the groove, while
+the 1 1/2-inch maximum envelope remains the overhead and perimeter clearance
+limit.
 
 The production channel clearance, printed-track fasteners, slat-end clearance,
 joint clips, and loading section remain prototype-controlled. The rendered
@@ -28,12 +28,11 @@ overhead curtain from hands and the cord.
 
 ### Front guide and street-light backers
 
-The slat center path remains at `y = 5.0`, while the guide centerline is
-modeled 3/8 inch inward at `y = 5.375`. The 1.5-inch envelope still reaches
-forward to `y = 4.25`; the backers end at `y = 3.80`:
+The slat and guide share the groove centerline at `y = 5.5`. The 1.5-inch
+envelope reaches forward to `y = 4.75`; the backers end at `y = 3.80`:
 
 ```text
-4.25 - 3.80 = 0.45 inch
+4.75 - 3.80 = 0.95 inch
 ```
 
 The left and right vertical support rails moved with the guide and now occupy
@@ -46,11 +45,10 @@ The front center rail bears against its underside. Two short vertical 2x4
 blocks provide full-depth attachment faces at the header ends and bear against
 the undersides of the upper side rails.
 
-The swept-envelope regression follows the resolved piecewise track, offsets
-the center of the 3/4-inch-high slat path 3/8 inch outward, and checks an
-independent 1 1/2-inch complete hardware envelope over the header's Y interval.
-The resulting clearance exceeds
-the required 1/4 inch, including through the 2 5/8-inch-radius front bend.
+The regression follows the resolved piecewise track and checks the rendered
+slat plus rear webbing over the header's Y interval. Separate dense samples of
+the complete printed-track cross section prove backing support and absence of
+lumber penetration through the 2 5/8-inch-radius front bend.
 
 This is a geometry result, not a structural rating. The header, blocks, center
 rail, fasteners, and connections must be selected for the charger dead load
@@ -75,7 +73,7 @@ The modeled exterior-plywood panel occupies:
 
 ```text
 x = 3.5 to 24.0 inches
-y = 8.75 to 17.625 inches
+y = 8.875 to 17.625 inches
 z = 43.25 to 43.50 inches
 ```
 
@@ -100,7 +98,7 @@ full-width test frame.
 ## Acceptance requirements
 
 1. Build the guide paths from one full-size template using the modeled
-   front `y = 5.375`, top `z = 44.125`, rear `y = 21.0`, and 2 5/8-inch-radius
+   front `y = 5.5`, top `z = 44.5`, rear `y = 21.0`, and 2 5/8-inch-radius
    track datums.
 2. Verify the header load path and connections for the charger and holster's
    dead and dynamic loads.

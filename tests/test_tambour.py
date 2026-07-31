@@ -188,6 +188,19 @@ class TambourTests(unittest.TestCase):
         self.assertIn("module render_tambour_slat_details", scad)
         self.assertIn("function t_installed(t) = len(t) > 14 ? t[14] : [];", scad)
 
+    def test_track_samples_cover_facets_and_reject_invalid_subdivisions(self) -> None:
+        resolved = sample_tambour().resolved()
+        samples = resolved.track_samples(subdivisions=2)
+
+        self.assertEqual(samples[0][0], resolved.left_points[0])
+        self.assertEqual(samples[-1][0], resolved.left_points[-1])
+        self.assertEqual(
+            len(samples),
+            3 * (len(resolved.left_points) - 1),
+        )
+        with self.assertRaisesRegex(ValueError, "at least one"):
+            resolved.track_samples(subdivisions=0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -284,20 +284,24 @@ right_center_rail
 ## 9. Add the tambour vertical supports (`tambour-vertical-rails`)
 
 Install `left_tambour_rail` between `rail_lb` and the left top side 4x4 and
-`right_tambour_rail` between `rail_rbu` and the right top side 4x4.
+`right_tambour_rail` between `rail_rbu` and the right top side 4x4. Add the
+short matching bend-backer block immediately behind the top of each rail to
+support the full printed flange through the front curve.
 
 These lumber members support the custom ASA tracks; they are not themselves
 the finished tracks. Check both for plumb and verify their inside spacing and
 front-to-back position against the full-size track template in
 [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) before fixing them permanently.
 Their modeled Y range is 4 3/4 to 6 1/4 inches, supporting the guide
-centerline at y = 5 3/8 inches.
+centerline at y = 5 1/2 inches.
 
 New model objects:
 
 ```text
 left_tambour_rail
 right_tambour_rail
+left_tambour_bend_backer
+right_tambour_bend_backer
 ```
 
 ## 10. Install and set the tracks; trial-fit the tambour (`tambour-door`)
@@ -311,11 +315,11 @@ electrical equipment or conduit. Their final position is the controlling
 clearance datum for the power-junction assembly, its 1 1/4-inch conduit, and
 all outgoing conduit runs; do not use those later assemblies to force or shift
 a guide. The track datums' rear lower endpoint is at `y = 21`, `z = 3` inches;
-their front lower endpoint is at `y = 5 3/8`, `z = 16` inches; their top
-centerline is at `z = 44 1/8` inches; and both turns begin from a modeled
-2 5/8-inch centerline radius. The slat center remains offset 3/8 inch from the
-datum; the wood is rendered at its actual 1/2-inch depth while the complete
-hardware assembly must remain inside the 1 1/2-inch clearance envelope.
+their front lower endpoint is at `y = 5 1/2`, `z = 16` inches; their top
+centerline is at `z = 44 1/2` inches; and both turns begin from a modeled
+2 5/8-inch centerline radius. The slat center shares the running-groove datum;
+the wood is rendered at its actual 1/2-inch depth while the complete hardware
+assembly must remain inside the 1 1/2-inch clearance envelope.
 
 Load the completed curtain and cycle it fully using both the lowest pull slat
 and the printed pull approximately 18 inches above it. Verify equal tracking,

@@ -61,7 +61,9 @@ class TambourFabricationConfig:
     nozzle_width: float = 0.6
     wall_thickness: float = 2.4
     mounting_flange_thickness: float = 4.8
-    flange_extension: float = 10.0
+    # Keep the complete 34.9 mm track footprint inside nominal 1.5 inch
+    # backing with slightly more than 1/16 inch of margin on each edge.
+    flange_extension: float = 8.2
     slat_end_engagement: float = 12.0
     mounting_hole_diameter: float = 4.5
     expansion_slot_length: float = 8.0
@@ -161,6 +163,10 @@ class TambourFabricationConfig:
     @property
     def channel_outer_width(self) -> float:
         return self.channel_internal_width + 2 * self.wall_thickness
+
+    @property
+    def mounting_footprint_width(self) -> float:
+        return self.channel_outer_width + 2 * self.flange_extension
 
     @property
     def centerline_length(self) -> float:

@@ -256,10 +256,12 @@ def build_enclosure(
     )
     TAMBOUR_TOP_Z=FRAME_DIMS.z-TAMBOUR_TOP_OFFSET
     TAMBOUR_FRONT_Y=5
-    TAMBOUR_SLAT_TRACK_OFFSET=TAMBOUR_MAX_ENVELOPE_DEPTH/4
-    TAMBOUR_TRACK_FRONT_Y=TAMBOUR_FRONT_Y+TAMBOUR_SLAT_TRACK_OFFSET
-    TAMBOUR_TRACK_TOP_Z=TAMBOUR_TOP_Z-TAMBOUR_SLAT_TRACK_OFFSET
     TAMBOUR_VERTICAL_SUPPORT_CENTER_Y=TAMBOUR_FRONT_Y+0.5
+    # Track points are the center of the running groove.  The detailed slats
+    # must share that datum rather than riding on one of the groove walls.
+    TAMBOUR_SLAT_TRACK_OFFSET=0
+    TAMBOUR_TRACK_FRONT_Y=TAMBOUR_VERTICAL_SUPPORT_CENTER_Y
+    TAMBOUR_TRACK_TOP_Z=TAMBOUR_TOP_Z
     TAMBOUR_FRONT_HEADER_TOP_Z=TAMBOUR_TOP_Z-2
     TAMBOUR_FRONT_HEADER_CENTER_Z=(
         TAMBOUR_FRONT_HEADER_TOP_Z-HEIGHT_2x4/2
@@ -311,6 +313,28 @@ def build_enclosure(
             cross_offset=cross_offset,
             position_axis=position_axis,
             rotated=rotated,
+        )
+
+    # Short blocks fill the inside corner between each vertical tambour rail
+    # and side brace.  Without them the swept flange at the front bend hangs
+    # over the concave corner even though both tangent runs are supported.
+    TAMBOUR_FRONT_BEND_BACKER_LENGTH=1.5
+    for name,rail_name in (
+        ("left_tambour_bend_backer", "left_tambour_rail"),
+        ("right_tambour_bend_backer", "right_tambour_rail"),
+    ):
+        rail=members[rail_name]
+        members.add(
+            name,
+            assembly="frame",
+            type="2x4",
+            axis="y",
+            start=AbsoluteCoord(
+                rail.min_on("x"),
+                rail.max_on("y"),
+                rail.max_on("z")-HEIGHT_2x4,
+            ),
+            length=TAMBOUR_FRONT_BEND_BACKER_LENGTH,
         )
 
     TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z=members["brace_fl_bl"].min_on("z")
@@ -1276,10 +1300,13 @@ def build_enclosure(
     TAMBOUR_LEFT_X = members["post_fl"].max_on("x")
     TAMBOUR_RIGHT_X = members["post_fr"].min_on("x")
     TAMBOUR_BACK_Y = members["post_bl"].max_on("y") - 0.5
-    TAMBOUR_TRACK_BACK_Y = TAMBOUR_BACK_Y-TAMBOUR_SLAT_TRACK_OFFSET
+    # Keep the narrowed flange comfortably inside the rear post face.  This
+    # datum is independent of slat placement now that the path is the groove
+    # centerline.
+    TAMBOUR_TRACK_BACK_Y = members["post_bl"].max_on("y") - 0.875
     TAMBOUR_BACK_BOTTOM_Z = 3
     TAMBOUR_FRONT_BOTTOM_Z = 16
-    TAMBOUR_BEND_RADIUS = 3-TAMBOUR_SLAT_TRACK_OFFSET
+    TAMBOUR_BEND_RADIUS = TAMBOUR_FABRICATION.bend_radius/MM_PER_INCH
 
     rear_fixed_length = (
         TAMBOUR_FABRICATION.rear_vertical_length
@@ -1358,13 +1385,13 @@ def build_enclosure(
             RelativeCoord(
                 "post_bl",
                 WIDTH_4x4,
-                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                TAMBOUR_TRACK_BACK_Y-members["post_bl"].min_on("y"),
                 BURIED_FRAME_Z+TAMBOUR_BACK_BOTTOM_Z,
             ),
             RelativeCoord(
                 "post_bl",
                 WIDTH_4x4,
-                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                TAMBOUR_TRACK_BACK_Y-members["post_bl"].min_on("y"),
                 BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
             ),
             RelativeCoord(
@@ -1384,13 +1411,13 @@ def build_enclosure(
             RelativeCoord(
                 "post_br",
                 0,
-                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                TAMBOUR_TRACK_BACK_Y-members["post_br"].min_on("y"),
                 BURIED_FRAME_Z+TAMBOUR_BACK_BOTTOM_Z,
             ),
             RelativeCoord(
                 "post_br",
                 0,
-                WIDTH_4x4-0.5-TAMBOUR_SLAT_TRACK_OFFSET,
+                TAMBOUR_TRACK_BACK_Y-members["post_br"].min_on("y"),
                 BURIED_FRAME_Z+TAMBOUR_TRACK_TOP_Z,
             ),
             RelativeCoord(

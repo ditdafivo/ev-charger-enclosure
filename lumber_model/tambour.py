@@ -471,6 +471,42 @@ class ResolvedTambourDoor:
     slats: tuple[ResolvedTambourSlat, ...]
     closed_slats: tuple[ResolvedTambourSlat, ...]
 
+    def track_samples(
+        self, subdivisions: int = 1
+    ) -> tuple[ResolvedTambourSlat, ...]:
+        """Sample both track centerlines for support/clearance checks.
+
+        Resolved bend arcs are already faceted according to ``TambourBend``.
+        Additional subdivisions sample the interior of every straight or arc
+        facet. Shared endpoints are returned for both adjacent facets because
+        each rendered channel segment has its own cross-section orientation.
+        """
+        if subdivisions < 1:
+            raise ValueError("track sample subdivisions must be at least one")
+
+        samples: list[ResolvedTambourSlat] = []
+        for left_start, left_end, right_start, right_end in zip(
+            self.left_points,
+            self.left_points[1:],
+            self.right_points,
+            self.right_points[1:],
+        ):
+            left_delta = _v_sub(left_end, left_start)
+            right_delta = _v_sub(right_end, right_start)
+            tangent = _v_unit(
+                _v_add(_v_unit(left_delta), _v_unit(right_delta))
+            )
+            for step in range(subdivisions + 1):
+                fraction = step / subdivisions
+                samples.append(
+                    (
+                        _v_add(left_start, _v_scale(left_delta, fraction)),
+                        _v_add(right_start, _v_scale(right_delta, fraction)),
+                        tangent,
+                    )
+                )
+        return tuple(samples)
+
     def scad_record(self) -> str:
         details = self.installed_details
         installed_record = (

@@ -561,7 +561,7 @@ module render_tambour_channel(points, opening_dir, installed) {
         length = v_len(v_sub(end, start));
 
         tambour_oriented_box(
-            v_add(center, v_scale(opening_dir, -flange_thickness / 2)),
+            v_add(center, v_scale(opening_dir, flange_thickness / 2)),
             opening_dir,
             travel_dir,
             depth_dir,

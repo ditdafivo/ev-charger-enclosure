@@ -4,11 +4,13 @@
 
 The modeled 1.5-inch tambour envelope clears the fixed front framing,
 street-light backers, revised charger-feed conduit, and removable plywood
-ceiling by at least the intended 1/4 inch. The model now renders the actual
-1.5-inch slat depth and regression-tests the front straight run and bend.
+ceiling by at least the intended 1/4 inch. The model renders the actual
+1/2-inch wooden slat and independently regression-tests the 1 1/2-inch complete
+hardware envelope through the front straight run and bend.
 
-The production groove, liner, slat-end clearance, fasteners, and loading
-section remain prototype-controlled. The rendered charger cord is illustrative
+The production channel clearance, printed-track fasteners, slat-end clearance,
+joint clips, and loading section remain prototype-controlled. The rendered
+charger cord is illustrative
 and is not treated as a hard clearance envelope; the plywood ceiling guards the
 overhead curtain from hands and the cord.
 
@@ -45,8 +47,9 @@ blocks provide full-depth attachment faces at the header ends and bear against
 the undersides of the upper side rails.
 
 The swept-envelope regression follows the resolved piecewise track, offsets
-the center of each 1.5-by-0.9-inch slat 3/8 inch outward, and checks the lowest
-curtain surface over the header's Y interval. The resulting clearance exceeds
+the center of the 3/4-inch-high slat path 3/8 inch outward, and checks an
+independent 1 1/2-inch complete hardware envelope over the header's Y interval.
+The resulting clearance exceeds
 the required 1/4 inch, including through the 2 5/8-inch-radius front bend.
 
 This is a geometry result, not a structural rating. The header, blocks, center
@@ -87,12 +90,12 @@ possible.
 the curtain passes through the rear opening, not the trailing end of the
 curtain. The simplified model draws each slat to both track centerlines, while
 the rear opening angles reach those same lateral boundaries. A production
-slat will instead terminate with running clearance inside a defined lined
-groove, with the trim concealing the interface.
+slat instead terminates with running clearance inside the printed side-opening
+channel, with the trim concealing the interface.
 
-Because the groove cross-section, liner thickness, end clearance, and
-fasteners are intentionally unspecified, this contact is excluded from the
-solid-envelope assertion. It must be approved on the full-width prototype.
+Because the accepted printed clearance, end engagement, and installed track
+spacing remain prototype-controlled, this interface must be approved on the
+full-width test frame.
 
 ## Acceptance requirements
 
@@ -101,7 +104,8 @@ solid-envelope assertion. It must be approved on the full-width prototype.
    track datums.
 2. Verify the header load path and connections for the charger and holster's
    dead and dynamic loads.
-3. Prototype the groove, liner, slat ends, pulls, fasteners, loading section,
+3. Prototype the printed channel, clearance coupons, slat ends, pulls,
+   fasteners, loading section,
    and removable ceiling retainers.
 4. Cycle the curtain through full travel before and after installing the
    ceiling, conduit, fixed cables, siding, and trim.

@@ -188,6 +188,7 @@ class TambourDoor:
     slat_thickness: float = 0.9
     slat_depth: float = 0.75
     slat_track_offset: float = 0.0
+    slat_envelope_depth: float | None = None
     door_length: float = 14.0
     track_color: TambourColor = DEFAULT_TRACK_COLOR
     slat_color: TambourColor = DEFAULT_SLAT_COLOR
@@ -231,9 +232,22 @@ class TambourDoor:
             )
         if self.slat_track_offset < 0:
             raise ValueError(f"{self.name}: slat_track_offset cannot be negative")
-        if self.slat_track_offset > self.slat_depth / 2:
+        envelope_depth = (
+            self.slat_depth
+            if self.slat_envelope_depth is None
+            else self.slat_envelope_depth
+        )
+        if not math.isfinite(envelope_depth) or envelope_depth <= 0:
             raise ValueError(
-                f"{self.name}: slat_track_offset must remain within the slat"
+                f"{self.name}: slat_envelope_depth must be finite and positive"
+            )
+        if envelope_depth < self.slat_depth:
+            raise ValueError(
+                f"{self.name}: slat_envelope_depth cannot be less than slat_depth"
+            )
+        if self.slat_track_offset > envelope_depth / 2:
+            raise ValueError(
+                f"{self.name}: slat_track_offset must remain within the envelope"
             )
         if len(self.track_color) != 4 or len(self.slat_color) != 4:
             raise ValueError(f"{self.name}: tambour colors must be RGBA 4-tuples")
@@ -241,6 +255,11 @@ class TambourDoor:
     def resolved(
         self, resolver: CoordinateResolver | None = None
     ) -> ResolvedTambourDoor:
+        envelope_depth = (
+            self.slat_depth
+            if self.slat_envelope_depth is None
+            else self.slat_envelope_depth
+        )
         left = tuple(
             resolve_coordinate(f"{self.name}: left_points[{index}]", point, resolver)
             for index, point in enumerate(self.left_points)
@@ -323,6 +342,7 @@ class TambourDoor:
             slat_thickness=self.slat_thickness,
             slat_depth=self.slat_depth,
             slat_track_offset=self.slat_track_offset,
+            slat_envelope_depth=envelope_depth,
             left_points=resolved_left,
             right_points=resolved_right,
             bends=tuple((bend.point_index, bend.radius) for bend in self.bends),
@@ -342,6 +362,7 @@ class ResolvedTambourDoor:
     slat_thickness: float
     slat_depth: float
     slat_track_offset: float
+    slat_envelope_depth: float
     left_points: tuple[Vector3, ...]
     right_points: tuple[Vector3, ...]
     bends: tuple[ResolvedTambourBend, ...]
@@ -405,6 +426,7 @@ class TambourCollection(Mapping[str, TambourDoor]):
         slat_thickness: float = 0.9,
         slat_depth: float = 0.75,
         slat_track_offset: float = 0.0,
+        slat_envelope_depth: float | None = None,
         door_length: float = 14.0,
         track_color: TambourColor = DEFAULT_TRACK_COLOR,
         slat_color: TambourColor = DEFAULT_SLAT_COLOR,
@@ -421,6 +443,7 @@ class TambourCollection(Mapping[str, TambourDoor]):
                 slat_thickness=slat_thickness,
                 slat_depth=slat_depth,
                 slat_track_offset=slat_track_offset,
+                slat_envelope_depth=slat_envelope_depth,
                 door_length=door_length,
                 track_color=track_color,
                 slat_color=slat_color,

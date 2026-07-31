@@ -92,6 +92,13 @@ from lumber_model.tambour import (
     TambourCollection,
     TambourDoor,
 )
+from lumber_model.tambour_fabrication import (
+    TambourFabricationConfig,
+    TambourPart,
+    generate_tambour_fabrication,
+    split_segment_lengths,
+    tambour_parts,
+)
 
 __all__ = [
     "ACTUAL_DIMS",
@@ -175,15 +182,20 @@ __all__ = [
     "TambourBend",
     "TambourCollection",
     "TambourDoor",
+    "TambourFabricationConfig",
+    "TambourPart",
     "cable_centerline_length",
     "clip_polygon_to_box",
     "conductor_fill_volume",
     "cubic_bezier_conduit_points",
     "cubic_bezier_points",
     "equipment_grounding_fill_volume",
+    "generate_tambour_fabrication",
     "ev_charger_cable_points",
     "minimum_cable_bend_radius",
     "rounded_cable_points",
+    "split_segment_lengths",
+    "tambour_parts",
     "minimum_stock_board_count",
     "parse_build_steps",
 ]

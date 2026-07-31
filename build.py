@@ -50,6 +50,7 @@ from lumber_model import (
     RightSidingOpening,
     TambourBend,
     TambourCollection,
+    generate_tambour_fabrication,
     cubic_bezier_conduit_points,
     cubic_bezier_points,
     clip_polygon_to_box,
@@ -239,14 +240,18 @@ def build_enclosure(
     # Keep the top guide/support assembly below the perimeter braces.  The
     # resulting one-inch gap from the guide centerline to the brace underside
     # accommodates a 1.5-inch curtain envelope plus 1/4 inch of clearance.
-    TAMBOUR_MAX_SLAT_DEPTH=1.5
+    TAMBOUR_MAX_ENVELOPE_DEPTH=1.5
+    TAMBOUR_SLAT_DEPTH=0.5
+    TAMBOUR_SLAT_HEIGHT=0.75
+    TAMBOUR_SLAT_GAP=1/32
+    TAMBOUR_SLAT_PITCH=TAMBOUR_SLAT_HEIGHT+TAMBOUR_SLAT_GAP
     TAMBOUR_BRACE_CLEARANCE=0.25
     TAMBOUR_TOP_OFFSET=(
-        HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_MAX_SLAT_DEPTH/2
+        HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_MAX_ENVELOPE_DEPTH/2
     )
     TAMBOUR_TOP_Z=FRAME_DIMS.z-TAMBOUR_TOP_OFFSET
     TAMBOUR_FRONT_Y=5
-    TAMBOUR_SLAT_TRACK_OFFSET=TAMBOUR_MAX_SLAT_DEPTH/4
+    TAMBOUR_SLAT_TRACK_OFFSET=TAMBOUR_MAX_ENVELOPE_DEPTH/4
     TAMBOUR_TRACK_FRONT_Y=TAMBOUR_FRONT_Y+TAMBOUR_SLAT_TRACK_OFFSET
     TAMBOUR_TRACK_TOP_Z=TAMBOUR_TOP_Z-TAMBOUR_SLAT_TRACK_OFFSET
     TAMBOUR_VERTICAL_SUPPORT_CENTER_Y=TAMBOUR_FRONT_Y+0.5
@@ -1331,8 +1336,11 @@ def build_enclosure(
             TambourBend(point_index=2, radius=TAMBOUR_BEND_RADIUS),
         ),
         door_length=44,
-        slat_depth=TAMBOUR_MAX_SLAT_DEPTH,
+        slat_pitch=TAMBOUR_SLAT_PITCH,
+        slat_thickness=TAMBOUR_SLAT_HEIGHT,
+        slat_depth=TAMBOUR_SLAT_DEPTH,
         slat_track_offset=TAMBOUR_SLAT_TRACK_OFFSET,
+        slat_envelope_depth=TAMBOUR_MAX_ENVELOPE_DEPTH,
         slat_color=TAMBOUR_DOOR_COLOR,
     )
 
@@ -1347,7 +1355,7 @@ def build_enclosure(
     )
     TAMBOUR_CEILING_TOP_Z=(
         TAMBOUR_TOP_Z
-        - TAMBOUR_MAX_SLAT_DEPTH/2
+        - TAMBOUR_MAX_ENVELOPE_DEPTH/2
         - TAMBOUR_CEILING_CLEARANCE
     )
     TAMBOUR_CEILING_BOTTOM_Z=(
@@ -1962,6 +1970,7 @@ def write_outputs(
     enclosure.model.write_fabrication_csv(output_dir / "fabrication.csv")
     enclosure.model.write_fabrication_json(output_dir / "fabrication.json")
     generate_gusset_dxf(output_dir / "gusset_plate_6x6.dxf")
+    generate_tambour_fabrication(output_dir / "tambour")
 
 
 def _playground_model_text(model_path: Path) -> str:

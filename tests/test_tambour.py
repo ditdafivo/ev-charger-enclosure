@@ -85,10 +85,41 @@ class TambourTests(unittest.TestCase):
         self.assertAlmostEqual(resolved.closed_slats[0][0][1], 10.375)
         self.assertEqual(resolved.left_points[0][1], 10)
 
-    def test_track_offset_must_remain_within_slat(self) -> None:
+    def test_track_offset_must_remain_within_envelope(self) -> None:
         door = sample_tambour()
-        with self.assertRaisesRegex(ValueError, "must remain within the slat"):
+        with self.assertRaisesRegex(ValueError, "must remain within the envelope"):
             TambourDoor(**{**door.__dict__, "slat_track_offset": 0.5})
+
+    def test_envelope_can_exceed_rendered_slat_depth(self) -> None:
+        door = sample_tambour()
+        resolved = TambourDoor(
+            **{
+                **door.__dict__,
+                "slat_depth": 0.5,
+                "slat_envelope_depth": 1.5,
+                "slat_track_offset": 0.375,
+            }
+        ).resolved()
+
+        self.assertEqual(resolved.slat_depth, 0.5)
+        self.assertEqual(resolved.slat_envelope_depth, 1.5)
+        self.assertEqual(resolved.slat_track_offset, 0.375)
+
+    def test_envelope_cannot_be_smaller_than_rendered_slat(self) -> None:
+        door = sample_tambour()
+        with self.assertRaisesRegex(ValueError, "cannot be less than slat_depth"):
+            TambourDoor(
+                **{
+                    **door.__dict__,
+                    "slat_depth": 1.0,
+                    "slat_envelope_depth": 0.75,
+                }
+            )
+
+    def test_envelope_must_be_positive(self) -> None:
+        door = sample_tambour()
+        with self.assertRaisesRegex(ValueError, "must be finite and positive"):
+            TambourDoor(**{**door.__dict__, "slat_envelope_depth": 0})
 
     def test_model_rejects_duplicate_tambour_names(self) -> None:
         members = LumberCollection()

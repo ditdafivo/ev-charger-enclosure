@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import hashlib
 import io
+import json
 import math
 import struct
 import subprocess
@@ -331,10 +332,10 @@ class TambourClearanceBuildTests(unittest.TestCase):
                     (
                         center_y
                         + travel_sign*tambour.slat_thickness/2*travel_y
-                        + depth_sign*tambour.slat_depth/2*depth_y,
+                        + depth_sign*tambour.slat_envelope_depth/2*depth_y,
                         center_z
                         + travel_sign*tambour.slat_thickness/2*travel_z
-                        + depth_sign*tambour.slat_depth/2*depth_z,
+                        + depth_sign*tambour.slat_envelope_depth/2*depth_z,
                     )
                     for travel_sign in (-1, 1)
                     for depth_sign in (-1, 1)
@@ -367,7 +368,10 @@ class TambourClearanceBuildTests(unittest.TestCase):
 
     def test_front_path_clears_backers_and_lowered_header(self) -> None:
         tambour = build.tambours["enclosure_tambour_door"].resolved(build.model)
-        self.assertEqual(tambour.slat_depth, 1.5)
+        self.assertEqual(tambour.slat_depth, 0.5)
+        self.assertEqual(tambour.slat_thickness, 0.75)
+        self.assertEqual(tambour.slat_pitch, 25/32)
+        self.assertEqual(tambour.slat_envelope_depth, 1.5)
         self.assertEqual(tambour.slat_track_offset, 0.375)
         self.assertEqual(tambour.bends, ((1, 2.625), (2, 2.625)))
         self.assertEqual(build.TAMBOUR_FRONT_Y, 5)
@@ -386,7 +390,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
             )
         )
         self.assertGreaterEqual(
-            build.TAMBOUR_FRONT_Y-tambour.slat_depth/2-backer_rear,
+            build.TAMBOUR_FRONT_Y-tambour.slat_envelope_depth/2-backer_rear,
             build.TAMBOUR_BRACE_CLEARANCE,
         )
 
@@ -410,7 +414,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
         self.assertEqual(panel.box_min, (3.5, 8.75, 43.25))
         self.assertEqual(panel.box_size, (20.5, 8.875, 0.25))
         self.assertAlmostEqual(
-            build.TAMBOUR_TOP_Z-build.TAMBOUR_MAX_SLAT_DEPTH/2
+            build.TAMBOUR_TOP_Z-build.TAMBOUR_MAX_ENVELOPE_DEPTH/2
             -(panel.box_min[2]+panel.box_size[2]),
             build.TAMBOUR_CEILING_CLEARANCE,
         )
@@ -435,7 +439,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
         self.assertGreaterEqual(
             min(point[1] for point in charger_feed.points)
             - charger_feed.od/2
-            - (build.TAMBOUR_FRONT_Y+build.TAMBOUR_MAX_SLAT_DEPTH/2),
+            - (build.TAMBOUR_FRONT_Y+build.TAMBOUR_MAX_ENVELOPE_DEPTH/2),
             0.25,
         )
 
@@ -1756,7 +1760,19 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "fabrication.csv",
                     "fabrication.json",
                     "gusset_plate_6x6.dxf",
+                    "tambour",
                 },
+            )
+            self.assertTrue((output_dir / "tambour" / "pull_handle.step").is_file())
+            self.assertTrue((output_dir / "tambour" / "pull_handle.stl").is_file())
+            manifest = json.loads(
+                (output_dir / "tambour" / "manifest.json").read_text()
+            )
+            quantities = {row["name"]: row["quantity"] for row in manifest}
+            self.assertEqual(quantities["pull_handle"], 2)
+            self.assertEqual(quantities["joint_collar"], 36)
+            self.assertTrue(
+                (output_dir / "tambour" / "joint_fit_preview.step").is_file()
             )
 
 

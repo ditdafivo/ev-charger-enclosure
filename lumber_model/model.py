@@ -869,7 +869,7 @@ class Model:
                         (
                             abs(span_dir[index]) * span_length
                             + abs(travel_dir[index]) * resolved.slat_thickness
-                            + abs(depth_dir[index]) * resolved.slat_depth
+                            + abs(depth_dir[index]) * resolved.slat_envelope_depth
                         )
                         / 2
                         for index in range(3)

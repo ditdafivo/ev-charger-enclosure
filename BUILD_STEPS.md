@@ -33,7 +33,7 @@ by a qualified installer.
   permanent context and is not assigned to a step.
 - Temporary operations such as removing and protecting the tambour curtain
   after its trial fit are not separate model objects. From its introduction in
-  Step 11, the visualization shows the completed tambour in its nominal open
+  Step 10, the visualization shows the completed tambour in its nominal open
   position.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
@@ -300,24 +300,7 @@ left_tambour_rail
 right_tambour_rail
 ```
 
-## 10. Verify the consolidated tambour top supports (`tambour-top-rails`)
-
-Verify that the inside faces and undersides of the two top side 4x4s provide
-continuous, level attachment surfaces for the printed tracks and removable
-ceiling retainers. Preserve the modeled rear and front bend clearances and
-confirm the support geometry against the prototype alignment gauges.
-
-Trial-fit the removable ceiling panel against its independent retainers, then
-remove it until the services and tambour have passed their later clearance
-checks.
-
-New model objects:
-
-```text
-tambour_ceiling_panel
-```
-
-## 11. Install and set the tracks; trial-fit the tambour (`tambour-door`)
+## 10. Install and set the tracks; trial-fit the tambour (`tambour-door`)
 
 Follow [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) to complete the full-size prototype
 and approve the 1/2-by-3/4-inch slat profile, printed pulls, mechanical webbing,
@@ -352,6 +335,23 @@ New model objects:
 
 ```text
 enclosure_tambour_door
+```
+
+## 11. Verify the consolidated tambour top supports (`tambour-top-rails`)
+
+Verify that the inside faces and undersides of the two top side 4x4s provide
+continuous, level attachment surfaces for the printed tracks and removable
+ceiling retainers. Preserve the modeled rear and front bend clearances and
+confirm the support geometry against the prototype alignment gauges.
+
+After the tambour trial fit, trial-fit the removable ceiling panel against its
+independent retainers, then remove it until the services and tambour have passed
+their later clearance checks.
+
+New model objects:
+
+```text
+tambour_ceiling_panel
 ```
 
 ## 12. Add the street-light backing (`street-light-backing`)

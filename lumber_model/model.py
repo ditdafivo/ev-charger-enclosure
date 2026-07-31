@@ -832,15 +832,29 @@ class Model:
 
         for tambour in self.tambours:
             resolved = tambour.resolved(self)
+            track_extent = resolved.track_diameter
+            if resolved.installed_details is not None:
+                details = resolved.installed_details
+                track_extent = max(
+                    track_extent,
+                    details.channel_internal_width
+                    + 2 * details.channel_wall_thickness
+                    + 2 * details.flange_extension,
+                    2
+                    * max(
+                        details.slat_end_engagement,
+                        details.mounting_flange_thickness,
+                    ),
+                )
             _include_centerline_segments(
                 bounds,
                 resolved.left_points,
-                resolved.track_diameter,
+                track_extent,
             )
             _include_centerline_segments(
                 bounds,
                 resolved.right_points,
-                resolved.track_diameter,
+                track_extent,
             )
 
             for slats in (resolved.slats, resolved.closed_slats):
@@ -869,7 +883,7 @@ class Model:
                         (
                             abs(span_dir[index]) * span_length
                             + abs(travel_dir[index]) * resolved.slat_thickness
-                            + abs(depth_dir[index]) * resolved.slat_depth
+                            + abs(depth_dir[index]) * resolved.slat_envelope_depth
                         )
                         / 2
                         for index in range(3)

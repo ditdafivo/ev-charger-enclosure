@@ -2,13 +2,15 @@
 
 ## Conclusion
 
-The modeled 1.5-inch tambour envelope clears the fixed front framing,
-street-light backers, revised charger-feed conduit, and removable plywood
-ceiling by at least the intended 1/4 inch. The model now renders the actual
-1.5-inch slat depth and regression-tests the front straight run and bend.
+The modeled tambour clears the fixed front framing, street-light backers,
+revised charger-feed conduit, and removable plywood ceiling. The model renders
+the actual 1/2-inch wooden slat and attached webbing inside the groove, while
+the 1 1/2-inch maximum envelope remains the overhead and perimeter clearance
+limit.
 
-The production groove, liner, slat-end clearance, fasteners, and loading
-section remain prototype-controlled. The rendered charger cord is illustrative
+The production channel clearance, printed-track fasteners, slat-end clearance,
+joint clips, and loading section remain prototype-controlled. The rendered
+charger cord is illustrative
 and is not treated as a hard clearance envelope; the plywood ceiling guards the
 overhead curtain from hands and the cord.
 
@@ -26,12 +28,11 @@ overhead curtain from hands and the cord.
 
 ### Front guide and street-light backers
 
-The slat center path remains at `y = 5.0`, while the guide centerline is
-modeled 3/8 inch inward at `y = 5.375`. The 1.5-inch envelope still reaches
-forward to `y = 4.25`; the backers end at `y = 3.80`:
+The slat and guide share the groove centerline at `y = 5.5`. The 1.5-inch
+envelope reaches forward to `y = 4.75`; the backers end at `y = 3.80`:
 
 ```text
-4.25 - 3.80 = 0.45 inch
+4.75 - 3.80 = 0.95 inch
 ```
 
 The left and right vertical support rails moved with the guide and now occupy
@@ -44,10 +45,10 @@ The front center rail bears against its underside. Two short vertical 2x4
 blocks provide full-depth attachment faces at the header ends and bear against
 the undersides of the upper side rails.
 
-The swept-envelope regression follows the resolved piecewise track, offsets
-the center of each 1.5-by-0.9-inch slat 3/8 inch outward, and checks the lowest
-curtain surface over the header's Y interval. The resulting clearance exceeds
-the required 1/4 inch, including through the 2 5/8-inch-radius front bend.
+The regression follows the resolved piecewise track and checks the rendered
+slat plus rear webbing over the header's Y interval. Separate dense samples of
+the complete printed-track cross section prove backing support and absence of
+lumber penetration through the 2 5/8-inch-radius front bend.
 
 This is a geometry result, not a structural rating. The header, blocks, center
 rail, fasteners, and connections must be selected for the charger dead load
@@ -72,7 +73,7 @@ The modeled exterior-plywood panel occupies:
 
 ```text
 x = 3.5 to 24.0 inches
-y = 8.75 to 17.625 inches
+y = 8.875 to 17.625 inches
 z = 43.25 to 43.50 inches
 ```
 
@@ -87,21 +88,22 @@ possible.
 the curtain passes through the rear opening, not the trailing end of the
 curtain. The simplified model draws each slat to both track centerlines, while
 the rear opening angles reach those same lateral boundaries. A production
-slat will instead terminate with running clearance inside a defined lined
-groove, with the trim concealing the interface.
+slat instead terminates with running clearance inside the printed side-opening
+channel, with the trim concealing the interface.
 
-Because the groove cross-section, liner thickness, end clearance, and
-fasteners are intentionally unspecified, this contact is excluded from the
-solid-envelope assertion. It must be approved on the full-width prototype.
+Because the accepted printed clearance, end engagement, and installed track
+spacing remain prototype-controlled, this interface must be approved on the
+full-width test frame.
 
 ## Acceptance requirements
 
 1. Build the guide paths from one full-size template using the modeled
-   front `y = 5.375`, top `z = 44.125`, rear `y = 21.0`, and 2 5/8-inch-radius
+   front `y = 5.5`, top `z = 44.5`, rear `y = 21.0`, and 2 5/8-inch-radius
    track datums.
 2. Verify the header load path and connections for the charger and holster's
    dead and dynamic loads.
-3. Prototype the groove, liner, slat ends, pulls, fasteners, loading section,
+3. Prototype the printed channel, clearance coupons, slat ends, pulls,
+   fasteners, loading section,
    and removable ceiling retainers.
 4. Cycle the curtain through full travel before and after installing the
    ceiling, conduit, fixed cables, siding, and trim.

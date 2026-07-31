@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import hashlib
 import io
+import json
 import math
 import struct
 import subprocess
@@ -308,6 +309,10 @@ class TambourClearanceBuildTests(unittest.TestCase):
         tambour = enclosure.tambours["enclosure_tambour_door"].resolved(
             enclosure.model
         )
+        details=tambour.installed_details
+        rendered_depth=tambour.slat_depth
+        if details is not None:
+            rendered_depth+=2*details.webbing_thickness
         minimum = math.inf
         for start,end in zip(tambour.left_points, tambour.left_points[1:]):
             dy=end[1]-start[1]
@@ -331,10 +336,10 @@ class TambourClearanceBuildTests(unittest.TestCase):
                     (
                         center_y
                         + travel_sign*tambour.slat_thickness/2*travel_y
-                        + depth_sign*tambour.slat_depth/2*depth_y,
+                        + depth_sign*rendered_depth/2*depth_y,
                         center_z
                         + travel_sign*tambour.slat_thickness/2*travel_z
-                        + depth_sign*tambour.slat_depth/2*depth_z,
+                        + depth_sign*rendered_depth/2*depth_z,
                     )
                     for travel_sign in (-1, 1)
                     for depth_sign in (-1, 1)
@@ -367,12 +372,31 @@ class TambourClearanceBuildTests(unittest.TestCase):
 
     def test_front_path_clears_backers_and_lowered_header(self) -> None:
         tambour = build.tambours["enclosure_tambour_door"].resolved(build.model)
-        self.assertEqual(tambour.slat_depth, 1.5)
-        self.assertEqual(tambour.slat_track_offset, 0.375)
+        self.assertEqual(tambour.slat_depth, 0.5)
+        self.assertEqual(tambour.slat_thickness, 0.75)
+        self.assertEqual(tambour.slat_pitch, 25/32)
+        self.assertEqual(tambour.slat_envelope_depth, 1.5)
+        self.assertEqual(tambour.slat_track_offset, 0)
+        details = tambour.installed_details
+        self.assertIsNotNone(details)
+        assert details is not None
+        self.assertAlmostEqual(details.channel_internal_width, 13.7/25.4)
+        self.assertAlmostEqual(details.channel_wall_thickness, 2.4/25.4)
+        self.assertAlmostEqual(details.mounting_flange_thickness, 4.8/25.4)
+        self.assertAlmostEqual(details.flange_extension, 8.2/25.4)
+        self.assertAlmostEqual(details.slat_end_engagement, 12/25.4)
+        self.assertAlmostEqual(details.joint_gap, 0.6/25.4)
+        self.assertAlmostEqual(details.loading_section_length, 100/25.4)
+        self.assertAlmostEqual(details.end_stop_length, 12/25.4)
+        self.assertEqual(details.webbing_count, 3)
+        self.assertEqual(details.pull_slat_indices, (0, 23))
+        self.assertAlmostEqual(details.handle_width, 300/25.4)
+        self.assertEqual(len(tambour.slats), 56)
+        self.assertEqual(len(tambour.installed_seams), len(details.segment_seams))
         self.assertEqual(tambour.bends, ((1, 2.625), (2, 2.625)))
         self.assertEqual(build.TAMBOUR_FRONT_Y, 5)
-        self.assertEqual(build.TAMBOUR_TRACK_FRONT_Y, 5.375)
-        self.assertEqual(build.TAMBOUR_TRACK_TOP_Z, 44.125)
+        self.assertEqual(build.TAMBOUR_TRACK_FRONT_Y, 5.5)
+        self.assertEqual(build.TAMBOUR_TRACK_TOP_Z, 44.5)
         self.assertEqual(build.TAMBOUR_TRACK_BACK_Y, 21)
         for name in ("left_tambour_rail", "right_tambour_rail"):
             self.assertAlmostEqual(build.members[name].center_on("y"), 5.5)
@@ -386,7 +410,9 @@ class TambourClearanceBuildTests(unittest.TestCase):
             )
         )
         self.assertGreaterEqual(
-            build.TAMBOUR_FRONT_Y-tambour.slat_depth/2-backer_rear,
+            build.TAMBOUR_TRACK_FRONT_Y
+            -tambour.slat_envelope_depth/2
+            -backer_rear,
             build.TAMBOUR_BRACE_CLEARANCE,
         )
 
@@ -401,16 +427,149 @@ class TambourClearanceBuildTests(unittest.TestCase):
             build.TAMBOUR_BRACE_CLEARANCE,
         )
 
+    def test_slats_run_between_both_track_walls(self) -> None:
+        tambour=build.tambours["enclosure_tambour_door"].resolved(build.model)
+        details=tambour.installed_details
+        assert details is not None
+
+        self.assertAlmostEqual(
+            details.channel_internal_width-tambour.slat_depth,
+            2*build.TAMBOUR_FABRICATION.running_clearance/25.4,
+        )
+
+        def distance_to_track(point, track_points):
+            minimum=math.inf
+            for start,end in zip(track_points, track_points[1:]):
+                delta=tuple(b-a for a,b in zip(start,end))
+                relative=tuple(value-a for value,a in zip(point,start))
+                length_squared=sum(value*value for value in delta)
+                fraction=max(
+                    0,
+                    min(1, sum(a*b for a,b in zip(relative,delta))/length_squared),
+                )
+                closest=tuple(a+fraction*d for a,d in zip(start,delta))
+                minimum=min(
+                    minimum,
+                    math.sqrt(sum((a-b)**2 for a,b in zip(point,closest))),
+                )
+            return minimum
+
+        for slats in (tambour.slats, tambour.closed_slats):
+            for left,right,_tangent in slats:
+                self.assertLessEqual(
+                    distance_to_track(left, tambour.left_points),
+                    1e-9,
+                )
+                self.assertLessEqual(
+                    distance_to_track(right, tambour.right_points),
+                    1e-9,
+                )
+
+    def test_every_track_section_is_backed_and_clears_other_lumber(self) -> None:
+        enclosure=build.default_build
+        tambour=enclosure.tambours["enclosure_tambour_door"].resolved(
+            enclosure.model
+        )
+        details=tambour.installed_details
+        assert details is not None
+        footprint_width=(
+            details.channel_internal_width
+            +2*details.channel_wall_thickness
+            +2*details.flange_extension
+        )
+        channel_outer_width=(
+            details.channel_internal_width+2*details.channel_wall_thickness
+        )
+        edge_margin=1/16
+        self.assertLessEqual(footprint_width, 1.5-2*edge_margin)
+
+        sides=(
+            (
+                0,
+                1,
+                {
+                    "post_bl",
+                    "brace_fl_bl",
+                    "left_tambour_rail",
+                    "left_tambour_bend_backer",
+                },
+            ),
+            (
+                1,
+                -1,
+                {
+                    "post_br",
+                    "brace_fr_br",
+                    "right_tambour_rail",
+                    "right_tambour_bend_backer",
+                },
+            ),
+        )
+        for endpoint_index,opening_sign,support_names in sides:
+            supports=[enclosure.members[name] for name in support_names]
+            for left,right,tangent in tambour.track_samples(subdivisions=4):
+                point=(left,right)[endpoint_index]
+                depth_y=-opening_sign*tangent[2]
+                depth_z=opening_sign*tangent[1]
+
+                # Check the full flange width, rather than only its edges, so
+                # concave gaps between backing members are detected at bends.
+                for index in range(65):
+                    offset=(index/64-0.5)*footprint_width
+                    y=point[1]+offset*depth_y
+                    z=point[2]+offset*depth_z
+                    self.assertTrue(
+                        any(
+                            member.min[1]-1e-9 <= y <= member.max[1]+1e-9
+                            and member.min[2]-1e-9 <= z <= member.max[2]+1e-9
+                            for member in supports
+                        ),
+                        f"unsupported track at {(point, y, z)}",
+                    )
+
+                # The channel walls project into the door opening.  Their
+                # conservative outer envelope must not enter unrelated lumber.
+                wall_min_x=(
+                    point[0]
+                    if opening_sign > 0
+                    else point[0]-details.slat_end_engagement
+                )
+                wall_max_x=(
+                    point[0]+details.slat_end_engagement
+                    if opening_sign > 0
+                    else point[0]
+                )
+                for index in range(33):
+                    offset=(index/32-0.5)*channel_outer_width
+                    y=point[1]+offset*depth_y
+                    z=point[2]+offset*depth_z
+                    for name,member in enclosure.members.items():
+                        if name in support_names:
+                            continue
+                        overlap_x=(
+                            min(wall_max_x, member.max[0])
+                            -max(wall_min_x, member.min[0])
+                        )
+                        conflicts=(
+                            overlap_x > 1e-9
+                            and member.min[1]+1e-9 < y < member.max[1]-1e-9
+                            and member.min[2]+1e-9 < z < member.max[2]-1e-9
+                        )
+                        self.assertFalse(
+                            conflicts,
+                            f"track channel conflicts with lumber {name}",
+                        )
+
     def test_removable_ceiling_guards_horizontal_run(self) -> None:
         panel_instance=build.components["tambour_ceiling_panel"]
         panel=panel_instance.resolved(build.members[panel_instance.member])
 
         self.assertEqual(panel_instance.assembly, "tambour_guard")
         self.assertEqual(panel.type_name, "quarter_inch_exterior_plywood_panel")
-        self.assertEqual(panel.box_min, (3.5, 8.75, 43.25))
-        self.assertEqual(panel.box_size, (20.5, 8.875, 0.25))
+        self.assertEqual(panel.box_min, (3.5, 8.875, 43.25))
+        self.assertEqual(panel.box_size, (20.5, 8.75, 0.25))
         self.assertAlmostEqual(
-            build.TAMBOUR_TOP_Z-build.TAMBOUR_MAX_SLAT_DEPTH/2
+            build.TAMBOUR_TOP_Z-build.TAMBOUR_MAX_ENVELOPE_DEPTH/2
             -(panel.box_min[2]+panel.box_size[2]),
             build.TAMBOUR_CEILING_CLEARANCE,
         )
@@ -435,7 +594,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
         self.assertGreaterEqual(
             min(point[1] for point in charger_feed.points)
             - charger_feed.od/2
-            - (build.TAMBOUR_FRONT_Y+build.TAMBOUR_MAX_SLAT_DEPTH/2),
+            - (build.TAMBOUR_FRONT_Y+build.TAMBOUR_MAX_ENVELOPE_DEPTH/2),
             0.25,
         )
 
@@ -1756,7 +1915,19 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "fabrication.csv",
                     "fabrication.json",
                     "gusset_plate_6x6.dxf",
+                    "tambour",
                 },
+            )
+            self.assertTrue((output_dir / "tambour" / "pull_handle.step").is_file())
+            self.assertTrue((output_dir / "tambour" / "pull_handle.stl").is_file())
+            manifest = json.loads(
+                (output_dir / "tambour" / "manifest.json").read_text()
+            )
+            quantities = {row["name"]: row["quantity"] for row in manifest}
+            self.assertEqual(quantities["pull_handle"], 2)
+            self.assertEqual(quantities["joint_collar"], 36)
+            self.assertTrue(
+                (output_dir / "tambour" / "joint_fit_preview.step").is_file()
             )
 
 

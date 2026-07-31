@@ -306,6 +306,26 @@ function t_left_points(t) = t[9];
 function t_right_points(t) = t[10];
 function t_bends(t) = t[11];
 function t_slats(t, is_open) = is_open ? t[12] : t[13];
+function t_installed(t) = len(t) > 14 ? t[14] : [];
+
+function ti_channel_width(i) = i[0];
+function ti_wall(i) = i[1];
+function ti_flange_thickness(i) = i[2];
+function ti_flange_extension(i) = i[3];
+function ti_engagement(i) = i[4];
+function ti_seams(i) = i[5];
+function ti_joint_gap(i) = i[6];
+function ti_loading_length(i) = i[7];
+function ti_stop_length(i) = i[8];
+function ti_webbing_count(i) = i[9];
+function ti_webbing_width(i) = i[10];
+function ti_webbing_thickness(i) = i[11];
+function ti_pull_indices(i) = i[12];
+function ti_handle_width(i) = i[13];
+function ti_handle_height(i) = i[14];
+function ti_handle_projection(i) = i[15];
+function ti_webbing_color(i) = i[16];
+function ti_handle_color(i) = i[17];
 
 function ts_left(s) = s[0];
 function ts_right(s) = s[1];
@@ -515,6 +535,102 @@ module render_tambour_track(points, diameter) {
     }
 }
 
+module tambour_oriented_box(center, opening_dir, travel_dir, depth_dir, size) {
+    multmatrix([
+        [opening_dir[0], travel_dir[0], depth_dir[0], center[0]],
+        [opening_dir[1], travel_dir[1], depth_dir[1], center[1]],
+        [opening_dir[2], travel_dir[2], depth_dir[2], center[2]],
+        [0, 0, 0, 1]
+    ]) cube(size, center = true);
+}
+
+module render_tambour_channel(points, opening_dir, installed) {
+    channel_width = ti_channel_width(installed);
+    wall = ti_wall(installed);
+    flange_thickness = ti_flange_thickness(installed);
+    extension = ti_flange_extension(installed);
+    engagement = ti_engagement(installed);
+    outer_width = channel_width + 2 * wall;
+
+    for (i = [0 : len(points) - 2]) {
+        start = points[i];
+        end = points[i + 1];
+        travel_dir = v_unit(v_sub(end, start));
+        depth_dir = v_unit(v_cross(opening_dir, travel_dir));
+        center = v_mid(start, end);
+        length = v_len(v_sub(end, start));
+
+        tambour_oriented_box(
+            v_add(center, v_scale(opening_dir, -flange_thickness / 2)),
+            opening_dir,
+            travel_dir,
+            depth_dir,
+            [flange_thickness, length, outer_width + 2 * extension]
+        );
+        for (depth_sign = [-1, 1])
+            tambour_oriented_box(
+                v_add(
+                    v_add(center, v_scale(opening_dir, engagement / 2)),
+                    v_scale(depth_dir, depth_sign * (channel_width + wall) / 2)
+                ),
+                opening_dir,
+                travel_dir,
+                depth_dir,
+                [engagement, length, wall]
+            );
+    }
+}
+
+module render_tambour_seam(s, opening_dir, installed) {
+    left = ts_left(s);
+    right = ts_right(s);
+    point = opening_dir[0] > 0 ? left : right;
+    travel_dir = v_unit(ts_tangent(s));
+    depth_dir = v_unit(v_cross(opening_dir, travel_dir));
+    outer_width = ti_channel_width(installed) + 2 * ti_wall(installed);
+
+    tambour_oriented_box(
+        v_add(point, v_scale(opening_dir, ti_engagement(installed) / 2)),
+        opening_dir,
+        travel_dir,
+        depth_dir,
+        [
+            ti_engagement(installed),
+            max(ti_joint_gap(installed), 0.01),
+            outer_width
+        ]
+    );
+}
+
+module render_tambour_service_parts(points, opening_dir, installed) {
+    start = points[0];
+    travel_dir = v_unit(v_sub(points[1], points[0]));
+    depth_dir = v_unit(v_cross(opening_dir, travel_dir));
+    outer_width = ti_channel_width(installed) + 2 * ti_wall(installed);
+    loading_length = ti_loading_length(installed);
+    stop_length = ti_stop_length(installed);
+
+    if (loading_length > 0)
+        tambour_oriented_box(
+            v_add(
+                v_add(start, v_scale(travel_dir, loading_length / 2)),
+                v_scale(opening_dir, ti_engagement(installed) + 0.01)
+            ),
+            opening_dir,
+            travel_dir,
+            depth_dir,
+            [0.02, loading_length, outer_width]
+        );
+    if (stop_length > 0)
+        tambour_oriented_box(
+            v_add(start, v_scale(travel_dir, stop_length / 2)),
+            opening_dir,
+            travel_dir,
+            depth_dir,
+            [ti_engagement(installed), stop_length, outer_width]
+        );
+}
+
 module render_tambour_slat(s, thickness, depth) {
     left = ts_left(s);
     right = ts_right(s);
@@ -533,17 +649,87 @@ module render_tambour_slat(s, thickness, depth) {
         cube([v_len(span), thickness, depth], center = true);
 }
 
-module render_tambour(t, is_open, highlighted = false) {
-    color(highlighted ? build_step_highlight_color() : t_track_color(t)) {
-        render_tambour_track(t_left_points(t), t_track_diameter(t));
-        render_tambour_track(t_right_points(t), t_track_diameter(t));
-    }
+module render_tambour_slat_details(s, index, thickness, depth, installed) {
+    left = ts_left(s);
+    right = ts_right(s);
+    span = v_sub(right, left);
+    span_length = v_len(span);
+    span_dir = v_unit(span);
+    travel_dir = v_unit(ts_tangent(s));
+    depth_dir = v_unit(v_cross(span_dir, travel_dir));
+    center = v_mid(left, right);
+    webbing_count = ti_webbing_count(installed);
 
-    color(highlighted ? build_step_highlight_color() : t_slat_color(t)) {
-        for (s = t_slats(t, is_open)) {
-            render_tambour_slat(s, t_slat_thickness(t), t_slat_depth(t));
+    color(ti_webbing_color(installed))
+        for (strip = [1 : webbing_count]) {
+            across = -span_length / 2 + strip * span_length / (webbing_count + 1);
+            tambour_oriented_box(
+                v_add(
+                    v_add(center, v_scale(span_dir, across)),
+                    v_scale(depth_dir, depth / 2 + ti_webbing_thickness(installed) / 2)
+                ),
+                span_dir,
+                travel_dir,
+                depth_dir,
+                [ti_webbing_width(installed), thickness, ti_webbing_thickness(installed)]
+            );
+        }
+
+    if (len(search(index, ti_pull_indices(installed))) > 0)
+        color(ti_handle_color(installed))
+            tambour_oriented_box(
+                v_add(
+                    center,
+                    v_scale(
+                        depth_dir,
+                        -(depth / 2 + ti_handle_projection(installed) / 2)
+                    )
+                ),
+                span_dir,
+                travel_dir,
+                depth_dir,
+                [
+                    ti_handle_width(installed),
+                    ti_handle_height(installed),
+                    ti_handle_projection(installed)
+                ]
+            );
+}
+
+module render_tambour(t, is_open, highlighted = false) {
+    installed = t_installed(t);
+    color(highlighted ? build_step_highlight_color() : t_track_color(t)) {
+        if (len(installed) == 0) {
+            render_tambour_track(t_left_points(t), t_track_diameter(t));
+            render_tambour_track(t_right_points(t), t_track_diameter(t));
+        } else {
+            render_tambour_channel(t_left_points(t), [1, 0, 0], installed);
+            render_tambour_channel(t_right_points(t), [-1, 0, 0], installed);
+            render_tambour_service_parts(t_left_points(t), [1, 0, 0], installed);
+            render_tambour_service_parts(t_right_points(t), [-1, 0, 0], installed);
         }
     }
+
+    if (len(installed) > 0)
+        color(highlighted ? build_step_highlight_color() : [0.15, 0.16, 0.17, 1])
+            for (seam = ti_seams(installed)) {
+                render_tambour_seam(seam, [1, 0, 0], installed);
+                render_tambour_seam(seam, [-1, 0, 0], installed);
+            }
+
+    color(highlighted ? build_step_highlight_color() : t_slat_color(t)) {
+        for (s = t_slats(t, is_open))
+            render_tambour_slat(s, t_slat_thickness(t), t_slat_depth(t));
+    }
+    if (len(installed) > 0)
+        for (index = [0 : len(t_slats(t, is_open)) - 1])
+            render_tambour_slat_details(
+                t_slats(t, is_open)[index],
+                is_open ? len(t_slats(t, is_open)) - 1 - index : index,
+                t_slat_thickness(t),
+                t_slat_depth(t),
+                installed
+            );
 }
 
 module render_siding_part(s, highlighted = false) {

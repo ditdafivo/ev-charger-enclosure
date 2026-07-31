@@ -6,8 +6,8 @@ center spacing, 47 inches above grade, and 32 inches of each post below grade.
 Dimensions and cut lengths below apply to this design only.
 
 The generated BOM and cut list remain the authoritative material references
-for generated modeled materials. The custom tambour curtain, guide liners,
-backing, pulls, and associated hardware remain provisional and are documented
+for generated modeled materials. The custom tambour curtain, printed tracks,
+webbing, pulls, and associated hardware remain prototype-controlled and are documented
 separately in [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md); they are not yet included in
 the generated material outputs.
 
@@ -33,7 +33,7 @@ by a qualified installer.
   permanent context and is not assigned to a step.
 - Temporary operations such as removing and protecting the tambour curtain
   after its trial fit are not separate model objects. From its introduction in
-  Step 11, the visualization shows the completed tambour in its nominal open
+  Step 10, the visualization shows the completed tambour in its nominal open
   position.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
@@ -284,61 +284,50 @@ right_center_rail
 ## 9. Add the tambour vertical supports (`tambour-vertical-rails`)
 
 Install `left_tambour_rail` between `rail_lb` and the left top side 4x4 and
-`right_tambour_rail` between `rail_rbu` and the right top side 4x4.
+`right_tambour_rail` between `rail_rbu` and the right top side 4x4. Add the
+short matching bend-backer block immediately behind the top of each rail to
+support the full printed flange through the front curve.
 
-These lumber members support the custom guide liners; they are not themselves
+These lumber members support the custom ASA tracks; they are not themselves
 the finished tracks. Check both for plumb and verify their inside spacing and
 front-to-back position against the full-size track template in
 [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) before fixing them permanently.
 Their modeled Y range is 4 3/4 to 6 1/4 inches, supporting the guide
-centerline at y = 5 3/8 inches.
+centerline at y = 5 1/2 inches.
 
 New model objects:
 
 ```text
 left_tambour_rail
 right_tambour_rail
+left_tambour_bend_backer
+right_tambour_bend_backer
 ```
 
-## 10. Verify the consolidated tambour top supports (`tambour-top-rails`)
-
-Verify that the inside faces and undersides of the two top side 4x4s provide
-continuous, level attachment surfaces for the guide liners and removable
-ceiling retainers. Preserve the modeled rear and front bend clearances and
-confirm the support geometry against the prototype alignment gauges.
-
-Trial-fit the removable ceiling panel against its independent retainers, then
-remove it until the services and tambour have passed their later clearance
-checks.
-
-New model objects:
-
-```text
-tambour_ceiling_panel
-```
-
-## 11. Install and set the tracks; trial-fit the tambour (`tambour-door`)
+## 10. Install and set the tracks; trial-fit the tambour (`tambour-door`)
 
 Follow [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) to complete the full-size prototype
-and approve the slat profile, recessed pulls, flexible backing, track profile,
+and approve the 1/2-by-3/4-inch slat profile, printed pulls, mechanical webbing,
+track profile,
 loading sections, and end stops before installing production parts. Mount the
-mirrored guide liners along the modeled paths before installing any nearby
+mirrored ASA track segments along the modeled paths before installing any nearby
 electrical equipment or conduit. Their final position is the controlling
 clearance datum for the power-junction assembly, its 1 1/4-inch conduit, and
 all outgoing conduit runs; do not use those later assemblies to force or shift
-a guide. The guide liners' rear lower endpoint is at `y = 21`, `z = 3` inches;
-their front lower endpoint is at `y = 5 3/8`, `z = 16` inches; their top
-centerline is at `z = 44 1/8` inches; and both turns begin from a modeled
-2 5/8-inch centerline radius. This puts the guide 3/8 inch into the inner half
-of the 1 1/2-inch slat while preserving the approved curtain envelope.
+a guide. The track datums' rear lower endpoint is at `y = 21`, `z = 3` inches;
+their front lower endpoint is at `y = 5 1/2`, `z = 16` inches; their top
+centerline is at `z = 44 1/2` inches; and both turns begin from a modeled
+2 5/8-inch centerline radius. The slat center shares the running-groove datum;
+the wood is rendered at its actual 1/2-inch depth while the complete hardware
+assembly must remain inside the 1 1/2-inch clearance envelope.
 
 Load the completed curtain and cycle it fully using both the lowest pull slat
-and the recessed pull approximately 18 inches above it. Verify equal tracking,
+and the printed pull approximately 18 inches above it. Verify equal tracking,
 the approved operating force, clearance from every installed framing member,
 and at least 1/4-inch clearance from the installed top bracing using the
 approved curtain and pull-slat envelope. Mark all matched track parts, then
 remove the curtain, removable loading sections, and end stops. Protect the
-fixed liners from debris, finish, and damage during the remaining work. Before
+fixed tracks from debris, finish, and damage during the remaining work. Before
 proceeding, lock the fixed guide geometry, record its critical spacing, and use
 the installed guides and those measurements when checking every nearby box and
 conduit clearance.
@@ -350,6 +339,23 @@ New model objects:
 
 ```text
 enclosure_tambour_door
+```
+
+## 11. Verify the consolidated tambour top supports (`tambour-top-rails`)
+
+Verify that the inside faces and undersides of the two top side 4x4s provide
+continuous, level attachment surfaces for the printed tracks and removable
+ceiling retainers. Preserve the modeled rear and front bend clearances and
+confirm the support geometry against the prototype alignment gauges.
+
+After the tambour trial fit, trial-fit the removable ceiling panel against its
+independent retainers, then remove it until the services and tambour have passed
+their later clearance checks.
+
+New model objects:
+
+```text
+tambour_ceiling_panel
 ```
 
 ## 12. Add the street-light backing (`street-light-backing`)
@@ -384,7 +390,7 @@ ground-level reach shown by the model.
 
 Check the flexible cord for strain relief, minimum bend radius, storage
 clearance, tambour-door clearance, and absence of abrasion or pinch points.
-Cycle the tambour fully from both recessed pulls and confirm that neither the
+Cycle the tambour fully from both printed pulls and confirm that neither the
 door nor either pull contacts the charger, cord, or plug. Repeat these checks
 after making the power connection in Step 15 and after reloading the curtain in
 Step 23.
@@ -444,7 +450,7 @@ charger entry. Route the unspliced #6 charger group through this conduit
 according to the approved electrical design. Verify that the power path remains
 clear of the cord-storage volume. Check the flexible cord for strain relief,
 minimum bend radius, storage clearance, tambour-door clearance, and absence of
-abrasion or pinch points. Cycle the tambour fully from both recessed pulls and
+abrasion or pinch points. Cycle the tambour fully from both printed pulls and
 confirm that neither the door nor either pull contacts the completed power
 connection, charger, cord, or plug. Verify the installed product markings and
 locally required bend and fill calculations before construction. Repeat the
@@ -704,10 +710,10 @@ vertical trim pieces are modeled at 46 inches; the rear opening header is
 20 1/2 inches.
 
 Check the trim for plumb, straight edges, safe cut edges, and interference-free
-clearance around the tambour opening. Uncover and clean the fixed guide liners,
+clearance around the tambour opening. Uncover and clean the fixed ASA tracks,
 then recheck their spacing and joints in case the siding or trim moved them.
 Reload the curtain through the removable lower-rear sections and reinstall the
-end stops. Cycle the door fully from both recessed pulls and repeat the
+end stops. Cycle the door fully from both printed pulls and repeat the
 operating-force, tracking, endpoint-retention, and framing/trim clearance tests
 from [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md). Repeat the full-travel clearance
 check against every completed conduit and fixed cable route. Install the

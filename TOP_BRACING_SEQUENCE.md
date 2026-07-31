@@ -76,7 +76,7 @@ than under the former 2x4 diagonals. It makes early installation less likely
 to obstruct later tambour work.
 
 The side 4x4s occupy the former side-support footprint rather than crossing the
-clear curtain opening. Verify the production tracks, curtain, recessed pulls,
+clear curtain opening. Verify the production tracks, curtain, printed pulls,
 fasteners, and ceiling retainers against their actual inside faces.
 
 ## Temporary-bracing limitation

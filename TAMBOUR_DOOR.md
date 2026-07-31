@@ -20,64 +20,96 @@ the build record at the end of this guide.
 | --- | ---: | --- |
 | Distance between left and right track centerlines | 20 1/2 in | Verify against the built frame |
 | Rear lower track endpoint | `y = 21`, `z = 3` in | Fixed enclosure interface |
-| Front lower track endpoint | `y = 5 3/8`, `z = 16` in | Fixed enclosure interface |
-| Top track centerline | `z = 44 1/8` in | Fixed enclosure interface |
-| Track offset into slat | 3/8 in | Prototype-controlled |
+| Front lower track endpoint | `y = 5 1/2`, `z = 16` in | Fixed enclosure interface |
+| Top track centerline | `z = 44 1/2` in | Fixed enclosure interface |
+| Track offset into slat | 0 in; path is groove center | Fixed enclosure interface |
 | Bend centerline radius | 2 5/8 in | Prototype-controlled |
 | Curtain length | 44 in | Prototype-controlled |
-| Slat pitch | 1 in | Prototype-controlled |
-| Slat travel-direction width | 0.9 in | Prototype-controlled |
-| Slat face depth | 1 1/2 in modeled maximum envelope | Prototype-controlled |
+| Slat pitch | 25/32 in | Prototype-controlled |
+| Slat travel-direction height | 3/4 in | Prototype-controlled |
+| Wooden slat face depth | 1/2 in | Prototype-controlled |
+| Complete swept depth envelope | 1 1/2 in | Fixed clearance limit |
 | Rendered track diameter | 1/2 in | Visualization only |
-| Removable ceiling panel | 20 1/2 by 8 7/8 by 1/4 in | Fixed enclosure interface |
+| Removable ceiling panel | 20 1/2 by 8 3/4 by 1/4 in | Fixed enclosure interface |
 
-The model places 44 slats on the 44-inch curtain. It models the two tracks as
-round centerlines; it does not define a groove, liner cross-section, running
-clearance, fastener pattern, or loading opening. Derive those details from the
-prototype rather than treating the rendered cylinders as stock material.
+The model places 56 slats on the 44-inch curtain. The 1/32-inch difference
+between the 3/4-inch slat height and 25/32-inch attachment pitch is a setup
+allowance, not a promise of a permanently visible gap. The lower stop supports
+the closed curtain, adjacent slats may settle together, and the webbing can bow
+locally. The detailed model draws the channel and its mounting flange; printable
+track solids and test coupons are generated separately with build123d.
 
-The track is modeled 3/8 inch into the slat's inner half, where most of the
-slat mass will remain after an outer-face finger indentation or handle detail
-is selected. The slat center path therefore remains at `z = 44.5` on the top
-run even though the track centerline is at `z = 44.125`. This permits an
-approved curtain and pull-slat envelope up to 1 1/2 inches deep while retaining
-1/4 inch of clearance below the braces: `44.125 + 0.375 + 1.5 / 2 = 45.25`
-inches. No
-handle, fastener, backing reinforcement, or track fixing may project beyond
-that approved envelope in this region. A thinner production profile increases
-the clearance but does not permit the track centerline to be raised.
+The track datum and wooden slat center now share the running-groove centerline.
+The actual 1/2-inch slat is rendered at `z = 44.5` on the top run, while
+clearance checks retain the complete 1 1/2-inch swept envelope. The envelope
+retains 1/4 inch below the braces: `44.5 + 1.5 / 2 = 45.25` inches. No handle,
+screw head, webbing,
+reinforcement, or track fixing may extend beyond it.
 
 ## Provisional construction
 
 Use the following construction family for the prototypes:
 
-- Straight, dimensionally stable exterior hardwood for the slats. Reject
-  twisted, cupped, checked, or irregular stock.
-- An exterior-rated flexible backing and compatible flexible adhesive on the
-  concealed face. Confirm adhesion to both the wood and its chosen finish with
-  coupons before committing the full curtain.
-- UV-stable UHMW-PE for the low-friction guide liners, mechanically attached to
-  the lumber supports. Do not rely on adhesive alone to retain UHMW.
-- Corrosion-resistant mechanical fasteners located outside the running
-  surface. Use slotted holes, suitable washers, and end gaps so the polymer can
-  expand without buckling.
+- Dry, straight pressure-treated stock surfaced to 1/2 inch for the slats.
+  Reject twisted, cupped, checked, severely incised, or irregular stock. Use a
+  planer, purchased surfaced stock, or outsourced milling rather than resawing
+  a wide board on edge with only a table saw. Field-treat and seal cut faces.
+- At least three exterior-rated polyester webbing strips on the concealed face,
+  mechanically fastened to every slat without pre-tension. Keep fasteners clear
+  of the captured ends and handle screws.
+- ASA track segments with integral mounting flanges as the replaceable running
+  surface. Print the clearance coupons before production parts; a separate
+  UHMW liner is not part of the initial design.
+- Corrosion-resistant fasteners outside the running surface. Fix each track
+  segment at its center and use slotted outer holes so it can expand without
+  buckling.
 - Replaceable end stops and paired removable loading sections at the lower rear
   ends of the tracks. The curtain must remain removable after siding, trim, and
   electrical equipment are installed.
 
 Make both guide paths from the same full-size master template. Mark every
-liner, spacer, loading section, and end stop left/right and front/rear so that
-matched pieces return to their proven positions. Keep the running surfaces
-smooth and free of exposed screw heads, abrupt joints, adhesive squeeze-out,
+track segment, keyed collar, spacer, loading section, and end stop
+left/right and front/rear so that matched pieces return to their proven
+positions. Keep the running surfaces
+smooth and free of exposed screw heads, abrupt joints, plastic strings,
 and pockets that retain grit or water. Provide cleanout and drainage at both
 low endpoints.
 
 Commercial tambour instructions emphasize consistent, aligned tracks and
-keeping debris out of the slats. UHMW installation guidance also requires room
-for substantially greater thermal movement than the supporting wood. See the
+keeping debris out of the slats. Printed ASA also requires expansion gaps and
+independently aligned segments rather than a long rigid run. See the
 [Tambour Doors installation guidance](https://tambourdoors.eu/installation-guides/),
 [Tambortech installation instructions](https://www.tambortech.com.au/fileadmin/user_upload/downloads/2013_Tambour_Door_Install_Sheet.pdf),
-and [UHMW expansion guidance](https://www.dotmar.com.au/insights/educational/plastics-designing-for-thermal-expansion).
+and the printable-part instructions below.
+
+## Printable ASA parts
+
+Run `uv run python tools/generate_tambour_parts.py` to write the complete STEP,
+STL, and quantity manifests beneath `output/tambour/`. Use `--part NAME` while
+developing a coupon or replacement. Do not scale meshes in the slicer; change
+the Python configuration and regenerate them so track and collar clearances stay
+coordinated.
+
+The baseline assumes a 0.6 mm nozzle, 0.3 mm or finer layers, at least four
+perimeters, and an enclosed ASA-capable printer. Put each track's mounting
+flange on the build plate; both handed exports are already oriented this way.
+Use enough top and bottom layers and infill to make screw counterbores and the
+handle ribs solid in practice. Follow the filament manufacturer's temperature,
+drying, ventilation, and fume-control instructions. Do not anneal production
+parts unless identically treated coupons demonstrate that dimensional change
+does not consume the accepted running clearance.
+
+The fixed straight runs are divided into equal segments below 300 mm. The rear
+loading section replaces the lowest 100 mm of fixed track; it is not added to
+the path length. Keep the configured 0.6 mm expansion seam between track ends.
+At every joint, slide one external dovetail-collar shoe down each channel wall,
+then retain each shoe with a recessed M3 stainless screw in its heat-set insert.
+The shoes index both channel walls while leaving the running channel empty and
+allowing limited longitudinal thermal movement. Remove both screws and lift the
+shoes outward before lifting an individual segment. The collars align the
+tracks but do not replace the segment mounting screws. Print the two joint-test
+tracks first and inspect `joint_fit_preview.step` for the installed orientation.
+Keep the open drain notch in each lower stop unobstructed.
 
 ## Pull slats
 
@@ -86,20 +118,20 @@ Make two special pull slats as part of the curtain:
 1. The lowest slat is the normal opening pull. When the door is open, this slat
    travels onto the upper run and also serves as the closing pull.
 2. Place a second pull approximately 18 inches above the lower curtain edge.
-   At the modeled 1-inch pitch this is nominally the nineteenth slat when the
-   lowest slat is counted as the first. Set its final position from the actual
-   production pitch, not merely the nominal slat count.
+   At the modeled 25/32-inch pitch this is nominally the twenty-fourth slat when
+   the lowest slat is counted as the first. Set its final position from the
+   actual production pitch, not merely the nominal slat count.
 
 Rear elevation, door closed (not to scale):
 
 ```text
-                  top track centerline z = 44.125
+                  top track centerline z = 44.5
        left track  |==========================|  right track
                    |                          |
-                   |  upper recessed pull     |  about 18 in above lower edge
+                   |  upper printed lift ledge|  about 18 in above lower edge
                    |  <-------------------->  |
                    |                          |
-                   |  lowest recessed pull    |  normal opening pull
+                   |  lowest printed lift ledge| normal opening pull
                    |  <-------------------->  |
                    +--------------------------+  lower edge about z = 3
 ```
@@ -108,48 +140,49 @@ Side path and handle orientation (not to scale):
 
 ```text
  rear opening                                      enclosure front
- y = 21                                                 y = 5.375
+ y = 21                                                   y = 5.5
     |        top brace underside z = 45.5                    |
     |        ----------------------------------               |
     |        1/4-in minimum clearance                         |
-    |      / recessed pull rotates onto top run \             |
-    |     /======================================\ z = 44.125 |
+    |      / printed ledge rotates onto top run \              |
+    |     /======================================\ z = 44.5   |
     |     |                                      |            |
     |     |                                      |            |
  z = 3 --+                                      +-- z = 16
 
  Any proud handle reduces the required 1/4-in clearance.
- The recessed pull must remain inside the approved 1 1/2-in envelope.
+ The printed ledge must remain inside the approved 1 1/2-in envelope.
 ```
 
 The model includes a removable 1/4-inch exterior-plywood ceiling from
-`y = 8.75` to `y = 17.625` and `z = 43.25` to `z = 43.5`. It shields the
+`y = 8.875` to `y = 17.625` and `z = 43.25` to `z = 43.5`. It shields the
 overhead curtain from hands and the charger cord while retaining 1/4 inch
 below the maximum curtain envelope. Support it on independent removable
-retainers; do not fasten through a guide liner or obstruct track inspection.
+retainers; do not fasten through a printed track or obstruct track inspection.
 
-Machine a continuous recessed finger channel across most of the usable span of
-each pull slat. Stop the channel before the end regions engaged by the tracks.
-The channel should permit a centered one-hand grip or a wide two-hand grip; it
-must not require separate handles near the tracks.
+Attach one centered printed ASA lift ledge to each pull slat. The nominal ledge
+is 300 mm wide, no more than 5/8 inch proud of the wood face, and secured with
+multiple short corrosion-resistant wood screws in recessed counterbores. It
+must remain entirely on one slat and permit a centered one-hand grip or a wide
+two-hand grip.
 
 The approved pull profile must meet all of these conditions:
 
 - Nothing projects beyond the ordinary slat envelope in any direction.
-- The groove and its edges are smooth, radiused, drainable, and sealed on every
-  machined surface.
-- Enough wood remains behind the deepest part of the groove to keep the pull
-  slat straight under the proof load.
-- The backing connection at each pull slat is reinforced within the approved
-  curtain envelope. Force on the upper pull must not depend only on a narrow
-  adhesive line at that slat.
+- The printed grip and its edges are smooth, rounded, drainable, and free of
+  layer separation or sharp support scars.
+- Screw pilot holes retain enough wood to keep the 1/2-inch pull slat straight
+  under the proof load without penetrating the concealed face.
+- The webbing connection at each pull slat is reinforced within the approved
+  curtain envelope. Force on the upper pull must not depend only on one screw
+  or one webbing strip.
 - The grip cannot trap a finger against the next slat or either track while the
   curtain enters a bend.
 
-A surface-mounted bail, folding handle, knob, proud screw, or webbing loop is
-not acceptable: every slat-mounted feature travels through both bends and
-under the top bracing. Prototype the recessed profile before making the full
-curtain.
+A bail, folding handle, knob, proud screw, or webbing loop is not acceptable:
+every slat-mounted feature travels through both bends and under the top
+bracing. Prototype the printed ledge and complete fastener stack before making
+the full curtain.
 
 ## Prototype sequence
 
@@ -157,12 +190,12 @@ Do not fabricate the final curtain and tracks in one pass.
 
 ### 1. Material and pull coupons
 
-Mill several short slats at the modeled profile. Round the moving edges and
-make at least one candidate recessed pull. Apply the proposed finish and bond
-backing across the samples using the proposed surface preparation and
-adhesive. After cure, check flexibility, adhesion, drainage, grip comfort, and
-whether the pull remains straight under the 15-pound proof load described
-below.
+Mill several short 1/2- and 3/8-inch-deep slats at the modeled 3/4-inch height.
+Ease the moving edges, fasten actual webbing, and mount one printed handle.
+Apply the proposed field treatment and finish. Check articulation, screw
+holding, drainage, grip comfort, and whether the pull remains straight under
+the 15-pound proof load described below. Keep 1/2 inch as the production depth
+unless the thinner coupon passes every wind and durability test.
 
 ### 2. Full-size path template
 
@@ -173,11 +206,12 @@ use it for both mirrored track assemblies.
 
 ### 3. Short-curtain track test
 
-Machine one prototype liner and run a short backed group of ordinary and pull
-slats through both bends. Adjust slat edge radii, groove clearance, liner
-profile, bend radius, and backing thickness until the sample moves without
-pinching, chatter, or visible skew. Reproduce the accepted profile in a second
-mirrored liner.
+Print the 0.3, 0.5, and 0.7 mm-per-face clearance coupons, then one complete
+bend and its tangent stubs. Run a short webbing-linked group of ordinary and
+pull slats through it. Select the tightest conditioned coupon that runs freely,
+then adjust only slat edge easing and setup gap until the sample moves without
+pinching, chatter, or visible skew. Generate both track hands with that
+accepted clearance.
 
 ### 4. Full-width test frame
 
@@ -207,15 +241,16 @@ access.
 
 1. Measure the actual frame and compare it with the prototype test frame.
 2. Use the prototype alignment gauges to position both guide paths. Shim the
-   track backing as needed; do not pull a crooked liner straight with screws.
-3. Allow the specified UHMW expansion clearance and keep every fixing outside
-   the running surface.
-4. Load the completed curtain and cycle it fully. Confirm the recessed pulls
+   mounting flanges as needed; do not pull a crooked segment straight with
+   screws.
+3. Fix each ASA segment at its center, use its slotted outer holes, preserve
+   the accepted joint gaps, and keep every fixing outside the running surface.
+4. Load the completed curtain and cycle it fully. Confirm the printed pulls
    clear both bends and all installed framing, including at least 1/4 inch of
    clearance below the already installed top braces throughout their travel.
 5. Mark all matched parts, then remove the curtain, loading sections, and end
-   stops. Cover the fixed liners against dust, cuttings, paint, finish, and
-   adhesive during the remaining work.
+   stops. Cover the fixed tracks against dust, cuttings, paint, and finish
+   during the remaining work.
 6. After siding and trim, uncover and clean the tracks. Confirm that no
    fastener or trim movement changed their spacing.
 7. Reinstall the curtain, loading sections, and stops, then repeat the full
@@ -241,8 +276,8 @@ After snowfall:
 
 1. Clear snow away from the face of the curtain, both track edges, and the rear
    lower track endpoints.
-2. Free any ice bond without levering against a slat or guide liner.
-3. Use a wide or two-handed grip on the upper recessed pull and apply smooth,
+2. Free any ice bond without levering against a slat or printed track.
+3. Use a wide or two-handed grip on the upper printed pull and apply smooth,
    even force until the bottom pull is exposed.
 4. Transfer to the bottom pull for normal operation.
 5. Stop if the door racks, binds, or requires more than its normal operating
@@ -254,11 +289,14 @@ Approve the production design only after it passes all of the following on the
 full-width test frame and again in the enclosure:
 
 - Complete at least 100 full open-close cycles without binding, derailment,
-  backing separation, handle damage, or visible track wear.
+  webbing separation, handle damage, or visible track wear.
 - Measure no more than 5 pounds peak normal operating force anywhere in the
   travel, using the center and the left and right thirds of both pulls.
-- Apply a 15-pound static load to each recessed pull for one minute without
-  cracking, permanent deformation, or backing separation.
+- Apply a 15-pound static load to each printed pull for one minute without
+  cracking, permanent deformation, screw withdrawal, or webbing separation.
+- Apply approximately 4.7 pounds uniformly to a conditioned full-span slat and
+  screen the complete closed door and supports for the project's approximately
+  260-pound distributed ultimate wind load.
 - Confirm that center operation does not rack the curtain and that a deliberate
   modest left/right imbalance does not cause derailment.
 - Confirm that the curtain cannot run away, leave either endpoint, or create an
@@ -282,12 +320,12 @@ update the model and generated material outputs in a later change.
 | Slat species and moisture condition | |
 | Slat pitch, travel width, depth, and end clearance | |
 | Ordinary edge profile | |
-| Recessed pull profile and remaining wall thickness | |
+| Printed pull revision, projection, and screw pattern | |
 | Upper pull position from lower curtain edge | |
-| Backing and reinforcement | |
-| Adhesive and surface preparation | |
+| Webbing product, strip count, and screw pattern | |
+| Field treatment and surface preparation | |
 | Finish and maintenance interval | |
-| UHMW grade, liner profile, and expansion allowance | |
+| ASA product, clearance coupon, and expansion allowance | |
 | Fasteners and slot dimensions | |
 | Loading-section and end-stop details | |
 | Measured peak operating force | |

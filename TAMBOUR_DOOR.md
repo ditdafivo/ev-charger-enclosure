@@ -40,6 +40,9 @@ locally. The detailed model draws the channel and its mounting flange; printable
 track solids and test coupons are generated separately with build123d.
 
 The track datum and wooden slat center now share the running-groove centerline.
+In the X direction, that datum is also the lumber mounting face: the printed
+flange and channel project from it into the door opening rather than into the
+supporting lumber.
 The actual 1/2-inch slat is rendered at `z = 44.5` on the top run, while
 clearance checks retain the complete 1 1/2-inch swept envelope. The envelope
 retains 1/4 inch below the braces: `44.5 + 1.5 / 2 = 45.25` inches. No handle,

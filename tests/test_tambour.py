@@ -187,6 +187,14 @@ class TambourTests(unittest.TestCase):
         self.assertIn("module render_tambour_channel", scad)
         self.assertIn("module render_tambour_slat_details", scad)
         self.assertIn("function t_installed(t) = len(t) > 14 ? t[14] : [];", scad)
+        self.assertIn(
+            "v_add(center, v_scale(opening_dir, flange_thickness / 2))",
+            scad,
+        )
+        self.assertNotIn(
+            "v_add(center, v_scale(opening_dir, -flange_thickness / 2))",
+            scad,
+        )
 
     def test_track_samples_cover_facets_and_reject_invalid_subdivisions(self) -> None:
         resolved = sample_tambour().resolved()

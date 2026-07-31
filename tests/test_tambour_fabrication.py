@@ -32,6 +32,7 @@ class TambourFabricationTests(unittest.TestCase):
         self.assertAlmostEqual(config.slat_pitch, 19.84375)
         self.assertEqual(config.slat_count, 56)
         self.assertAlmostEqual(config.swept_envelope_depth, 38.1)
+        self.assertAlmostEqual(config.end_stop_insertion, 12.0)
         self.assertAlmostEqual(config.centerline_length / 25.4, 82.621681, places=5)
 
     def test_straight_runs_split_evenly_below_bed_limit(self) -> None:

@@ -25,6 +25,66 @@ DEFAULT_SLAT_COLOR: TambourColor = (0.67, 0.42, 0.20, 1.0)
 DEFAULT_BEND_SEGMENTS = 12
 
 
+@dataclass(frozen=True)
+class TambourInstalledDetails:
+    """Installed hardware dimensions used by the enclosure visualization.
+
+    All dimensions are inches.  A tambour without this record retains the
+    original lightweight centerline-track rendering.
+    """
+
+    channel_internal_width: float
+    channel_wall_thickness: float
+    mounting_flange_thickness: float
+    flange_extension: float
+    slat_end_engagement: float
+    segment_seams: tuple[float, ...] = ()
+    joint_gap: float = 0.0
+    loading_section_length: float = 0.0
+    end_stop_length: float = 0.0
+    webbing_count: int = 3
+    webbing_width: float = 1.0
+    webbing_thickness: float = 1 / 16
+    pull_slat_indices: tuple[int, ...] = (0, 23)
+    handle_width: float = 300 / 25.4
+    handle_height: float = (0.75 * 25.4 - 1) / 25.4
+    handle_projection: float = 0.625
+    webbing_color: TambourColor = (0.08, 0.08, 0.08, 1.0)
+    handle_color: TambourColor = (0.28, 0.30, 0.32, 1.0)
+
+    def __post_init__(self) -> None:
+        positive_fields = (
+            "channel_internal_width",
+            "channel_wall_thickness",
+            "mounting_flange_thickness",
+            "flange_extension",
+            "slat_end_engagement",
+            "webbing_width",
+            "webbing_thickness",
+            "handle_width",
+            "handle_height",
+            "handle_projection",
+        )
+        for field_name in positive_fields:
+            value = getattr(self, field_name)
+            if not math.isfinite(value) or value <= 0:
+                raise ValueError(f"{field_name} must be finite and positive")
+        if self.webbing_count < 1:
+            raise ValueError("webbing_count must be at least one")
+        if self.joint_gap < 0 or self.loading_section_length < 0:
+            raise ValueError("joint gap and loading-section length cannot be negative")
+        if self.end_stop_length < 0:
+            raise ValueError("end_stop_length cannot be negative")
+        if any(distance <= 0 for distance in self.segment_seams):
+            raise ValueError("segment seams must be positive path distances")
+        if tuple(sorted(set(self.segment_seams))) != self.segment_seams:
+            raise ValueError("segment seams must be sorted and unique")
+        if any(index < 0 for index in self.pull_slat_indices):
+            raise ValueError("pull slat indices cannot be negative")
+        if len(self.webbing_color) != 4 or len(self.handle_color) != 4:
+            raise ValueError("installed-detail colors must be RGBA 4-tuples")
+
+
 def _format_vector(values: Iterable[float]) -> str:
     return "[" + ", ".join(fmt_float(value) for value in values) + "]"
 
@@ -189,6 +249,7 @@ class TambourDoor:
     slat_depth: float = 0.75
     slat_track_offset: float = 0.0
     slat_envelope_depth: float | None = None
+    installed_details: TambourInstalledDetails | None = None
     door_length: float = 14.0
     track_color: TambourColor = DEFAULT_TRACK_COLOR
     slat_color: TambourColor = DEFAULT_SLAT_COLOR
@@ -299,6 +360,18 @@ class TambourDoor:
             raise ValueError(f"{self.name}: door_length exceeds the track length")
 
         slat_count = max(1, math.floor(self.door_length / self.slat_pitch))
+        if self.installed_details is not None:
+            details = self.installed_details
+            if details.segment_seams and details.segment_seams[-1] >= left_total:
+                raise ValueError(f"{self.name}: segment seam exceeds the track length")
+            if details.loading_section_length >= left_total:
+                raise ValueError(
+                    f"{self.name}: loading section exceeds the track length"
+                )
+            if details.handle_width > _v_length(_v_sub(right[0], left[0])):
+                raise ValueError(f"{self.name}: handle width exceeds the slat span")
+            if any(index >= slat_count for index in details.pull_slat_indices):
+                raise ValueError(f"{self.name}: pull slat index exceeds the curtain")
 
         def resolve_slats(
             distances: Iterable[float],
@@ -324,12 +397,37 @@ class TambourDoor:
                 )
             return tuple(slats)
 
+        def resolve_track_samples(
+            distances: Iterable[float],
+        ) -> tuple[ResolvedTambourSlat, ...]:
+            samples: list[ResolvedTambourSlat] = []
+            for distance in distances:
+                left_point, left_tangent = _sample_path(
+                    resolved_left, left_lengths, distance
+                )
+                right_point, right_tangent = _sample_path(
+                    resolved_right, right_lengths, distance
+                )
+                samples.append(
+                    (
+                        left_point,
+                        right_point,
+                        _v_unit(_v_add(left_tangent, right_tangent)),
+                    )
+                )
+            return tuple(samples)
+
         open_slats = resolve_slats(
             left_total - (index + 0.5) * self.slat_pitch
             for index in reversed(range(slat_count))
         )
         closed_slats = resolve_slats(
             (index + 0.5) * self.slat_pitch for index in range(slat_count)
+        )
+        installed_seams = (
+            resolve_track_samples(self.installed_details.segment_seams)
+            if self.installed_details is not None
+            else ()
         )
 
         return ResolvedTambourDoor(
@@ -343,6 +441,8 @@ class TambourDoor:
             slat_depth=self.slat_depth,
             slat_track_offset=self.slat_track_offset,
             slat_envelope_depth=envelope_depth,
+            installed_details=self.installed_details,
+            installed_seams=installed_seams,
             left_points=resolved_left,
             right_points=resolved_right,
             bends=tuple((bend.point_index, bend.radius) for bend in self.bends),
@@ -363,6 +463,8 @@ class ResolvedTambourDoor:
     slat_depth: float
     slat_track_offset: float
     slat_envelope_depth: float
+    installed_details: TambourInstalledDetails | None
+    installed_seams: tuple[ResolvedTambourSlat, ...]
     left_points: tuple[Vector3, ...]
     right_points: tuple[Vector3, ...]
     bends: tuple[ResolvedTambourBend, ...]
@@ -370,6 +472,35 @@ class ResolvedTambourDoor:
     closed_slats: tuple[ResolvedTambourSlat, ...]
 
     def scad_record(self) -> str:
+        details = self.installed_details
+        installed_record = (
+            "[]"
+            if details is None
+            else "["
+            + ", ".join(
+                (
+                    fmt_float(details.channel_internal_width),
+                    fmt_float(details.channel_wall_thickness),
+                    fmt_float(details.mounting_flange_thickness),
+                    fmt_float(details.flange_extension),
+                    fmt_float(details.slat_end_engagement),
+                    _format_slats(self.installed_seams),
+                    fmt_float(details.joint_gap),
+                    fmt_float(details.loading_section_length),
+                    fmt_float(details.end_stop_length),
+                    fmt_float(details.webbing_count),
+                    fmt_float(details.webbing_width),
+                    fmt_float(details.webbing_thickness),
+                    _format_vector(details.pull_slat_indices),
+                    fmt_float(details.handle_width),
+                    fmt_float(details.handle_height),
+                    fmt_float(details.handle_projection),
+                    _format_vector(details.webbing_color),
+                    _format_vector(details.handle_color),
+                )
+            )
+            + "]"
+        )
         return (
             "["
             f"{scad_string(self.name)}, "
@@ -385,7 +516,8 @@ class ResolvedTambourDoor:
             f"{_format_points(self.right_points)}, "
             f"{_format_bends(self.bends)}, "
             f"{_format_slats(self.slats)}, "
-            f"{_format_slats(self.closed_slats)}"
+            f"{_format_slats(self.closed_slats)}, "
+            f"{installed_record}"
             "]"
         )
 
@@ -427,6 +559,7 @@ class TambourCollection(Mapping[str, TambourDoor]):
         slat_depth: float = 0.75,
         slat_track_offset: float = 0.0,
         slat_envelope_depth: float | None = None,
+        installed_details: TambourInstalledDetails | None = None,
         door_length: float = 14.0,
         track_color: TambourColor = DEFAULT_TRACK_COLOR,
         slat_color: TambourColor = DEFAULT_SLAT_COLOR,
@@ -444,6 +577,7 @@ class TambourCollection(Mapping[str, TambourDoor]):
                 slat_depth=slat_depth,
                 slat_track_offset=slat_track_offset,
                 slat_envelope_depth=slat_envelope_depth,
+                installed_details=installed_details,
                 door_length=door_length,
                 track_color=track_color,
                 slat_color=slat_color,

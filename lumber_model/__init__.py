@@ -91,6 +91,7 @@ from lumber_model.tambour import (
     TambourBend,
     TambourCollection,
     TambourDoor,
+    TambourInstalledDetails,
 )
 from lumber_model.tambour_fabrication import (
     TambourFabricationConfig,
@@ -182,6 +183,7 @@ __all__ = [
     "TambourBend",
     "TambourCollection",
     "TambourDoor",
+    "TambourInstalledDetails",
     "TambourFabricationConfig",
     "TambourPart",
     "cable_centerline_length",

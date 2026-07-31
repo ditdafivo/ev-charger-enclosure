@@ -50,6 +50,8 @@ from lumber_model import (
     RightSidingOpening,
     TambourBend,
     TambourCollection,
+    TambourFabricationConfig,
+    TambourInstalledDetails,
     generate_tambour_fabrication,
     cubic_bezier_conduit_points,
     cubic_bezier_points,
@@ -57,6 +59,7 @@ from lumber_model import (
     ev_charger_cable_points,
     parse_build_steps,
     rounded_cable_points,
+    split_segment_lengths,
 )
 from lumber_model.gusset import (
     GUSSET_FASTENER_COUNT,
@@ -245,6 +248,8 @@ def build_enclosure(
     TAMBOUR_SLAT_HEIGHT=0.75
     TAMBOUR_SLAT_GAP=1/32
     TAMBOUR_SLAT_PITCH=TAMBOUR_SLAT_HEIGHT+TAMBOUR_SLAT_GAP
+    TAMBOUR_FABRICATION=TambourFabricationConfig()
+    MM_PER_INCH=25.4
     TAMBOUR_BRACE_CLEARANCE=0.25
     TAMBOUR_TOP_OFFSET=(
         HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_MAX_ENVELOPE_DEPTH/2
@@ -1276,6 +1281,76 @@ def build_enclosure(
     TAMBOUR_FRONT_BOTTOM_Z = 16
     TAMBOUR_BEND_RADIUS = 3-TAMBOUR_SLAT_TRACK_OFFSET
 
+    rear_fixed_length = (
+        TAMBOUR_FABRICATION.rear_vertical_length
+        - TAMBOUR_FABRICATION.bend_stub_length
+        - TAMBOUR_FABRICATION.loading_section_length
+    )
+    top_fixed_length = (
+        TAMBOUR_FABRICATION.top_tangent_length
+        - 2 * TAMBOUR_FABRICATION.bend_stub_length
+    )
+    front_fixed_length = (
+        TAMBOUR_FABRICATION.front_vertical_length
+        - TAMBOUR_FABRICATION.bend_stub_length
+    )
+    rear_segments = split_segment_lengths(
+        rear_fixed_length, TAMBOUR_FABRICATION.maximum_segment_length
+    )
+    top_segments = split_segment_lengths(
+        top_fixed_length, TAMBOUR_FABRICATION.maximum_segment_length
+    )
+    front_segments = split_segment_lengths(
+        front_fixed_length, TAMBOUR_FABRICATION.maximum_segment_length
+    )
+    quarter_arc = math.pi * TAMBOUR_FABRICATION.bend_radius / 2
+    segment_seams_mm: list[float] = [TAMBOUR_FABRICATION.loading_section_length]
+    cursor = TAMBOUR_FABRICATION.loading_section_length
+    for length in rear_segments:
+        cursor += length
+        segment_seams_mm.append(cursor)
+    cursor += 2 * TAMBOUR_FABRICATION.bend_stub_length + quarter_arc
+    segment_seams_mm.append(cursor)
+    for length in top_segments:
+        cursor += length
+        segment_seams_mm.append(cursor)
+    cursor += 2 * TAMBOUR_FABRICATION.bend_stub_length + quarter_arc
+    segment_seams_mm.append(cursor)
+    for length in front_segments[:-1]:
+        cursor += length
+        segment_seams_mm.append(cursor)
+    TAMBOUR_SEGMENT_SEAMS=tuple(
+        distance/MM_PER_INCH for distance in sorted(set(segment_seams_mm))
+    )
+    TAMBOUR_INSTALLED_DETAILS=TambourInstalledDetails(
+        channel_internal_width=(
+            TAMBOUR_FABRICATION.channel_internal_width/MM_PER_INCH
+        ),
+        channel_wall_thickness=(
+            TAMBOUR_FABRICATION.wall_thickness/MM_PER_INCH
+        ),
+        mounting_flange_thickness=(
+            TAMBOUR_FABRICATION.mounting_flange_thickness/MM_PER_INCH
+        ),
+        flange_extension=TAMBOUR_FABRICATION.flange_extension/MM_PER_INCH,
+        slat_end_engagement=(
+            TAMBOUR_FABRICATION.slat_end_engagement/MM_PER_INCH
+        ),
+        segment_seams=TAMBOUR_SEGMENT_SEAMS,
+        joint_gap=TAMBOUR_FABRICATION.joint_expansion_gap/MM_PER_INCH,
+        loading_section_length=(
+            TAMBOUR_FABRICATION.loading_section_length/MM_PER_INCH
+        ),
+        end_stop_length=TAMBOUR_FABRICATION.end_stop_insertion/MM_PER_INCH,
+        webbing_count=3,
+        webbing_width=1.0,
+        webbing_thickness=1/16,
+        pull_slat_indices=(0, 23),
+        handle_width=TAMBOUR_FABRICATION.handle_width/MM_PER_INCH,
+        handle_height=TAMBOUR_FABRICATION.handle_height/MM_PER_INCH,
+        handle_projection=TAMBOUR_FABRICATION.handle_projection/MM_PER_INCH,
+    )
+
     tambours.add(
         "enclosure_tambour_door",
         assembly="tambour_door",
@@ -1332,8 +1407,8 @@ def build_enclosure(
             ),
         ),
         bends=(
-            TambourBend(point_index=1, radius=TAMBOUR_BEND_RADIUS),
-            TambourBend(point_index=2, radius=TAMBOUR_BEND_RADIUS),
+            TambourBend(point_index=1, radius=TAMBOUR_BEND_RADIUS, segments=48),
+            TambourBend(point_index=2, radius=TAMBOUR_BEND_RADIUS, segments=48),
         ),
         door_length=44,
         slat_pitch=TAMBOUR_SLAT_PITCH,
@@ -1341,6 +1416,7 @@ def build_enclosure(
         slat_depth=TAMBOUR_SLAT_DEPTH,
         slat_track_offset=TAMBOUR_SLAT_TRACK_OFFSET,
         slat_envelope_depth=TAMBOUR_MAX_ENVELOPE_DEPTH,
+        installed_details=TAMBOUR_INSTALLED_DETAILS,
         slat_color=TAMBOUR_DOOR_COLOR,
     )
 

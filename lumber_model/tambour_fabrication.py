@@ -56,6 +56,7 @@ class TambourFabricationConfig:
     maximum_segment_length: float = 300.0
     bend_stub_length: float = 20.0
     loading_section_length: float = 100.0
+    end_stop_insertion: float = 12.0
     running_clearance: float = 0.5
     nozzle_width: float = 0.6
     wall_thickness: float = 2.4
@@ -93,6 +94,7 @@ class TambourFabricationConfig:
             "maximum_segment_length",
             "bend_stub_length",
             "loading_section_length",
+            "end_stop_insertion",
             "running_clearance",
             "nozzle_width",
             "wall_thickness",
@@ -510,7 +512,7 @@ def make_joint_preview(config: TambourFabricationConfig) -> Compound:
 
 def make_end_stop(config: TambourFabricationConfig) -> Part:
     internal = config.channel_internal_width
-    insertion = 12.0
+    insertion = config.end_stop_insertion
     result = Box(
         internal - 0.4,
         insertion,

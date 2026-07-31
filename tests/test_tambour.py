@@ -8,6 +8,7 @@ from lumber_model import (
     Model,
     TambourBend,
     TambourDoor,
+    TambourInstalledDetails,
 )
 
 
@@ -157,6 +158,35 @@ class TambourTests(unittest.TestCase):
         self.assertIn(
             "function t_slats(t, is_open) = is_open ? t[12] : t[13];", scad
         )
+
+    def test_installed_details_are_resolved_and_rendered(self) -> None:
+        door = sample_tambour()
+        detailed = TambourDoor(
+            **{
+                **door.__dict__,
+                "installed_details": TambourInstalledDetails(
+                    channel_internal_width=0.54,
+                    channel_wall_thickness=0.095,
+                    mounting_flange_thickness=0.19,
+                    flange_extension=0.39,
+                    slat_end_engagement=0.47,
+                    segment_seams=(2.0, 8.0),
+                    joint_gap=0.024,
+                    loading_section_length=2.0,
+                    end_stop_length=0.5,
+                    pull_slat_indices=(0, 2),
+                    handle_width=4.0,
+                ),
+            }
+        )
+        resolved = detailed.resolved()
+
+        self.assertEqual(len(resolved.installed_seams), 2)
+        self.assertEqual(resolved.installed_seams[0][0], (0.0, 10.0, 2.0))
+        scad = Model([], tambours=[detailed]).to_scad()
+        self.assertIn("module render_tambour_channel", scad)
+        self.assertIn("module render_tambour_slat_details", scad)
+        self.assertIn("function t_installed(t) = len(t) > 14 ? t[14] : [];", scad)
 
 
 if __name__ == "__main__":

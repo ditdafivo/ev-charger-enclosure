@@ -214,6 +214,8 @@ New model objects:
 ```text
 rail_lb
 rail_rb
+rail_ltam
+rail_rtam
 ```
 
 ## 5. Add the lower front cross rail (`lower-front-rail`)
@@ -244,6 +246,8 @@ New model objects:
 
 ```text
 rail_rbu
+rail_lt
+rail_rt
 ```
 
 ## 7. Add the upper front cross rail (`upper-front-rail`)
@@ -261,8 +265,6 @@ New model objects:
 
 ```text
 rail_ft
-rail_ft_left_support
-rail_ft_right_support
 ```
 
 ## 8. Add the main vertical rails (`main-vertical-rails`)
@@ -278,7 +280,6 @@ New model objects:
 
 ```text
 front_center_rail
-right_center_rail
 ```
 
 ## 9. Add the tambour vertical supports (`tambour-vertical-rails`)
@@ -298,10 +299,7 @@ centerline at y = 5 1/2 inches.
 New model objects:
 
 ```text
-left_tambour_rail
-right_tambour_rail
-left_tambour_bend_backer
-right_tambour_bend_backer
+right_center_rail
 ```
 
 ## 10. Install and set the tracks; trial-fit the tambour (`tambour-door`)

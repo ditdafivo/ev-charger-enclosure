@@ -285,8 +285,12 @@ def build_enclosure(
     for name,support_a,support_b,position,cross_offset,position_axis, rotated in [
         ("rail_rb","post_fr","post_br", 7, 0, None, True),
         ("rail_lb","post_fl","post_bl", 7, 0, None, True),
+        ("rail_ltam","brace_fl_bl","rail_lb", 1.75, -6.75, None, True),
+        ("rail_rtam","brace_fr_br","rail_rb", 25.75, -6.75, None, True),
         ("rail_fb","rail_lb","rail_rb", 7, CENTER_RAIL_OFFSET, None, True),
-        ("rail_rbu","post_fr","post_br", 13, 0, None, True),
+        ("rail_rbu","rail_rtam","post_br", 13, 0, None, True),
+        ("rail_lt","rail_ltam","post_bl", 41.625, 0, None, True),
+        ("rail_rt","rail_rtam","post_br", 41.625, 0, None, True),
         (
             "rail_ft",
             "brace_fr_br",
@@ -297,25 +301,25 @@ def build_enclosure(
             True,
         ),
         ("front_center_rail","rail_fb","rail_ft",(WIDTH_4x4+FRAME_DIMS.x)/2, 0, None, False),
-        ("right_center_rail","rail_rbu","brace_fr_br",(WIDTH_4x4+FRAME_DIMS.y)/2, 0, "y", True),
-        (
-            "right_tambour_rail",
-            "rail_rbu",
-            "brace_fr_br",
-            TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
-            0,
-            "y",
-            True,
-        ),
-        (
-            "left_tambour_rail",
-            "rail_lb",
-            "brace_fl_bl",
-            TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
-            0,
-            "y",
-            True,
-        ),
+        ("right_center_rail","rail_rbu","rail_rt",(WIDTH_4x4+FRAME_DIMS.y)/2, 0, "y", True),
+#        (
+#            "right_tambour_rail",
+#            "rail_rbu",
+#            "brace_fr_br",
+#            TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
+#            0,
+#            "y",
+#            True,
+#        ),
+#        (
+#            "left_tambour_rail",
+#            "rail_lb",
+#            "brace_fl_bl",
+#            TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
+#            0,
+#            "y",
+#            True,
+#        ),
     ]:
         members.between(
             name,
@@ -329,49 +333,49 @@ def build_enclosure(
             rotated=rotated,
         )
 
-    # Short blocks fill the inside corner between each vertical tambour rail
-    # and side brace.  Without them the swept flange at the front bend hangs
-    # over the concave corner even though both tangent runs are supported.
-    TAMBOUR_FRONT_BEND_BACKER_LENGTH=1.5
-    for name,rail_name in (
-        ("left_tambour_bend_backer", "left_tambour_rail"),
-        ("right_tambour_bend_backer", "right_tambour_rail"),
-    ):
-        rail=members[rail_name]
-        members.add(
-            name,
-            assembly="frame",
-            type="2x4",
-            axis="y",
-            start=AbsoluteCoord(
-                rail.min_on("x"),
-                rail.max_on("y"),
-                rail.max_on("z")-HEIGHT_2x4,
-            ),
-            length=TAMBOUR_FRONT_BEND_BACKER_LENGTH,
-        )
+#    # Short blocks fill the inside corner between each vertical tambour rail
+#    # and side brace.  Without them the swept flange at the front bend hangs
+#    # over the concave corner even though both tangent runs are supported.
+#    TAMBOUR_FRONT_BEND_BACKER_LENGTH=1.5
+#    for name,rail_name in (
+#        ("left_tambour_bend_backer", "rail_ltam"),
+#        ("right_tambour_bend_backer", "rail_rtam"),
+#    ):
+#        rail=members[rail_name]
+#        members.add(
+#            name,
+#            assembly="frame",
+#            type="2x4",
+#            axis="y",
+#            start=AbsoluteCoord(
+#                rail.min_on("x"),
+#                rail.max_on("y"),
+#                rail.max_on("z")-HEIGHT_2x4,
+#            ),
+#            length=TAMBOUR_FRONT_BEND_BACKER_LENGTH,
+#        )
 
     TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z=members["brace_fl_bl"].min_on("z")
     TAMBOUR_FRONT_HEADER_SUPPORT_LENGTH=(
         TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z-members["rail_ft"].min_on("z")
     )
-    for name,x in (
-        ("rail_ft_left_support", members["rail_ft"].min_on("x")-HEIGHT_2x4),
-        ("rail_ft_right_support", members["rail_ft"].max_on("x")),
-    ):
-        members.add(
-            name,
-            assembly="frame",
-            type="2x4",
-            axis="z",
-            start=AbsoluteCoord(
-                x,
-                members["rail_ft"].min_on("y"),
-                members["rail_ft"].min_on("z"),
-            ),
-            length=TAMBOUR_FRONT_HEADER_SUPPORT_LENGTH,
-            rotated=False,
-        )
+#    for name,x in (
+#        ("rail_ft_left_support", members["rail_ft"].min_on("x")-HEIGHT_2x4),
+#        ("rail_ft_right_support", members["rail_ft"].max_on("x")),
+#    ):
+#        members.add(
+#            name,
+#            assembly="frame",
+#            type="2x4",
+#            axis="z",
+#            start=AbsoluteCoord(
+#                x,
+#                members["rail_ft"].min_on("y"),
+#                members["rail_ft"].min_on("z"),
+#            ),
+#            length=TAMBOUR_FRONT_HEADER_SUPPORT_LENGTH,
+#            rotated=False,
+#        )
 
     BACK_RIGHT_OUTLET_REAR_OFFSET=1.5
     BACK_RIGHT_OUTLET_CENTER_Y=(

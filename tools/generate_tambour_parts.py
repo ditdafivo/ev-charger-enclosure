@@ -6,6 +6,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from build import default_build
 from lumber_model.tambour_fabrication import generate_tambour_fabrication
 
 
@@ -27,7 +28,11 @@ def main() -> None:
         help="generate one named part instead of the complete fabrication set",
     )
     args = parser.parse_args()
-    paths = generate_tambour_fabrication(args.output_dir, part_name=args.part)
+    paths = generate_tambour_fabrication(
+        args.output_dir,
+        config=default_build.TAMBOUR_FABRICATION,
+        part_name=args.part,
+    )
     for path in paths:
         print(path)
 

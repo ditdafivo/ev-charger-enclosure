@@ -14,11 +14,12 @@ have been inspected.
 
 ## Consolidated geometry
 
-The left and right top perimeter members are now 4x4s spanning `z = 43.50` to
-`47.00`. Their inside faces and undersides replace `rail_l_tambour`,
-`rail_r_tambour`, `rail_lt`, and `rail_rt`. The removable ceiling remains at
-`z = 43.25` to `43.50`, directly against the 4x4 undersides, while the curtain
-and guides remain inside the clear opening.
+The left and right top perimeter members are 4x4s spanning `z = 43.50` to
+`47.00`. Their inside faces and undersides replace the former top track rails,
+while `rail_lt` and `rail_rt` remain below them as the side receivers for the
+lowered front header. The removable ceiling remains at `z = 43.25` to `43.50`,
+directly against the 4x4 undersides, while the curtain and guides remain inside
+the clear opening.
 
 The full-section diagonal remains at `z = 46.25` to `47.00`. The two involved
 posts stop at its underside, and only the four intersected side braces are

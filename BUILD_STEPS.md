@@ -214,8 +214,6 @@ New model objects:
 ```text
 rail_lb
 rail_rb
-rail_ltam
-rail_rtam
 ```
 
 ## 5. Add the lower front cross rail (`lower-front-rail`)
@@ -225,7 +223,7 @@ front face is offset toward the enclosure interior to support the front center
 rail and the power-junction assembly.
 
 Check that it is level, square to the side rails, and correctly oriented before
-adding the vertical member in Step 8.
+adding the vertical member in Step 9.
 
 New model objects:
 
@@ -233,14 +231,44 @@ New model objects:
 rail_fb
 ```
 
-## 6. Add the upper side rails (`upper-side-rails`)
+## 6. Add the front tambour supports (`tambour-vertical-rails`)
 
-Install the right intermediate receiver rail. Keep its modeled wide face horizontal.
+Install `rail_ltam` and `rail_rtam` vertically between the lower side rails and
+the undersides of the top side 4x4s. Their modeled Y range is 4 1/4 to
+5 3/4 inches, centered on the `y = 5` track datum. Use the full-size track
+template to keep the two mounting faces parallel and directly opposite one
+another.
 
-Check `rail_rbu` at its
-modeled lower-face elevation of 11 1/4 inches; it receives the right-side
-vertical rails in Step 8 and Step 9. Reconfirm post plumbness and the frame
-diagonals as these rails are fastened.
+At the top of each vertical rail, install its 1 1/2-inch bend-backer block
+toward the rear. Each block occupies `y = 5 3/4` to `7 1/4` inches and
+`z = 42` to `43 1/2` inches. These blocks fill the concave backing gap beneath
+the top 4x4s; do not omit them or place track fasteners across an unsupported
+joint.
+
+Check both vertical rails for plumb, verify the modeled 20 1/2-inch spacing
+between the left and right track mounting faces, and keep the backer faces flush
+with their rails and the undersides of the top side braces.
+
+New model objects:
+
+```text
+rail_ltam
+rail_rtam
+left_tambour_bend_backer
+right_tambour_bend_backer
+```
+
+## 7. Add the side receiver rails (`upper-side-rails`)
+
+Install `rail_rbu` from `rail_rtam` to the back-right post with its lower face
+at `z = 12 1/4` inches. Install `rail_lt` and `rail_rt` from the corresponding
+front tambour support to the back post; their modeled lower and upper faces are
+at `z = 40 7/8` and `42 3/8` inches. Keep all three wide faces horizontal.
+
+Check the receiver rails for level and confirm that the two upper rails remain
+opposite one another. Their front ends depend on the plumb tambour supports
+installed in Step 6, and their aligned inside faces receive `rail_ft` in
+Step 8.
 
 New model objects:
 
@@ -250,14 +278,14 @@ rail_lt
 rail_rt
 ```
 
-## 7. Add the upper front cross rail (`upper-front-rail`)
+## 8. Add the upper front cross rail (`upper-front-rail`)
 
-Install the 20 1/2-inch 2x4 `rail_ft` with its lower and upper faces at
-z = 41 and 42 1/2 inches. Install the two 1 3/4-inch vertical 2x4 support
-blocks between its ends and the undersides of the top side 4x4s.
+Install the 20 1/2-inch 2x4 `rail_ft` between `rail_lt` and `rail_rt`, with its
+lower and upper faces at `z = 40 7/8` and `42 3/8` inches. Its modeled Y range
+is `6 3/16` to `9 11/16` inches. Fasten its complete end faces to the side
+rails; the former separate vertical header-support blocks are not used.
 
-Check the header for level and square, obtain full bearing from the support
-blocks, and verify that the assembly is positioned to receive
+Check the header for level and square and verify its position before adding
 `front_center_rail`. Use connections designed for the charger dead load and
 the repeated lateral and torsional loads produced while handling its cord.
 
@@ -267,10 +295,10 @@ New model objects:
 rail_ft
 ```
 
-## 8. Add the main vertical rails (`main-vertical-rails`)
+## 9. Add the main vertical rails (`main-vertical-rails`)
 
-Install `front_center_rail` between the lower and upper front cross rails.
-Install `right_center_rail` between `rail_rbu` and the right top side 4x4.
+Install `front_center_rail` between `rail_fb` and `rail_ft`. Install
+`right_center_rail` between `rail_rbu` and `rail_rt`.
 
 Check both rails for plumb. Their face orientation matters: the front center
 rail supports the power junction box and EV charger, while the right center
@@ -280,25 +308,6 @@ New model objects:
 
 ```text
 front_center_rail
-```
-
-## 9. Add the tambour vertical supports (`tambour-vertical-rails`)
-
-Install `left_tambour_rail` between `rail_lb` and the left top side 4x4 and
-`right_tambour_rail` between `rail_rbu` and the right top side 4x4. Add the
-short matching bend-backer block immediately behind the top of each rail to
-support the full printed flange through the front curve.
-
-These lumber members support the custom ASA tracks; they are not themselves
-the finished tracks. Check both for plumb and verify their inside spacing and
-front-to-back position against the full-size track template in
-[`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) before fixing them permanently.
-Their modeled Y range is 4 3/4 to 6 1/4 inches, supporting the guide
-centerline at y = 5 1/2 inches.
-
-New model objects:
-
-```text
 right_center_rail
 ```
 
@@ -313,8 +322,8 @@ electrical equipment or conduit. Their final position is the controlling
 clearance datum for the power-junction assembly, its 1 1/4-inch conduit, and
 all outgoing conduit runs; do not use those later assemblies to force or shift
 a guide. The track datums' rear lower endpoint is at `y = 21`, `z = 3` inches;
-their front lower endpoint is at `y = 5 1/2`, `z = 16` inches; their top
-centerline is at `z = 44 1/2` inches; and both turns begin from a modeled
+their front lower endpoint is at `y = 5`, `z = 16` inches; their top
+centerline is at `z = 44 3/8` inches; and both turns begin from a modeled
 2 5/8-inch centerline radius. The slat center shares the running-groove datum;
 the wood is rendered at its actual 1/2-inch depth while the complete hardware
 assembly must remain inside the 1 1/2-inch clearance envelope.

@@ -23,29 +23,32 @@ overhead curtain from hands and the cord.
 | Perimeter top braces | 0.25-inch clearance |
 | Shallow top diagonal | Approximately 1-inch clearance |
 | Lowered `rail_ft` and front bend | At least 0.25-inch modeled clearance |
-| Front street-light backers | 0.45-inch planar clearance |
+| Front street-light backers | 0.325-inch planar clearance |
 | Charger-riser feed | Clears below or behind the front curtain |
 | Plywood ceiling | 0.25 inch below the horizontal curtain envelope |
 | Rear trim and lateral slat ends | Prototype-controlled guide detail |
 
 ### Front guide and street-light backers
 
-The slat and guide share the groove centerline at `y = 5.5`. The outward
-handle envelope reaches forward to `y = 4.625`; the backers end at `y = 3.80`:
+The slat and guide share the groove centerline at `y = 5.0`. The minimum safe
+datum from the fixed street-light backers is `y = 4.925`; it is rounded
+rearward to the next 1/8 inch for construction. The outward handle envelope
+therefore reaches forward to `y = 4.125`, while the backers end at `y = 3.80`:
 
 ```text
-4.625 - 3.80 = 0.825 inch
+4.125 - 3.80 = 0.325 inch
 ```
 
-The left and right vertical support rails moved with the guide and now occupy
-`y = 4.75` to `y = 6.25`.
+The left and right vertical support rails move with the guide and occupy
+`y = 4.25` to `y = 5.75`. Short backers continue rearward to `y = 7.25` at
+the bend so the complete printed flange remains supported through the turn.
 
 ### Structural front header
 
 `rail_ft` remains a 2x4 but moved down to `z = 40.875` through `z = 42.375`.
-The front center rail bears against its underside. Two short vertical 2x4
-blocks provide full-depth attachment faces at the header ends and bear against
-the undersides of the upper side rails.
+The front center rail bears against its underside. The header spans directly
+between `rail_lt` and `rail_rt`, which provide its full-depth end attachment
+faces; the former vertical header-support blocks are not used.
 
 The regression follows the resolved piecewise track and checks both the full
 7/8-inch outward handle envelope and the full 5/16-inch inward slat/hardware
@@ -76,7 +79,7 @@ The modeled exterior-plywood panel occupies:
 
 ```text
 x = 3.5 to 24.0 inches
-y = 8.875 to 17.625 inches
+y = 8.375 to 17.625 inches
 z = 43.25 to 43.50 inches
 ```
 
@@ -102,7 +105,7 @@ full-width test frame.
 ## Acceptance requirements
 
 1. Build the guide paths from one full-size template using the modeled
-   front `y = 5.5`, top `z = 44.375`, rear `y = 21.0`, and 2 5/8-inch-radius
+   front `y = 5.0`, top `z = 44.375`, rear `y = 21.0`, and 2 5/8-inch-radius
    track datums.
 2. Verify the header load path and connections for the charger and holster's
    dead and dynamic loads.

@@ -20,8 +20,11 @@ the build record at the end of this guide.
 | --- | ---: | --- |
 | Distance between left and right track centerlines | 20 1/2 in | Verify against the built frame |
 | Rear lower track endpoint | `y = 21`, `z = 3` in | Fixed enclosure interface |
-| Front lower track endpoint | `y = 5 1/2`, `z = 16` in | Fixed enclosure interface |
+| Front lower track endpoint | `y = 5`, `z = 16` in | Fixed enclosure interface |
 | Top track centerline | `z = 44 3/8` in | Fixed enclosure interface |
+| Rear straight run | 38 3/4 in | Derived from installed datums |
+| Top straight run | 10 3/4 in | Derived from installed datums |
+| Front straight run | 25 3/4 in | Derived from installed datums |
 | Track offset into slat | 0 in; path is groove center | Fixed enclosure interface |
 | Bend centerline radius | 2 5/8 in | Prototype-controlled |
 | Curtain length | 44 in | Prototype-controlled |
@@ -30,7 +33,7 @@ the build record at the end of this guide.
 | Wooden slat face depth | 1/2 in | Prototype-controlled |
 | Complete swept depth envelope | 1 1/2 in | Fixed clearance limit |
 | Rendered track diameter | 1/2 in | Visualization only |
-| Removable ceiling panel | 20 1/2 by 8 3/4 by 1/4 in | Fixed enclosure interface |
+| Removable ceiling panel | 20 1/2 by 9 1/4 by 1/4 in | Fixed enclosure interface |
 
 The model places 56 slats on the 44-inch curtain. The 1/32-inch difference
 between the 3/4-inch slat height and 25/32-inch attachment pitch is a setup
@@ -147,7 +150,7 @@ Side path and handle orientation (not to scale):
 
 ```text
  rear opening                                      enclosure front
- y = 21                                                   y = 5.5
+ y = 21                                                     y = 5
     |        top brace underside z = 45.5                    |
     |        ----------------------------------               |
     |        1/4-in minimum clearance                         |
@@ -162,7 +165,7 @@ Side path and handle orientation (not to scale):
 ```
 
 The model includes a removable 1/4-inch exterior-plywood ceiling from
-`y = 8.875` to `y = 17.625` and `z = 43.25` to `z = 43.5`. It shields the
+`y = 8.375` to `y = 17.625` and `z = 43.25` to `z = 43.5`. It shields the
 overhead curtain from hands and the charger cord while retaining 1/4 inch
 below the maximum curtain envelope. Support it on independent removable
 retainers; do not fasten through a printed track or obstruct track inspection.
@@ -249,9 +252,9 @@ this design.
 
 ## Enclosure installation
 
-Install the approved tracks after the four tambour-supporting lumber members
-are fixed and before electrical backing, conduit, siding, or trim restricts
-access.
+Install the approved tracks after both vertical supports, both bend backers,
+and the top side 4x4s are fixed and before electrical backing, conduit, siding,
+or trim restricts access.
 
 1. Measure the actual frame and compare it with the prototype test frame.
 2. Use the prototype alignment gauges to position both guide paths. Shim the

@@ -152,12 +152,36 @@ class TambourTests(unittest.TestCase):
         self.assertIn("tambour_door_open = true;", scad)
         self.assertIn('"door", "tambour"', scad)
         self.assertIn(
-            "module render_tambour(t, is_open, highlighted = false)",
+            "module render_tambour_track_component(t, highlighted = false)",
+            scad,
+        )
+        self.assertIn(
+            "module render_tambour_door_component(t, is_open, highlighted = false)",
             scad,
         )
         self.assertIn(
             "function t_slats(t, is_open) = is_open ? t[12] : t[13];", scad
         )
+
+    def test_track_and_door_can_have_separate_names_and_assemblies(self) -> None:
+        door = TambourDoor(
+            **{
+                **sample_tambour().__dict__,
+                "track_name": "track",
+                "track_assembly": "track_parts",
+                "assembly": "door_parts",
+            }
+        )
+        model = Model([], tambours=[door])
+        resolved = door.resolved()
+        scad = model.to_scad()
+
+        self.assertEqual(resolved.renderable_object_names(), ("track", "door"))
+        self.assertEqual(model.renderable_object_names(), ["track", "door"])
+        self.assertIn("tambour_track_parts = true;", scad)
+        self.assertIn("tambour_door_parts = true;", scad)
+        self.assertIn('function t_track_name(t) = len(t) > 15', scad)
+        self.assertIn('function t_track_assembly(t) = len(t) > 16', scad)
 
     def test_installed_details_are_resolved_and_rendered(self) -> None:
         door = sample_tambour()

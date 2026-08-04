@@ -33,13 +33,13 @@ by a qualified installer.
   permanent context and is not assigned to a step.
 - Temporary operations such as removing and protecting the tambour curtain
   after its trial fit are not separate model objects. From its introduction in
-  Step 10, the visualization shows the completed tambour in its nominal open
-  position.
+  Step 12, the visualization shows the completed tambour door in its nominal
+  open position.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
-  - `build_step = 1..25`: show earlier objects normally, highlight objects from
+  - `build_step = 1..27`: show earlier objects normally, highlight objects from
     the selected step, and hide objects from later steps.
-  - `build_step = 26`: show the completed model in its normal colors.
+  - `build_step = 28`: show the completed model in its normal colors.
 - An invalid positive step number should fail clearly during generation rather
   than silently display an incomplete or misleading model.
 
@@ -239,23 +239,15 @@ the undersides of the top side 4x4s. Their modeled Y range is 4 1/4 to
 template to keep the two mounting faces parallel and directly opposite one
 another.
 
-At the top of each vertical rail, install its 1 1/2-inch bend-backer block
-toward the rear. Each block occupies `y = 5 3/4` to `7 1/4` inches and
-`z = 42` to `43 1/2` inches. These blocks fill the concave backing gap beneath
-the top 4x4s; do not omit them or place track fasteners across an unsupported
-joint.
-
 Check both vertical rails for plumb, verify the modeled 20 1/2-inch spacing
-between the left and right track mounting faces, and keep the backer faces flush
-with their rails and the undersides of the top side braces.
+between the left and right track mounting faces, and preserve access for the
+plywood bend backers installed in Step 10.
 
 New model objects:
 
 ```text
 rail_ltam
 rail_rtam
-left_tambour_bend_backer
-right_tambour_bend_backer
 ```
 
 ## 7. Add the side receiver rails (`upper-side-rails`)
@@ -311,7 +303,26 @@ front_center_rail
 right_center_rail
 ```
 
-## 10. Install and set the tracks; trial-fit the tambour (`tambour-door`)
+## 10. Add the plywood tambour bend backers (`tambour-bend-backers`)
+
+Fit a 3/4-inch plywood backer behind the top of each vertical tambour rail.
+Each piece occupies `y = 5 3/4` to `7 1/4` inches and `z = 42 3/8` to
+`43 1/2` inches. The left piece occupies `x = 2 3/4` to `3 1/2` inches; the
+right piece occupies `x = 24` to `24 3/4` inches. This placement fills the
+concave track-backing gap without overlapping `rail_lt` or `rail_rt`.
+
+Keep each plywood face flush with the track mounting plane and the underside of
+the corresponding top 4x4. Verify the complete front bend footprint against
+the full-size track template before fastening either piece.
+
+New model objects:
+
+```text
+left_tambour_bend_backer
+right_tambour_bend_backer
+```
+
+## 11. Install and set the tambour tracks (`tambour-track`)
 
 Follow [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md) to complete the full-size prototype
 and approve the 1/2-by-3/4-inch slat profile, printed pulls, mechanical webbing,
@@ -328,16 +339,26 @@ centerline is at `z = 44 3/8` inches; and both turns begin from a modeled
 the wood is rendered at its actual 1/2-inch depth while the complete hardware
 assembly must remain inside the 1 1/2-inch clearance envelope.
 
+Protect the fixed tracks from debris, finish, and damage during the remaining
+work. Before proceeding, lock the fixed guide geometry, record its critical
+spacing, and use the installed guides and those measurements when checking
+every nearby box and conduit clearance.
+
+New model objects:
+
+```text
+enclosure_tambour_track
+```
+
+## 12. Load and trial-fit the tambour door (`tambour-door`)
+
 Load the completed curtain and cycle it fully using both the lowest pull slat
 and the printed pull approximately 18 inches above it. Verify equal tracking,
 the approved operating force, clearance from every installed framing member,
 and at least 1/4-inch clearance from the installed top bracing using the
 approved curtain and pull-slat envelope. Mark all matched track parts, then
 remove the curtain, removable loading sections, and end stops. Protect the
-fixed tracks from debris, finish, and damage during the remaining work. Before
-proceeding, lock the fixed guide geometry, record its critical spacing, and use
-the installed guides and those measurements when checking every nearby box and
-conduit clearance.
+fixed tracks from debris, finish, and damage during the remaining work.
 
 The build-step visualization shows the completed door in its nominal open
 position from this step onward; it does not depict this temporary removal.
@@ -348,7 +369,7 @@ New model objects:
 enclosure_tambour_door
 ```
 
-## 11. Verify the consolidated tambour top supports (`tambour-top-rails`)
+## 13. Verify the consolidated tambour top supports (`tambour-top-rails`)
 
 Verify that the inside faces and undersides of the two top side 4x4s provide
 continuous, level attachment surfaces for the printed tracks and removable
@@ -365,7 +386,7 @@ New model objects:
 tambour_ceiling_panel
 ```
 
-## 12. Add the street-light backing (`street-light-backing`)
+## 14. Add the street-light backing (`street-light-backing`)
 
 Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
 modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
@@ -385,22 +406,22 @@ front_street_light_backer_lower
 front_street_light_backer_upper
 ```
 
-## 13. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
+## 15. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
 
 Mount the EV charger body and its inseparable flexible cord and plug on
 `front_center_rail`, with the charger body shifted 2 inches downward from its
 former modeled position while the cord holster remains fixed. Confirm and
 record the physical location of its conduit
 input; this installed position controls the field-fit conduit connection in
-Step 15. Route the cord between the charger body, storage position, and
+Step 17. Route the cord between the charger body, storage position, and
 ground-level reach shown by the model.
 
 Check the flexible cord for strain relief, minimum bend radius, storage
 clearance, tambour-door clearance, and absence of abrasion or pinch points.
 Cycle the tambour fully from both printed pulls and confirm that neither the
 door nor either pull contacts the charger, cord, or plug. Repeat these checks
-after making the power connection in Step 15 and after reloading the curtain in
-Step 23.
+after making the power connection in Step 17 and after reloading the curtain in
+Step 25.
 
 New model objects:
 
@@ -410,7 +431,7 @@ front_ev_charger_plug
 front_ev_charger_cable
 ```
 
-## 14. Preassemble and mount the power junction (`power-junction-assembly`)
+## 16. Preassemble and mount the power junction (`power-junction-assembly`)
 
 Before mounting the Carlon E987N power junction box, fit its rear-facing
 1 1/4-inch input adapter and coupling for the T-body branch and the two
@@ -443,9 +464,9 @@ power_junction_outlet_adapter
 power_junction_outlet_coupling
 ```
 
-## 15. Connect the power junction to the EV charger (`ev-charger-power`)
+## 17. Connect the power junction to the EV charger (`ev-charger-power`)
 
-Using the physical charger-input position recorded in Step 13, align the
+Using the physical charger-input position recorded in Step 15, align the
 1 1/4-inch ground riser and T body with the charger's conduit-port X coordinate.
 Set the T-body branch high enough that the complete conduit envelope passes
 above `rail_fb`, then run the full horizontal branch to the rear coupling on
@@ -461,7 +482,7 @@ abrasion or pinch points. Cycle the tambour fully from both printed pulls and
 confirm that neither the door nor either pull contacts the completed power
 connection, charger, cord, or plug. Verify the installed product markings and
 locally required bend and fill calculations before construction. Repeat the
-clearance check after the curtain is reloaded in Step 23.
+clearance check after the curtain is reloaded in Step 25.
 
 New model objects:
 
@@ -472,7 +493,7 @@ power_ev_t_body
 power_t_junction_feed
 ```
 
-## 16. Rough in the street light (`street-light-rough-in`)
+## 18. Rough in the street light (`street-light-rough-in`)
 
 Mount the Commercial Electric WRB550B base box on the street-light backers.
 Install the 1/2-inch feed from the forward fitting on the positive-X side of
@@ -499,7 +520,7 @@ front_street_light_base_box
 power_street_light_feed
 ```
 
-## 17. Add the backing and rough in the right-side outlet (`outlet-rough-in`)
+## 19. Add the backing and rough in the right-side outlet (`outlet-rough-in`)
 
 Install the two 6 11/16-inch 2x4 backers between `right_center_rail` and
 `post_br`. Their modeled lower-face elevations are approximately 13 5/8 and
@@ -525,7 +546,7 @@ back_right_outlet
 power_back_right_outlet_feed
 ```
 
-## 18. Add the low-voltage termination (`low-voltage-termination`)
+## 20. Add the low-voltage termination (`low-voltage-termination`)
 
 Mount the low-voltage junction box in its shifted position, spanning x = 10
 to 14 inches and y = 2.1875 to 6.1875 inches, centered at z = 13 inches. The
@@ -555,7 +576,7 @@ low_voltage_cable_gland_2
 low_voltage_cable_gland_3
 ```
 
-## 19. Mount and cable the Wi-Fi access point (`wifi-and-feed`)
+## 21. Mount and cable the Wi-Fi access point (`wifi-and-feed`)
 
 Mount the Wi-Fi access point near the top of `right_center_rail`. Route the
 highest-X low-voltage gland's cable through the modeled droop, then sweep it
@@ -579,7 +600,7 @@ front_wifi_access_point
 low_voltage_wifi_feed
 ```
 
-## 20. Route the street-light service cable (`light-service-cable`)
+## 22. Route the street-light service cable (`light-service-cable`)
 
 Route the front low-voltage gland's cable downward before sweeping toward and
 up the positive-X face of `post_fl`. Continue beneath `brace_fl_fr` and
@@ -598,7 +619,7 @@ New model objects:
 low_voltage_street_light_service
 ```
 
-## 21. Route the charger low-voltage feed (`charger-low-voltage-feed`)
+## 23. Route the charger low-voltage feed (`charger-low-voltage-feed`)
 
 Route the center low-voltage gland's cable down from the gland and up the
 negative-X face of `front_center_rail`. Hold the gland's X coordinate through
@@ -619,7 +640,7 @@ New model objects:
 low_voltage_ev_charger_feed
 ```
 
-## 22. Install the composite siding (`composite-siding`)
+## 24. Install the composite siding (`composite-siding`)
 
 Before placing the top boards, install 1/4-inch ripped pressure-treated shims
 on the exposed portions of all four perimeter members and across both
@@ -709,7 +730,7 @@ enclosure_siding_rear_left_9
 enclosure_siding_rear_right_9
 ```
 
-## 23. Install the siding trim and reload the tambour (`siding-trim`)
+## 25. Install the siding trim and reload the tambour (`siding-trim`)
 
 Install the paired black-aluminum angle legs at all four enclosure corners and
 both sides of the tambour opening, then install the paired header legs. The
@@ -724,7 +745,7 @@ end stops. Cycle the door fully from both printed pulls and repeat the
 operating-force, tracking, endpoint-retention, and framing/trim clearance tests
 from [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md). Repeat the full-travel clearance
 check against every completed conduit and fixed cable route. Install the
-removable 20 1/2-by-8 7/8-inch, 1/4-inch plywood ceiling panel on independent
+removable 20 1/2-by-7 15/16-inch, 1/4-inch plywood ceiling panel on independent
 retainers at z = 43 1/4 to 43 1/2 inches beneath the overhead curtain, then
 repeat the full-travel test before placing the enclosure in service.
 
@@ -747,7 +768,7 @@ enclosure_siding_angle_tambour_header_face
 enclosure_siding_angle_tambour_header_bottom
 ```
 
-## 24. Finish the street-light assembly (`street-light-finish`)
+## 26. Finish the street-light assembly (`street-light-finish`)
 
 Install the WRE450G extension ring through the siding opening, with its front
 face flush with the siding exterior plane, then attach the downward-facing
@@ -764,7 +785,7 @@ front_street_light_extension_ring
 front_street_light
 ```
 
-## 25. Finish the right-side outlet (`outlet-finish`)
+## 27. Finish the right-side outlet (`outlet-finish`)
 
 Install the Intermatic WP5100BL in-use cover on the FSE box after the siding is
 complete.
@@ -782,17 +803,17 @@ back_right_outlet_cover
 
 ## Model coverage checklist
 
-The 25 steps above assign all modeled construction objects exactly once:
+The 27 steps above assign all modeled construction objects exactly once:
 
 | Category | Modeled count | Assigned steps |
 | --- | ---: | --- |
-| Lumber members | 29 | 2-9, 11-12, 17 |
-| Components and fittings | 25 | 13-19, 23-25 |
-| Conduit runs | 6 | 1, 15-17 |
-| Cable paths | 4 | 13, 19-21 |
-| Tambour assemblies | 1 | 10 |
-| Composite siding render parts | 58 | 22 |
-| Siding trim render parts | 14 | 23 |
+| Lumber members | 25 | 2-9, 14, 19 |
+| Components and fittings | 31 | 3, 10, 13, 15-21, 24, 26-27 |
+| Conduit runs | 6 | 1, 17-19 |
+| Cable paths | 4 | 15, 21-23 |
+| Tambour track and door | 2 | 11-12 |
+| Composite siding render parts | 57 | 24 |
+| Siding trim render parts | 14 | 25 |
 
 The `ground` object is visualization context rather than an installed enclosure
 component, so it intentionally remains outside the numbered sequence.

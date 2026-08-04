@@ -272,15 +272,30 @@ class TopBracingBuildTests(unittest.TestCase):
             self.assertAlmostEqual(support.center_on("y"), build.TAMBOUR_TRACK_FRONT_Y)
             self.assertAlmostEqual(support.min_on("z"), 7.75)
             self.assertAlmostEqual(support.max_on("z"), 43.5)
-        for name in (
-            "left_tambour_bend_backer",
-            "right_tambour_bend_backer",
+        for name,minimum_x in (
+            ("left_tambour_bend_backer", 2.75),
+            ("right_tambour_bend_backer", 24.0),
         ):
-            support = enclosure.members[name]
-            self.assertAlmostEqual(support.min_on("y"), 5.75)
-            self.assertAlmostEqual(support.max_on("y"), 7.25)
-            self.assertAlmostEqual(support.min_on("z"), 42)
-            self.assertAlmostEqual(support.max_on("z"), 43.5)
+            component = enclosure.components[name]
+            support = component.resolved(enclosure.members[component.member])
+            self.assertEqual(component.assembly, "tambour_supports")
+            self.assertEqual(
+                support.type_name,
+                "three_quarter_inch_plywood_tambour_bend_backer",
+            )
+            self.assertAlmostEqual(support.box_min[1], 5.75)
+            self.assertAlmostEqual(support.box_size[1], 1.5)
+            self.assertAlmostEqual(support.box_min[2], 42.375)
+            self.assertAlmostEqual(support.box_size[2], 1.125)
+            self.assertAlmostEqual(support.box_min[0], minimum_x)
+            self.assertAlmostEqual(support.box_size[0], 0.75)
+            receiver = enclosure.members[
+                "rail_lt" if name.startswith("left") else "rail_rt"
+            ]
+            self.assertAlmostEqual(
+                support.box_min[2],
+                receiver.max_on("z"),
+            )
         for name in ("rail_lt", "rail_rt"):
             support = enclosure.members[name]
             self.assertAlmostEqual(support.min_on("y"), 5.75)
@@ -476,6 +491,13 @@ class TambourClearanceBuildTests(unittest.TestCase):
             -backer_rear,
             build.TAMBOUR_BRACE_CLEARANCE,
         )
+        outward_clearance=(
+            build.TAMBOUR_TRACK_FRONT_Y
+            -build.TAMBOUR_OUTWARD_ENVELOPE_DEPTH
+            -backer_rear
+        )
+        self.assertAlmostEqual(outward_clearance, 0.325)
+        self.assertGreaterEqual(outward_clearance, build.TAMBOUR_BRACE_CLEARANCE)
 
         header=build.members["rail_ft"]
         minimum_slat_z=self._minimum_slat_z_over_y_interval(
@@ -651,7 +673,27 @@ class TambourClearanceBuildTests(unittest.TestCase):
             ),
         )
         for endpoint_index,opening_sign,support_names in sides:
-            supports=[enclosure.members[name] for name in support_names]
+            supports=[]
+            for name in support_names:
+                member=enclosure.members.get(name)
+                if member is not None:
+                    supports.append((member.min,member.max))
+                    continue
+                component=enclosure.components[name]
+                resolved=component.resolved(enclosure.members[component.member])
+                supports.append(
+                    (
+                        resolved.box_min,
+                        tuple(
+                            a+b
+                            for a,b in zip(
+                                resolved.box_min,
+                                resolved.box_size,
+                                strict=True,
+                            )
+                        ),
+                    )
+                )
             for left,right,tangent in tambour.track_samples(subdivisions=4):
                 point=(left,right)[endpoint_index]
                 depth_y=-opening_sign*tangent[2]
@@ -665,9 +707,9 @@ class TambourClearanceBuildTests(unittest.TestCase):
                     z=point[2]+offset*depth_z
                     self.assertTrue(
                         any(
-                            member.min[1]-1e-9 <= y <= member.max[1]+1e-9
-                            and member.min[2]-1e-9 <= z <= member.max[2]+1e-9
-                            for member in supports
+                            minimum[1]-1e-9 <= y <= maximum[1]+1e-9
+                            and minimum[2]-1e-9 <= z <= maximum[2]+1e-9
+                            for minimum,maximum in supports
                         ),
                         f"unsupported track at {(point, y, z)}",
                     )
@@ -711,8 +753,9 @@ class TambourClearanceBuildTests(unittest.TestCase):
 
         self.assertEqual(panel_instance.assembly, "tambour_guard")
         self.assertEqual(panel.type_name, "quarter_inch_exterior_plywood_panel")
-        self.assertEqual(panel.box_min, (3.5, 8.375, 43.25))
-        self.assertEqual(panel.box_size, (20.5, 9.25, 0.25))
+        self.assertEqual(panel.box_min, (3.5, 9.6875, 43.25))
+        self.assertEqual(panel.box_size, (20.5, 7.9375, 0.25))
+        self.assertEqual(panel.box_min[1], build.members["rail_ft"].max_on("y"))
         self.assertGreaterEqual(
             build.TAMBOUR_TOP_Z-build.TAMBOUR_INWARD_ENVELOPE_DEPTH
             -(panel.box_min[2]+panel.box_size[2]),

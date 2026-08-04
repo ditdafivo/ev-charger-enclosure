@@ -40,8 +40,10 @@ therefore reaches forward to `y = 4.125`, while the backers end at `y = 3.80`:
 ```
 
 The left and right vertical support rails move with the guide and occupy
-`y = 4.25` to `y = 5.75`. Short backers continue rearward to `y = 7.25` at
-the bend so the complete printed flange remains supported through the turn.
+`y = 4.25` to `y = 5.75`. The 3/4-inch plywood bend backers continue rearward
+to `y = 7.25` and occupy `z = 42.375` to `z = 43.5`, above `rail_lt` and
+`rail_rt`, so the complete printed flange remains supported without overlapping
+the receiver rails.
 
 ### Structural front header
 
@@ -79,15 +81,15 @@ The modeled exterior-plywood panel occupies:
 
 ```text
 x = 3.5 to 24.0 inches
-y = 8.375 to 17.625 inches
+y = 9.6875 to 17.625 inches
 z = 43.25 to 43.50 inches
 ```
 
 Its top is 9/16 inch below the inward horizontal curtain envelope at
 `44.375 - 0.3125 = 44.0625` inches.
-Its Y ends are inset 3/4 inch from both bend tangencies. Mount it on independent
-removable retainers so track inspection, cleaning, and curtain removal remain
-possible.
+Its rear edge is inset 3/4 inch from the rear bend tangency; its front edge
+aligns with the positive-Y face of `rail_ft`. Mount it on independent removable
+retainers so track inspection, cleaning, and curtain removal remain possible.
 
 ## Rear trim and slat ends
 

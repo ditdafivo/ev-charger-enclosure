@@ -379,25 +379,6 @@ def build_enclosure(
             rotated=True,
         )
 
-    TAMBOUR_FRONT_BEND_BACKER_LENGTH=HEIGHT_2x4
-    for name,rail_name in (
-        ("left_tambour_bend_backer", "rail_ltam"),
-        ("right_tambour_bend_backer", "rail_rtam"),
-    ):
-        rail=members[rail_name]
-        members.add(
-            name,
-            assembly="frame",
-            type="2x4",
-            axis="y",
-            start=AbsoluteCoord(
-                rail.min_on("x"),
-                rail.max_on("y"),
-                members["brace_fl_bl"].min_on("z")-HEIGHT_2x4,
-            ),
-            length=TAMBOUR_FRONT_BEND_BACKER_LENGTH,
-        )
-
     for name,support_a,support_b,position,position_axis in [
         ("rail_rbu", "rail_rtam", "post_br", 13, None),
         (
@@ -762,6 +743,57 @@ def build_enclosure(
     LOW_VOLTAGE_STREET_LIGHT_COLOR=(0.18, 0.07, 0.025, 1.0)
 
     components = ComponentCollection()
+
+    TAMBOUR_FRONT_BEND_BACKER_THICKNESS=0.75
+    TAMBOUR_FRONT_BEND_BACKER_LENGTH=HEIGHT_2x4
+    TAMBOUR_FRONT_BEND_BACKER_BOTTOM_Z=max(
+        members["rail_lt"].max_on("z"),
+        members["rail_rt"].max_on("z"),
+    )
+    TAMBOUR_FRONT_BEND_BACKER_TOP_Z=min(
+        members["brace_fl_bl"].min_on("z"),
+        members["brace_fr_br"].min_on("z"),
+    )
+    TAMBOUR_FRONT_BEND_BACKER_HEIGHT=(
+        TAMBOUR_FRONT_BEND_BACKER_TOP_Z
+        -TAMBOUR_FRONT_BEND_BACKER_BOTTOM_Z
+    )
+    if TAMBOUR_FRONT_BEND_BACKER_HEIGHT <= 0:
+        raise ValueError("tambour bend backers have no space above the side rails")
+    tambour_bend_backer_type=ComponentType(
+        name="three_quarter_inch_plywood_tambour_bend_backer",
+        size=(
+            TAMBOUR_FRONT_BEND_BACKER_HEIGHT,
+            TAMBOUR_FRONT_BEND_BACKER_THICKNESS,
+            TAMBOUR_FRONT_BEND_BACKER_LENGTH,
+        ),
+        color=(0.72, 0.58, 0.38, 1.0),
+        default_face="narrow_pos",
+        mount_point=(0, 0, 0),
+    )
+    for name,rail_name,minimum_x in (
+        (
+            "left_tambour_bend_backer",
+            "rail_ltam",
+            members["rail_ltam"].max_on("x")
+            -TAMBOUR_FRONT_BEND_BACKER_THICKNESS,
+        ),
+        (
+            "right_tambour_bend_backer",
+            "rail_rtam",
+            members["rail_rtam"].min_on("x"),
+        ),
+    ):
+        rail=members[rail_name]
+        components.add(
+            name,
+            assembly="tambour_supports",
+            component_type=tambour_bend_backer_type,
+            member=rail_name,
+            at=TAMBOUR_FRONT_BEND_BACKER_BOTTOM_Z-rail.min_on("z"),
+            face="narrow_pos",
+            offset=(0, minimum_x-rail.center_on("x"), 0),
+        )
 
     GUSSET_HARDWARE_PROJECTION=(
         GUSSET_THICKNESS_IN+GUSSET_SCREW_HEAD_HEIGHT_IN
@@ -1493,6 +1525,8 @@ def build_enclosure(
     tambours.add(
         "enclosure_tambour_door",
         assembly="tambour_door",
+        track_name="enclosure_tambour_track",
+        track_assembly="tambour_track",
         left_points=(
             RelativeCoord(
                 "post_bl",
@@ -1562,9 +1596,7 @@ def build_enclosure(
     TAMBOUR_CEILING_THICKNESS=0.25
     TAMBOUR_CEILING_CLEARANCE=0.25
     TAMBOUR_CEILING_BEND_INSET=0.75
-    TAMBOUR_CEILING_FRONT_Y=(
-        TAMBOUR_TRACK_FRONT_Y+TAMBOUR_BEND_RADIUS+TAMBOUR_CEILING_BEND_INSET
-    )
+    TAMBOUR_CEILING_FRONT_Y=members["rail_ft"].max_on("y")
     TAMBOUR_CEILING_REAR_Y=(
         TAMBOUR_TRACK_BACK_Y-TAMBOUR_BEND_RADIUS-TAMBOUR_CEILING_BEND_INSET
     )

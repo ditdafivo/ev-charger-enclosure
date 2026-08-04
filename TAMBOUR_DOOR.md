@@ -33,7 +33,7 @@ the build record at the end of this guide.
 | Wooden slat face depth | 1/2 in | Prototype-controlled |
 | Complete swept depth envelope | 1 1/2 in | Fixed clearance limit |
 | Rendered track diameter | 1/2 in | Visualization only |
-| Removable ceiling panel | 20 1/2 by 9 1/4 by 1/4 in | Fixed enclosure interface |
+| Removable ceiling panel | 20 1/2 by 7 15/16 by 1/4 in | Fixed enclosure interface |
 
 The model places 56 slats on the 44-inch curtain. The 1/32-inch difference
 between the 3/4-inch slat height and 25/32-inch attachment pitch is a setup
@@ -165,10 +165,12 @@ Side path and handle orientation (not to scale):
 ```
 
 The model includes a removable 1/4-inch exterior-plywood ceiling from
-`y = 8.375` to `y = 17.625` and `z = 43.25` to `z = 43.5`. It shields the
-overhead curtain from hands and the charger cord while retaining 1/4 inch
-below the maximum curtain envelope. Support it on independent removable
-retainers; do not fasten through a printed track or obstruct track inspection.
+`y = 9.6875` to `y = 17.625` and `z = 43.25` to `z = 43.5`. Its front edge
+aligns with the positive-Y face of `rail_ft`, avoiding an unnecessary forward
+overhang. It shields the overhead curtain from hands and the charger cord while
+retaining 1/4 inch below the maximum curtain envelope. Support it on independent
+removable retainers; do not fasten through a printed track or obstruct track
+inspection.
 
 Attach one centered printed ASA lift ledge to each pull slat. The nominal ledge
 is 300 mm wide, no more than 5/8 inch proud of the wood face, and secured from
@@ -252,9 +254,10 @@ this design.
 
 ## Enclosure installation
 
-Install the approved tracks after both vertical supports, both bend backers,
-and the top side 4x4s are fixed and before electrical backing, conduit, siding,
-or trim restricts access.
+Install the approved tracks only after both vertical supports, both 3/4-inch
+plywood bend backers, and the top side 4x4s are fixed. Install and verify the
+tracks before loading the door, and complete both operations before electrical
+backing, conduit, siding, or trim restricts access.
 
 1. Measure the actual frame and compare it with the prototype test frame.
 2. Use the prototype alignment gauges to position both guide paths. Shim the

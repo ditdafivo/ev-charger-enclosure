@@ -107,13 +107,14 @@ The revised sequence is:
 2. Install the four posts with temporary external bracing.
 3. Install the complete top perimeter and diagonal bracing while checking post
    plumb, spacing, plan diagonals, and the approved connection details.
-4. Continue with the former Steps 3 through 11, renumbered as Steps 4 through
-   12.
-5. Continue with the existing Steps 13 through 25 without changing their
-   numbers.
+4. Complete the lower and upper framing through Step 9.
+5. Install the plywood bend backers in Step 10, the fixed tracks in Step 11,
+   and the tambour door in Step 12.
+6. Trial-fit the removable guard in Step 13, then complete the electrical,
+   siding, trim, and finish work through Step 27.
 
-This move keeps the total at 25 build steps, so `build_step = 26` continues to
-represent the completed model.
+The complete sequence contains 27 build steps, so `build_step = 28` represents
+the completed model.
 
 ## Implemented project updates
 

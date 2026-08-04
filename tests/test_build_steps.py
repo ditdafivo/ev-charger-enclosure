@@ -177,6 +177,10 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn("function object_is_visible(name)", scad)
         self.assertIn("function object_is_highlighted(name)", scad)
         self.assertIn("[1.0, 0.82, 0.0, 1.0]", scad)
+        self.assertIn("labels = false;", scad)
+        self.assertNotIn("lumber_labels", scad)
+        self.assertNotIn("component_labels", scad)
+        self.assertEqual(scad.count("if (labels && highlighted)"), 2)
         self.assertIn(
             "render_lumber(p, object_is_highlighted(l_name(p)))",
             scad,

@@ -20,12 +20,11 @@ build_step = {{ build_step_count + 1 }}; // [{{ range(0, build_step_count + 2) |
 
 {% endif %}
 
-lumber_labels = false;
-component_labels = false;
+labels = false;
 label_size = 1.25;
 label_lift = 0.03;
 lumber_color = [0.50, 0.18, 0.08, 1.0];
-/* [Hidden] */
+/* [Details] */
 {% for assembly in assemblies %}
 {{ assembly.toggle }} = true;
 {% endfor %}
@@ -42,6 +41,7 @@ lumber_color = [0.50, 0.18, 0.08, 1.0];
 {{ assembly.toggle }} = true;
 {% endfor %}
 
+/* [Hidden] */
 
 pieces = [
     {{ piece_records | join(',\n    ') }}
@@ -405,7 +405,7 @@ module render_lumber(l, highlighted = false) {
                 routed_seat_volume(r);
     }
 
-    if (lumber_labels)
+    if (labels && highlighted)
         lumber_name(l);
 }
 
@@ -458,7 +458,7 @@ module render_component(c, highlighted = false) {
         }
     }
 
-    if (component_labels)
+    if (labels && highlighted)
         component_name(c);
 }
 

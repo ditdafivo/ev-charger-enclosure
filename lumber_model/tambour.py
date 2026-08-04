@@ -51,6 +51,7 @@ class TambourInstalledDetails:
     handle_projection: float = 0.625
     webbing_color: TambourColor = (0.08, 0.08, 0.08, 1.0)
     handle_color: TambourColor = (0.28, 0.30, 0.32, 1.0)
+    inward_hardware_projection: float = 1 / 16
 
     def __post_init__(self) -> None:
         positive_fields = (
@@ -64,6 +65,7 @@ class TambourInstalledDetails:
             "handle_width",
             "handle_height",
             "handle_projection",
+            "inward_hardware_projection",
         )
         for field_name in positive_fields:
             value = getattr(self, field_name)
@@ -81,6 +83,10 @@ class TambourInstalledDetails:
             raise ValueError("segment seams must be sorted and unique")
         if any(index < 0 for index in self.pull_slat_indices):
             raise ValueError("pull slat indices cannot be negative")
+        if self.inward_hardware_projection < self.webbing_thickness:
+            raise ValueError(
+                "inward_hardware_projection cannot be less than webbing_thickness"
+            )
         if len(self.webbing_color) != 4 or len(self.handle_color) != 4:
             raise ValueError("installed-detail colors must be RGBA 4-tuples")
 
@@ -242,6 +248,8 @@ class TambourDoor:
     left_points: tuple[Coordinate, ...]
     right_points: tuple[Coordinate, ...]
     assembly: str = "tambour"
+    track_name: str | None = None
+    track_assembly: str | None = None
     bends: tuple[TambourBend, ...] = ()
     track_diameter: float = 0.5
     slat_pitch: float = 1.0
@@ -312,6 +320,10 @@ class TambourDoor:
             )
         if len(self.track_color) != 4 or len(self.slat_color) != 4:
             raise ValueError(f"{self.name}: tambour colors must be RGBA 4-tuples")
+        if self.track_name == "":
+            raise ValueError(f"{self.name}: track_name cannot be empty")
+        if self.track_assembly == "":
+            raise ValueError(f"{self.name}: track_assembly cannot be empty")
 
     def resolved(
         self, resolver: CoordinateResolver | None = None
@@ -433,6 +445,8 @@ class TambourDoor:
         return ResolvedTambourDoor(
             name=self.name,
             assembly=self.assembly,
+            track_name=self.track_name or self.name,
+            track_assembly=self.track_assembly or self.assembly,
             track_color=self.track_color,
             slat_color=self.slat_color,
             track_diameter=self.track_diameter,
@@ -455,6 +469,8 @@ class TambourDoor:
 class ResolvedTambourDoor:
     name: str
     assembly: str
+    track_name: str
+    track_assembly: str
     track_color: TambourColor
     slat_color: TambourColor
     track_diameter: float
@@ -507,6 +523,11 @@ class ResolvedTambourDoor:
                 )
         return tuple(samples)
 
+    def renderable_object_names(self) -> tuple[str, ...]:
+        if self.track_name == self.name:
+            return (self.name,)
+        return (self.track_name, self.name)
+
     def scad_record(self) -> str:
         details = self.installed_details
         installed_record = (
@@ -533,6 +554,7 @@ class ResolvedTambourDoor:
                     fmt_float(details.handle_projection),
                     _format_vector(details.webbing_color),
                     _format_vector(details.handle_color),
+                    fmt_float(details.inward_hardware_projection),
                 )
             )
             + "]"
@@ -553,7 +575,9 @@ class ResolvedTambourDoor:
             f"{_format_bends(self.bends)}, "
             f"{_format_slats(self.slats)}, "
             f"{_format_slats(self.closed_slats)}, "
-            f"{installed_record}"
+            f"{installed_record}, "
+            f"{scad_string(self.track_name)}, "
+            f"{scad_string(self.track_assembly)}"
             "]"
         )
 
@@ -588,6 +612,8 @@ class TambourCollection(Mapping[str, TambourDoor]):
         left_points: Iterable[Coordinate],
         right_points: Iterable[Coordinate],
         assembly: str = "tambour",
+        track_name: str | None = None,
+        track_assembly: str | None = None,
         bends: Iterable[TambourBend] = (),
         track_diameter: float = 0.5,
         slat_pitch: float = 1.0,
@@ -606,6 +632,8 @@ class TambourCollection(Mapping[str, TambourDoor]):
                 left_points=tuple(left_points),
                 right_points=tuple(right_points),
                 assembly=assembly,
+                track_name=track_name,
+                track_assembly=track_assembly,
                 bends=tuple(bends),
                 track_diameter=track_diameter,
                 slat_pitch=slat_pitch,

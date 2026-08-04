@@ -14,11 +14,12 @@ have been inspected.
 
 ## Consolidated geometry
 
-The left and right top perimeter members are now 4x4s spanning `z = 43.50` to
-`47.00`. Their inside faces and undersides replace `rail_l_tambour`,
-`rail_r_tambour`, `rail_lt`, and `rail_rt`. The removable ceiling remains at
-`z = 43.25` to `43.50`, directly against the 4x4 undersides, while the curtain
-and guides remain inside the clear opening.
+The left and right top perimeter members are 4x4s spanning `z = 43.50` to
+`47.00`. Their inside faces and undersides replace the former top track rails,
+while `rail_lt` and `rail_rt` remain below them as the side receivers for the
+lowered front header. The removable ceiling remains at `z = 43.25` to `43.50`,
+directly against the 4x4 undersides, while the curtain and guides remain inside
+the clear opening.
 
 The full-section diagonal remains at `z = 46.25` to `47.00`. The two involved
 posts stop at its underside, and only the four intersected side braces are
@@ -106,13 +107,14 @@ The revised sequence is:
 2. Install the four posts with temporary external bracing.
 3. Install the complete top perimeter and diagonal bracing while checking post
    plumb, spacing, plan diagonals, and the approved connection details.
-4. Continue with the former Steps 3 through 11, renumbered as Steps 4 through
-   12.
-5. Continue with the existing Steps 13 through 25 without changing their
-   numbers.
+4. Complete the lower and upper framing through Step 9.
+5. Install the plywood bend backers in Step 10, the fixed tracks in Step 11,
+   and the tambour door in Step 12.
+6. Trial-fit the removable guard in Step 13, then complete the electrical,
+   siding, trim, and finish work through Step 27.
 
-This move keeps the total at 25 build steps, so `build_step = 26` continues to
-represent the completed model.
+The complete sequence contains 27 build steps, so `build_step = 28` represents
+the completed model.
 
 ## Implemented project updates
 

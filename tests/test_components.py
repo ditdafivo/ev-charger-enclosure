@@ -391,6 +391,31 @@ class ComponentResolutionTests(unittest.TestCase):
 
 
 class ComponentValidationTests(unittest.TestCase):
+    def test_component_toggle_identifiers_must_remain_unique(self) -> None:
+        members = LumberCollection()
+        members.add(
+            "rail",
+            assembly="frame",
+            type="2x4",
+            axis="x",
+            start=AbsoluteCoord(0, 0, 0),
+            length=10,
+        )
+        components = ComponentCollection()
+        for name, at in (("same-name", 1), ("same name", 2)):
+            components.add(
+                name,
+                component_type=WEATHERPROOF_120V_OUTLET_BOX,
+                member="rail",
+                at=at,
+            )
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "duplicate individual OpenSCAD toggles",
+        ):
+            Model(members, components=components).validate()
+
     def test_model_rejects_unknown_lumber_reference(self) -> None:
         members = LumberCollection()
         members.add(

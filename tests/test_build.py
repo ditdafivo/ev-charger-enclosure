@@ -257,7 +257,7 @@ class TopBracingBuildTests(unittest.TestCase):
                     f"no roof shim covers non-gusseted {post_name}",
                 )
 
-    def test_side_4x4s_consolidate_top_and_tambour_supports(self) -> None:
+    def test_side_4x4s_and_rails_support_tambour_and_header(self) -> None:
         enclosure = build.default_build
         for name in ("brace_fl_bl", "brace_fr_br"):
             with self.subTest(name=name):
@@ -265,41 +265,92 @@ class TopBracingBuildTests(unittest.TestCase):
                 self.assertEqual(support.type, "4x4")
                 self.assertAlmostEqual(support.min_on("z"), 43.5)
                 self.assertAlmostEqual(support.max_on("z"), 47)
-        for name in ("rail_l_tambour", "rail_r_tambour", "rail_lt", "rail_rt"):
+        for name in ("rail_l_tambour", "rail_r_tambour"):
             self.assertNotIn(name, enclosure.members)
+        for name in ("rail_ltam", "rail_rtam"):
+            support = enclosure.members[name]
+            self.assertAlmostEqual(support.center_on("y"), build.TAMBOUR_TRACK_FRONT_Y)
+            self.assertAlmostEqual(support.min_on("z"), 7.75)
+            self.assertAlmostEqual(support.max_on("z"), 43.5)
+        for name,minimum_x in (
+            ("left_tambour_bend_backer", 2.75),
+            ("right_tambour_bend_backer", 24.0),
+        ):
+            component = enclosure.components[name]
+            support = component.resolved(enclosure.members[component.member])
+            self.assertEqual(component.assembly, "tambour_supports")
+            self.assertEqual(
+                support.type_name,
+                "three_quarter_inch_plywood_tambour_bend_backer",
+            )
+            self.assertAlmostEqual(support.box_min[1], 5.75)
+            self.assertAlmostEqual(support.box_size[1], 1.5)
+            self.assertAlmostEqual(support.box_min[2], 42.375)
+            self.assertAlmostEqual(support.box_size[2], 1.125)
+            self.assertAlmostEqual(support.box_min[0], minimum_x)
+            self.assertAlmostEqual(support.box_size[0], 0.75)
+            receiver = enclosure.members[
+                "rail_lt" if name.startswith("left") else "rail_rt"
+            ]
+            self.assertAlmostEqual(
+                support.box_min[2],
+                receiver.max_on("z"),
+            )
+        for name in ("rail_lt", "rail_rt"):
+            support = enclosure.members[name]
+            self.assertAlmostEqual(support.min_on("y"), 5.75)
+            self.assertAlmostEqual(support.min_on("z"), 40.875)
+            self.assertAlmostEqual(support.max_on("z"), 42.375)
 
-    def test_lowered_front_header_has_full_depth_end_supports(self) -> None:
+    def test_lowered_front_header_bears_on_side_rails(self) -> None:
         header = build.members["rail_ft"]
 
         self.assertEqual(header.type, "2x4")
-        self.assertAlmostEqual(header.min_on("z"), 41)
-        self.assertAlmostEqual(header.max_on("z"), 42.5)
+        self.assertAlmostEqual(header.min_on("z"), 40.875)
+        self.assertAlmostEqual(header.max_on("z"), 42.375)
         self.assertAlmostEqual(
             build.members["front_center_rail"].max_on("z"),
             header.min_on("z"),
         )
 
         for name,header_x in (
-            ("rail_ft_left_support", header.min_on("x")),
-            ("rail_ft_right_support", header.max_on("x")),
+            ("rail_lt", header.min_on("x")),
+            ("rail_rt", header.max_on("x")),
         ):
             with self.subTest(name=name):
                 support = build.members[name]
                 self.assertEqual(support.type, "2x4")
+                self.assertEqual(support.axis, "y")
                 self.assertAlmostEqual(support.min_on("z"), header.min_on("z"))
-                self.assertAlmostEqual(
-                    support.max_on("z"),
-                    build.members["brace_fl_bl"].min_on("z"),
-                )
-                self.assertAlmostEqual(support.min_on("y"), header.min_on("y"))
-                self.assertAlmostEqual(support.max_on("y"), header.max_on("y"))
+                self.assertAlmostEqual(support.max_on("z"), header.max_on("z"))
+                self.assertLessEqual(support.min_on("y"), header.min_on("y"))
+                self.assertGreaterEqual(support.max_on("y"), header.max_on("y"))
                 self.assertTrue(
                     math.isclose(support.min_on("x"), header_x)
                     or math.isclose(support.max_on("x"), header_x)
                 )
+        for name in ("rail_ft_left_support", "rail_ft_right_support"):
+            self.assertNotIn(name, build.members)
 
 
 class TambourClearanceBuildTests(unittest.TestCase):
+    @staticmethod
+    def _convex_polygons_overlap(
+        first: list[tuple[float, float]],
+        second: list[tuple[float, float]],
+    ) -> bool:
+        """Return true for positive-area overlap; touching edges are clear."""
+        for polygon in (first, second):
+            for start, end in zip(polygon, polygon[1:] + polygon[:1]):
+                axis = (-(end[1] - start[1]), end[0] - start[0])
+                first_projection = [y * axis[0] + z * axis[1] for y, z in first]
+                second_projection = [y * axis[0] + z * axis[1] for y, z in second]
+                if min(max(first_projection), max(second_projection)) <= max(
+                    min(first_projection), min(second_projection)
+                ) + 1e-9:
+                    return False
+        return True
+
     @staticmethod
     def _minimum_slat_z_over_y_interval(
         enclosure: build.EnclosureBuild,
@@ -391,15 +442,40 @@ class TambourClearanceBuildTests(unittest.TestCase):
         self.assertEqual(details.webbing_count, 3)
         self.assertEqual(details.pull_slat_indices, (0, 23))
         self.assertAlmostEqual(details.handle_width, 300/25.4)
+        self.assertAlmostEqual(details.inward_hardware_projection, 1/16)
         self.assertEqual(len(tambour.slats), 56)
         self.assertEqual(len(tambour.installed_seams), len(details.segment_seams))
         self.assertEqual(tambour.bends, ((1, 2.625), (2, 2.625)))
         self.assertEqual(build.TAMBOUR_FRONT_Y, 5)
-        self.assertEqual(build.TAMBOUR_TRACK_FRONT_Y, 5.5)
-        self.assertEqual(build.TAMBOUR_TRACK_TOP_Z, 44.5)
+        self.assertEqual(build.TAMBOUR_TRACK_FRONT_Y, 5)
+        self.assertEqual(build.TAMBOUR_TRACK_TOP_Z, 44.375)
         self.assertEqual(build.TAMBOUR_TRACK_BACK_Y, 21)
-        for name in ("left_tambour_rail", "right_tambour_rail"):
-            self.assertAlmostEqual(build.members[name].center_on("y"), 5.5)
+        self.assertEqual(build.TAMBOUR_REAR_VERTICAL_LENGTH, 38.75)
+        self.assertEqual(build.TAMBOUR_TOP_TANGENT_LENGTH, 10.75)
+        self.assertEqual(build.TAMBOUR_FRONT_VERTICAL_LENGTH, 25.75)
+        self.assertAlmostEqual(
+            build.TAMBOUR_FABRICATION.rear_vertical_length/25.4,
+            build.TAMBOUR_REAR_VERTICAL_LENGTH,
+        )
+        self.assertAlmostEqual(
+            build.TAMBOUR_FABRICATION.top_tangent_length/25.4,
+            build.TAMBOUR_TOP_TANGENT_LENGTH,
+        )
+        self.assertAlmostEqual(
+            build.TAMBOUR_FABRICATION.front_vertical_length/25.4,
+            build.TAMBOUR_FRONT_VERTICAL_LENGTH,
+        )
+        self.assertEqual(build.TAMBOUR_MINIMUM_TRACK_FRONT_Y, 4.925)
+        self.assertEqual(build.TAMBOUR_PLACEMENT_INCREMENT, 1/8)
+        self.assertAlmostEqual(
+            build.TAMBOUR_TRACK_SUPPORT_EDGE_MARGIN,
+            (1.5-build.TAMBOUR_TRACK_FOOTPRINT_WIDTH)/2,
+        )
+        for name in ("rail_ltam", "rail_rtam"):
+            self.assertAlmostEqual(
+                build.members[name].center_on("y"),
+                build.TAMBOUR_TRACK_FRONT_Y,
+            )
 
         backer_rear=max(
             build.members[name].max_on("y")
@@ -415,6 +491,13 @@ class TambourClearanceBuildTests(unittest.TestCase):
             -backer_rear,
             build.TAMBOUR_BRACE_CLEARANCE,
         )
+        outward_clearance=(
+            build.TAMBOUR_TRACK_FRONT_Y
+            -build.TAMBOUR_OUTWARD_ENVELOPE_DEPTH
+            -backer_rear
+        )
+        self.assertAlmostEqual(outward_clearance, 0.325)
+        self.assertGreaterEqual(outward_clearance, build.TAMBOUR_BRACE_CLEARANCE)
 
         header=build.members["rail_ft"]
         minimum_slat_z=self._minimum_slat_z_over_y_interval(
@@ -426,6 +509,88 @@ class TambourClearanceBuildTests(unittest.TestCase):
             minimum_slat_z-header.max_on("z"),
             build.TAMBOUR_BRACE_CLEARANCE,
         )
+
+    def test_asymmetric_hardware_envelope_clears_fixed_material(self) -> None:
+        tambour = build.tambours["enclosure_tambour_door"].resolved(build.model)
+        details = tambour.installed_details
+        assert details is not None
+        outward_depth = tambour.slat_depth / 2 + details.handle_projection
+        self.assertAlmostEqual(outward_depth, build.TAMBOUR_OUTWARD_ENVELOPE_DEPTH)
+        self.assertAlmostEqual(
+            tambour.slat_depth / 2
+            + build.TAMBOUR_FABRICATION.inward_hardware_projection / 25.4,
+            build.TAMBOUR_INWARD_ENVELOPE_DEPTH,
+        )
+
+        ceiling_instance = build.components["tambour_ceiling_panel"]
+        ceiling = ceiling_instance.resolved(build.members[ceiling_instance.member])
+        obstacles = [
+            (name, member.min, member.max)
+            for name, member in build.members.items()
+        ] + [
+            (
+                part.name,
+                part.start,
+                tuple(a + b for a, b in zip(part.start, part.size, strict=True)),
+            )
+            for part in build.siding.board_parts
+        ] + [
+            (
+                "tambour_ceiling_panel",
+                ceiling.box_min,
+                tuple(
+                    a + b
+                    for a, b in zip(ceiling.box_min, ceiling.box_size, strict=True)
+                ),
+            )
+        ]
+        handle_center_x = (
+            tambour.left_points[0][0] + tambour.right_points[0][0]
+        ) / 2
+        handle_min_x = handle_center_x - details.handle_width / 2
+        handle_max_x = handle_center_x + details.handle_width / 2
+
+        for side, depth_sign, envelope_depth in (
+            ("outward handle", -1, outward_depth),
+            ("inward hardware", 1, build.TAMBOUR_INWARD_ENVELOPE_DEPTH),
+        ):
+            for left, right, tangent in tambour.track_samples(subdivisions=8):
+                center_y = (left[1] + right[1]) / 2
+                center_z = (left[2] + right[2]) / 2
+                travel_y, travel_z = tangent[1], tangent[2]
+                depth_y, depth_z = -travel_z, travel_y
+                envelope = [
+                    (
+                        center_y
+                        + travel_sign * tambour.slat_thickness / 2 * travel_y
+                        + depth_sign * depth_fraction * envelope_depth * depth_y,
+                        center_z
+                        + travel_sign * tambour.slat_thickness / 2 * travel_z
+                        + depth_sign * depth_fraction * envelope_depth * depth_z,
+                    )
+                    for travel_sign, depth_fraction in (
+                        (-1, 0),
+                        (1, 0),
+                        (1, 1),
+                        (-1, 1),
+                    )
+                ]
+                for name, minimum, maximum in obstacles:
+                    if min(handle_max_x, maximum[0]) <= max(
+                        handle_min_x, minimum[0]
+                    ):
+                        continue
+                    obstacle = [
+                        (minimum[1], minimum[2]),
+                        (maximum[1], minimum[2]),
+                        (maximum[1], maximum[2]),
+                        (minimum[1], maximum[2]),
+                    ]
+                    self.assertFalse(
+                        self._convex_polygons_overlap(envelope, obstacle),
+                        f"{side} sweep conflicts with "
+                        f"{name} at {(center_y, center_z)}",
+                    )
 
     def test_slats_run_between_both_track_walls(self) -> None:
         tambour=build.tambours["enclosure_tambour_door"].resolved(build.model)
@@ -490,7 +655,8 @@ class TambourClearanceBuildTests(unittest.TestCase):
                 {
                     "post_bl",
                     "brace_fl_bl",
-                    "left_tambour_rail",
+                    "rail_ltam",
+                    "rail_lt",
                     "left_tambour_bend_backer",
                 },
             ),
@@ -500,13 +666,34 @@ class TambourClearanceBuildTests(unittest.TestCase):
                 {
                     "post_br",
                     "brace_fr_br",
-                    "right_tambour_rail",
+                    "rail_rtam",
+                    "rail_rt",
                     "right_tambour_bend_backer",
                 },
             ),
         )
         for endpoint_index,opening_sign,support_names in sides:
-            supports=[enclosure.members[name] for name in support_names]
+            supports=[]
+            for name in support_names:
+                member=enclosure.members.get(name)
+                if member is not None:
+                    supports.append((member.min,member.max))
+                    continue
+                component=enclosure.components[name]
+                resolved=component.resolved(enclosure.members[component.member])
+                supports.append(
+                    (
+                        resolved.box_min,
+                        tuple(
+                            a+b
+                            for a,b in zip(
+                                resolved.box_min,
+                                resolved.box_size,
+                                strict=True,
+                            )
+                        ),
+                    )
+                )
             for left,right,tangent in tambour.track_samples(subdivisions=4):
                 point=(left,right)[endpoint_index]
                 depth_y=-opening_sign*tangent[2]
@@ -520,9 +707,9 @@ class TambourClearanceBuildTests(unittest.TestCase):
                     z=point[2]+offset*depth_z
                     self.assertTrue(
                         any(
-                            member.min[1]-1e-9 <= y <= member.max[1]+1e-9
-                            and member.min[2]-1e-9 <= z <= member.max[2]+1e-9
-                            for member in supports
+                            minimum[1]-1e-9 <= y <= maximum[1]+1e-9
+                            and minimum[2]-1e-9 <= z <= maximum[2]+1e-9
+                            for minimum,maximum in supports
                         ),
                         f"unsupported track at {(point, y, z)}",
                     )
@@ -566,10 +753,11 @@ class TambourClearanceBuildTests(unittest.TestCase):
 
         self.assertEqual(panel_instance.assembly, "tambour_guard")
         self.assertEqual(panel.type_name, "quarter_inch_exterior_plywood_panel")
-        self.assertEqual(panel.box_min, (3.5, 8.875, 43.25))
-        self.assertEqual(panel.box_size, (20.5, 8.75, 0.25))
-        self.assertAlmostEqual(
-            build.TAMBOUR_TOP_Z-build.TAMBOUR_MAX_ENVELOPE_DEPTH/2
+        self.assertEqual(panel.box_min, (3.5, 9.6875, 43.25))
+        self.assertEqual(panel.box_size, (20.5, 7.9375, 0.25))
+        self.assertEqual(panel.box_min[1], build.members["rail_ft"].max_on("y"))
+        self.assertGreaterEqual(
+            build.TAMBOUR_TOP_Z-build.TAMBOUR_INWARD_ENVELOPE_DEPTH
             -(panel.box_min[2]+panel.box_size[2]),
             build.TAMBOUR_CEILING_CLEARANCE,
         )
@@ -851,7 +1039,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.members["front_center_rail"]
         )
         self.assertAlmostEqual(charger.box_min[2], 23.65)
-        self.assertAlmostEqual(holster.box_min[2], 28.33492125984252)
+        self.assertAlmostEqual(holster.box_min[2], 28.20992125984252)
 
     def test_riser_and_equipment_feeds_use_relative_endpoints(self) -> None:
         enclosure = build.default_build
@@ -1054,7 +1242,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 168)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "fc971e0f7b9f9670c958191956d8ca4e96b7d5151f4867d5567eb3749d021e34",
+            "423e00e4c5b952bffa29ae782e5eb87950ecdd95a328e8348afbfe48258da710",
         )
 
     def test_center_gland_charger_route_exact_regression(self) -> None:
@@ -1593,10 +1781,15 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertAlmostEqual(taller.members["brace_fl_fr"].max_on("z"), 55)
         self.assertAlmostEqual(taller.members["brace_fr_br"].min_on("z"), 51.5)
         self.assertNotIn("rail_r_tambour", taller.members)
-        self.assertNotIn("rail_rt", taller.members)
+        self.assertAlmostEqual(taller.members["rail_rt"].min_on("z"), 48.875)
+        self.assertAlmostEqual(taller.members["rail_rt"].max_on("z"), 50.375)
+        self.assertAlmostEqual(taller.members["rail_rtam"].max_on("z"), 51.5)
         self.assertAlmostEqual(taller.siding.frame_top_z, 55)
         self.assertAlmostEqual(taller.siding.roof_support_z, 55.25)
-        self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.5)
+        self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.375)
+        self.assertAlmostEqual(taller.TAMBOUR_REAR_VERTICAL_LENGTH, 46.75)
+        self.assertAlmostEqual(taller.TAMBOUR_TOP_TANGENT_LENGTH, 10.75)
+        self.assertAlmostEqual(taller.TAMBOUR_FRONT_VERTICAL_LENGTH, 33.75)
         self.assertAlmostEqual(taller.LOW_VOLTAGE_SERVICE_LOOP_TOP_Z, 50.9375)
 
         for name in (
@@ -1918,6 +2111,13 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "tambour",
                 },
             )
+            manifest = json.loads(
+                (output_dir / "tambour" / "manifest.json").read_text()
+            )
+            top_track = next(
+                row for row in manifest if row["name"] == "left_top_straight_01"
+            )
+            self.assertEqual(top_track["size_y_mm"], 233.05)
             self.assertTrue((output_dir / "tambour" / "pull_handle.step").is_file())
             self.assertTrue((output_dir / "tambour" / "pull_handle.stl").is_file())
             manifest = json.loads(

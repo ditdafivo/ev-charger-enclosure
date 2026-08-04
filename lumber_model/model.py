@@ -195,6 +195,23 @@ class Model:
                 f"sanitization: {duplicate_vars}"
             )
 
+        lumber_toggle_vars = [
+            "show_lumber_" + sanitize_scad_identifier(piece.name)
+            for piece in self.pieces
+        ]
+        duplicate_lumber_toggle_vars = sorted(
+            {
+                name
+                for name in lumber_toggle_vars
+                if lumber_toggle_vars.count(name) > 1
+            }
+        )
+        if duplicate_lumber_toggle_vars:
+            raise ValueError(
+                "Lumber names produce duplicate individual OpenSCAD toggles after "
+                f"sanitization: {duplicate_lumber_toggle_vars}"
+            )
+
         member_by_name = {piece.name: piece for piece in self.pieces}
 
         component_names = [component.name for component in self.components]
@@ -225,6 +242,23 @@ class Model:
             raise ValueError(
                 "Component assembly names produce duplicate OpenSCAD identifiers "
                 f"after sanitization: {duplicate_component_vars}"
+            )
+
+        component_toggle_vars = [
+            "show_component_" + sanitize_scad_identifier(component.name)
+            for component in self.components
+        ]
+        duplicate_component_toggle_vars = sorted(
+            {
+                name
+                for name in component_toggle_vars
+                if component_toggle_vars.count(name) > 1
+            }
+        )
+        if duplicate_component_toggle_vars:
+            raise ValueError(
+                "Component names produce duplicate individual OpenSCAD toggles "
+                f"after sanitization: {duplicate_component_toggle_vars}"
             )
 
         for component in self.components:
@@ -340,6 +374,23 @@ class Model:
         if duplicate_tambours:
             raise ValueError(f"Duplicate tambour names: {duplicate_tambours}")
 
+        tambour_object_names = [
+            name
+            for tambour in self.tambours
+            for name in tambour.resolved(self).renderable_object_names()
+        ]
+        duplicate_tambour_objects = sorted(
+            {
+                name
+                for name in tambour_object_names
+                if tambour_object_names.count(name) > 1
+            }
+        )
+        if duplicate_tambour_objects:
+            raise ValueError(
+                f"Duplicate tambour object names: {duplicate_tambour_objects}"
+            )
+
         tambour_assembly_vars = [
             "tambour_" + sanitize_scad_identifier(a)
             for a in self.tambour_assemblies()
@@ -378,7 +429,11 @@ class Model:
             + [conduit.name for conduit in self.conduits]
             + [cable.name for cable in self.cables]
             + [footing.name for footing in self.footings]
-            + [tambour.name for tambour in self.tambours]
+            + [
+                name
+                for tambour in self.tambours
+                for name in tambour.resolved(self).renderable_object_names()
+            ]
             + [part.name for siding in self.sidings for part in siding.parts]
         )
 
@@ -659,6 +714,15 @@ class Model:
     def scad_piece_records(self) -> list[str]:
         return [piece.scad_record() for piece in self.pieces]
 
+    def scad_piece_toggles(self) -> list[dict[str, str]]:
+        return [
+            {
+                "name": piece.name,
+                "toggle": "show_lumber_" + sanitize_scad_identifier(piece.name),
+            }
+            for piece in self.pieces
+        ]
+
     def scad_routed_seat_records(self) -> list[str]:
         return [seat.scad_record() for seat in self.routed_seats]
 
@@ -687,6 +751,16 @@ class Model:
         member_by_name = {piece.name: piece for piece in self.pieces}
         return [
             component.resolved(member_by_name[component.member]).scad_record(scad_dir)
+            for component in self.components
+        ]
+
+    def scad_component_toggles(self) -> list[dict[str, str]]:
+        return [
+            {
+                "name": component.name,
+                "toggle": "show_component_"
+                + sanitize_scad_identifier(component.name),
+            }
             for component in self.components
         ]
 
@@ -740,7 +814,16 @@ class Model:
         return [footing.resolved(self).scad_record() for footing in self.footings]
 
     def tambour_assemblies(self) -> list[str]:
-        return sorted({tambour.assembly for tambour in self.tambours})
+        return sorted(
+            {
+                assembly
+                for tambour in self.tambours
+                for assembly in (
+                    tambour.assembly,
+                    tambour.track_assembly or tambour.assembly,
+                )
+            }
+        )
 
     def scad_tambour_assemblies(self) -> list[dict[str, str]]:
         return [
@@ -943,9 +1026,11 @@ class Model:
         return template.render(
             assemblies=self.scad_assemblies(),
             piece_records=self.scad_piece_records(),
+            piece_toggles=self.scad_piece_toggles(),
             routed_seat_records=self.scad_routed_seat_records(),
             component_assemblies=self.scad_component_assemblies(),
             component_records=self.scad_component_records(scad_dir),
+            component_toggles=self.scad_component_toggles(),
             conduit_assemblies=self.scad_conduit_assemblies(),
             conduit_records=self.scad_conduit_records(),
             cable_assemblies=self.scad_cable_assemblies(),

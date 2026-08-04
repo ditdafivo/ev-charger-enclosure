@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -241,8 +241,9 @@ def build_enclosure(
 
     CENTER_RAIL_OFFSET=-3
     # Keep the top guide/support assembly below the perimeter braces.  The
-    # resulting one-inch gap from the guide centerline to the brace underside
-    # accommodates a 1.5-inch curtain envelope plus 1/4 inch of clearance.
+    # swept envelope is asymmetric about the groove centerline: the handle is
+    # proud of the outward slat face, while webbing and its fastener heads are
+    # on the inward face.
     TAMBOUR_MAX_ENVELOPE_DEPTH=1.5
     TAMBOUR_SLAT_DEPTH=0.5
     TAMBOUR_SLAT_HEIGHT=0.75
@@ -250,58 +251,83 @@ def build_enclosure(
     TAMBOUR_SLAT_PITCH=TAMBOUR_SLAT_HEIGHT+TAMBOUR_SLAT_GAP
     TAMBOUR_FABRICATION=TambourFabricationConfig()
     MM_PER_INCH=25.4
+    TAMBOUR_TRACK_FOOTPRINT_WIDTH=(
+        TAMBOUR_FABRICATION.channel_internal_width
+        +2*TAMBOUR_FABRICATION.wall_thickness
+        +2*TAMBOUR_FABRICATION.flange_extension
+    )/MM_PER_INCH
+    TAMBOUR_TRACK_SUPPORT_EDGE_MARGIN=(
+        HEIGHT_2x4-TAMBOUR_TRACK_FOOTPRINT_WIDTH
+    )/2
+    if TAMBOUR_TRACK_SUPPORT_EDGE_MARGIN < 1/16:
+        raise ValueError("tambour track leaves less than 1/16 inch support margin")
+    TAMBOUR_OUTWARD_ENVELOPE_DEPTH=(
+        TAMBOUR_SLAT_DEPTH/2
+        +TAMBOUR_FABRICATION.handle_projection/MM_PER_INCH
+    )
+    TAMBOUR_INWARD_ENVELOPE_DEPTH=(
+        TAMBOUR_SLAT_DEPTH/2
+        +TAMBOUR_FABRICATION.inward_hardware_projection/MM_PER_INCH
+    )
+    if (
+        TAMBOUR_OUTWARD_ENVELOPE_DEPTH+TAMBOUR_INWARD_ENVELOPE_DEPTH
+        > TAMBOUR_MAX_ENVELOPE_DEPTH
+    ):
+        raise ValueError("tambour hardware exceeds the 1.5-inch swept envelope")
     TAMBOUR_BRACE_CLEARANCE=0.25
     TAMBOUR_TOP_OFFSET=(
-        HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_MAX_ENVELOPE_DEPTH/2
+        HEIGHT_2x4+TAMBOUR_BRACE_CLEARANCE+TAMBOUR_OUTWARD_ENVELOPE_DEPTH
     )
     TAMBOUR_TOP_Z=FRAME_DIMS.z-TAMBOUR_TOP_OFFSET
-    TAMBOUR_FRONT_Y=5
-    TAMBOUR_VERTICAL_SUPPORT_CENTER_Y=TAMBOUR_FRONT_Y+0.5
+    TAMBOUR_TRACK_BACK_Y=members["post_bl"].max_on("y")-0.875
+    TAMBOUR_BACK_BOTTOM_Z=3
+    TAMBOUR_FRONT_BOTTOM_Z=16
+    TAMBOUR_BEND_RADIUS=TAMBOUR_FABRICATION.bend_radius/MM_PER_INCH
+
+    # The front electrical assembly remains fixed.  Put the curtain as far
+    # forward as its outward envelope and required clearance allow, rounded
+    # rearward to construction-friendly 1/8-inch resolution.
+    FRONT_STREET_LIGHT_FACE_PROJECTION=0
+    FRONT_STREET_LIGHT_BOX_FACE_Y=(
+        -SIDING_BOARD_THICKNESS-FRONT_STREET_LIGHT_FACE_PROJECTION
+    )
+    FRONT_STREET_LIGHT_BOX_BACK_Y=(
+        FRONT_STREET_LIGHT_BOX_FACE_Y
+        +COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]
+        +COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING.size[2]
+    )
+    FRONT_STREET_LIGHT_BACKER_REAR_Y=(
+        FRONT_STREET_LIGHT_BOX_BACK_Y+HEIGHT_2x4
+    )
+    TAMBOUR_PLACEMENT_INCREMENT=1/8
+    TAMBOUR_MINIMUM_TRACK_FRONT_Y=(
+        FRONT_STREET_LIGHT_BACKER_REAR_Y
+        +TAMBOUR_OUTWARD_ENVELOPE_DEPTH
+        +TAMBOUR_BRACE_CLEARANCE
+    )
+    TAMBOUR_TRACK_FRONT_Y=(
+        math.ceil(
+            TAMBOUR_MINIMUM_TRACK_FRONT_Y/TAMBOUR_PLACEMENT_INCREMENT-1e-9
+        )
+        *TAMBOUR_PLACEMENT_INCREMENT
+    )
+    TAMBOUR_FRONT_Y=TAMBOUR_TRACK_FRONT_Y
+    TAMBOUR_VERTICAL_SUPPORT_CENTER_Y=TAMBOUR_TRACK_FRONT_Y
     # Track points are the center of the running groove.  The detailed slats
     # must share that datum rather than riding on one of the groove walls.
     TAMBOUR_SLAT_TRACK_OFFSET=0
-    TAMBOUR_TRACK_FRONT_Y=TAMBOUR_VERTICAL_SUPPORT_CENTER_Y
     TAMBOUR_TRACK_TOP_Z=TAMBOUR_TOP_Z
     TAMBOUR_FRONT_HEADER_TOP_Z=TAMBOUR_TOP_Z-2
     TAMBOUR_FRONT_HEADER_CENTER_Z=(
         TAMBOUR_FRONT_HEADER_TOP_Z-HEIGHT_2x4/2
     )
-    UPPER_RAIL_OFFSET=3.5
-
-    for name,support_a,support_b,position,cross_offset,position_axis, rotated in [
+    TAMBOUR_FRONT_HEADER_CENTER_Y=(
+        members["brace_fl_bl"].center_on("y")+CENTER_RAIL_OFFSET
+    )
+    for name,support_a,support_b,position,cross_offset,position_axis,rotated in [
         ("rail_rb","post_fr","post_br", 7, 0, None, True),
         ("rail_lb","post_fl","post_bl", 7, 0, None, True),
         ("rail_fb","rail_lb","rail_rb", 7, CENTER_RAIL_OFFSET, None, True),
-        ("rail_rbu","post_fr","post_br", 13, 0, None, True),
-        (
-            "rail_ft",
-            "brace_fr_br",
-            "brace_fl_bl",
-            TAMBOUR_FRONT_HEADER_CENTER_Z,
-            CENTER_RAIL_OFFSET,
-            None,
-            True,
-        ),
-        ("front_center_rail","rail_fb","rail_ft",(WIDTH_4x4+FRAME_DIMS.x)/2, 0, None, False),
-        ("right_center_rail","rail_rbu","brace_fr_br",(WIDTH_4x4+FRAME_DIMS.y)/2, 0, "y", True),
-        (
-            "right_tambour_rail",
-            "rail_rbu",
-            "brace_fr_br",
-            TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
-            0,
-            "y",
-            True,
-        ),
-        (
-            "left_tambour_rail",
-            "rail_lb",
-            "brace_fl_bl",
-            TAMBOUR_VERTICAL_SUPPORT_CENTER_Y,
-            0,
-            "y",
-            True,
-        ),
     ]:
         members.between(
             name,
@@ -315,49 +341,107 @@ def build_enclosure(
             rotated=rotated,
         )
 
-    # Short blocks fill the inside corner between each vertical tambour rail
-    # and side brace.  Without them the swept flange at the front bend hangs
-    # over the concave corner even though both tangent runs are supported.
-    TAMBOUR_FRONT_BEND_BACKER_LENGTH=1.5
-    for name,rail_name in (
-        ("left_tambour_bend_backer", "left_tambour_rail"),
-        ("right_tambour_bend_backer", "right_tambour_rail"),
+    tambour_support_overlap_center_y=(
+        max(
+            members["brace_fl_bl"].min_on("y"),
+            members["rail_lb"].min_on("y"),
+        )
+        +min(
+            members["brace_fl_bl"].max_on("y"),
+            members["rail_lb"].max_on("y"),
+        )
+    )/2
+    tambour_support_cross_offset=(
+        TAMBOUR_VERTICAL_SUPPORT_CENTER_Y-tambour_support_overlap_center_y
+    )
+    for name,support_a,support_b,position in (
+        (
+            "rail_ltam",
+            "brace_fl_bl",
+            "rail_lb",
+            members["post_fl"].center_on("x"),
+        ),
+        (
+            "rail_rtam",
+            "brace_fr_br",
+            "rail_rb",
+            members["post_fr"].center_on("x"),
+        ),
     ):
-        rail=members[rail_name]
-        members.add(
+        members.between(
             name,
             assembly="frame",
             type="2x4",
-            axis="y",
-            start=AbsoluteCoord(
-                rail.min_on("x"),
-                rail.max_on("y"),
-                rail.max_on("z")-HEIGHT_2x4,
-            ),
-            length=TAMBOUR_FRONT_BEND_BACKER_LENGTH,
+            support_a=support_a,
+            support_b=support_b,
+            position=position,
+            cross_offset=tambour_support_cross_offset,
+            rotated=True,
         )
 
-    TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z=members["brace_fl_bl"].min_on("z")
-    TAMBOUR_FRONT_HEADER_SUPPORT_LENGTH=(
-        TAMBOUR_FRONT_HEADER_SUPPORT_TOP_Z-members["rail_ft"].min_on("z")
-    )
-    for name,x in (
-        ("rail_ft_left_support", members["rail_ft"].min_on("x")-HEIGHT_2x4),
-        ("rail_ft_right_support", members["rail_ft"].max_on("x")),
-    ):
-        members.add(
+    for name,support_a,support_b,position,position_axis in [
+        ("rail_rbu", "rail_rtam", "post_br", 13, None),
+        (
+            "rail_lt",
+            "rail_ltam",
+            "post_bl",
+            TAMBOUR_FRONT_HEADER_CENTER_Z,
+            None,
+        ),
+        (
+            "rail_rt",
+            "rail_rtam",
+            "post_br",
+            TAMBOUR_FRONT_HEADER_CENTER_Z,
+            None,
+        ),
+    ]:
+        members.between(
             name,
             assembly="frame",
             type="2x4",
-            axis="z",
-            start=AbsoluteCoord(
-                x,
-                members["rail_ft"].min_on("y"),
-                members["rail_ft"].min_on("z"),
-            ),
-            length=TAMBOUR_FRONT_HEADER_SUPPORT_LENGTH,
-            rotated=False,
+            support_a=support_a,
+            support_b=support_b,
+            position=position,
+            position_axis=position_axis,
+            rotated=True,
         )
+
+    header_support_overlap_center_y=(
+        max(members["rail_lt"].min_on("y"), members["rail_rt"].min_on("y"))
+        +min(members["rail_lt"].max_on("y"), members["rail_rt"].max_on("y"))
+    )/2
+    members.between(
+        "rail_ft",
+        assembly="frame",
+        type="2x4",
+        support_a="rail_lt",
+        support_b="rail_rt",
+        position=TAMBOUR_FRONT_HEADER_CENTER_Z,
+        cross_offset=(
+            TAMBOUR_FRONT_HEADER_CENTER_Y-header_support_overlap_center_y
+        ),
+        rotated=True,
+    )
+    members.between(
+        "front_center_rail",
+        assembly="frame",
+        type="2x4",
+        support_a="rail_fb",
+        support_b="rail_ft",
+        position=(WIDTH_4x4+FRAME_DIMS.x)/2,
+        rotated=False,
+    )
+    members.between(
+        "right_center_rail",
+        assembly="frame",
+        type="2x4",
+        support_a="rail_rbu",
+        support_b="rail_rt",
+        position=(WIDTH_4x4+FRAME_DIMS.y)/2,
+        position_axis="y",
+        rotated=True,
+    )
 
     BACK_RIGHT_OUTLET_REAR_OFFSET=1.5
     BACK_RIGHT_OUTLET_CENTER_Y=(
@@ -422,15 +506,6 @@ def build_enclosure(
     FRONT_STREET_LIGHT_CENTER_X=(FRAME_DIMS.x + WIDTH_4x4) / 2
     FRONT_STREET_LIGHT_TOP_OFFSET=7
     FRONT_STREET_LIGHT_CENTER_Z=FRAME_DIMS.z-FRONT_STREET_LIGHT_TOP_OFFSET
-    FRONT_STREET_LIGHT_FACE_PROJECTION=0
-    FRONT_STREET_LIGHT_BOX_FACE_Y=(
-        -SIDING_BOARD_THICKNESS - FRONT_STREET_LIGHT_FACE_PROJECTION
-    )
-    FRONT_STREET_LIGHT_BOX_BACK_Y=(
-        FRONT_STREET_LIGHT_BOX_FACE_Y
-        + COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]
-        + COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING.size[2]
-    )
     FRONT_STREET_LIGHT_BACKER_CROSS_OFFSET=(
         FRONT_STREET_LIGHT_BOX_BACK_Y
         + HEIGHT_2x4 / 2
@@ -668,6 +743,57 @@ def build_enclosure(
     LOW_VOLTAGE_STREET_LIGHT_COLOR=(0.18, 0.07, 0.025, 1.0)
 
     components = ComponentCollection()
+
+    TAMBOUR_FRONT_BEND_BACKER_THICKNESS=0.75
+    TAMBOUR_FRONT_BEND_BACKER_LENGTH=HEIGHT_2x4
+    TAMBOUR_FRONT_BEND_BACKER_BOTTOM_Z=max(
+        members["rail_lt"].max_on("z"),
+        members["rail_rt"].max_on("z"),
+    )
+    TAMBOUR_FRONT_BEND_BACKER_TOP_Z=min(
+        members["brace_fl_bl"].min_on("z"),
+        members["brace_fr_br"].min_on("z"),
+    )
+    TAMBOUR_FRONT_BEND_BACKER_HEIGHT=(
+        TAMBOUR_FRONT_BEND_BACKER_TOP_Z
+        -TAMBOUR_FRONT_BEND_BACKER_BOTTOM_Z
+    )
+    if TAMBOUR_FRONT_BEND_BACKER_HEIGHT <= 0:
+        raise ValueError("tambour bend backers have no space above the side rails")
+    tambour_bend_backer_type=ComponentType(
+        name="three_quarter_inch_plywood_tambour_bend_backer",
+        size=(
+            TAMBOUR_FRONT_BEND_BACKER_HEIGHT,
+            TAMBOUR_FRONT_BEND_BACKER_THICKNESS,
+            TAMBOUR_FRONT_BEND_BACKER_LENGTH,
+        ),
+        color=(0.72, 0.58, 0.38, 1.0),
+        default_face="narrow_pos",
+        mount_point=(0, 0, 0),
+    )
+    for name,rail_name,minimum_x in (
+        (
+            "left_tambour_bend_backer",
+            "rail_ltam",
+            members["rail_ltam"].max_on("x")
+            -TAMBOUR_FRONT_BEND_BACKER_THICKNESS,
+        ),
+        (
+            "right_tambour_bend_backer",
+            "rail_rtam",
+            members["rail_rtam"].min_on("x"),
+        ),
+    ):
+        rail=members[rail_name]
+        components.add(
+            name,
+            assembly="tambour_supports",
+            component_type=tambour_bend_backer_type,
+            member=rail_name,
+            at=TAMBOUR_FRONT_BEND_BACKER_BOTTOM_Z-rail.min_on("z"),
+            face="narrow_pos",
+            offset=(0, minimum_x-rail.center_on("x"), 0),
+        )
 
     GUSSET_HARDWARE_PROJECTION=(
         GUSSET_THICKNESS_IN+GUSSET_SCREW_HEAD_HEIGHT_IN
@@ -1299,14 +1425,29 @@ def build_enclosure(
 
     TAMBOUR_LEFT_X = members["post_fl"].max_on("x")
     TAMBOUR_RIGHT_X = members["post_fr"].min_on("x")
-    TAMBOUR_BACK_Y = members["post_bl"].max_on("y") - 0.5
-    # Keep the narrowed flange comfortably inside the rear post face.  This
-    # datum is independent of slat placement now that the path is the groove
-    # centerline.
-    TAMBOUR_TRACK_BACK_Y = members["post_bl"].max_on("y") - 0.875
-    TAMBOUR_BACK_BOTTOM_Z = 3
-    TAMBOUR_FRONT_BOTTOM_Z = 16
-    TAMBOUR_BEND_RADIUS = TAMBOUR_FABRICATION.bend_radius/MM_PER_INCH
+    TAMBOUR_REAR_VERTICAL_LENGTH=(
+        TAMBOUR_TRACK_TOP_Z-TAMBOUR_BACK_BOTTOM_Z-TAMBOUR_BEND_RADIUS
+    )
+    TAMBOUR_TOP_TANGENT_LENGTH=(
+        TAMBOUR_TRACK_BACK_Y
+        -TAMBOUR_TRACK_FRONT_Y
+        -2*TAMBOUR_BEND_RADIUS
+    )
+    TAMBOUR_FRONT_VERTICAL_LENGTH=(
+        TAMBOUR_TRACK_TOP_Z-TAMBOUR_FRONT_BOTTOM_Z-TAMBOUR_BEND_RADIUS
+    )
+    if min(
+        TAMBOUR_REAR_VERTICAL_LENGTH,
+        TAMBOUR_TOP_TANGENT_LENGTH,
+        TAMBOUR_FRONT_VERTICAL_LENGTH,
+    ) <= 0:
+        raise ValueError("tambour path leaves no room for a straight track run")
+    TAMBOUR_FABRICATION=replace(
+        TAMBOUR_FABRICATION,
+        rear_vertical_length=TAMBOUR_REAR_VERTICAL_LENGTH*MM_PER_INCH,
+        top_tangent_length=TAMBOUR_TOP_TANGENT_LENGTH*MM_PER_INCH,
+        front_vertical_length=TAMBOUR_FRONT_VERTICAL_LENGTH*MM_PER_INCH,
+    )
 
     rear_fixed_length = (
         TAMBOUR_FABRICATION.rear_vertical_length
@@ -1376,11 +1517,16 @@ def build_enclosure(
         handle_width=TAMBOUR_FABRICATION.handle_width/MM_PER_INCH,
         handle_height=TAMBOUR_FABRICATION.handle_height/MM_PER_INCH,
         handle_projection=TAMBOUR_FABRICATION.handle_projection/MM_PER_INCH,
+        inward_hardware_projection=(
+            TAMBOUR_FABRICATION.inward_hardware_projection/MM_PER_INCH
+        ),
     )
 
     tambours.add(
         "enclosure_tambour_door",
         assembly="tambour_door",
+        track_name="enclosure_tambour_track",
+        track_assembly="tambour_track",
         left_points=(
             RelativeCoord(
                 "post_bl",
@@ -1450,17 +1596,11 @@ def build_enclosure(
     TAMBOUR_CEILING_THICKNESS=0.25
     TAMBOUR_CEILING_CLEARANCE=0.25
     TAMBOUR_CEILING_BEND_INSET=0.75
-    TAMBOUR_CEILING_FRONT_Y=(
-        TAMBOUR_TRACK_FRONT_Y+TAMBOUR_BEND_RADIUS+TAMBOUR_CEILING_BEND_INSET
-    )
+    TAMBOUR_CEILING_FRONT_Y=members["rail_ft"].max_on("y")
     TAMBOUR_CEILING_REAR_Y=(
         TAMBOUR_TRACK_BACK_Y-TAMBOUR_BEND_RADIUS-TAMBOUR_CEILING_BEND_INSET
     )
-    TAMBOUR_CEILING_TOP_Z=(
-        TAMBOUR_TOP_Z
-        - TAMBOUR_MAX_ENVELOPE_DEPTH/2
-        - TAMBOUR_CEILING_CLEARANCE
-    )
+    TAMBOUR_CEILING_TOP_Z=FRAME_DIMS.z-3.5
     TAMBOUR_CEILING_BOTTOM_Z=(
         TAMBOUR_CEILING_TOP_Z-TAMBOUR_CEILING_THICKNESS
     )
@@ -2073,7 +2213,10 @@ def write_outputs(
     enclosure.model.write_fabrication_csv(output_dir / "fabrication.csv")
     enclosure.model.write_fabrication_json(output_dir / "fabrication.json")
     generate_gusset_dxf(output_dir / "gusset_plate_6x6.dxf")
-    generate_tambour_fabrication(output_dir / "tambour")
+    generate_tambour_fabrication(
+        output_dir / "tambour",
+        config=enclosure.TAMBOUR_FABRICATION,
+    )
 
 
 def _playground_model_text(model_path: Path) -> str:

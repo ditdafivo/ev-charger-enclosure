@@ -82,6 +82,10 @@ class TambourFabricationConfig:
     handle_width: float = 300.0
     handle_height: float = inches(0.75) - 1.0
     handle_projection: float = inches(0.625)
+    # Complete permitted projection beyond the concealed slat face, including
+    # webbing and every fastener head. Handle screws enter from recessed
+    # counterbores on the outward face and do not consume this allowance.
+    inward_hardware_projection: float = inches(1 / 16)
     swept_envelope_depth: float = inches(1.5)
 
     def __post_init__(self) -> None:
@@ -119,6 +123,7 @@ class TambourFabricationConfig:
             "handle_width",
             "handle_height",
             "handle_projection",
+            "inward_hardware_projection",
             "swept_envelope_depth",
         )
         for field_name in positive_fields:
@@ -139,8 +144,15 @@ class TambourFabricationConfig:
             raise ValueError("heat-set insert must remain within the mounting flange")
         if self.handle_width > 350 or self.handle_height > 350:
             raise ValueError("handle must fit the 350 mm printer bed")
-        if self.slat_depth + self.handle_projection > self.swept_envelope_depth:
-            raise ValueError("slat and handle exceed the swept depth envelope")
+        if (
+            self.slat_depth
+            + self.handle_projection
+            + self.inward_hardware_projection
+            > self.swept_envelope_depth
+        ):
+            raise ValueError(
+                "slat, handle, and inward hardware exceed the swept depth envelope"
+            )
         if self.bend_stub_length >= self.top_tangent_length / 2:
             raise ValueError("bend stubs leave no top straight track")
         if self.loading_section_length >= (

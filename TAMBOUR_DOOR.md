@@ -20,8 +20,11 @@ the build record at the end of this guide.
 | --- | ---: | --- |
 | Distance between left and right track centerlines | 20 1/2 in | Verify against the built frame |
 | Rear lower track endpoint | `y = 21`, `z = 3` in | Fixed enclosure interface |
-| Front lower track endpoint | `y = 5 1/2`, `z = 16` in | Fixed enclosure interface |
-| Top track centerline | `z = 44 1/2` in | Fixed enclosure interface |
+| Front lower track endpoint | `y = 5`, `z = 16` in | Fixed enclosure interface |
+| Top track centerline | `z = 44 3/8` in | Fixed enclosure interface |
+| Rear straight run | 38 3/4 in | Derived from installed datums |
+| Top straight run | 10 3/4 in | Derived from installed datums |
+| Front straight run | 25 3/4 in | Derived from installed datums |
 | Track offset into slat | 0 in; path is groove center | Fixed enclosure interface |
 | Bend centerline radius | 2 5/8 in | Prototype-controlled |
 | Curtain length | 44 in | Prototype-controlled |
@@ -30,7 +33,7 @@ the build record at the end of this guide.
 | Wooden slat face depth | 1/2 in | Prototype-controlled |
 | Complete swept depth envelope | 1 1/2 in | Fixed clearance limit |
 | Rendered track diameter | 1/2 in | Visualization only |
-| Removable ceiling panel | 20 1/2 by 8 3/4 by 1/4 in | Fixed enclosure interface |
+| Removable ceiling panel | 20 1/2 by 7 15/16 by 1/4 in | Fixed enclosure interface |
 
 The model places 56 slats on the 44-inch curtain. The 1/32-inch difference
 between the 3/4-inch slat height and 25/32-inch attachment pitch is a setup
@@ -43,11 +46,15 @@ The track datum and wooden slat center now share the running-groove centerline.
 In the X direction, that datum is also the lumber mounting face: the printed
 flange and channel project from it into the door opening rather than into the
 supporting lumber.
-The actual 1/2-inch slat is rendered at `z = 44.5` on the top run, while
-clearance checks retain the complete 1 1/2-inch swept envelope. The envelope
-retains 1/4 inch below the braces: `44.5 + 1.5 / 2 = 45.25` inches. No handle,
-screw head, webbing,
-reinforcement, or track fixing may extend beyond it.
+The actual 1/2-inch slat is rendered at `z = 44.375` on the top run. Clearance
+checks use an asymmetric swept envelope: 7/8 inch outward from the groove
+centerline for the slat plus 5/8-inch handle, and 5/16 inch inward for the slat
+plus no more than 1/16 inch of webbing, reinforcement, and fastener-head
+projection. The resulting 1 3/16-inch stack remains within the fixed
+1 1/2-inch maximum. The outward envelope retains 1/4 inch below the braces:
+`44.375 + 0.875 = 45.25` inches. No handle, screw head, webbing, reinforcement,
+or track fixing may extend beyond its applicable side of this approved
+envelope.
 
 ## Provisional construction
 
@@ -128,7 +135,7 @@ Make two special pull slats as part of the curtain:
 Rear elevation, door closed (not to scale):
 
 ```text
-                  top track centerline z = 44.5
+                  top track centerline z = 44.375
        left track  |==========================|  right track
                    |                          |
                    |  upper printed lift ledge|  about 18 in above lower edge
@@ -143,35 +150,44 @@ Side path and handle orientation (not to scale):
 
 ```text
  rear opening                                      enclosure front
- y = 21                                                   y = 5.5
+ y = 21                                                     y = 5
     |        top brace underside z = 45.5                    |
     |        ----------------------------------               |
     |        1/4-in minimum clearance                         |
     |      / printed ledge rotates onto top run \              |
-    |     /======================================\ z = 44.5   |
+    |     /======================================\ z = 44.375 |
     |     |                                      |            |
     |     |                                      |            |
  z = 3 --+                                      +-- z = 16
 
- Any proud handle reduces the required 1/4-in clearance.
+ The modeled 5/8-in proud handle is included in the 1/4-in clearance.
  The printed ledge must remain inside the approved 1 1/2-in envelope.
 ```
 
 The model includes a removable 1/4-inch exterior-plywood ceiling from
-`y = 8.875` to `y = 17.625` and `z = 43.25` to `z = 43.5`. It shields the
-overhead curtain from hands and the charger cord while retaining 1/4 inch
-below the maximum curtain envelope. Support it on independent removable
-retainers; do not fasten through a printed track or obstruct track inspection.
+`y = 9.6875` to `y = 17.625` and `z = 43.25` to `z = 43.5`. Its front edge
+aligns with the positive-Y face of `rail_ft`, avoiding an unnecessary forward
+overhang. It shields the overhead curtain from hands and the charger cord while
+retaining 1/4 inch below the maximum curtain envelope. Support it on independent
+removable retainers; do not fasten through a printed track or obstruct track
+inspection.
 
 Attach one centered printed ASA lift ledge to each pull slat. The nominal ledge
-is 300 mm wide, no more than 5/8 inch proud of the wood face, and secured with
-multiple short corrosion-resistant wood screws in recessed counterbores. It
-must remain entirely on one slat and permit a centered one-hand grip or a wide
-two-hand grip.
+is 300 mm wide, no more than 5/8 inch proud of the wood face, and secured from
+the outward side with multiple short corrosion-resistant wood screws in
+recessed counterbores. The screw tips must not penetrate the concealed face;
+the modeled handle attachment therefore has no screw head on the inward plane.
+It must remain entirely on one slat and permit a centered one-hand grip or a
+wide two-hand grip.
 
 The approved pull profile must meet all of these conditions:
 
-- Nothing projects beyond the ordinary slat envelope in any direction.
+- Nothing projects beyond the approved asymmetric swept envelope in any
+  direction.
+- Webbing, reinforcement, and all heads on the inward face project no more than
+  1/16 inch beyond that face. A proposed through-fastener with its head or nut
+  on the inward face is a design change and must pass the bend coupon before
+  use; it is not the modeled handle fastening method.
 - The printed grip and its edges are smooth, rounded, drainable, and free of
   layer separation or sharp support scars.
 - Screw pilot holes retain enough wood to keep the 1/2-inch pull slat straight
@@ -238,9 +254,10 @@ this design.
 
 ## Enclosure installation
 
-Install the approved tracks after the four tambour-supporting lumber members
-are fixed and before electrical backing, conduit, siding, or trim restricts
-access.
+Install the approved tracks only after both vertical supports, both 3/4-inch
+plywood bend backers, and the top side 4x4s are fixed. Install and verify the
+tracks before loading the door, and complete both operations before electrical
+backing, conduit, siding, or trim restricts access.
 
 1. Measure the actual frame and compare it with the prototype test frame.
 2. Use the prototype alignment gauges to position both guide paths. Shim the

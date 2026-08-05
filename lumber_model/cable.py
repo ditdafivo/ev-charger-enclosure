@@ -491,6 +491,8 @@ def ev_charger_cable_points(
     diameter: float = 0.8,
     spacing: float = 0.8,
     ground_clearance: float = 3.0,
+    body_exit_across: float = 2.26,
+    body_exit_depth: float = 1.60,
     curve_segments: int = DEFAULT_CURVE_SEGMENTS,
 ) -> tuple[Vector3, ...]:
     """Build the expanding, depth-stacked cable centerline for the front charger."""
@@ -511,7 +513,16 @@ def ev_charger_cable_points(
     plug_size = plug.box_size
     radius = diameter / 2
     minimum_bend_radius = MINIMUM_BEND_RADIUS_MULTIPLIER * diameter
-    start = _component_local_point(body, 0.0, 2.0, body_size[1] / 2)
+    if not 0 <= body_exit_across <= body_size[0]:
+        raise ValueError("EV charger cable exit must be within the body width")
+    if not 0 <= body_exit_depth <= body_size[1]:
+        raise ValueError("EV charger cable exit must be within the body depth")
+    start = _component_local_point(
+        body,
+        0.0,
+        body_exit_across,
+        body_exit_depth,
+    )
     end = _component_local_point(plug, 0.0, plug_size[0] / 2, plug_size[1])
 
     body_left = body.box_min[0]

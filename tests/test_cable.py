@@ -126,7 +126,10 @@ class CableTests(unittest.TestCase):
         points = ev_charger_cable_points(body, plug, ground)
 
         self.assertTrue(math.isclose(cable_centerline_length(points), 300, abs_tol=1e-7))
-        self.assertEqual(points[0], (body.box_min[0] + 2, 8.15, body.box_min[2]))
+        self.assertEqual(
+            points[0],
+            (body.box_min[0] + 2.26, 8.10, body.box_min[2]),
+        )
         self.assertEqual(
             points[-1],
             (

@@ -571,9 +571,15 @@ class ComponentValidationTests(unittest.TestCase):
 
     def test_ev_charger_body_geometry(self) -> None:
         self.assertEqual(EV_CHARGER_BODY.name, "ev_charger_body")
-        self.assertEqual(EV_CHARGER_BODY.size, (6.6, 6.6, 3.3))
+        self.assertEqual(EV_CHARGER_BODY.size, (7.9, 7.8, 3.9))
         self.assertEqual(EV_CHARGER_BODY.default_face, "wide_neg")
-        self.assertEqual(EV_CHARGER_BODY.mount_point, (6.6, 3.3, 0.0))
+        self.assertEqual(EV_CHARGER_BODY.mount_point, (7.9, 3.9, 0.0))
+        self.assertEqual(EV_CHARGER_BODY.shape, "mesh")
+        self.assertEqual(
+            EV_CHARGER_BODY.mesh_path,
+            "assets/components/wallbox_pulsar_plus/"
+            "wallbox_pulsar_plus_body.stl",
+        )
 
     def test_carlon_e989nnj_junction_box_geometry(self) -> None:
         self.assertEqual(CARLON_E989NNJ_JUNCTION_BOX.name, "carlon_e989nnj_junction_box")

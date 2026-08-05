@@ -979,10 +979,15 @@ WIFI_ACCESS_POINT = ComponentType(
 
 EV_CHARGER_BODY = ComponentType(
     name="ev_charger_body",
-    size=(6.6, 6.6, 3.3),
-    color=(0.74, 0.78, 0.80, 1.0),
+    size=(7.9, 7.8, 3.9),
+    color=(0.055, 0.055, 0.060, 1.0),
     default_face="wide_neg",
-    mount_point=(6.6, 3.3, 0.0),
+    mount_point=(7.9, 3.9, 0.0),
+    shape="mesh",
+    mesh_path=(
+        "assets/components/wallbox_pulsar_plus/"
+        "wallbox_pulsar_plus_body.stl"
+    ),
 )
 
 CARLON_E989NNJ_JUNCTION_BOX = ComponentType(

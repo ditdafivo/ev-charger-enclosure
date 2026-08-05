@@ -82,6 +82,14 @@ PLAYGROUND_DEPLOY_PATH = "pages/model.scad"
 PLAYGROUND_REMOTE = "origin"
 LOCAL_MESH_PATH = "../assets/components/ev_charger_plug/ev_charger_plug.stl"
 PLAYGROUND_MESH_PATH = "ev_charger_plug.stl"
+LOCAL_CHARGER_BODY_MESH_PATH = (
+    "../assets/components/wallbox_pulsar_plus/wallbox_pulsar_plus_body.stl"
+)
+PLAYGROUND_CHARGER_BODY_MESH_PATH = "wallbox_pulsar_plus_body.stl"
+PLAYGROUND_MESH_PATHS = {
+    LOCAL_MESH_PATH: PLAYGROUND_MESH_PATH,
+    LOCAL_CHARGER_BODY_MESH_PATH: PLAYGROUND_CHARGER_BODY_MESH_PATH,
+}
 
 
 @dataclass(frozen=True)
@@ -1069,14 +1077,21 @@ def build_enclosure(
     ev_body = components["front_ev_charger_body"].resolved(
         members["front_center_rail"]
     )
-    POWER_EV_ENTRY=(
-        ev_body.box_min[0]+ev_body.box_size[0]/2+2.25,
-        ev_body.box_min[1]+ev_body.box_size[1]/2,
-        ev_body.box_min[2],
-    )
     POWER_EV_ENTRY_ANCHOR=ComponentAnchor(
         "front_ev_charger_body",
-        position=(0, EV_CHARGER_BODY.size[1]/2+2.25),
+        position=(0, EV_CHARGER_BODY.size[1]-2.30),
+        depth_offset=1.60-EV_CHARGER_BODY.size[2]/2,
+    )
+    POWER_EV_ENTRY=tuple(
+        ev_body.origin[index]
+        + ev_body.along_vec[index]*POWER_EV_ENTRY_ANCHOR.position[0]
+        + ev_body.across_vec[index]*POWER_EV_ENTRY_ANCHOR.position[1]
+        + ev_body.out_vec[index]
+        * (
+            EV_CHARGER_BODY.size[2]/2
+            + POWER_EV_ENTRY_ANCHOR.depth_offset
+        )
+        for index in range(3)
     )
 
     # Keep the T's vertical channel coaxial with the charger entry and raise
@@ -2223,12 +2238,18 @@ def _playground_model_text(model_path: Path) -> str:
     """Return a Playground-ready model without changing the local output."""
 
     model_text = model_path.read_text()
-    if LOCAL_MESH_PATH not in model_text:
+    replaced_path = False
+    for local_path, playground_path in PLAYGROUND_MESH_PATHS.items():
+        if local_path in model_text:
+            model_text = model_text.replace(local_path, playground_path)
+            replaced_path = True
+    if not replaced_path:
+        expected = ", ".join(PLAYGROUND_MESH_PATHS)
         raise ValueError(
-            f"generated model does not reference the expected mesh path: "
-            f"{LOCAL_MESH_PATH}"
+            "generated model does not reference any expected mesh path: "
+            f"{expected}"
         )
-    return model_text.replace(LOCAL_MESH_PATH, PLAYGROUND_MESH_PATH)
+    return model_text
 
 
 def _validate_deployment_source(repository: str) -> None:

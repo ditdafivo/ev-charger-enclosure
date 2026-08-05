@@ -8,7 +8,8 @@ source_dir="${project_dir}/openscad-playground"
 model_path=${1:-"${repository_dir}/pages/model.scad"}
 output_dir=${2:-"${project_dir}/dist"}
 build_id=${3:-local}
-model_asset="${repository_dir}/assets/components/ev_charger_plug/ev_charger_plug.stl"
+plug_asset="${repository_dir}/assets/components/ev_charger_plug/ev_charger_plug.stl"
+charger_body_asset="${repository_dir}/assets/components/wallbox_pulsar_plus/wallbox_pulsar_plus_body.stl"
 
 for command_name in git npm sed tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
@@ -25,10 +26,12 @@ if [[ ! -f ${model_path} ]]; then
   echo "Prepared Playground model is missing: ${model_path}" >&2
   exit 1
 fi
-if [[ ! -f ${model_asset} ]]; then
-  echo "Model asset is missing: ${model_asset}" >&2
-  exit 1
-fi
+for model_asset in "${plug_asset}" "${charger_body_asset}"; do
+  if [[ ! -f ${model_asset} ]]; then
+    echo "Model asset is missing: ${model_asset}" >&2
+    exit 1
+  fi
+done
 
 temporary_dir=$(mktemp -d)
 cleanup() {
@@ -43,9 +46,12 @@ tar -C "${build_dir}" -xf "${temporary_dir}/source.tar"
 
 mkdir -p "${build_dir}/public/default-project"
 install -m 0644 "${model_path}" "${build_dir}/public/default-project/model.scad"
-install -m 0644 "${model_asset}" "${build_dir}/public/default-project/ev_charger_plug.stl"
+install -m 0644 "${plug_asset}" "${build_dir}/public/default-project/ev_charger_plug.stl"
+install -m 0644 "${charger_body_asset}" "${build_dir}/public/default-project/wallbox_pulsar_plus_body.stl"
 install -m 0644 "${source_dir}/LICENSE.md" "${build_dir}/public/LICENSE.md"
 sed -i 's#../assets/components/ev_charger_plug/ev_charger_plug\.stl#ev_charger_plug.stl#' \
+  "${build_dir}/public/default-project/model.scad"
+sed -i 's#../assets/components/wallbox_pulsar_plus/wallbox_pulsar_plus_body\.stl#wallbox_pulsar_plus_body.stl#' \
   "${build_dir}/public/default-project/model.scad"
 
 git -C "${build_dir}" apply "${project_dir}/patches/retry-library-downloads.patch"

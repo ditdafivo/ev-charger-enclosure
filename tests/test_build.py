@@ -986,7 +986,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertVectorAlmostEqual(riser.points[-1][:2], build.POWER_EV_ENTRY[:2])
         self.assertEqual(branch.trade_size, "1-1/4")
         self.assertEqual(branch.points[0][0], branch.points[-1][0])
-        self.assertAlmostEqual(branch.points[0][0], 16)
+        self.assertAlmostEqual(branch.points[0][0], build.POWER_EV_ENTRY[0])
         self.assertEqual(branch.points[0][2], branch.points[-1][2])
         self.assertLess(branch.points[0][1]-branch.points[-1][1], 0.25)
         self.assertAlmostEqual(
@@ -1012,7 +1012,10 @@ class PowerJunctionBuildTests(unittest.TestCase):
             adapter.box_min[1],
             box.box_min[1]+box.box_size[1],
         )
-        self.assertAlmostEqual(adapter.box_min[0]+adapter.box_size[0]/2, 16)
+        self.assertAlmostEqual(
+            adapter.box_min[0]+adapter.box_size[0]/2,
+            build.POWER_EV_ENTRY[0],
+        )
         self.assertLess(adapter.box_min[1], coupling.box_min[1])
         self.assertLess(coupling.box_min[1], branch.points[-1][1])
 
@@ -1030,7 +1033,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         )
         self.assertVectorAlmostEqual(
             build.POWER_EV_ENTRY,
-            (16, 11.3375, 23.65),
+            (15.35, 11.2875, 22.35),
         )
         charger = build.components["front_ev_charger_body"].resolved(
             build.members["front_center_rail"]
@@ -1038,7 +1041,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         holster = build.components["front_ev_charger_plug"].resolved(
             build.members["front_center_rail"]
         )
-        self.assertAlmostEqual(charger.box_min[2], 23.65)
+        self.assertAlmostEqual(charger.box_min[2], 22.35)
         self.assertAlmostEqual(holster.box_min[2], 28.20992125984252)
 
     def test_riser_and_equipment_feeds_use_relative_endpoints(self) -> None:
@@ -1252,7 +1255,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 101)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "b60023f251362216e48b9fe96328aec742d96064621b3a7635327a5d5c59e591",
+            "e955fee7dc0154943957fcf4faa2dc6379a5c79183dd9579601e6df6a136aa89",
         )
 
     def test_junction_boxes_share_positive_y_face_and_one_inch_x_gap(self) -> None:
@@ -1920,6 +1923,23 @@ class ParameterizedBuildTests(unittest.TestCase):
                 f'import("{build.PLAYGROUND_MESH_PATH}");\n',
             )
             self.assertEqual(model_path.read_text(), original)
+
+    def test_playground_model_rewrites_every_component_mesh(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            model_path = Path(temporary_directory) / "model.scad"
+            original = (
+                f'import("{build.LOCAL_MESH_PATH}");\n'
+                f'import("{build.LOCAL_CHARGER_BODY_MESH_PATH}");\n'
+            )
+            model_path.write_text(original)
+
+            transformed = build._playground_model_text(model_path)
+
+            self.assertEqual(
+                transformed,
+                f'import("{build.PLAYGROUND_MESH_PATH}");\n'
+                f'import("{build.PLAYGROUND_CHARGER_BODY_MESH_PATH}");\n',
+            )
 
     def test_deployment_failure_warns_and_returns_false(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

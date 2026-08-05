@@ -42,10 +42,12 @@ lumber_color = [0.50, 0.18, 0.08, 1.0];
 {% endfor %}
 /* [Individual Lumber] */
 {% for item in piece_toggles %}
+// {{ item.name | replace('_', ' ') }}
 {{ item.toggle }} = true;
 {% endfor %}
 /* [Individual Components] */
 {% for item in component_toggles %}
+// {{ item.name | replace('_', ' ') }}
 {{ item.toggle }} = true;
 {% endfor %}
 

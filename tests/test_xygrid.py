@@ -69,7 +69,9 @@ class XYGridTests(unittest.TestCase):
         self.assertIn("xzgrid_yloc = 0; // [-1:1:5]", scad)
         self.assertIn("yzgrid_enabled = false;", scad)
         self.assertIn("yzgrid_xloc = 0; // [-1:1:11]", scad)
-        self.assertIn("xygrid_region = 0; // [-1:1:1]", scad)
+        self.assertIn("xygrid_region = 0; // [-2:1:2]", scad)
+        self.assertIn("xzgrid_region = 0; // [-2:1:2]", scad)
+        self.assertIn("yzgrid_region = 0; // [-2:1:2]", scad)
         self.assertIn("xygrid_origin = [0, 0];", scad)
         self.assertIn("xygrid_zloc == floor(xygrid_zloc)", scad)
         self.assertIn("module render_xygrid(bounds, origin, zloc)", scad)
@@ -78,7 +80,8 @@ class XYGridTests(unittest.TestCase):
         self.assertIn("module render_model()", scad)
         self.assertIn("module render_preview_region()", scad)
         self.assertIn("intersection()", scad)
-        self.assertIn("yzgrid_region == 1 ? yzgrid_xloc", scad)
+        self.assertIn("yzgrid_region > 0 ? yzgrid_xloc", scad)
+        self.assertIn("yzgrid_region < 0 ? yzgrid_xloc", scad)
         self.assertIn("coordinate % 10 == 0", scad)
         self.assertIn("coordinate % 5 == 0", scad)
         self.assertIn(
@@ -90,7 +93,15 @@ class XYGridTests(unittest.TestCase):
             scad,
         )
         self.assertIn(
-            "if ($preview && xygrid_enabled && len(xygrid_bounds) == 4)",
+            "$preview && xygrid_enabled && abs(xygrid_region) != 2",
+            scad,
+        )
+        self.assertIn(
+            "$preview && xzgrid_enabled && abs(xzgrid_region) != 2",
+            scad,
+        )
+        self.assertIn(
+            "$preview && yzgrid_enabled && abs(yzgrid_region) != 2",
             scad,
         )
         self.assertIn("if ($preview && region_enabled", scad)

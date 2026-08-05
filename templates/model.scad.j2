@@ -26,13 +26,13 @@ lumber_color = [0.50, 0.18, 0.08, 1.0];
 /* [Grids] */
 xygrid_enabled = false;
 xygrid_zloc = {{ xygrid_zdefault }}; // [{{ xygrid_zrange }}]
-xygrid_region = 0; // [-1:1:1]
+xygrid_region = 0; // [-2:1:2]
 xzgrid_enabled = false;
 xzgrid_yloc = {{ xzgrid_ydefault }}; // [{{ xzgrid_yrange }}]
-xzgrid_region = 0; // [-1:1:1]
+xzgrid_region = 0; // [-2:1:2]
 yzgrid_enabled = false;
 yzgrid_xloc = {{ yzgrid_xdefault }}; // [{{ yzgrid_xrange }}]
-yzgrid_region = 0; // [-1:1:1]
+yzgrid_region = 0; // [-2:1:2]
 
 /* [Details] */
 {% for assembly in assemblies %}
@@ -128,16 +128,16 @@ assert(
     str("yzgrid_xloc must be an integer; got ", yzgrid_xloc)
 );
 assert(
-    xygrid_region == -1 || xygrid_region == 0 || xygrid_region == 1,
-    str("xygrid_region must be -1, 0, or 1; got ", xygrid_region)
+    abs(xygrid_region) <= 2 && xygrid_region == floor(xygrid_region),
+    str("xygrid_region must be an integer from -2 through 2; got ", xygrid_region)
 );
 assert(
-    xzgrid_region == -1 || xzgrid_region == 0 || xzgrid_region == 1,
-    str("xzgrid_region must be -1, 0, or 1; got ", xzgrid_region)
+    abs(xzgrid_region) <= 2 && xzgrid_region == floor(xzgrid_region),
+    str("xzgrid_region must be an integer from -2 through 2; got ", xzgrid_region)
 );
 assert(
-    yzgrid_region == -1 || yzgrid_region == 0 || yzgrid_region == 1,
-    str("yzgrid_region must be -1, 0, or 1; got ", yzgrid_region)
+    abs(yzgrid_region) <= 2 && yzgrid_region == floor(yzgrid_region),
+    str("yzgrid_region must be an integer from -2 through 2; got ", yzgrid_region)
 );
 
 {% if build_step_count %}
@@ -1042,12 +1042,12 @@ if (footings) {
 }
 
 module render_preview_region() {
-    min_x = yzgrid_region == 1 ? yzgrid_xloc : model_bounds[0];
-    max_x = yzgrid_region == -1 ? yzgrid_xloc : model_bounds[1];
-    min_y = xzgrid_region == 1 ? xzgrid_yloc : model_bounds[2];
-    max_y = xzgrid_region == -1 ? xzgrid_yloc : model_bounds[3];
-    min_z = xygrid_region == 1 ? xygrid_zloc : model_bounds[4];
-    max_z = xygrid_region == -1 ? xygrid_zloc : model_bounds[5];
+    min_x = yzgrid_region > 0 ? yzgrid_xloc : model_bounds[0];
+    max_x = yzgrid_region < 0 ? yzgrid_xloc : model_bounds[1];
+    min_y = xzgrid_region > 0 ? xzgrid_yloc : model_bounds[2];
+    max_y = xzgrid_region < 0 ? xzgrid_yloc : model_bounds[3];
+    min_z = xygrid_region > 0 ? xygrid_zloc : model_bounds[4];
+    max_z = xygrid_region < 0 ? xygrid_zloc : model_bounds[5];
 
     intersection() {
         render_model();
@@ -1069,12 +1069,21 @@ if ($preview && region_enabled && len(model_bounds) == 6) {
     render_model();
 }
 
-if ($preview && xygrid_enabled && len(xygrid_bounds) == 4) {
+if (
+    $preview && xygrid_enabled && abs(xygrid_region) != 2
+    && len(xygrid_bounds) == 4
+) {
     render_xygrid(xygrid_bounds, xygrid_origin, xygrid_zloc);
 }
-if ($preview && xzgrid_enabled && len(model_bounds) == 6) {
+if (
+    $preview && xzgrid_enabled && abs(xzgrid_region) != 2
+    && len(model_bounds) == 6
+) {
     render_xzgrid(model_bounds, xygrid_origin, xzgrid_yloc);
 }
-if ($preview && yzgrid_enabled && len(model_bounds) == 6) {
+if (
+    $preview && yzgrid_enabled && abs(yzgrid_region) != 2
+    && len(model_bounds) == 6
+) {
     render_yzgrid(model_bounds, xygrid_origin, yzgrid_xloc);
 }

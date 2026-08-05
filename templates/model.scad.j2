@@ -14,7 +14,6 @@ siding = true;
 ground = false;
 footings = true;
 center_gland_cat6 = true;
-xygrid_zloc = -1; // [-1:1:48]
 {% if build_step_count %}
 build_step = {{ build_step_count + 1 }}; // [{{ range(0, build_step_count + 2) | map('string') | join(', ') }}]
 
@@ -24,6 +23,17 @@ labels = false;
 label_size = 1.25;
 label_lift = 0.03;
 lumber_color = [0.50, 0.18, 0.08, 1.0];
+/* [Grids] */
+xygrid_enabled = false;
+xygrid_zloc = {{ xygrid_zdefault }}; // [{{ xygrid_zrange }}]
+xygrid_region = 0; // [-1:1:1]
+xzgrid_enabled = false;
+xzgrid_yloc = {{ xzgrid_ydefault }}; // [{{ xzgrid_yrange }}]
+xzgrid_region = 0; // [-1:1:1]
+yzgrid_enabled = false;
+yzgrid_xloc = {{ yzgrid_xdefault }}; // [{{ yzgrid_xrange }}]
+yzgrid_region = 0; // [-1:1:1]
+
 /* [Details] */
 {% for assembly in assemblies %}
 {{ assembly.toggle }} = true;
@@ -103,10 +113,31 @@ siding_parts = [
 
 xygrid_bounds = {{ xygrid_bounds }};
 xygrid_origin = {{ xygrid_origin }};
+model_bounds = {{ model_bounds }};
 
 assert(
     xygrid_zloc == floor(xygrid_zloc),
     str("xygrid_zloc must be an integer; got ", xygrid_zloc)
+);
+assert(
+    xzgrid_yloc == floor(xzgrid_yloc),
+    str("xzgrid_yloc must be an integer; got ", xzgrid_yloc)
+);
+assert(
+    yzgrid_xloc == floor(yzgrid_xloc),
+    str("yzgrid_xloc must be an integer; got ", yzgrid_xloc)
+);
+assert(
+    xygrid_region == -1 || xygrid_region == 0 || xygrid_region == 1,
+    str("xygrid_region must be -1, 0, or 1; got ", xygrid_region)
+);
+assert(
+    xzgrid_region == -1 || xzgrid_region == 0 || xzgrid_region == 1,
+    str("xzgrid_region must be -1, 0, or 1; got ", xzgrid_region)
+);
+assert(
+    yzgrid_region == -1 || yzgrid_region == 0 || yzgrid_region == 1,
+    str("yzgrid_region must be -1, 0, or 1; got ", yzgrid_region)
 );
 
 {% if build_step_count %}
@@ -812,6 +843,70 @@ module render_xygrid(bounds, origin, zloc) {
     }
 }
 
+module render_xzgrid(bounds, origin, yloc) {
+    min_x = bounds[0];
+    max_x = bounds[1];
+    min_z = bounds[4];
+    max_z = bounds[5];
+    origin_x = origin[0];
+    origin_z = 0;
+    line_height = 0.01;
+
+    for (x = [ceil(min_x - origin_x) : floor(max_x - origin_x)]) {
+        line_width = xygrid_line_width(x);
+        color(xygrid_line_color(x))
+            translate([
+                origin_x + x - line_width / 2,
+                yloc - line_height / 2,
+                min_z
+            ])
+                cube([line_width, line_height, max_z - min_z]);
+    }
+
+    for (z = [ceil(min_z - origin_z) : floor(max_z - origin_z)]) {
+        line_width = xygrid_line_width(z);
+        color(xygrid_line_color(z))
+            translate([
+                min_x,
+                yloc - line_height / 2,
+                origin_z + z - line_width / 2
+            ])
+                cube([max_x - min_x, line_height, line_width]);
+    }
+}
+
+module render_yzgrid(bounds, origin, xloc) {
+    min_y = bounds[2];
+    max_y = bounds[3];
+    min_z = bounds[4];
+    max_z = bounds[5];
+    origin_y = origin[1];
+    origin_z = 0;
+    line_height = 0.01;
+
+    for (y = [ceil(min_y - origin_y) : floor(max_y - origin_y)]) {
+        line_width = xygrid_line_width(y);
+        color(xygrid_line_color(y))
+            translate([
+                xloc - line_height / 2,
+                origin_y + y - line_width / 2,
+                min_z
+            ])
+                cube([line_height, line_width, max_z - min_z]);
+    }
+
+    for (z = [ceil(min_z - origin_z) : floor(max_z - origin_z)]) {
+        line_width = xygrid_line_width(z);
+        color(xygrid_line_color(z))
+            translate([
+                xloc - line_height / 2,
+                min_y,
+                origin_z + z - line_width / 2
+            ])
+                cube([line_height, max_y - min_y, line_width]);
+    }
+}
+
 module render_assembly(assembly_name, enabled) {
     if (enabled) {
         for (p = pieces) {
@@ -890,6 +985,7 @@ module render_tambour_assembly(assembly_name, enabled, is_open) {
     }
 }
 
+module render_model() {
 // OpenSCAD cannot dynamically resolve a boolean variable by string,
 // so Python emits explicit toggle routing here.
 {% for assembly in assemblies %}
@@ -943,7 +1039,42 @@ if (footings) {
         }
     }
 }
+}
 
-if ($preview && xygrid_zloc >= 0 && len(xygrid_bounds) == 4) {
+module render_preview_region() {
+    min_x = yzgrid_region == 1 ? yzgrid_xloc : model_bounds[0];
+    max_x = yzgrid_region == -1 ? yzgrid_xloc : model_bounds[1];
+    min_y = xzgrid_region == 1 ? xzgrid_yloc : model_bounds[2];
+    max_y = xzgrid_region == -1 ? xzgrid_yloc : model_bounds[3];
+    min_z = xygrid_region == 1 ? xygrid_zloc : model_bounds[4];
+    max_z = xygrid_region == -1 ? xygrid_zloc : model_bounds[5];
+
+    intersection() {
+        render_model();
+        translate([min_x, min_y, min_z])
+            cube([
+                max(0, max_x - min_x),
+                max(0, max_y - min_y),
+                max(0, max_z - min_z)
+            ]);
+    }
+}
+
+region_enabled =
+    xygrid_region != 0 || xzgrid_region != 0 || yzgrid_region != 0;
+
+if ($preview && region_enabled && len(model_bounds) == 6) {
+    render_preview_region();
+} else {
+    render_model();
+}
+
+if ($preview && xygrid_enabled && len(xygrid_bounds) == 4) {
     render_xygrid(xygrid_bounds, xygrid_origin, xygrid_zloc);
+}
+if ($preview && xzgrid_enabled && len(model_bounds) == 6) {
+    render_xzgrid(model_bounds, xygrid_origin, xzgrid_yloc);
+}
+if ($preview && yzgrid_enabled && len(model_bounds) == 6) {
+    render_yzgrid(model_bounds, xygrid_origin, yzgrid_xloc);
 }

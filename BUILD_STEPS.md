@@ -50,11 +50,13 @@ reference points and mark all four 10-inch footing circles. Route both
 underground conduit runs through the enclosure interior and clear of the full
 footing excavations before sweeping them up to the risers. Bring the modeled
 1 1/4-inch power riser out of the ground on the EV charger's conduit-port axis
-(x = 16 inches and y = 11.3375 inches in the default model) and bring the
-modeled 3/4-inch low-voltage riser out beneath the rear of its junction box.
-Its default axis is approximately x = 13.17 inches and y = 5.44 inches, clear
-of the post footings. Leave both upper ends positioned for the later equipment
-connections.
+(x = 15.35 inches and y = 11.2875 inches in the default model) and bring the
+modeled 3/4-inch low-voltage riser out beneath the center of its junction box.
+Its default axis is centered on the box bottom at x = 12 inches and
+y = 4.1875 inches, clear of the post footings. This nominal centered location
+preserves adjustment margin in every plan direction when the box opening is
+field-located from the as-built riser. Leave both upper ends positioned for the
+later equipment connections.
 
 Before covering the conduit, measure and photograph its centerline, depth, and
 the complete envelope of every sweep from protected reference points. Establish
@@ -552,9 +554,11 @@ Mount the low-voltage junction box in its shifted position, spanning x = 10
 to 14 inches and y = 2.1875 to 6.1875 inches, centered at z = 13 inches. The
 power junction spans x = 15 to 19 inches, so both boxes share the same
 positive-Y face and retain a one-inch X gap. Future backing lumber may be
-added but is not included. Connect
-the rear portion of the bottom panel to the 3/4-inch riser installed in Step 1,
-then add the three cable glands across the front portion of the bottom panel.
+added but is not included. Connect the center of the bottom panel to the
+3/4-inch riser installed in Step 1, field-locating the opening from the
+as-built riser position. Then add the three cable glands in the remaining
+bottom-panel area; reposition their nominal front-row layout as necessary to
+preserve fitting clearances.
 
 Keep each fitting center at least 3/4 inch from the panel sides. Confirm that
 the riser remains plumb and clear of the 10-inch footing and that the existing
@@ -622,9 +626,9 @@ low_voltage_street_light_service
 ## 23. Route the charger low-voltage feed (`charger-low-voltage-feed`)
 
 Route the center low-voltage gland's cable down from the gland and up the
-negative-X face of `front_center_rail`. Hold the gland's X coordinate through
-the droop and ascending return until z = 10 inches, then sweep toward the rail.
-As it approaches
+negative-X face of `front_center_rail`. Sweep it in positive X through the
+droop and ascending return to bypass the centered 3/4-inch riser, then continue
+toward the rail. As it approaches
 the elevation of the EV charger's bottom plane, bend in positive Y to clear the
 positive-Y face of the rail, then sweep upward into the charger's unchanged
 bottom entry.

@@ -690,41 +690,16 @@ def build_enclosure(
         LOW_VOLTAGE_BOX_CENTER_Z - CARLON_E987N_JUNCTION_BOX.size[0]/2
     )
     LOW_VOLTAGE_PORT_EDGE_CLEARANCE=0.75
-    LOW_VOLTAGE_INPUT_Y=(
-        LOW_VOLTAGE_BOX_CENTER_Y
-        + CARLON_E987N_JUNCTION_BOX.size[1]/2
-        - LOW_VOLTAGE_PORT_EDGE_CLEARANCE
-    )
+    # Center the nominal riser entry on the box bottom so the field-installed
+    # opening has equal adjustment margin in every plan direction. The three
+    # smaller cable-gland openings are subordinate and may be repositioned
+    # around the as-built riser entry when necessary.
+    LOW_VOLTAGE_INPUT_X=LOW_VOLTAGE_BOX_CENTER_X
+    LOW_VOLTAGE_INPUT_Y=LOW_VOLTAGE_BOX_CENTER_Y
     LOW_VOLTAGE_CONDUIT_RADIUS=CONDUIT_OD_BY_TRADE_SIZE["3/4"]/2
     LOW_VOLTAGE_FOOTING_CLEARANCE_RADIUS=(
         FOOTING_DIAMETER/2+LOW_VOLTAGE_CONDUIT_RADIUS
     )
-    LOW_VOLTAGE_POST_FL_CENTER=(
-        members["post_fl"].center_on("x"),
-        members["post_fl"].center_on("y"),
-    )
-    LOW_VOLTAGE_POST_FL_Y_OFFSET=(
-        LOW_VOLTAGE_INPUT_Y-LOW_VOLTAGE_POST_FL_CENTER[1]
-    )
-    LOW_VOLTAGE_POST_FL_MIN_X=(
-        LOW_VOLTAGE_POST_FL_CENTER[0]
-        + math.sqrt(12**2-LOW_VOLTAGE_POST_FL_Y_OFFSET**2)
-        if abs(LOW_VOLTAGE_POST_FL_Y_OFFSET) < 12
-        else -math.inf
-    )
-    # Translate the former riser axis one inch in positive X with both boxes.
-    # The old 12-inch post_fl clearance intentionally yields to the requested
-    # location; footing collision checks remain.
-    LOW_VOLTAGE_INPUT_X=max(
-        LOW_VOLTAGE_BOX_LEFT_X+LOW_VOLTAGE_PORT_EDGE_CLEARANCE,
-        LOW_VOLTAGE_POST_FL_MIN_X,
-    )
-    if LOW_VOLTAGE_INPUT_X > (
-        LOW_VOLTAGE_BOX_REAR_X-LOW_VOLTAGE_PORT_EDGE_CLEARANCE
-    ):
-        raise ValueError(
-            "low-voltage riser cannot maintain post clearance within the junction box"
-        )
     for footing in footings:
         resolved_footing=footing.resolved(members)
         footing_clearance=math.hypot(
@@ -1724,41 +1699,6 @@ def build_enclosure(
         return tuple(swept)
 
 
-    def _hold_then_sweep_centerline_x(
-        points: tuple[tuple[float, float, float], ...],
-        hold_x: float,
-        end_x: float,
-        hold_until_z: float,
-    ) -> tuple[tuple[float, float, float], ...]:
-        lowest_index=min(range(len(points)), key=lambda index: points[index][2])
-        sweep_start_index=next(
-            index
-            for index in range(lowest_index, len(points))
-            if points[index][2] >= hold_until_z
-        )
-        sweep_lengths=[0.0]
-        for start,end in zip(points[sweep_start_index:], points[sweep_start_index+1:]):
-            sweep_lengths.append(sweep_lengths[-1]+math.dist(start, end))
-        sweep_length=sweep_lengths[-1]
-
-        held=[(hold_x, point[1], point[2]) for point in points[:sweep_start_index]]
-        for point,length in zip(
-            points[sweep_start_index:],
-            sweep_lengths,
-            strict=True,
-        ):
-            progress=length/sweep_length
-            eased=progress**3*(progress*(progress*6-15)+10)
-            held.append(
-                (
-                    hold_x+(end_x-hold_x)*eased,
-                    point[1],
-                    point[2],
-                )
-            )
-        return tuple(held)
-
-
     LOW_VOLTAGE_GLAND_END_Z=(
         LOW_VOLTAGE_BOX_BOTTOM_Z-ONE_INCH_CABLE_GLAND.size[0]
     )
@@ -1923,14 +1863,16 @@ def build_enclosure(
     LOW_VOLTAGE_CHARGER_LANE_OFFSET=LOW_VOLTAGE_CABLE_DIAMETER/2
     LOW_VOLTAGE_WIFI_X_SWEEP_END_Z=10.25
     LOW_VOLTAGE_WIFI_FACE_CENTER_Z=15
-    LOW_VOLTAGE_CENTER_GLAND_HOLD_X_UNTIL_Z=10
 
     wifi=components["front_wifi_access_point"].resolved(members["right_center_rail"])
     path_2_start=(LOW_VOLTAGE_GLAND_XS[2], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
     path_2_riser_bypass=(
-        LOW_VOLTAGE_INPUT_X
-        + LOW_VOLTAGE_RISER_CABLE_CLEARANCE
-        + LOW_VOLTAGE_CABLE_DIAMETER,
+        max(
+            path_2_start[0],
+            LOW_VOLTAGE_INPUT_X
+            + LOW_VOLTAGE_RISER_CABLE_CLEARANCE
+            + LOW_VOLTAGE_CABLE_DIAMETER,
+        ),
         LOW_VOLTAGE_INPUT_Y,
         LOW_VOLTAGE_RISER_BYPASS_Z,
     )
@@ -1972,7 +1914,7 @@ def build_enclosure(
     path_2_entry_under=(path_2_entry[0], path_2_entry[1], path_2_entry_sweep[2])
     path_2_droop_points=cubic_bezier_points(
         path_2_start,
-        (path_2_start[0], path_2_start[1], path_2_start[2]-2.5),
+        (path_2_start[0], path_2_start[1], path_2_start[2]-1),
         (
             path_2_riser_approach[0],
             path_2_riser_approach[1]-1.5,
@@ -2073,7 +2015,7 @@ def build_enclosure(
     path_3_lower_yz=_join_centerline_sections(
         cubic_bezier_points(
             path_3_start,
-            (path_3_start[0], path_3_start[1], path_3_start[2]-2.5),
+            (path_3_start[0], path_3_start[1], path_3_start[2]-1),
             (
                 path_3_riser_approach[0],
                 path_3_riser_approach[1]-1.5,
@@ -2092,12 +2034,7 @@ def build_enclosure(
             path_3_front_rail,
         ),
     )
-    path_3_lower_points=_hold_then_sweep_centerline_x(
-        path_3_lower_yz,
-        path_3_start[0],
-        path_3_front_rail[0],
-        LOW_VOLTAGE_CENTER_GLAND_HOLD_X_UNTIL_Z,
-    )
+    path_3_lower_points=path_3_lower_yz
     path_3_points=_join_centerline_sections(
         path_3_lower_points,
         rounded_cable_points(

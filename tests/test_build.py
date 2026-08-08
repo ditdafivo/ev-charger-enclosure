@@ -1245,7 +1245,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 168)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "423e00e4c5b952bffa29ae782e5eb87950ecdd95a328e8348afbfe48258da710",
+            "baeeb7705cbebe5a5ce010f13476ab8ca12067d95831b0fc9eab1098069413dc",
         )
 
     def test_center_gland_charger_route_exact_regression(self) -> None:
@@ -1255,7 +1255,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 101)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "e955fee7dc0154943957fcf4faa2dc6379a5c79183dd9579601e6df6a136aa89",
+            "beae06c4e9d65f70681585617431d1582dd40ffee6fb160ee5b32f21abfbf7f0",
         )
 
     def test_junction_boxes_share_positive_y_face_and_one_inch_x_gap(self) -> None:
@@ -1360,10 +1360,8 @@ class LowVoltageBuildTests(unittest.TestCase):
         )
         self.assertEqual(riser.points[0][:2], riser.points[-1][:2])
 
-        self.assertAlmostEqual(
-            riser.points[0][0],
-            build.LOW_VOLTAGE_POST_FL_MIN_X,
-        )
+        self.assertAlmostEqual(riser.points[0][0], build.LOW_VOLTAGE_BOX_CENTER_X)
+        self.assertAlmostEqual(riser.points[0][1], build.LOW_VOLTAGE_BOX_CENTER_Y)
 
         for footing in build.footings:
             resolved = footing.resolved(build.model)
@@ -1447,7 +1445,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertGreater(build.path_2_riser_bypass[0], build.LOW_VOLTAGE_INPUT_X)
         self.assertTrue(
             all(
-                start[0] <= end[0]
+                start[0] <= end[0]+1e-9
                 for start,end in zip(wifi_feed.points, wifi_feed.points[1:])
             )
         )
@@ -1518,21 +1516,13 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertGreater(build.path_2_entry[2], build.path_2_entry_sweep[2])
 
         ev_feed = build.cables["low_voltage_ev_charger_feed"]
-        lowest_index=min(
-            range(len(build.path_3_lower_points)),
-            key=lambda index: build.path_3_lower_points[index][2],
-        )
-        hold_end_index=next(
-            index
-            for index in range(lowest_index, len(build.path_3_lower_points))
-            if build.path_3_lower_points[index][2]
-            >= build.LOW_VOLTAGE_CENTER_GLAND_HOLD_X_UNTIL_Z
-        )
-        self.assertTrue(
-            all(
-                point[0] == build.path_3_start[0]
-                for point in build.path_3_lower_points[:hold_end_index+1]
-            )
+        self.assertGreater(
+            max(
+                point[0]
+                for point in build.path_3_lower_points
+                if point[2] <= build.LOW_VOLTAGE_INPUT_ADAPTER_END_Z
+            ),
+            build.path_3_start[0],
         )
         self.assertIn(build.path_3_front_rail, ev_feed.points)
         self.assertGreater(build.path_3_front_rail[1], build.path_3_start[1])

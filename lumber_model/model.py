@@ -31,21 +31,26 @@ from lumber_model.siding import CompositeSiding
 from lumber_model.tambour import TambourDoor
 
 
+ModelBounds = tuple[float, float, float, float, float, float]
 XYBounds = tuple[float, float, float, float]
 XYOrigin = tuple[float, float]
 
 
-def _include_xy_box(
+def _include_box(
     bounds: list[float],
     min_x: float,
     max_x: float,
     min_y: float,
     max_y: float,
+    min_z: float,
+    max_z: float,
 ) -> None:
     bounds[0] = min(bounds[0], min_x)
     bounds[1] = max(bounds[1], max_x)
     bounds[2] = min(bounds[2], min_y)
     bounds[3] = max(bounds[3], max_y)
+    bounds[4] = min(bounds[4], min_z)
+    bounds[5] = max(bounds[5], max_z)
 
 
 def _include_centerline_segments(
@@ -61,12 +66,15 @@ def _include_centerline_segments(
             continue
         x_radius = radius * math.sqrt(max(0, 1 - (delta[0] / length) ** 2))
         y_radius = radius * math.sqrt(max(0, 1 - (delta[1] / length) ** 2))
-        _include_xy_box(
+        z_radius = radius * math.sqrt(max(0, 1 - (delta[2] / length) ** 2))
+        _include_box(
             bounds,
             min(start[0], end[0]) - x_radius,
             max(start[0], end[0]) + x_radius,
             min(start[1], end[1]) - y_radius,
             max(start[1], end[1]) + y_radius,
+            min(start[2], end[2]) - z_radius,
+            max(start[2], end[2]) + z_radius,
         )
 
 
@@ -847,9 +855,9 @@ class Model:
             for name in step.object_names
         ]
 
-    def _xygrid_bounds(self) -> XYBounds | None:
-        """Return non-ground XY geometry bounds with a one-inch margin."""
-        bounds = [math.inf, -math.inf, math.inf, -math.inf]
+    def _model_bounds(self) -> ModelBounds | None:
+        """Return bounds for all potentially rendered geometry."""
+        bounds = [math.inf, -math.inf, math.inf, -math.inf, math.inf, -math.inf]
         member_by_name = {piece.name: piece for piece in self.pieces}
         component_by_name = {
             component.name: component for component in self.components
@@ -858,12 +866,14 @@ class Model:
         for piece in self.pieces:
             if isinstance(piece, AngledLumber):
                 if piece.footprint is not None:
-                    _include_xy_box(
+                    _include_box(
                         bounds,
                         piece.min[0],
                         piece.max[0],
                         piece.min[1],
                         piece.max[1],
+                        piece.min[2],
+                        piece.max[2],
                     )
                     continue
                 dx = piece.end[0] - piece.start[0]
@@ -872,30 +882,36 @@ class Model:
                 perpendicular_y = dx / piece.length
                 x_radius = abs(perpendicular_x) * piece.width / 2
                 y_radius = abs(perpendicular_y) * piece.width / 2
-                _include_xy_box(
+                _include_box(
                     bounds,
                     min(piece.start[0], piece.end[0]) - x_radius,
                     max(piece.start[0], piece.end[0]) + x_radius,
                     min(piece.start[1], piece.end[1]) - y_radius,
                     max(piece.start[1], piece.end[1]) + y_radius,
+                    piece.min[2],
+                    piece.max[2],
                 )
             else:
-                _include_xy_box(
+                _include_box(
                     bounds,
                     piece.min[0],
                     piece.max[0],
                     piece.min[1],
                     piece.max[1],
+                    piece.min[2],
+                    piece.max[2],
                 )
 
         for component in self.components:
             resolved = component.resolved(member_by_name[component.member])
-            _include_xy_box(
+            _include_box(
                 bounds,
                 resolved.box_min[0],
                 resolved.box_min[0] + resolved.box_size[0],
                 resolved.box_min[1],
                 resolved.box_min[1] + resolved.box_size[1],
+                resolved.box_min[2],
+                resolved.box_min[2] + resolved.box_size[2],
             )
 
         for conduit in self.conduits:
@@ -905,12 +921,14 @@ class Model:
         for cable in self.cables:
             radius = cable.diameter / 2
             for point in cable.points:
-                _include_xy_box(
+                _include_box(
                     bounds,
                     point[0] - radius,
                     point[0] + radius,
                     point[1] - radius,
                     point[1] + radius,
+                    point[2] - radius,
+                    point[2] + radius,
                 )
 
         for tambour in self.tambours:
@@ -971,33 +989,148 @@ class Model:
                         / 2
                         for index in range(3)
                     )
-                    _include_xy_box(
+                    _include_box(
                         bounds,
                         center[0] - half_extent[0],
                         center[0] + half_extent[0],
                         center[1] - half_extent[1],
                         center[1] + half_extent[1],
+                        center[2] - half_extent[2],
+                        center[2] + half_extent[2],
                     )
 
         for siding in self.sidings:
             for part in siding.parts:
-                _include_xy_box(
+                _include_box(
                     bounds,
                     part.start[0],
                     part.start[0] + part.size[0],
                     part.start[1],
                     part.start[1] + part.size[1],
+                    part.start[2],
+                    part.start[2] + part.size[2],
                 )
+
+        for footing in self.footings:
+            resolved = footing.resolved(self)
+            radius = resolved.diameter / 2
+            _include_box(
+                bounds,
+                resolved.center[0] - radius,
+                resolved.center[0] + radius,
+                resolved.center[1] - radius,
+                resolved.center[1] + radius,
+                resolved.bottom_z,
+                resolved.top_z,
+            )
+
+        for ground in self.grounds:
+            resolved = ground.resolved(self)
+            normal = resolved.normal
+            extents = tuple(
+                resolved.radius * math.sqrt(max(0, 1 - normal[index] ** 2))
+                + resolved.thickness * abs(normal[index]) / 2
+                for index in range(3)
+            )
+            _include_box(
+                bounds,
+                resolved.center[0] - extents[0],
+                resolved.center[0] + extents[0],
+                resolved.center[1] - extents[1],
+                resolved.center[1] + extents[1],
+                resolved.center[2] - extents[2],
+                resolved.center[2] + extents[2],
+            )
 
         if math.isinf(bounds[0]):
             return None
-        return (bounds[0] - 1, bounds[1] + 1, bounds[2] - 1, bounds[3] + 1)
+        return tuple(bounds)  # type: ignore[return-value]
+
+    def _xygrid_bounds(self) -> XYBounds | None:
+        """Return the XY projection of the complete model bounds."""
+        bounds = self._model_bounds()
+        if bounds is None:
+            return None
+        return (
+            bounds[0] - 1,
+            bounds[1] + 1,
+            bounds[2] - 1,
+            bounds[3] + 1,
+        )
 
     def _scad_xygrid_bounds(self) -> str:
         bounds = self._xygrid_bounds()
         if bounds is None:
             return "[]"
         return "[" + ", ".join(fmt_float(value) for value in bounds) + "]"
+
+    def _scad_model_bounds(self) -> str:
+        bounds = self._model_bounds()
+        if bounds is None:
+            return "[]"
+        expanded = [
+            math.floor(bounds[0]) - 1,
+            math.ceil(bounds[1]) + 1,
+            math.floor(bounds[2]) - 1,
+            math.ceil(bounds[3]) + 1,
+            math.floor(bounds[4]) - 1,
+            math.ceil(bounds[5]) + 1,
+        ]
+        return "[" + ", ".join(fmt_float(value) for value in expanded) + "]"
+
+    def _grid_slider_range(self, axis: int) -> str:
+        bounds = self._model_bounds()
+        if bounds is None:
+            return "-1:1:1"
+        minimum = math.floor(bounds[axis * 2]) - 1
+        maximum = math.ceil(bounds[axis * 2 + 1]) + 1
+        return f"{minimum}:1:{maximum}"
+
+    def _grid_slider_default(self, axis: int) -> int:
+        bounds = self._model_bounds()
+        if bounds is None:
+            return 0
+        minimum = math.floor(bounds[axis * 2]) - 1
+        maximum = math.ceil(bounds[axis * 2 + 1]) + 1
+        return min(maximum, max(minimum, 0))
+
+    def _grid_template_context(self) -> dict[str, str | int]:
+        bounds = self._model_bounds()
+        if bounds is None:
+            return {
+                "xygrid_bounds": "[]",
+                "model_bounds": "[]",
+                "yzgrid_xrange": "-1:1:1",
+                "xzgrid_yrange": "-1:1:1",
+                "xygrid_zrange": "-1:1:1",
+                "yzgrid_xdefault": 0,
+                "xzgrid_ydefault": 0,
+                "xygrid_zdefault": 0,
+            }
+
+        limits = [
+            math.floor(bounds[0]) - 1,
+            math.ceil(bounds[1]) + 1,
+            math.floor(bounds[2]) - 1,
+            math.ceil(bounds[3]) + 1,
+            math.floor(bounds[4]) - 1,
+            math.ceil(bounds[5]) + 1,
+        ]
+        xy_bounds = (bounds[0] - 1, bounds[1] + 1, bounds[2] - 1, bounds[3] + 1)
+        return {
+            "xygrid_bounds": "["
+            + ", ".join(fmt_float(value) for value in xy_bounds)
+            + "]",
+            "model_bounds": "["
+            + ", ".join(fmt_float(value) for value in limits)
+            + "]",
+            "yzgrid_xrange": f"{limits[0]}:1:{limits[1]}",
+            "xzgrid_yrange": f"{limits[2]}:1:{limits[3]}",
+            "xygrid_zrange": f"{limits[4]}:1:{limits[5]}",
+            "yzgrid_xdefault": min(limits[1], max(limits[0], 0)),
+            "xzgrid_ydefault": min(limits[3], max(limits[2], 0)),
+            "xygrid_zdefault": min(limits[5], max(limits[4], 0)),
+        }
 
     def _scad_xygrid_origin(self) -> str:
         values = ", ".join(fmt_float(value) for value in self.xygrid_origin)
@@ -1022,6 +1155,7 @@ class Model:
         )
 
         template = env.get_template(template_name)
+        grid_context = self._grid_template_context()
 
         return template.render(
             assemblies=self.scad_assemblies(),
@@ -1040,10 +1174,10 @@ class Model:
             tambour_assemblies=self.scad_tambour_assemblies(),
             tambour_records=self.scad_tambour_records(),
             siding_records=self.scad_siding_records(),
-            xygrid_bounds=self._scad_xygrid_bounds(),
             xygrid_origin=self._scad_xygrid_origin(),
             build_step_records=self.scad_build_step_records(),
             build_step_count=len(self.build_steps),
+            **grid_context,
         )
 
     def write_scad(

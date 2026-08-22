@@ -209,6 +209,12 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertNotIn("component_labels", scad)
         self.assertIn("/* [Individual Lumber] */", scad)
         self.assertIn("/* [Individual Components] */", scad)
+        self.assertIn("// rail ft\nshow_lumber_rail_ft = true;", scad)
+        self.assertIn(
+            "// tambour ceiling panel\n"
+            "show_component_tambour_ceiling_panel = true;",
+            scad,
+        )
         self.assertIn("show_lumber_rail_ft = true;", scad)
         self.assertIn("show_component_tambour_ceiling_panel = true;", scad)
         self.assertIn("function lumber_object_is_enabled(name)", scad)

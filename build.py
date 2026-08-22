@@ -700,16 +700,6 @@ def build_enclosure(
     LOW_VOLTAGE_FOOTING_CLEARANCE_RADIUS=(
         FOOTING_DIAMETER/2+LOW_VOLTAGE_CONDUIT_RADIUS
     )
-    for footing in footings:
-        resolved_footing=footing.resolved(members)
-        footing_clearance=math.hypot(
-            LOW_VOLTAGE_INPUT_X-resolved_footing.center[0],
-            LOW_VOLTAGE_INPUT_Y-resolved_footing.center[1],
-        )
-        if footing_clearance < LOW_VOLTAGE_FOOTING_CLEARANCE_RADIUS-1e-9:
-            raise ValueError(
-                f"low-voltage riser conflicts with {footing.name}"
-            )
     LOW_VOLTAGE_GLAND_Y=(
         LOW_VOLTAGE_BOX_CENTER_Y
         - CARLON_E987N_JUNCTION_BOX.size[1]/2
@@ -1074,6 +1064,14 @@ def build_enclosure(
     POWER_T_MAIN_CHANNEL_WIDTH=2+5/16
     POWER_T_AXIS_X=POWER_EV_ENTRY[0]
     POWER_T_AXIS_Y=POWER_EV_ENTRY[1]
+    LOW_VOLTAGE_RISER_POWER_OFFSET_X=-0.53
+    LOW_VOLTAGE_RISER_POWER_OFFSET_Y=-6.1
+    LOW_VOLTAGE_RISER_X=(
+        POWER_T_AXIS_X+LOW_VOLTAGE_RISER_POWER_OFFSET_X
+    )
+    LOW_VOLTAGE_RISER_Y=(
+        POWER_T_AXIS_Y+LOW_VOLTAGE_RISER_POWER_OFFSET_Y
+    )
     POWER_T_RAIL_CLEARANCE=0.25
     POWER_T_CENTER_Z=(
         members["rail_fb"].max_on("z")
@@ -1387,9 +1385,19 @@ def build_enclosure(
     LOW_VOLTAGE_INPUT_ADAPTER_END_Z=(
         LOW_VOLTAGE_BOX_BOTTOM_Z-CARLON_E943E_MALE_TERMINAL_ADAPTER.size[0]
     )
+    for footing in footings:
+        resolved_footing=footing.resolved(members)
+        footing_clearance=math.hypot(
+            LOW_VOLTAGE_RISER_X-resolved_footing.center[0],
+            LOW_VOLTAGE_RISER_Y-resolved_footing.center[1],
+        )
+        if footing_clearance < LOW_VOLTAGE_FOOTING_CLEARANCE_RADIUS-1e-9:
+            raise ValueError(
+                f"low-voltage riser conflicts with {footing.name}"
+            )
     LOW_VOLTAGE_GROUND_Z=grounds[0].resolved(members).z_at(
-        LOW_VOLTAGE_INPUT_X,
-        LOW_VOLTAGE_INPUT_Y,
+        LOW_VOLTAGE_RISER_X,
+        LOW_VOLTAGE_RISER_Y,
     )
     conduits.add(
         "low_voltage_ground_riser",
@@ -1398,14 +1406,14 @@ def build_enclosure(
         points=(
             _member_relative_coord(
                 "post_fr",
-                LOW_VOLTAGE_INPUT_X,
-                LOW_VOLTAGE_INPUT_Y,
+                LOW_VOLTAGE_RISER_X,
+                LOW_VOLTAGE_RISER_Y,
                 LOW_VOLTAGE_GROUND_Z,
             ),
             _member_relative_coord(
                 "post_fr",
-                LOW_VOLTAGE_INPUT_X,
-                LOW_VOLTAGE_INPUT_Y,
+                LOW_VOLTAGE_RISER_X,
+                LOW_VOLTAGE_RISER_Y,
                 LOW_VOLTAGE_INPUT_ADAPTER_END_Z,
             ),
         ),

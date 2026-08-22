@@ -1337,31 +1337,57 @@ class LowVoltageBuildTests(unittest.TestCase):
                 )-max(fitting.box_min[1], other.box_min[1])
                 self.assertFalse(x_overlap > 0 and y_overlap > 0)
 
-    def test_three_quarter_riser_has_exact_ground_and_adapter_endpoints(self) -> None:
+    def test_three_quarter_riser_uses_as_built_plumb_axis(self) -> None:
         riser = self.resolved_conduit("low_voltage_ground_riser")
 
         self.assertEqual(riser.trade_size, "3/4")
         self.assertEqual(riser.assembly, "low_voltage_conduit")
+        self.assertAlmostEqual(
+            build.LOW_VOLTAGE_RISER_X-build.POWER_T_AXIS_X,
+            -0.53,
+        )
+        self.assertAlmostEqual(
+            build.LOW_VOLTAGE_RISER_Y-build.POWER_T_AXIS_Y,
+            -6.1,
+        )
         self.assertVectorAlmostEqual(
             riser.points[0],
             (
-                build.LOW_VOLTAGE_INPUT_X,
-                build.LOW_VOLTAGE_INPUT_Y,
+                build.LOW_VOLTAGE_RISER_X,
+                build.LOW_VOLTAGE_RISER_Y,
                 build.LOW_VOLTAGE_GROUND_Z,
             ),
         )
         self.assertVectorAlmostEqual(
             riser.points[-1],
             (
-                build.LOW_VOLTAGE_INPUT_X,
-                build.LOW_VOLTAGE_INPUT_Y,
+                build.LOW_VOLTAGE_RISER_X,
+                build.LOW_VOLTAGE_RISER_Y,
                 build.LOW_VOLTAGE_INPUT_ADAPTER_END_Z,
             ),
         )
         self.assertEqual(riser.points[0][:2], riser.points[-1][:2])
 
-        self.assertAlmostEqual(riser.points[0][0], build.LOW_VOLTAGE_BOX_CENTER_X)
-        self.assertAlmostEqual(riser.points[0][1], build.LOW_VOLTAGE_BOX_CENTER_Y)
+        ground_z=build.grounds[0].resolved(build.members).z_at(
+            build.LOW_VOLTAGE_RISER_X,
+            build.LOW_VOLTAGE_RISER_Y,
+        )
+        self.assertAlmostEqual(riser.points[0][2], ground_z)
+
+        self.assertAlmostEqual(build.LOW_VOLTAGE_INPUT_X, 12)
+        self.assertAlmostEqual(build.LOW_VOLTAGE_INPUT_Y, 4.1875)
+        self.assertAlmostEqual(
+            build.LOW_VOLTAGE_INPUT_X,
+            build.LOW_VOLTAGE_BOX_CENTER_X,
+        )
+        self.assertAlmostEqual(
+            build.LOW_VOLTAGE_INPUT_Y,
+            build.LOW_VOLTAGE_BOX_CENTER_Y,
+        )
+        self.assertNotEqual(
+            riser.points[-1][:2],
+            (build.LOW_VOLTAGE_INPUT_X, build.LOW_VOLTAGE_INPUT_Y),
+        )
 
         for footing in build.footings:
             resolved = footing.resolved(build.model)

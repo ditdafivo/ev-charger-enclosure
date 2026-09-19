@@ -389,8 +389,43 @@ class ComponentResolutionTests(unittest.TestCase):
                 self.assertVectorAlmostEqual(resolved.box_min, box_min)
                 self.assertVectorAlmostEqual(resolved.box_size, box_size)
 
+    def test_absolute_anchor_positions_component_outside_reference_member(self) -> None:
+        member = Lumber(
+            name="rail",
+            assembly="frame",
+            type="2x4",
+            axis="z",
+            start=AbsoluteCoord(10, 20, 30),
+            length=10,
+        )
+        component = ComponentInstance(
+            name="fixed_box",
+            component_type=ComponentType(
+                name="box",
+                size=(4, 2, 1),
+                default_face="wide_neg",
+            ),
+            member="rail",
+            at=0,
+            absolute_anchor=(100, 200, 300),
+        )
+
+        resolved = component.resolved(member)
+
+        self.assertVectorAlmostEqual(resolved.box_min, (99, 199, 298))
+        self.assertVectorAlmostEqual(resolved.box_size, (1, 2, 4))
+
 
 class ComponentValidationTests(unittest.TestCase):
+    def test_relative_component_rejects_negative_position(self) -> None:
+        with self.assertRaisesRegex(ValueError, "at must be non-negative"):
+            ComponentInstance(
+                name="outlet",
+                component_type=WEATHERPROOF_120V_OUTLET_BOX,
+                member="rail",
+                at=-1,
+            )
+
     def test_component_toggle_identifiers_must_remain_unique(self) -> None:
         members = LumberCollection()
         members.add(

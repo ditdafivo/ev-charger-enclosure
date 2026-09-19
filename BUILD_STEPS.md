@@ -203,26 +203,30 @@ gusset_front_right
 
 ## 4. Add the lower side rails (`lower-side-rails`)
 
-Install the left and right 14 7/8-inch 2x4 rails between the front and back
-posts. Their modeled bottom elevation is 6 1/4 inches above the nominal ground
-datum and their wide faces are horizontal.
+Install the 14 7/8-inch `rail_lb` and `rail_rbu` 2x4 rails between their front
+and back posts. Their modeled bottom elevation is 12 1/4 inches above the
+nominal ground datum. Install the secondary right-side `rail_rb` with its
+modeled bottom at 7 1/4 inches. Keep all three wide faces horizontal.
 
-Check that the rails are level with one another, that the clear spacing between
-posts remains 14 7/8 inches, and that all four posts remain plumb. Adjust the
-temporary bracing rather than using these rails to pull the posts into place.
+Check that `rail_lb` and `rail_rbu` are level with one another, that `rail_rb`
+is level at its separate elevation, that the clear spacing between posts
+remains 14 7/8 inches, and that all four posts remain plumb. Adjust the temporary
+bracing rather than using these rails to pull the posts into place.
 
 New model objects:
 
 ```text
 rail_lb
 rail_rb
+rail_rbu
 ```
 
 ## 5. Add the lower front cross rail (`lower-front-rail`)
 
-Install the 20 1/2-inch `rail_fb` between the two lower side rails. Its modeled
+Install the 20 1/2-inch `rail_fb` between `rail_lb` and `rail_rbu`. Its modeled
 front face is offset toward the enclosure interior to support the front center
-rail and the power-junction assembly.
+rail. The conduit boxes and fittings retain their absolute modeled coordinates
+while their eventual mounting arrangement is deferred.
 
 Check that it is level, square to the side rails, and correctly oriented before
 adding the vertical member in Step 9.
@@ -235,7 +239,7 @@ rail_fb
 
 ## 6. Add the front tambour supports (`tambour-vertical-rails`)
 
-Install `rail_ltam` and `rail_rtam` vertically between the lower side rails and
+Install `rail_ltam` and `rail_rtam` vertically between `rail_lb`/`rail_rbu` and
 the undersides of the top side 4x4s. Their modeled Y range is 4 1/4 to
 5 3/4 inches, centered on the `y = 5` track datum. Use the full-size track
 template to keep the two mounting faces parallel and directly opposite one
@@ -254,10 +258,9 @@ rail_rtam
 
 ## 7. Add the side receiver rails (`upper-side-rails`)
 
-Install `rail_rbu` from `rail_rtam` to the back-right post with its lower face
-at `z = 12 1/4` inches. Install `rail_lt` and `rail_rt` from the corresponding
-front tambour support to the back post; their modeled lower and upper faces are
-at `z = 40 7/8` and `42 3/8` inches. Keep all three wide faces horizontal.
+Install `rail_lt` and `rail_rt` from the corresponding front tambour support to
+the back post; their modeled lower and upper faces are at `z = 40 7/8` and
+`42 3/8` inches. Keep both wide faces horizontal.
 
 Check the receiver rails for level and confirm that the two upper rails remain
 opposite one another. Their front ends depend on the plumb tambour supports
@@ -267,7 +270,6 @@ Step 8.
 New model objects:
 
 ```text
-rail_rbu
 rail_lt
 rail_rt
 ```

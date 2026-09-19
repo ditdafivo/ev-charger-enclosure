@@ -165,6 +165,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertEqual(step_by_object["power_ev_reducer"], 17)
         self.assertEqual(step_by_object["rail_ltam"], 6)
         self.assertEqual(step_by_object["rail_rtam"], 6)
+        self.assertEqual(step_by_object["rail_rbu"], 4)
         self.assertEqual(step_by_object["left_tambour_bend_backer"], 10)
         self.assertEqual(step_by_object["right_tambour_bend_backer"], 10)
         self.assertEqual(step_by_object["rail_lt"], 7)

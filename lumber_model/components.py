@@ -326,12 +326,18 @@ class ComponentInstance:
     face: FaceName | None = None
     offset: Vector3 = (0.0, 0.0, 0.0)
     orientation: ComponentOrientation = "up"
+    absolute_anchor: Vector3 | None = None
 
     def __post_init__(self) -> None:
-        if self.at < 0:
-            raise ValueError(f"{self.name}: at must be non-negative, got {self.at}")
+        if self.absolute_anchor is None:
+            if self.at < 0:
+                raise ValueError(f"{self.name}: at must be non-negative, got {self.at}")
+        elif self.at != 0:
+            raise ValueError(f"{self.name}: at must be zero with absolute_anchor")
 
         _validate_vector3(f"{self.name}: offset", self.offset)
+        if self.absolute_anchor is not None:
+            _validate_vector3(f"{self.name}: absolute_anchor", self.absolute_anchor)
 
         if self.face is not None and self.face not in FACE_NAMES:
             raise ValueError(
@@ -346,7 +352,7 @@ class ComponentInstance:
             )
 
     def resolved(self, member: LumberPiece) -> ResolvedComponent:
-        if self.at > member.length:
+        if self.absolute_anchor is None and self.at > member.length:
             raise ValueError(
                 f"{self.name}: at={self.at} is outside member {member.name!r} "
                 f"length {member.length}"
@@ -394,6 +400,9 @@ class ComponentInstance:
             across_vec,
             out_vec,
         )
+
+        if self.absolute_anchor is not None:
+            anchor = self.absolute_anchor
 
         anchor = _v_mul_add(anchor, along_vec, self.offset[0])
         anchor = _v_mul_add(anchor, across_vec, self.offset[1])
@@ -570,6 +579,7 @@ class ComponentCollection(Mapping[str, ComponentInstance]):
         face: FaceName | None = None,
         offset: Vector3 = (0.0, 0.0, 0.0),
         orientation: ComponentOrientation = "up",
+        absolute_anchor: Vector3 | None = None,
     ) -> ComponentInstance:
         member_name = member.name if isinstance(member, (Lumber, AngledLumber)) else member
 
@@ -583,6 +593,7 @@ class ComponentCollection(Mapping[str, ComponentInstance]):
                 face=face,
                 offset=offset,
                 orientation=orientation,
+                absolute_anchor=absolute_anchor,
             )
         )
 

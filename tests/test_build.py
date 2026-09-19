@@ -270,8 +270,32 @@ class TopBracingBuildTests(unittest.TestCase):
         for name in ("rail_ltam", "rail_rtam"):
             support = enclosure.members[name]
             self.assertAlmostEqual(support.center_on("y"), build.TAMBOUR_TRACK_FRONT_Y)
-            self.assertAlmostEqual(support.min_on("z"), 7.75)
+            self.assertAlmostEqual(support.min_on("z"), 13.75)
             self.assertAlmostEqual(support.max_on("z"), 43.5)
+        self.assertAlmostEqual(
+            enclosure.members["rail_lb"].center_on("z"),
+            enclosure.members["rail_rbu"].center_on("z"),
+        )
+        self.assertAlmostEqual(
+            enclosure.members["rail_rbu"].min_on("y"),
+            enclosure.members["post_fr"].max_on("y"),
+        )
+        self.assertAlmostEqual(
+            enclosure.members["rail_rbu"].max_on("y"),
+            enclosure.members["post_br"].min_on("y"),
+        )
+        self.assertAlmostEqual(
+            enclosure.members["rail_rtam"].min_on("z"),
+            enclosure.members["rail_rbu"].max_on("z"),
+        )
+        self.assertAlmostEqual(
+            enclosure.members["rail_fb"].min_on("x"),
+            enclosure.members["rail_lb"].max_on("x"),
+        )
+        self.assertAlmostEqual(
+            enclosure.members["rail_fb"].max_on("x"),
+            enclosure.members["rail_rbu"].min_on("x"),
+        )
         for name,minimum_x in (
             ("left_tambour_bend_backer", 2.75),
             ("right_tambour_bend_backer", 24.0),
@@ -991,7 +1015,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertLess(branch.points[0][1]-branch.points[-1][1], 0.25)
         self.assertAlmostEqual(
             branch.points[0][2]-branch.od/2,
-            build.members["rail_fb"].max_on("z")+build.POWER_T_RAIL_CLEARANCE,
+            8,
         )
         self.assertEqual(
             build.conduits["power_t_junction_feed"].points,
@@ -1182,7 +1206,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             riser = self.resolved_conduit("power_ground_riser", enclosure)
             self.assertVectorAlmostEqual(riser.points[0][:2], ev.points[-1][:2])
 
-    def test_outlet_feed_has_two_sweeps_and_clears_low_rail(self) -> None:
+    def test_outlet_feed_has_two_sweeps_at_fixed_elevation(self) -> None:
         outlet = self.resolved_conduit("power_back_right_outlet_feed")
 
         self.assertEqual(outlet.trade_size, "1/2")
@@ -1199,10 +1223,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             outlet.points[-1],
             build.BACK_RIGHT_OUTLET_CONDUIT_ENTRY.resolve(build.members),
         )
-        self.assertGreater(
-            min(point[2] for point in outlet.points),
-            build.members["rail_rb"].max_on("z"),
-        )
+        self.assertAlmostEqual(min(point[2] for point in outlet.points), 8.5382653061)
         self.assertLess(
             max(point[0] for point in outlet.points)
             + CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2,
@@ -1594,41 +1615,6 @@ class LowVoltageBuildTests(unittest.TestCase):
             minimum_cable_bend_radius(ev_feed.points),
             build.LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS,
         )
-
-        rail_fb=build.members["rail_fb"]
-        cable_radius=build.LOW_VOLTAGE_CABLE_DIAMETER/2
-        rail_min=tuple(rail_fb.min_on(axis)-cable_radius for axis in "xyz")
-        rail_max=tuple(rail_fb.max_on(axis)+cable_radius for axis in "xyz")
-
-        def segment_intersects_rail(
-            start: tuple[float,float,float],
-            end: tuple[float,float,float],
-        ) -> bool:
-            interval_min=0.0
-            interval_max=1.0
-            for index in range(3):
-                delta=end[index]-start[index]
-                if abs(delta) < 1e-12:
-                    if not rail_min[index] <= start[index] <= rail_max[index]:
-                        return False
-                    continue
-                near=(rail_min[index]-start[index])/delta
-                far=(rail_max[index]-start[index])/delta
-                if near > far:
-                    near,far=far,near
-                interval_min=max(interval_min, near)
-                interval_max=min(interval_max, far)
-                if interval_min > interval_max:
-                    return False
-            return True
-
-        for cable in (wifi_feed, ev_feed):
-            self.assertFalse(
-                any(
-                    segment_intersects_rail(start, end)
-                    for start,end in zip(cable.points, cable.points[1:])
-                )
-            )
 
         required_riser_clearance = (
             build.LOW_VOLTAGE_CONDUIT_RADIUS

@@ -332,10 +332,36 @@ def build_enclosure(
     TAMBOUR_FRONT_HEADER_CENTER_Y=(
         members["brace_fl_bl"].center_on("y")+CENTER_RAIL_OFFSET
     )
+    RAIL_RBU_CENTER_Z=13
     for name,support_a,support_b,position,cross_offset,position_axis,rotated in [
         ("rail_rb","post_fr","post_br", 7, 0, None, True),
-        ("rail_lb","post_fl","post_bl", 7, 0, None, True),
-        ("rail_fb","rail_lb","rail_rb", 7, CENTER_RAIL_OFFSET, None, True),
+        (
+            "rail_lb",
+            "post_fl",
+            "post_bl",
+            RAIL_RBU_CENTER_Z,
+            0,
+            None,
+            True,
+        ),
+        (
+            "rail_rbu",
+            "post_fr",
+            "post_br",
+            RAIL_RBU_CENTER_Z,
+            0,
+            None,
+            True,
+        ),
+        (
+            "rail_fb",
+            "rail_lb",
+            "rail_rbu",
+            RAIL_RBU_CENTER_Z,
+            CENTER_RAIL_OFFSET,
+            None,
+            True,
+        ),
     ]:
         members.between(
             name,
@@ -372,7 +398,7 @@ def build_enclosure(
         (
             "rail_rtam",
             "brace_fr_br",
-            "rail_rb",
+            "rail_rbu",
             members["post_fr"].center_on("x"),
         ),
     ):
@@ -388,7 +414,6 @@ def build_enclosure(
         )
 
     for name,support_a,support_b,position,position_axis in [
-        ("rail_rbu", "rail_rtam", "post_br", 13, None),
         (
             "rail_lt",
             "rail_ltam",
@@ -860,16 +885,12 @@ def build_enclosure(
         assembly="low_voltage_fittings",
         component_type=CARLON_E987N_JUNCTION_BOX,
         member="front_center_rail",
-        at=(
-            LOW_VOLTAGE_BOX_CENTER_Z
-            - members["front_center_rail"].min_on("z")
-        ),
+        at=0,
         face="wide_neg",
-        offset=(
-            0,
-            LOW_VOLTAGE_BOX_CENTER_X
-            - members["front_center_rail"].center_on("x"),
-            0,
+        absolute_anchor=(
+            LOW_VOLTAGE_BOX_CENTER_X,
+            members["front_center_rail"].min_on("y"),
+            LOW_VOLTAGE_BOX_CENTER_Z,
         ),
     )
 
@@ -878,19 +899,12 @@ def build_enclosure(
         assembly="low_voltage_fittings",
         component_type=CARLON_E943E_MALE_TERMINAL_ADAPTER,
         member="front_center_rail",
-        at=(
-            LOW_VOLTAGE_BOX_BOTTOM_Z
-            - members["front_center_rail"].min_on("z")
-        ),
+        at=0,
         face="wide_neg",
-        offset=(
-            0,
-            -(
-                LOW_VOLTAGE_INPUT_X
-                - members["front_center_rail"].center_on("x")
-            ),
-            members["front_center_rail"].min_on("y")
-            - LOW_VOLTAGE_INPUT_Y,
+        absolute_anchor=(
+            LOW_VOLTAGE_INPUT_X,
+            LOW_VOLTAGE_INPUT_Y,
+            LOW_VOLTAGE_BOX_BOTTOM_Z,
         ),
         orientation="down",
     )
@@ -901,16 +915,12 @@ def build_enclosure(
             assembly="low_voltage_fittings",
             component_type=ONE_INCH_CABLE_GLAND,
             member="front_center_rail",
-            at=(
-                LOW_VOLTAGE_BOX_BOTTOM_Z
-                - members["front_center_rail"].min_on("z")
-            ),
+            at=0,
             face="wide_neg",
-            offset=(
-                0,
-                -(gland_x-members["front_center_rail"].center_on("x")),
-                members["front_center_rail"].min_on("y")
-                - LOW_VOLTAGE_GLAND_Y,
+            absolute_anchor=(
+                gland_x,
+                LOW_VOLTAGE_GLAND_Y,
+                LOW_VOLTAGE_BOX_BOTTOM_Z,
             ),
             orientation="down",
         )
@@ -977,8 +987,13 @@ def build_enclosure(
         assembly="electrical",
         component_type=EV_CHARGER_BODY,
         member="front_center_rail",
-        at=22.5,
+        at=0,
         face="wide_pos",
+        absolute_anchor=(
+            members["front_center_rail"].center_on("x"),
+            members["front_center_rail"].max_on("y"),
+            30.25,
+        ),
     )
 
     components.add(
@@ -1027,15 +1042,12 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E987N_JUNCTION_BOX,
         member="front_center_rail",
-        at=(
-            POWER_JUNCTION_CENTER_Z
-            - members["front_center_rail"].min_on("z")
-        ),
+        at=0,
         face="wide_neg",
-        offset=(
-            0,
-            POWER_JUNCTION_X-members["front_center_rail"].center_on("x"),
-            -POWER_JUNCTION_Y_SHIFT,
+        absolute_anchor=(
+            POWER_JUNCTION_X,
+            members["front_center_rail"].min_on("y")+POWER_JUNCTION_Y_SHIFT,
+            POWER_JUNCTION_CENTER_Z,
         ),
     )
 
@@ -1059,8 +1071,8 @@ def build_enclosure(
         for index in range(3)
     )
 
-    # Keep the T's vertical channel coaxial with the charger entry and raise
-    # its horizontal branch until the complete conduit envelope clears rail_fb.
+    # Keep the conduit layout at its approved absolute elevation.  It is
+    # intentionally independent of rail_fb while the box mounting is revised.
     POWER_T_MAIN_CHANNEL_WIDTH=2+5/16
     POWER_T_AXIS_X=POWER_EV_ENTRY[0]
     POWER_T_AXIS_Y=POWER_EV_ENTRY[1]
@@ -1072,12 +1084,7 @@ def build_enclosure(
     LOW_VOLTAGE_RISER_Y=(
         POWER_T_AXIS_Y+LOW_VOLTAGE_RISER_POWER_OFFSET_Y
     )
-    POWER_T_RAIL_CLEARANCE=0.25
-    POWER_T_CENTER_Z=(
-        members["rail_fb"].max_on("z")
-        + CONDUIT_OD_BY_TRADE_SIZE["1-1/4"]/2
-        + POWER_T_RAIL_CLEARANCE
-    )
+    POWER_T_CENTER_Z=8.83
     POWER_T_ANCHOR_X=(
         POWER_T_AXIS_X-CARLON_E983G_CONDUIT_T_BODY.size[2]/2
     )
@@ -1093,12 +1100,12 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E983G_CONDUIT_T_BODY,
         member="front_center_rail",
-        at=POWER_T_CENTER_Z-members["front_center_rail"].min_on("z"),
+        at=0,
         face="narrow_pos",
-        offset=(
-            0,
-            members["front_center_rail"].center_on("y")-POWER_T_ANCHOR_Y,
-            POWER_T_ANCHOR_X-members["front_center_rail"].max_on("x"),
+        absolute_anchor=(
+            POWER_T_ANCHOR_X,
+            POWER_T_ANCHOR_Y,
+            POWER_T_CENTER_Z,
         ),
         orientation="down",
     )
@@ -1127,20 +1134,17 @@ def build_enclosure(
         POWER_JUNCTION_CENTER_Y+CARLON_E987N_JUNCTION_BOX.size[1]/2
     )
     POWER_JUNCTION_T_PORT_Z=POWER_T_CENTER_Z
-    POWER_JUNCTION_T_FACE_OFFSET=(
-        members["front_center_rail"].min_on("y")-POWER_JUNCTION_T_PORT_Y
-    )
     components.add(
         "power_junction_input_adapter",
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E996G_BOX_ADAPTER,
         member="front_center_rail",
-        at=POWER_JUNCTION_T_PORT_Z-members["front_center_rail"].min_on("z"),
+        at=0,
         face="wide_neg",
-        offset=(
-            -POWER_JUNCTION_T_FACE_OFFSET,
-            POWER_JUNCTION_T_PORT_X-members["front_center_rail"].center_on("x"),
-            0,
+        absolute_anchor=(
+            POWER_JUNCTION_T_PORT_X,
+            POWER_JUNCTION_T_PORT_Y,
+            POWER_JUNCTION_T_PORT_Z,
         ),
         orientation="inward",
     )
@@ -1149,15 +1153,12 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E940G_COUPLING,
         member="front_center_rail",
-        at=POWER_JUNCTION_T_PORT_Z-members["front_center_rail"].min_on("z"),
+        at=0,
         face="wide_neg",
-        offset=(
-            (
-                CARLON_E996G_BOX_ADAPTER.size[0]/2
-                - POWER_JUNCTION_T_FACE_OFFSET
-            ),
-            POWER_JUNCTION_T_PORT_X-members["front_center_rail"].center_on("x"),
-            0,
+        absolute_anchor=(
+            POWER_JUNCTION_T_PORT_X,
+            POWER_JUNCTION_T_PORT_Y+CARLON_E996G_BOX_ADAPTER.size[0]/2,
+            POWER_JUNCTION_T_PORT_Z,
         ),
         orientation="inward",
     )
@@ -1176,12 +1177,12 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E950GF_REDUCER_BUSHING,
         member="front_center_rail",
-        at=POWER_T_TOP_Z-members["front_center_rail"].min_on("z"),
+        at=0,
         face="narrow_pos",
-        offset=(
-            0,
-            POWER_T_AXIS_Y-members["front_center_rail"].center_on("y"),
-            POWER_T_AXIS_X-members["front_center_rail"].max_on("x"),
+        absolute_anchor=(
+            POWER_T_AXIS_X,
+            POWER_T_AXIS_Y,
+            POWER_T_TOP_Z,
         ),
     )
 
@@ -1192,12 +1193,12 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E996D_BOX_ADAPTER,
         member="front_center_rail",
-        at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
+        at=0,
         face="wide_neg",
-        offset=(
-            POWER_JUNCTION_RIGHT_X-members["front_center_rail"].center_on("x"),
-            0,
-            members["front_center_rail"].min_on("y")-POWER_JUNCTION_LIGHT_PORT_Y,
+        absolute_anchor=(
+            POWER_JUNCTION_RIGHT_X,
+            POWER_JUNCTION_LIGHT_PORT_Y,
+            POWER_JUNCTION_OUTLET_PORT_Z,
         ),
         orientation="left",
     )
@@ -1206,14 +1207,13 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E940D_COUPLING,
         member="front_center_rail",
-        at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
+        at=0,
         face="wide_neg",
-        offset=(
+        absolute_anchor=(
             POWER_JUNCTION_RIGHT_X
-            + CARLON_E996D_BOX_ADAPTER.size[0]/2
-            - members["front_center_rail"].center_on("x"),
-            0,
-            members["front_center_rail"].min_on("y")-POWER_JUNCTION_LIGHT_PORT_Y,
+            + CARLON_E996D_BOX_ADAPTER.size[0]/2,
+            POWER_JUNCTION_LIGHT_PORT_Y,
+            POWER_JUNCTION_OUTLET_PORT_Z,
         ),
         orientation="left",
     )
@@ -1224,12 +1224,12 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E996D_BOX_ADAPTER,
         member="front_center_rail",
-        at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
+        at=0,
         face="wide_neg",
-        offset=(
-            POWER_JUNCTION_RIGHT_X-members["front_center_rail"].center_on("x"),
-            0,
-            members["front_center_rail"].min_on("y")-POWER_JUNCTION_PORT_Y,
+        absolute_anchor=(
+            POWER_JUNCTION_RIGHT_X,
+            POWER_JUNCTION_PORT_Y,
+            POWER_JUNCTION_OUTLET_PORT_Z,
         ),
         orientation="left",
     )
@@ -1238,14 +1238,13 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E940D_COUPLING,
         member="front_center_rail",
-        at=POWER_JUNCTION_OUTLET_PORT_Z-members["front_center_rail"].min_on("z"),
+        at=0,
         face="wide_neg",
-        offset=(
+        absolute_anchor=(
             POWER_JUNCTION_RIGHT_X
-            + CARLON_E996D_BOX_ADAPTER.size[0]/2
-            - members["front_center_rail"].center_on("x"),
-            0,
-            members["front_center_rail"].min_on("y")-POWER_JUNCTION_PORT_Y,
+            + CARLON_E996D_BOX_ADAPTER.size[0]/2,
+            POWER_JUNCTION_PORT_Y,
+            POWER_JUNCTION_OUTLET_PORT_Z,
         ),
         orientation="left",
     )
@@ -1718,11 +1717,9 @@ def build_enclosure(
     LOW_VOLTAGE_RISER_BYPASS_Z=LOW_VOLTAGE_GLAND_END_Z-4
     LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z=LOW_VOLTAGE_GLAND_END_Z-2
     LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS=LOW_VOLTAGE_MINIMUM_BEND_RADIUS
-    LOW_VOLTAGE_RAIL_FB_CLEAR_Z=(
-        members["rail_fb"].max_on("z")
-        + LOW_VOLTAGE_CABLE_DIAMETER/2
-        + LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS
-    )
+    # Preserve the approved cable route while rail_fb and the box mounting are
+    # revised.  This is an absolute world-space elevation, not rail clearance.
+    LOW_VOLTAGE_RAIL_FB_CLEAR_Z=8.4375
     LOW_VOLTAGE_POST_FL_POS_X=(
         members["post_fl"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )

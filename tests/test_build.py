@@ -1006,8 +1006,14 @@ class PowerJunctionBuildTests(unittest.TestCase):
         riser = self.resolved_conduit("power_ground_riser")
         branch = self.resolved_conduit("power_t_junction_feed")
         ev = self.resolved_conduit("power_ev_charger_feed")
-        self.assertVectorAlmostEqual(riser.points[0][:2], build.POWER_EV_ENTRY[:2])
-        self.assertVectorAlmostEqual(riser.points[-1][:2], build.POWER_EV_ENTRY[:2])
+        self.assertVectorAlmostEqual(
+            riser.points[0][:2],
+            (build.POWER_RISER_X, build.POWER_RISER_Y),
+        )
+        self.assertVectorAlmostEqual(
+            riser.points[-1][:2],
+            (build.POWER_RISER_X, build.POWER_RISER_Y),
+        )
         self.assertEqual(branch.trade_size, "1-1/4")
         self.assertEqual(branch.points[0][0], branch.points[-1][0])
         self.assertAlmostEqual(branch.points[0][0], build.POWER_EV_ENTRY[0])
@@ -1079,9 +1085,9 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertVectorAlmostEqual(
             riser.points[0],
             (
-                enclosure.POWER_T_AXIS_X,
-                enclosure.POWER_T_AXIS_Y,
-                enclosure.POWER_T_GROUND_Z,
+                enclosure.POWER_RISER_X,
+                enclosure.POWER_RISER_Y,
+                enclosure.POWER_RISER_GROUND_Z,
             ),
         )
         self.assertEqual(riser.points[0][:2], riser.points[-1][:2])
@@ -1204,7 +1210,10 @@ class PowerJunctionBuildTests(unittest.TestCase):
             self.assertVectorAlmostEqual(ev.points[-1], enclosure.POWER_EV_ENTRY)
             self.assertVectorAlmostEqual(ev.points[0][:2], ev.points[-1][:2])
             riser = self.resolved_conduit("power_ground_riser", enclosure)
-            self.assertVectorAlmostEqual(riser.points[0][:2], ev.points[-1][:2])
+            self.assertVectorAlmostEqual(
+                riser.points[0][:2],
+                (enclosure.POWER_RISER_X, enclosure.POWER_RISER_Y),
+            )
 
     def test_outlet_feed_has_two_sweeps_at_fixed_elevation(self) -> None:
         outlet = self.resolved_conduit("power_back_right_outlet_feed")
@@ -1358,19 +1367,13 @@ class LowVoltageBuildTests(unittest.TestCase):
                 )-max(fitting.box_min[1], other.box_min[1])
                 self.assertFalse(x_overlap > 0 and y_overlap > 0)
 
-    def test_three_quarter_riser_uses_as_built_plumb_axis(self) -> None:
+    def test_three_quarter_riser_uses_requested_plumb_axis(self) -> None:
         riser = self.resolved_conduit("low_voltage_ground_riser")
 
         self.assertEqual(riser.trade_size, "3/4")
         self.assertEqual(riser.assembly, "low_voltage_conduit")
-        self.assertAlmostEqual(
-            build.LOW_VOLTAGE_RISER_X-build.POWER_T_AXIS_X,
-            -0.53,
-        )
-        self.assertAlmostEqual(
-            build.LOW_VOLTAGE_RISER_Y-build.POWER_T_AXIS_Y,
-            -6.1,
-        )
+        self.assertAlmostEqual(build.LOW_VOLTAGE_RISER_X, 14)
+        self.assertAlmostEqual(build.LOW_VOLTAGE_RISER_Y, 6.25)
         self.assertVectorAlmostEqual(
             riser.points[0],
             (

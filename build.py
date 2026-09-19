@@ -1076,15 +1076,18 @@ def build_enclosure(
     POWER_T_MAIN_CHANNEL_WIDTH=2+5/16
     POWER_T_AXIS_X=POWER_EV_ENTRY[0]
     POWER_T_AXIS_Y=POWER_EV_ENTRY[1]
-    LOW_VOLTAGE_RISER_POWER_OFFSET_X=-0.53
-    LOW_VOLTAGE_RISER_POWER_OFFSET_Y=-6.1
-    LOW_VOLTAGE_RISER_X=(
-        POWER_T_AXIS_X+LOW_VOLTAGE_RISER_POWER_OFFSET_X
-    )
-    LOW_VOLTAGE_RISER_Y=(
-        POWER_T_AXIS_Y+LOW_VOLTAGE_RISER_POWER_OFFSET_Y
-    )
+    # Keep the riser axes independent from the fittings they used to align
+    # with. These coordinates move only the vertical conduit runs; the
+    # low-voltage input adapter and power T body remain at their existing
+    # absolute anchors.
+    POWER_RISER_X=15.055
+    POWER_RISER_Y=12.5
+    LOW_VOLTAGE_RISER_X=14
+    LOW_VOLTAGE_RISER_Y=6.25
     POWER_T_CENTER_Z=8.83
+    POWER_T_BOTTOM_Z=(
+        POWER_T_CENTER_Z-CARLON_E983G_CONDUIT_T_BODY.size[0]/2
+    )
     POWER_T_ANCHOR_X=(
         POWER_T_AXIS_X-CARLON_E983G_CONDUIT_T_BODY.size[2]/2
     )
@@ -1255,17 +1258,26 @@ def build_enclosure(
         POWER_T_AXIS_X,
         POWER_T_AXIS_Y,
     )
+    POWER_RISER_GROUND_Z=grounds[0].resolved(members).z_at(
+        POWER_RISER_X,
+        POWER_RISER_Y,
+    )
     conduits.add(
         "power_ground_riser",
         trade_size="1-1/4",
         points=(
             _member_relative_coord(
                 "front_center_rail",
-                POWER_T_AXIS_X,
-                POWER_T_AXIS_Y,
-                POWER_T_GROUND_Z,
+                POWER_RISER_X,
+                POWER_RISER_Y,
+                POWER_RISER_GROUND_Z,
             ),
-            POWER_T_BOTTOM_ANCHOR,
+            _member_relative_coord(
+                "front_center_rail",
+                POWER_RISER_X,
+                POWER_RISER_Y,
+                POWER_T_BOTTOM_Z,
+            ),
         ),
     )
     conduits.add(

@@ -2106,8 +2106,8 @@ def build_enclosure(
             ),
         ),
         xygrid_origin=(
-            members["post_fr"].max_on("x"),
-            members["post_fr"].min_on("y"),
+            members["post_fl"].min_on("x"),
+            members["post_fl"].min_on("y"),
         ),
         build_steps=(
             BUILD_STEPS

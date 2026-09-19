@@ -130,20 +130,30 @@ class XYGridTests(unittest.TestCase):
         self.assertIn("xzgrid_yloc = 19; // [19:1:25]", scad)
         self.assertIn("xygrid_zloc = 29; // [29:1:33]", scad)
 
-    def test_full_enclosure_grid_origin_is_post_fr_outer_front_corner(self) -> None:
-        post_fr = build.members["post_fr"]
+    def test_default_grid_origin_uses_post_fl_minimum_xy_corner(self) -> None:
+        post_fl = build.members["post_fl"]
 
         self.assertEqual(
             build.model.xygrid_origin,
-            (post_fr.max_on("x"), post_fr.min_on("y")),
+            (post_fl.min_on("x"), post_fl.min_on("y")),
         )
-        self.assertEqual(build.model.xygrid_origin, (27.5, 0))
-        self.assertIn("xygrid_origin = [27.5, 0];", build.model.to_scad())
+        self.assertEqual(build.model.xygrid_origin, (0, 0))
+        self.assertIn("xygrid_origin = [0, 0];", build.model.to_scad())
 
-    def test_enclosure_grid_origin_tracks_non_default_width(self) -> None:
-        enclosure = build.build_enclosure(width=30)
+    def test_parameterized_dimensions_move_structure_but_not_grid_origin(self) -> None:
+        enclosure = build.build_enclosure(width=30, depth=26)
 
-        self.assertEqual(enclosure.model.xygrid_origin, (33.5, 0))
+        self.assertEqual(enclosure.width, 30)
+        self.assertEqual(enclosure.depth, 26)
+        self.assertEqual(enclosure.members["post_br"].start, (30, 26, -32))
+        self.assertAlmostEqual(enclosure.siding.max_x, 33.5)
+        self.assertAlmostEqual(enclosure.siding.max_y, 29.5)
+        post_fl = enclosure.members["post_fl"]
+        self.assertEqual(
+            enclosure.model.xygrid_origin,
+            (post_fl.min_on("x"), post_fl.min_on("y")),
+        )
+        self.assertEqual(enclosure.model.xygrid_origin, (0, 0))
 
     def test_full_enclosure_ranges_cover_all_renderable_geometry(self) -> None:
         self.assertEqual(

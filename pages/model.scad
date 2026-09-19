@@ -347,7 +347,7 @@ siding_parts = [
 ];
 
 xygrid_bounds = [-36.9595, 60.9595, -39.7737, 58.1487];
-xygrid_origin = [27.5, 0];
+xygrid_origin = [0, 0];
 model_bounds = [-37, 61, -40, 59, -37, 50];
 
 assert(

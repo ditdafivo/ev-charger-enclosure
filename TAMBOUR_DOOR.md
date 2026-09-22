@@ -19,11 +19,11 @@ the build record at the end of this guide.
 | Feature | Modeled value | Status |
 | --- | ---: | --- |
 | Distance between left and right track centerlines | 20 1/2 in | Verify against the built frame |
-| Rear lower track endpoint | `y = 21`, `z = 3` in | Fixed enclosure interface |
+| Rear lower track endpoint | `y = 22`, `z = 3` in | Fixed enclosure interface |
 | Front lower track endpoint | `y = 5`, `z = 16` in | Fixed enclosure interface |
 | Top track centerline | `z = 44 3/8` in | Fixed enclosure interface |
 | Rear straight run | 38 3/4 in | Derived from installed datums |
-| Top straight run | 10 3/4 in | Derived from installed datums |
+| Top straight run | 11 3/4 in | Derived from installed datums |
 | Front straight run | 25 3/4 in | Derived from installed datums |
 | Track offset into slat | 0 in; path is groove center | Fixed enclosure interface |
 | Bend centerline radius | 2 5/8 in | Prototype-controlled |
@@ -150,7 +150,7 @@ Side path and handle orientation (not to scale):
 
 ```text
  rear opening                                      enclosure front
- y = 21                                                     y = 5
+ y = 22                                                     y = 5
     |        top brace underside z = 45.5                    |
     |        ----------------------------------               |
     |        1/4-in minimum clearance                         |
@@ -165,7 +165,7 @@ Side path and handle orientation (not to scale):
 ```
 
 The model includes a removable 1/4-inch exterior-plywood ceiling from
-`y = 9.6875` to `y = 17.625` and `z = 43.25` to `z = 43.5`. Its front edge
+`y = 10.6875` to `y = 18.625` and `z = 43.25` to `z = 43.5`. Its front edge
 aligns with the positive-Y face of `rail_ft`, avoiding an unnecessary forward
 overhang. It shields the overhead curtain from hands and the charger cord while
 retaining 1/4 inch below the maximum curtain envelope. Support it on independent

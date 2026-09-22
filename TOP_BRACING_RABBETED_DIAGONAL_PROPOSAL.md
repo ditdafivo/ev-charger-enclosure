@@ -13,9 +13,9 @@ checks remain in [`TOP_BRACING.md`](TOP_BRACING.md).
 - The front and rear perimeter members remain top-flush 2x4s.
 - `post_bl` and `post_fr` are 3/4 inch shorter than the other posts and stop at
   `z = 46.25`. They are not rabbeted.
-- The diagonal is ripped from nominal 1x6 stock to a calculated 4.907-inch
+- The diagonal is ripped from nominal 1x6 stock to a calculated 4.922-inch
   default finished width and occupies `z = 46.25` through `z = 47.00`. Its
-  35.133-inch rectangular blank follows the post-center line at 37.44 degrees.
+  35.766-inch rectangular blank follows the post-center line at 38.91 degrees.
   Both ends are jigsawed to the modeled six-sided footprint, fully covering
   both post tops without crossing their exterior XY faces.
 - The diagonal's footprint is routed 3/4 inch into the four intersected side

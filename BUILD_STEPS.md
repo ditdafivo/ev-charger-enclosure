@@ -1,7 +1,7 @@
 # EV Charger Enclosure Build Steps
 
 This guide describes the modeled construction sequence for the fixed enclosure
-design: 24-inch left-to-right post center spacing, 18 3/8-inch front-to-back post
+design: 24-inch left-to-right post center spacing, 19 3/8-inch front-to-back post
 center spacing, 47 inches above grade, and 32 inches of each post below grade.
 Dimensions and cut lengths below apply to this design only.
 
@@ -49,14 +49,12 @@ Before installing any posts, establish the enclosure layout from protected
 reference points and mark all four 10-inch footing circles. Route both
 underground conduit runs through the enclosure interior and clear of the full
 footing excavations before sweeping them up to the risers. Bring the modeled
-1 1/4-inch power riser out of the ground on the EV charger's conduit-port axis
-(x = 15.35 inches and y = 11.2875 inches in the default model) and bring the
-modeled 3/4-inch low-voltage riser out beneath the center of its junction box.
-Its default axis is centered on the box bottom at x = 12 inches and
-y = 4.1875 inches, clear of the post footings. This nominal centered location
-preserves adjustment margin in every plan direction when the box opening is
-field-located from the as-built riser. Leave both upper ends positioned for the
-later equipment connections.
+1 1/4-inch power riser out of the ground at its fixed modeled axis
+(x = 15.055 inches and y = 12.5 inches in the default model) and bring the
+modeled 3/4-inch low-voltage riser out at its fixed axis (x = 14 inches and
+y = 6.25 inches). These riser positions remain fixed while the center-rail
+assembly and its equipment move rearward. Leave both upper ends positioned for
+the later equipment connections.
 
 Before covering the conduit, measure and photograph its centerline, depth, and
 the complete envelope of every sweep from protected reference points. Establish
@@ -96,7 +94,7 @@ low_voltage_ground_riser
 
 Excavate and fill four 10-inch-diameter gravel footings from 36 inches below
 the nominal ground datum to grade, centered on the post centerlines. Position
-the four 79-inch 4x4 posts on the 24-by-18 3/8-inch centerline rectangle. The
+the four 79-inch 4x4 posts on the 24-by-19 3/8-inch centerline rectangle. The
 model places each post 32 inches below grade and 47 inches above grade, leaving
 4 inches of gravel beneath it.
 
@@ -166,9 +164,9 @@ Install 2x4 front and back perimeter braces and top-flush 4x4 left and right
 braces. The back-left and front-right posts stop at `z = 46.25`; do not rabbet
 them. Route only the four side-brace regions listed in
 `output/fabrication.csv` to a uniform 3/4-inch depth. Dry-fit the approximately
-35.133-inch-long rectangular blank cut from a stress-rated nominal 1x6; cut it
+35.766-inch-long rectangular blank cut from a stress-rated nominal 1x6; cut it
 slightly long rather than rounding the minimum downward. Rip it slightly proud
-of the calculated 4.907-inch minimum finished width, fit it on the modeled
+of the calculated 4.922-inch minimum finished width, fit it on the modeled
 post-center line, and jigsaw the end profiles listed in `output/fabrication.csv`.
 Its full section must occupy `z = 46.25` to `47.00`, cover both complete post
 tops, and stop at their exterior XY faces.
@@ -203,14 +201,14 @@ gusset_front_right
 
 ## 4. Add the lower side rails (`lower-side-rails`)
 
-Install the 14 7/8-inch `rail_lb` and `rail_rbu` 2x4 rails between their front
+Install the 15 7/8-inch `rail_lb` and `rail_rbu` 2x4 rails between their front
 and back posts. Their modeled bottom elevation is 12 1/4 inches above the
 nominal ground datum. Install the secondary right-side `rail_rb` with its
 modeled bottom at 7 1/4 inches. Keep all three wide faces horizontal.
 
 Check that `rail_lb` and `rail_rbu` are level with one another, that `rail_rb`
 is level at its separate elevation, that the clear spacing between posts
-remains 14 7/8 inches, and that all four posts remain plumb. Adjust the temporary
+remains 15 7/8 inches, and that all four posts remain plumb. Adjust the temporary
 bracing rather than using these rails to pull the posts into place.
 
 New model objects:
@@ -278,7 +276,7 @@ rail_rt
 
 Install the 20 1/2-inch 2x4 `rail_ft` between `rail_lt` and `rail_rt`, with its
 lower and upper faces at `z = 40 7/8` and `42 3/8` inches. Its modeled Y range
-is `6 3/16` to `9 11/16` inches. Fasten its complete end faces to the side
+is `7 3/16` to `10 11/16` inches. Fasten its complete end faces to the side
 rails; the former separate vertical header-support blocks are not used.
 
 Check the header for level and square and verify its position before adding
@@ -336,7 +334,7 @@ mirrored ASA track segments along the modeled paths before installing any nearby
 electrical equipment or conduit. Their final position is the controlling
 clearance datum for the power-junction assembly, its 1 1/4-inch conduit, and
 all outgoing conduit runs; do not use those later assemblies to force or shift
-a guide. The track datums' rear lower endpoint is at `y = 21`, `z = 3` inches;
+a guide. The track datums' rear lower endpoint is at `y = 22`, `z = 3` inches;
 their front lower endpoint is at `y = 5`, `z = 16` inches; their top
 centerline is at `z = 44 3/8` inches; and both turns begin from a modeled
 2 5/8-inch centerline radius. The slat center shares the running-groove datum;
@@ -442,7 +440,7 @@ Before mounting the Carlon E987N power junction box, fit its rear-facing
 right-side 1/2-inch light and receptacle outlets.
 The light outlet is forward of the receptacle outlet. Then mount the connected
 box on `front_center_rail`, spanning x = 15 to 19 inches in the default model,
-and y = 2.1875 to 6.1875 inches. Its bottom face remains at the modeled
+and y = 3.1875 to 7.1875 inches. Its bottom face remains at the modeled
 elevation of approximately z = 6.50 inches. Keep every fitting axis aligned
 with its conduit path.
 
@@ -508,7 +506,7 @@ make the second 3-inch-radius sweep toward negative X, support the horizontal
 run on the bottom backer, and make the third 3-inch-radius sweep toward
 positive Z into the bottom port of the WRB550B base box at x = 13.75,
 y = 1.5, and z = 37.3 inches. The junction-box fitting center is at
-y = 3.1875 inches, leaving approximately 0.14 inch between the conduit
+y = 4.1875 inches, leaving approximately 0.39 inch between the conduit
 envelope and the closed tambour plane.
 
 Check that the box is centered at x = 13 3/4 inches and z = 40 inches, the
@@ -553,7 +551,7 @@ power_back_right_outlet_feed
 ## 20. Add the low-voltage termination (`low-voltage-termination`)
 
 Mount the low-voltage junction box in its shifted position, spanning x = 10
-to 14 inches and y = 2.1875 to 6.1875 inches, centered at z = 13 inches. The
+to 14 inches and y = 3.1875 to 7.1875 inches, centered at z = 13 inches. The
 power junction spans x = 15 to 19 inches, so both boxes share the same
 positive-Y face and retain a one-inch X gap. Future backing lumber may be
 added but is not included. Connect the center of the bottom panel to the
@@ -681,6 +679,7 @@ enclosure_siding_top_1
 enclosure_siding_top_2
 enclosure_siding_top_3
 enclosure_siding_top_4
+enclosure_siding_top_5
 enclosure_siding_front_1
 enclosure_siding_left_1
 enclosure_siding_right_1

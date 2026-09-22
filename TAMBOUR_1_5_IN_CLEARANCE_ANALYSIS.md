@@ -81,7 +81,7 @@ The modeled exterior-plywood panel occupies:
 
 ```text
 x = 3.5 to 24.0 inches
-y = 9.6875 to 17.625 inches
+y = 10.6875 to 18.625 inches
 z = 43.25 to 43.50 inches
 ```
 
@@ -107,7 +107,7 @@ full-width test frame.
 ## Acceptance requirements
 
 1. Build the guide paths from one full-size template using the modeled
-   front `y = 5.0`, top `z = 44.375`, rear `y = 21.0`, and 2 5/8-inch-radius
+   front `y = 5.0`, top `z = 44.375`, rear `y = 22.0`, and 2 5/8-inch-radius
    track datums.
 2. Verify the header load path and connections for the charger and holster's
    dead and dynamic loads.

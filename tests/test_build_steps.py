@@ -131,7 +131,7 @@ class BuildStepModelTests(unittest.TestCase):
         }
 
         self.assertEqual(len(model.build_steps), 27)
-        self.assertEqual(len(assigned), 143)
+        self.assertEqual(len(assigned), 144)
         self.assertEqual(set(assigned), set(model.renderable_object_names()))
         self.assertEqual(
             model.build_steps[0].object_names,
@@ -174,6 +174,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertEqual(step_by_object["front_center_rail"], 9)
         self.assertEqual(step_by_object["right_center_rail"], 9)
         self.assertEqual(step_by_object["roof_shim_brace_fl_fr"], 24)
+        self.assertEqual(step_by_object["enclosure_siding_top_5"], 24)
         self.assertEqual(step_by_object["back_right_outlet_backer_lower"], 19)
         self.assertEqual(step_by_object["back_right_outlet"], 19)
 

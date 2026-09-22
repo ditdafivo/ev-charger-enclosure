@@ -72,7 +72,7 @@ from lumber_model.gusset import (
 from lumber_model.gusset_dxf import generate_gusset_dxf
 
 DEFAULT_WIDTH = 24
-DEFAULT_DEPTH = 18.375
+DEFAULT_DEPTH = 19.375
 DEFAULT_HEIGHT = 47
 BUILD_STEPS_PATH = Path(__file__).with_name("BUILD_STEPS.md")
 BUILD_STEPS = parse_build_steps(BUILD_STEPS_PATH)
@@ -247,7 +247,11 @@ def build_enclosure(
         )
     )
 
-    CENTER_RAIL_OFFSET=-3
+    # Increasing the default frame depth by one inch moves depth-centered
+    # supports rearward by one-half inch. Add the remaining one-half inch here
+    # so the center-rail assembly moves exactly one inch in world Y.
+    CENTER_RAIL_DEPTH_CORRECTION=0.5
+    CENTER_RAIL_OFFSET=-3+CENTER_RAIL_DEPTH_CORRECTION
     # Keep the top guide/support assembly below the perimeter braces.  The
     # swept envelope is asymmetric about the groove centerline: the handle is
     # proud of the outward slat face, while webbing and its fastener heads are
@@ -471,7 +475,7 @@ def build_enclosure(
         type="2x4",
         support_a="rail_rbu",
         support_b="rail_rt",
-        position=(WIDTH_4x4+FRAME_DIMS.y)/2,
+        position=(WIDTH_4x4+FRAME_DIMS.y)/2+CENTER_RAIL_DEPTH_CORRECTION,
         position_axis="y",
         rotated=True,
     )

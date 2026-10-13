@@ -17,6 +17,7 @@ from lumber_model.tambour_fabrication import (
     make_bend_track,
     make_clearance_coupon,
     make_handle,
+    make_end_stop,
     make_joint_collar,
     make_joint_preview,
     make_straight_track,
@@ -35,11 +36,31 @@ class TambourFabricationTests(unittest.TestCase):
         self.assertAlmostEqual(config.end_stop_insertion, 12.0)
         self.assertAlmostEqual(config.centerline_length / 25.4, 82.621681, places=5)
         self.assertAlmostEqual(config.flange_extension, 8.2)
-        self.assertLessEqual(config.mounting_footprint_width / 25.4, 1.375)
+        self.assertAlmostEqual(config.mounting_footprint_width, 39.7)
+        self.assertAlmostEqual(config.slat_end_engagement, 40)
+        self.assertAlmostEqual(config.usable_channel_depth, 35.2)
         self.assertGreaterEqual(
-            (1.5 - config.mounting_footprint_width / 25.4) / 2,
+            (1.75 - config.mounting_footprint_width / 25.4) / 2,
             1 / 16,
         )
+
+    def test_capture_includes_full_sideways_movement(self) -> None:
+        config = TambourFabricationConfig()
+        self.assertAlmostEqual(config.worst_case_slat_capture, 8.2125)
+        length = config.fitted_slat_length(500, 525.4)
+        self.assertAlmostEqual(length, 498.4125)
+        self.assertAlmostEqual(config.usable_channel_depth - (525.4 - length), 8.2125)
+        self.assertGreaterEqual(config.worst_case_slat_capture, 6.35)
+        with self.assertRaisesRegex(ValueError, "insufficient slat capture"):
+            replace(config, slat_end_engagement=38)
+        with self.assertRaisesRegex(ValueError, "design allowance"):
+            config.fitted_slat_length(500, 526)
+        with self.assertRaisesRegex(ValueError, "maximum"):
+            config.fitted_slat_length(501, 500)
+        with self.assertRaisesRegex(ValueError, "finite"):
+            config.fitted_slat_length(float("nan"), 500)
+        with self.assertRaisesRegex(ValueError, "wall height"):
+            replace(config, slat_end_engagement=4.8)
 
     def test_straight_runs_split_evenly_below_bed_limit(self) -> None:
         lengths = split_segment_lengths(1024.55, 300)
@@ -93,10 +114,27 @@ class TambourFabricationTests(unittest.TestCase):
         )
         self.assertIsNone(collar.intersect(first))
         self.assertIsNone(collar.intersect(second))
+        # Shoes lift from the exterior pads without passing over the tall walls.
+        lifted = Location((0, 0, config.collar_pad_height + 0.5)) * collar
+        self.assertIsNone(lifted.intersect(first))
+        self.assertIsNone(lifted.intersect(second))
         self.assertGreater(
             config.collar_pad_head_width,
             config.collar_pad_neck_width,
         )
+
+    def test_deep_channel_and_stop_fit(self) -> None:
+        config = TambourFabricationConfig()
+        track = make_straight_track(40, config)
+        self.assertAlmostEqual(track.bounding_box().size.Z, 40)
+        self.assertTrue(track.is_inside((-config.channel_outer_width/2, 20, 4)))
+        self.assertFalse(track.is_inside((-config.channel_outer_width/2, 20, 5)))
+        self.assertFalse(track.is_inside((-config.channel_outer_width/2, 20, 39)))
+        self.assertTrue(track.is_inside((-config.wall_thickness/2, 20, 39)))
+        stop = Location((-config.channel_outer_width/2, 0, 0)) * make_end_stop(config)
+        self.assertTrue(stop.is_valid)
+        self.assertAlmostEqual(stop.bounding_box().size.Z, 40)
+        self.assertIsNone(stop.intersect(track))
 
     def test_handle_fits_bed_and_swept_depth(self) -> None:
         config = TambourFabricationConfig()

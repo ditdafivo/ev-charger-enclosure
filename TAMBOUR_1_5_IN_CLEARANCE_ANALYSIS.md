@@ -40,8 +40,9 @@ therefore reaches forward to `y = 4.125`, while the backers end at `y = 3.80`:
 ```
 
 The left and right vertical support rails move with the guide and occupy
-`y = 4.25` to `y = 5.75`. The 3/4-inch plywood bend backers continue rearward
-to `y = 7.25` and occupy `z = 42.375` to `z = 43.5`, above `rail_lt` and
+`y = 4.25` to `y = 5.75`, with flush recessed 1 3/4-inch plywood
+facings extending from `y = 4.125` to `y = 5.875`. The 3/4-inch plywood bend
+backers extend from `y = 5.625` rearward to `y = 7.375` and occupy `z = 42.375` to `z = 43.5`, above `rail_lt` and
 `rail_rt`, so the complete printed flange remains supported without overlapping
 the receiver rails.
 
@@ -95,10 +96,12 @@ retainers so track inspection, cleaning, and curtain removal remain possible.
 
 “Rear trim and slat ends” refers to the left and right ends of each slat where
 the curtain passes through the rear opening, not the trailing end of the
-curtain. The simplified model draws each slat to both track centerlines, while
-the rear opening angles reach those same lateral boundaries. A production
-slat instead terminates with running clearance inside the printed side-opening
-channel, with the trim concealing the interface.
+curtain. The model now shortens each slat to the nominal channel-bottom spacing minus
+1/16-inch total end clearance. Production slats use the minimum measured
+channel-bottom spacing after the backing and tracks are installed. The 40 mm
+walls give 35.2 mm usable depth and require at least 1 3/4-inch-wide backing
+for the 39.7 mm footprint. See `TAMBOUR_DOOR.md` for the 1-inch variation and
+full sideways capture check.
 
 Because the accepted printed clearance, end engagement, and installed track
 spacing remain prototype-controlled, this interface must be approved on the

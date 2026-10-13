@@ -10,6 +10,8 @@
 
 // true: fully open; false: fully closed
 tambour_door_open = true;
+// Show tambour parts retained for possible future installation
+show_deferred = false;
 siding = true;
 ground = false;
 footings = true;
@@ -140,6 +142,15 @@ assert(
     str("yzgrid_region must be an integer from -2 through 2; got ", yzgrid_region)
 );
 
+deferred_objects = [
+    {{ deferred_object_records | join(',\n    ') }}
+];
+function object_is_deferred(name) =
+    len([
+        for (deferred_name = deferred_objects)
+            if (deferred_name == name) deferred_name
+    ]) > 0;
+
 {% if build_step_count %}
 build_step_count = {{ build_step_count }};
 build_step_objects = [
@@ -166,11 +177,15 @@ function object_build_step(name) =
     assert(len(matches) == 1, str("No unique build step for object ", name))
     matches[0];
 function object_is_visible(name) =
-    object_build_step(name) <= build_step;
+    object_is_deferred(name)
+        ? show_deferred && build_step == build_step_count + 1
+        : object_build_step(name) <= build_step;
 function object_is_highlighted(name) =
-    build_step > 0 && object_build_step(name) == build_step;
+    object_is_deferred(name)
+        ? false
+        : build_step > 0 && object_build_step(name) == build_step;
 {% else %}
-function object_is_visible(name) = true;
+function object_is_visible(name) = !object_is_deferred(name) || show_deferred;
 function object_is_highlighted(name) = false;
 {% endif %}
 function build_step_highlight_color() = [1.0, 0.82, 0.0, 1.0];
@@ -693,7 +708,10 @@ module render_tambour_service_parts(points, opening_dir, installed) {
         );
     if (stop_length > 0)
         tambour_oriented_box(
-            v_add(start, v_scale(travel_dir, stop_length / 2)),
+            v_add(
+                v_add(start, v_scale(travel_dir, stop_length / 2)),
+                v_scale(opening_dir, ti_engagement(installed) / 2)
+            ),
             opening_dir,
             travel_dir,
             depth_dir,

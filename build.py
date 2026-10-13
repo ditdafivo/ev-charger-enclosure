@@ -76,6 +76,15 @@ DEFAULT_DEPTH = 19.375
 DEFAULT_HEIGHT = 47
 BUILD_STEPS_PATH = Path(__file__).with_name("BUILD_STEPS.md")
 BUILD_STEPS = parse_build_steps(BUILD_STEPS_PATH)
+DEFERRED_OBJECT_NAMES = (
+    "left_tambour_vertical_backing",
+    "right_tambour_vertical_backing",
+    "left_tambour_bend_backer",
+    "right_tambour_bend_backer",
+    "tambour_ceiling_panel",
+    "enclosure_tambour_track",
+    "enclosure_tambour_door",
+)
 PLAYGROUND_MODEL_URL = "https://ditdafivo.github.io/ev-charger-enclosure/"
 PLAYGROUND_DEPLOY_BRANCH = "pages-source"
 PLAYGROUND_DEPLOY_PATH = "pages/model.scad"
@@ -269,7 +278,7 @@ def build_enclosure(
         +2*TAMBOUR_FABRICATION.flange_extension
     )/MM_PER_INCH
     TAMBOUR_TRACK_SUPPORT_EDGE_MARGIN=(
-        HEIGHT_2x4-TAMBOUR_TRACK_FOOTPRINT_WIDTH
+        TAMBOUR_FABRICATION.minimum_backing_width/MM_PER_INCH-TAMBOUR_TRACK_FOOTPRINT_WIDTH
     )/2
     if TAMBOUR_TRACK_SUPPORT_EDGE_MARGIN < 1/16:
         raise ValueError("tambour track leaves less than 1/16 inch support margin")
@@ -747,7 +756,7 @@ def build_enclosure(
     components = ComponentCollection()
 
     TAMBOUR_FRONT_BEND_BACKER_THICKNESS=0.75
-    TAMBOUR_FRONT_BEND_BACKER_LENGTH=HEIGHT_2x4
+    TAMBOUR_FRONT_BEND_BACKER_LENGTH=TAMBOUR_FABRICATION.minimum_backing_width/MM_PER_INCH
     TAMBOUR_FRONT_BEND_BACKER_BOTTOM_Z=max(
         members["rail_lt"].max_on("z"),
         members["rail_rt"].max_on("z"),
@@ -794,7 +803,30 @@ def build_enclosure(
             member=rail_name,
             at=TAMBOUR_FRONT_BEND_BACKER_BOTTOM_Z-rail.min_on("z"),
             face="narrow_pos",
-            offset=(0, minimum_x-rail.center_on("x"), 0),
+            offset=(0, minimum_x-rail.center_on("x"), -1/8),
+        )
+
+    # Recess the 3/4-inch plywood facing into each front rail so its inside
+    # face retains the track datum. The facing extends 1/8 inch on both edges.
+    for side, rail_name in (("left", "rail_ltam"), ("right", "rail_rtam")):
+        rail = members[rail_name]
+        thickness = 0.75
+        backing_type = ComponentType(
+            name="recessed_three_quarter_inch_plywood_tambour_backing",
+            size=(rail.length, thickness, TAMBOUR_FABRICATION.minimum_backing_width/MM_PER_INCH),
+            color=(0.72, 0.58, 0.38, 1.0),
+            default_face="narrow_pos",
+            mount_point=(0, 0, 0),
+        )
+        minimum_x = rail.max_on("x") - thickness if side == "left" else rail.min_on("x")
+        components.add(
+            f"{side}_tambour_vertical_backing",
+            assembly="tambour_supports",
+            component_type=backing_type,
+            member=rail_name,
+            at=0,
+            face="narrow_pos",
+            offset=(0, minimum_x-rail.center_on("x"), -HEIGHT_2x4-1/8),
         )
 
     GUSSET_HARDWARE_PROJECTION=(
@@ -1517,6 +1549,7 @@ def build_enclosure(
         slat_end_engagement=(
             TAMBOUR_FABRICATION.slat_end_engagement/MM_PER_INCH
         ),
+        slat_total_end_clearance=TAMBOUR_FABRICATION.slat_total_end_clearance/MM_PER_INCH,
         segment_seams=TAMBOUR_SEGMENT_SEAMS,
         joint_gap=TAMBOUR_FABRICATION.joint_expansion_gap/MM_PER_INCH,
         loading_section_length=(
@@ -2131,6 +2164,7 @@ def build_enclosure(
             == (DEFAULT_WIDTH, DEFAULT_DEPTH, DEFAULT_HEIGHT)
             else ()
         ),
+        deferred_object_names=DEFERRED_OBJECT_NAMES,
     )
 
     build_values = dict(locals())

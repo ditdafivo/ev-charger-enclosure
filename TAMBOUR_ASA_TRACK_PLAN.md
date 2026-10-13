@@ -21,7 +21,7 @@ wind, screw-holding, and durability tests.
   expansion slots, drainage, removable loading sections and stops, and paired
   external keyed collars that align both channel walls while permitting
   individual segment removal.
-- Size printable features for a 0.6 mm nozzle, including nominal 2.4 mm minimum
+- Size printable features for a 0.6 mm nozzle, including nominal 4.8 mm prototype
   walls and reinforced channel/flange transitions.
 - Give every track end exterior dovetail pads and retain each paired collar
   with a recessed M3 stainless screw and heat-set insert. Preserve a nominal
@@ -114,3 +114,14 @@ wind, screw-holding, and durability tests.
   liner.
 - Drilling, countersinking, sanding, planing, and jig-making tools may supplement
   the table saw. No router is required.
+
+## Deeper-channel prototype revision
+
+The current generator uses 40 mm overall walls over a 4.8 mm base, giving
+35.2 mm usable depth. Walls are 4.8 mm thick; the running clearance and 8.2 mm
+flange extension are retained. The 39.7 mm footprint requires at least
+1 3/4-inch backing. All tracks, bends, loading sections, coupons, and stops
+use this configuration; exterior dovetail shoes remain removable. Follow
+`TAMBOUR_DOOR.md` for bottom-to-bottom field measurements, common slat sizing,
+1-inch total opening variation, 1/4-inch minimum capture at full sideways
+movement, and physical prototype validation before production printing.

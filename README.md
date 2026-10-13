@@ -48,7 +48,8 @@ fabrication copy directly, run:
 uv run python tools/generate_gusset_dxf.py
 ```
 
-Printable ASA tambour tracks, removable keyed joint collars, clearance coupons,
+Tambour installation is deferred indefinitely. Printable ASA tracks, removable
+keyed joint collars, clearance coupons,
 end stops, loading sections, and the pull handle are generated as STEP and STL
 files beneath `output/tambour/`. Generate the complete set, or one named part,
 with:
@@ -61,7 +62,11 @@ uv run python tools/generate_tambour_parts.py --part clearance_coupon_0.5mm
 The geometry uses millimetres and targets a 350 mm printer bed with a 0.6 mm
 nozzle. Print and condition the clearance coupons before committing to the
 production tracks; the default 0.5 mm running clearance is only a starting
-point. The generated CSV and JSON manifests give print quantities and finished
+point. The 40 mm walls provide 35.2 mm usable depth with a 4.8 mm base and walls.
+Provide at least 1 3/4-inch backing for the 39.7 mm footprint. Field-fit slats
+to the minimum installed channel-bottom spacing minus 1/16-inch total end
+clearance, following [the capture and prototype procedure](TAMBOUR_DOOR.md).
+The generated CSV and JSON manifests give print quantities and finished
 bounding dimensions. Print two common dovetail-collar shoes for every track
 joint, plus two pull handles. `joint_fit_preview.step` shows two test tracks,
 the expansion gap, and both collars in their installed positions.

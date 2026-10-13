@@ -307,8 +307,8 @@ class TopBracingBuildTests(unittest.TestCase):
                 support.type_name,
                 "three_quarter_inch_plywood_tambour_bend_backer",
             )
-            self.assertAlmostEqual(support.box_min[1], 5.75)
-            self.assertAlmostEqual(support.box_size[1], 1.5)
+            self.assertAlmostEqual(support.box_min[1], 5.625)
+            self.assertAlmostEqual(support.box_size[1], 1.75)
             self.assertAlmostEqual(support.box_min[2], 42.375)
             self.assertAlmostEqual(support.box_size[2], 1.125)
             self.assertAlmostEqual(support.box_min[0], minimum_x)
@@ -456,10 +456,10 @@ class TambourClearanceBuildTests(unittest.TestCase):
         self.assertIsNotNone(details)
         assert details is not None
         self.assertAlmostEqual(details.channel_internal_width, 13.7/25.4)
-        self.assertAlmostEqual(details.channel_wall_thickness, 2.4/25.4)
+        self.assertAlmostEqual(details.channel_wall_thickness, 4.8/25.4)
         self.assertAlmostEqual(details.mounting_flange_thickness, 4.8/25.4)
         self.assertAlmostEqual(details.flange_extension, 8.2/25.4)
-        self.assertAlmostEqual(details.slat_end_engagement, 12/25.4)
+        self.assertAlmostEqual(details.slat_end_engagement, 40/25.4)
         self.assertAlmostEqual(details.joint_gap, 0.6/25.4)
         self.assertAlmostEqual(details.loading_section_length, 100/25.4)
         self.assertAlmostEqual(details.end_stop_length, 12/25.4)
@@ -493,7 +493,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
         self.assertEqual(build.TAMBOUR_PLACEMENT_INCREMENT, 1/8)
         self.assertAlmostEqual(
             build.TAMBOUR_TRACK_SUPPORT_EDGE_MARGIN,
-            (1.5-build.TAMBOUR_TRACK_FOOTPRINT_WIDTH)/2,
+            (1.75-build.TAMBOUR_TRACK_FOOTPRINT_WIDTH)/2,
         )
         for name in ("rail_ltam", "rail_rtam"):
             self.assertAlmostEqual(
@@ -645,13 +645,13 @@ class TambourClearanceBuildTests(unittest.TestCase):
 
         for slats in (tambour.slats, tambour.closed_slats):
             for left,right,_tangent in slats:
-                self.assertLessEqual(
+                self.assertAlmostEqual(
                     distance_to_track(left, tambour.left_points),
-                    1e-9,
+                    details.mounting_flange_thickness + details.slat_total_end_clearance/2,
                 )
-                self.assertLessEqual(
+                self.assertAlmostEqual(
                     distance_to_track(right, tambour.right_points),
-                    1e-9,
+                    details.mounting_flange_thickness + details.slat_total_end_clearance/2,
                 )
 
     def test_every_track_section_is_backed_and_clears_other_lumber(self) -> None:
@@ -670,7 +670,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
             details.channel_internal_width+2*details.channel_wall_thickness
         )
         edge_margin=1/16
-        self.assertLessEqual(footprint_width, 1.5-2*edge_margin)
+        self.assertLessEqual(footprint_width, 1.75-2*edge_margin)
 
         sides=(
             (
@@ -682,6 +682,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
                     "rail_ltam",
                     "rail_lt",
                     "left_tambour_bend_backer",
+                    "left_tambour_vertical_backing",
                 },
             ),
             (
@@ -693,6 +694,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
                     "rail_rtam",
                     "rail_rt",
                     "right_tambour_bend_backer",
+                    "right_tambour_vertical_backing",
                 },
             ),
         )

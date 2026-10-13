@@ -1,9 +1,10 @@
-# Custom Tambour Door Prototype and Build Guide
+# Deferred Tambour Door Prototype and Build Guide
 
-This guide defines how to develop, prove, fabricate, install, and maintain the
-custom tambour door shown in the enclosure model. It supplements
-[`BUILD_STEPS.md`](BUILD_STEPS.md); it is not a claim that the current modeled
-slat and track dimensions are a proven shop drawing.
+Tambour installation is deferred indefinitely and is not part of the current
+enclosure build sequence in [`BUILD_STEPS.md`](BUILD_STEPS.md). This guide
+retains the prototype, fabrication, installation, and maintenance information
+for possible future use; the modeled slat and track dimensions are not a proven
+shop drawing.
 
 The door is intended to be an attractive visual barrier that is easy to open,
 close, clean, and service. It is not a security barrier or a weather seal. Do
@@ -32,7 +33,13 @@ the build record at the end of this guide.
 | Slat travel-direction height | 3/4 in | Prototype-controlled |
 | Wooden slat face depth | 1/2 in | Prototype-controlled |
 | Complete swept depth envelope | 1 1/2 in | Fixed clearance limit |
-| Rendered track diameter | 1/2 in | Visualization only |
+| Overall channel wall height | 40 mm | Prototype-controlled |
+| Base / wall thickness | 4.8 / 4.8 mm | Prototype-controlled |
+| Usable channel depth | 35.2 mm / 1.386 in | Derived |
+| Mounting footprint | 39.7 mm / 1.563 in | Derived |
+| Minimum backing width | 1 3/4 in | Required at narrow supports |
+| Total end clearance at minimum spacing | 1/16 in | Provisional |
+| Minimum slat-end capture | 1/4 in | Prototype-controlled |
 | Removable ceiling panel | 20 1/2 by 7 15/16 by 1/4 in | Fixed enclosure interface |
 
 The model places 56 slats on the 44-inch curtain. The 1/32-inch difference
@@ -55,6 +62,40 @@ projection. The resulting 1 3/16-inch stack remains within the fixed
 `44.375 + 0.875 = 45.25` inches. No handle, screw head, webbing, reinforcement,
 or track fixing may extend beyond its applicable side of this approved
 envelope.
+
+## Opening variation and field-fitted slats
+
+The deeper tracks accommodate 1 inch of total opening-width variation,
+including sideways curtain movement. The compatibility configuration field
+`slat_end_engagement` means overall wall height, not actual capture;
+`usable_channel_depth` subtracts the 4.8 mm base from the 40 mm height.
+Keep the 1/2-inch slat thickness and 3/4-inch travel height.
+
+If installation resumes, provide at least 1 3/4-inch-wide backing wherever the
+as-built support is too narrow. The current build sequence omits the plywood
+backers. Preserve the track datums with flush recesses; if field backing
+projects into the opening, measure again after its installation.
+Measure between opposing channel bottoms along the entire completed path,
+including bends, seams, and loading sections. Record the smallest and largest
+distances; their difference must not exceed 1 inch.
+
+Cut every slat to the smallest measured bottom-to-bottom distance minus the
+provisional 1/16-inch **total** end clearance. With a slat pushed fully against
+one channel bottom at the widest opening, opposite-end capture is:
+
+`capture = usable depth - (largest bottom spacing - slat length)`
+
+At the design limit this is `35.2 - 25.4 - 1.5875 = 8.2125 mm` (0.323 inch),
+exceeding the required 6.35 mm (1/4 inch). Dividing the free space by two would
+only check a centered curtain. Check both sideways extremes physically.
+The nominal model renders 20.0595-inch slats between the channel bottoms with
+the provisional end clearance; field measurements determine the cut length.
+
+Keep webbing, fasteners, and handles outside the channels at every sideways
+position. Reserve an end zone at least the usable depth plus the full lateral
+play at the widest spacing (currently 35.2 + 26.9875 = 62.1875 mm) for hardware
+layout and verify it on the paired test frame. Width tolerance does not correct
+abrupt track offsets, mismatched bends, or twisted mounting surfaces.
 
 ## Provisional construction
 
@@ -234,6 +275,15 @@ accepted clearance.
 
 ### 4. Full-width test frame
 
+Before production printing, test paired straight sections and a bend with
+full-length slats at both minimum and maximum measured spacing (also exercise
+the full 1-inch design variation). Push the curtain fully to either side;
+check binding, wall flex, retained capture, and hardware clearance, and repeat
+the existing door proof-load procedure below. Test collar lift-off, paired
+loading-section removal, and end-stop retention with the deeper walls. Wall
+stiffness, running clearance, and minimum capture remain prototype requirements
+until physical testing passes.
+
 Build a rigid test frame at the measured production track spacing. Use fixed
 spacers or an alignment gauge at the rear vertical, both bends, top run, and
 front vertical. Install the removable loading sections and end stops exactly
@@ -252,12 +302,13 @@ the production profile is approved. Do not mask an excessively heavy curtain
 with extra track friction, and do not add a spring or counterweight as part of
 this design.
 
-## Enclosure installation
+## Future installation reference
 
-Install the approved tracks only after both vertical supports, both 3/4-inch
-plywood bend backers, and the top side 4x4s are fixed. Install and verify the
-tracks before loading the door, and complete both operations before electrical
-backing, conduit, siding, or trim restricts access.
+If tambour installation resumes, first compare the completed enclosure and its
+support rails with the prototype and confirm access for mounting the tracks.
+The current build sequence omits the plywood backers, tracks, curtain, and
+ceiling panel, so reassess the mounting details and installation order against
+the as-built enclosure before fabricating production parts.
 
 1. Measure the actual frame and compare it with the prototype test frame.
 2. Use the prototype alignment gauges to position both guide paths. Shim the
@@ -278,12 +329,13 @@ backing, conduit, siding, or trim restricts access.
    and fixed cable routes. Install the removable ceiling and repeat the test.
 
 The rendered charger cord is illustrative rather than an accurate operating
-envelope. Do not use its modeled path as a hard tambour-clearance datum; the
-ceiling panel provides the physical guard beneath the overhead curtain.
+envelope. Do not use its modeled path as a hard tambour-clearance datum; if the
+door is installed later, verify its clearance and the need for a ceiling guard
+against the as-built wiring and enclosure.
 
-The OpenSCAD build-step view shows the completed tambour assembly beginning at
-its trial-fit step. It does not attempt to depict the curtain's temporary
-removal during the intervening construction work.
+The OpenSCAD model retains the tambour geometry as a future reference. It is
+hidden by default; set `show_deferred = true` in the completed-model view to
+display it.
 
 ## Snow operation
 

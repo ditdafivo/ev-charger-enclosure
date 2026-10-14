@@ -976,7 +976,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
 
         self.assertVectorAlmostEqual(
             box.box_min,
-            (15, 3.1875, build.POWER_JUNCTION_BOTTOM_Z),
+            (13, 3.1875, build.POWER_JUNCTION_BOTTOM_Z),
         )
         self.assertVectorAlmostEqual(box.box_size, (4, 4, 4))
         self.assertAlmostEqual(
@@ -985,6 +985,8 @@ class PowerJunctionBuildTests(unittest.TestCase):
         )
         self.assertEqual(build.POWER_JUNCTION_BOX_FILL.required_volume, 18)
         self.assertEqual(build.POWER_JUNCTION_BOX_FILL.remaining_volume, 31)
+        self.assertAlmostEqual(build.POWER_LIGHT_COUPLING_END[0], 18.925)
+        self.assertAlmostEqual(build.POWER_OUTLET_COUPLING_END_X, 18.925)
 
     def test_default_charger_riser_fittings_and_route(self) -> None:
         expected_types = {
@@ -1277,7 +1279,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 168)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "881628c994c8981425b6b494f1c08978eb3e59e196c216f3bd5571ffb4e5bb6a",
+            "79e980a16d3b7f4b893079545894119dd665cd4e7dcdf0d69b55023bd578819d",
         )
 
     def test_center_gland_charger_route_exact_regression(self) -> None:
@@ -1287,26 +1289,31 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertEqual(len(points), 101)
         self.assertEqual(
             hashlib.sha256(encoded).hexdigest(),
-            "1c8d39fde87160d8d3921546ebadbff9ec853cc43a7aa776b74334f8605de26e",
+            "4b15eb35ea8e979514b92ca56f029b2c18ba226378750a6aa1ec6db8d9a7ecab",
         )
 
-    def test_junction_boxes_share_positive_y_face_and_one_inch_x_gap(self) -> None:
+    def test_low_voltage_box_sits_on_upper_elbow(self) -> None:
         instance = build.components["low_voltage_termination_box"]
         box = self.resolved_component("low_voltage_termination_box")
 
         self.assertIs(instance.component_type, CARLON_E987N_JUNCTION_BOX)
         self.assertEqual(instance.face, "wide_neg")
-        self.assertVectorAlmostEqual(box.box_min, (10, 3.1875, 11))
+        self.assertVectorAlmostEqual(
+            box.box_min,
+            (build.LOW_VOLTAGE_INPUT_X-2, build.LOW_VOLTAGE_BOX_CENTER_Y-2,
+             build.LOW_VOLTAGE_BOX_BOTTOM_Z),
+        )
         self.assertVectorAlmostEqual(box.box_size, (4, 4, 4))
-        self.assertAlmostEqual(box.box_min[0]+box.box_size[0], 14)
-        self.assertAlmostEqual(box.box_min[2]+box.box_size[2]/2, 13)
-
-        box_min_y = box.box_min[1]
-        box_max_y = box_min_y+box.box_size[1]
-        power = self.resolved_component("power_junction_box")
-        self.assertAlmostEqual(box_min_y, power.box_min[1])
-        self.assertAlmostEqual(box_max_y, power.box_min[1]+power.box_size[1])
-        self.assertAlmostEqual(power.box_min[0]-(box.box_min[0]+box.box_size[0]), 1)
+        self.assertAlmostEqual(
+            box.box_min[1]+box.box_size[1],
+            build.members["rail_fb"].min_on("y"),
+        )
+        self.assertVectorAlmostEqual(
+            build.LOW_VOLTAGE_UPPER_ELBOW_OUTLET,
+            (build.LOW_VOLTAGE_INPUT_X, build.LOW_VOLTAGE_INPUT_Y,
+             build.LOW_VOLTAGE_INPUT_ADAPTER_END_Z),
+        )
+        self.assertNotIn("low_voltage_ground_riser", build.conduits)
 
     def test_bottom_fittings_are_inside_the_box_and_do_not_overlap(self) -> None:
         box = self.resolved_component("low_voltage_termination_box")
@@ -1370,7 +1377,7 @@ class LowVoltageBuildTests(unittest.TestCase):
                 self.assertFalse(x_overlap > 0 and y_overlap > 0)
 
     def test_three_quarter_riser_uses_requested_plumb_axis(self) -> None:
-        riser = self.resolved_conduit("low_voltage_ground_riser")
+        riser = self.resolved_conduit("low_voltage_ground_riser_inlet")
 
         self.assertEqual(riser.trade_size, "3/4")
         self.assertEqual(riser.assembly, "low_voltage_conduit")
@@ -1389,7 +1396,7 @@ class LowVoltageBuildTests(unittest.TestCase):
             (
                 build.LOW_VOLTAGE_RISER_X,
                 build.LOW_VOLTAGE_RISER_Y,
-                build.LOW_VOLTAGE_INPUT_ADAPTER_END_Z,
+                build.LOW_VOLTAGE_FIRST_ELBOW_ANCHOR_Z,
             ),
         )
         self.assertEqual(riser.points[0][:2], riser.points[-1][:2])
@@ -1400,15 +1407,15 @@ class LowVoltageBuildTests(unittest.TestCase):
         )
         self.assertAlmostEqual(riser.points[0][2], ground_z)
 
-        self.assertAlmostEqual(build.LOW_VOLTAGE_INPUT_X, 12)
-        self.assertAlmostEqual(build.LOW_VOLTAGE_INPUT_Y, 5.1875)
+        self.assertAlmostEqual(build.LOW_VOLTAGE_INPUT_X, 10.65685424949238)
+        self.assertAlmostEqual(build.LOW_VOLTAGE_INPUT_Y, 6.25)
         self.assertAlmostEqual(
             build.LOW_VOLTAGE_INPUT_X,
             build.LOW_VOLTAGE_BOX_CENTER_X,
         )
         self.assertAlmostEqual(
-            build.LOW_VOLTAGE_INPUT_Y,
-            build.LOW_VOLTAGE_BOX_CENTER_Y,
+            build.LOW_VOLTAGE_INPUT_Y-build.LOW_VOLTAGE_BOX_CENTER_Y,
+            1.0625,
         )
         self.assertNotEqual(
             riser.points[-1][:2],
@@ -1723,7 +1730,11 @@ class ParameterizedBuildTests(unittest.TestCase):
         ground = enclosure.grounds[0].resolved(enclosure.members)
         for name, x, y in (
             ("power_ground_riser", 15.055, 12.5),
-            ("low_voltage_ground_riser", 14, 6.25),
+            (
+                "low_voltage_ground_riser_inlet",
+                14,
+                enclosure.members["rail_fb"].min_on("y")-0.9375,
+            ),
         ):
             with self.subTest(name=name):
                 riser = self.resolved_conduit(enclosure, name)
@@ -1768,9 +1779,8 @@ class ParameterizedBuildTests(unittest.TestCase):
         )
         junction = self.resolved_component(enclosure, "power_junction_box")
         self.assertAlmostEqual(
-            junction.box_min[0]
-            - (low_voltage_box.box_min[0]+low_voltage_box.box_size[0]),
-            enclosure.LOW_VOLTAGE_BOX_GAP,
+            low_voltage_box.box_min[0]+low_voltage_box.box_size[0]/2,
+            enclosure.LOW_VOLTAGE_UPPER_ELBOW_OUTLET[0],
         )
         front_center_rail = enclosure.members["front_center_rail"]
         self.assertAlmostEqual(
@@ -1785,7 +1795,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             low_voltage_box.box_min[1],
-            front_center_rail.min_on("y")-low_voltage_box.box_size[1],
+            enclosure.members["rail_fb"].min_on("y")-low_voltage_box.box_size[1],
         )
 
         outlet_feed = self.resolved_conduit(

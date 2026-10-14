@@ -90,7 +90,6 @@ power_ground_riser
 low_voltage_ground_riser_inlet
 low_voltage_ground_sweep_elbow_1
 low_voltage_ground_sweep_elbow_2
-low_voltage_ground_riser
 ```
 
 ## 2. Install the four posts (`posts`)
@@ -326,9 +325,9 @@ Before mounting the Carlon E987N power junction box, fit its rear-facing
 1 1/4-inch input adapter and coupling for the T-body branch and the two
 right-side 1/2-inch light and receptacle outlets.
 The light outlet is forward of the receptacle outlet. Then mount the connected
-box on `front_center_rail`, spanning x = 15 to 19 inches in the default model,
+box on `front_center_rail`, spanning x = 13 to 17 inches in the default model,
 and y = 3.1875 to 7.1875 inches. Its bottom face remains at the modeled
-elevation of approximately z = 6.50 inches. Keep every fitting axis aligned
+elevation of approximately z = 6.51 inches. Keep every fitting axis aligned
 with its conduit path.
 
 Check that the fittings are fully seated and clear of `front_center_rail`.
@@ -462,14 +461,16 @@ power_back_right_outlet_feed
 
 ## 16. Add the low-voltage termination (`low-voltage-termination`)
 
-Mount the low-voltage junction box in its shifted position, spanning x = 10
-to 14 inches and y = 3.1875 to 7.1875 inches, centered at z = 13 inches. The
-power junction spans x = 15 to 19 inches, so both boxes share the same
-positive-Y face and retain a one-inch X gap. Future backing lumber may be
-added but is not included. Connect the center of the bottom panel to the
-3/4-inch riser installed in Step 1, field-locating the opening from the
-as-built riser position. Then add the three cable glands in the remaining
-bottom-panel area; reposition their nominal front-row layout as necessary to
+Mount the low-voltage junction box with its bottom adapter centered at the
+upper 45-degree elbow outlet (nominally x = 10.657, y = 6.25, z = 9.912
+inches). The adapter meets that outlet directly. The box spans approximately
+x = 8.657 to 12.657 and y = 3.1875 to 7.1875 inches, with its center at
+z = 13.382 inches. Its back is flush with the front face of `rail_fb`; the
+bottom entry is offset toward the back at y = 6.25 inches to meet the elbow.
+The power junction spans x = 13 to 17 inches. Future backing lumber may be
+added but is not included. Field-locate the bottom opening from the as-built
+elbow position. Then add the three cable glands in
+the remaining bottom-panel area; reposition their nominal front-row layout as necessary to
 preserve fitting clearances.
 
 Keep each fitting center at least 3/4 inch from the panel sides. Confirm that
@@ -479,7 +480,7 @@ toward the center framing. Route the blue Cat 6 feeds beside the 3/4-inch
 riser, retaining the modeled clearance. Use
 the modeled 0.625-inch upward turn beneath the glands, remain on the negative-Y
 side of `rail_fb` until above it. Use the gentle departure spline modeled for
-the dark-brown street-light cable; it bottoms at z = 8.25 inches without a flat
+the dark-brown street-light cable; it bottoms at z = 8.63 inches without a flat
 horizontal run.
 
 New model objects:

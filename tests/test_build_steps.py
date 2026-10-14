@@ -131,14 +131,19 @@ class BuildStepModelTests(unittest.TestCase):
         }
 
         self.assertEqual(len(model.build_steps), 23)
-        self.assertEqual(len(assigned), 139)
+        self.assertEqual(len(assigned), 141)
         self.assertEqual(
             set(assigned) | set(model.deferred_object_names),
             set(model.renderable_object_names()),
         )
         self.assertEqual(
             model.build_steps[0].object_names,
-            ("power_ground_riser", "low_voltage_ground_riser"),
+            (
+                "power_ground_riser",
+                "low_voltage_ground_riser_inlet",
+                "low_voltage_ground_sweep_elbow_1",
+                "low_voltage_ground_sweep_elbow_2",
+            ),
         )
         self.assertEqual(
             model.build_steps[-1].object_names,
@@ -161,7 +166,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertEqual(step_by_object["front_ev_charger_cable"], 10)
         self.assertEqual(step_by_object["power_junction_box"], 11)
         self.assertEqual(step_by_object["power_ground_riser"], 1)
-        self.assertEqual(step_by_object["low_voltage_ground_riser"], 1)
+        self.assertEqual(step_by_object["low_voltage_ground_riser_inlet"], 1)
         self.assertEqual(step_by_object["power_ev_charger_feed"], 12)
         self.assertEqual(step_by_object["power_ev_t_body"], 12)
         self.assertEqual(step_by_object["power_t_junction_feed"], 12)
@@ -187,7 +192,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn("build_step = 24;", scad)
         self.assertIn("build_step_count = 23;", scad)
         self.assertIn('["power_ground_riser", 1]', scad)
-        self.assertIn('["low_voltage_ground_riser", 1]', scad)
+        self.assertIn('["low_voltage_ground_riser_inlet", 1]', scad)
         self.assertIn('["post_fl", 2]', scad)
         self.assertIn('["footing_fl", 2]', scad)
         self.assertIn('["brace_fl_fr", 3]', scad)
@@ -236,7 +241,10 @@ class BuildStepModelTests(unittest.TestCase):
 
         self.assertNotIn("build_step = 28;", generic_scad)
         self.assertNotIn("build_step = 28;", custom_scad)
-        self.assertIn("function object_is_visible(name) = true;", generic_scad)
+        self.assertIn(
+            "function object_is_visible(name) = !object_is_deferred(name) || show_deferred;",
+            generic_scad,
+        )
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ from lumber_model import (
     CARLON_E940G_COUPLING,
     CARLON_E943E_MALE_TERMINAL_ADAPTER,
     CARLON_E987N_JUNCTION_BOX,
+    CARLON_UA7AEB_BELL_END_45_ELBOW,
     CARLON_E996D_BOX_ADAPTER,
     CARLON_E996G_BOX_ADAPTER,
     COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
@@ -1112,10 +1113,9 @@ def build_enclosure(
     POWER_T_MAIN_CHANNEL_WIDTH=2+5/16
     POWER_T_AXIS_X=POWER_EV_ENTRY[0]
     POWER_T_AXIS_Y=POWER_EV_ENTRY[1]
-    # Keep the riser axes independent from the fittings they used to align
-    # with. These coordinates move only the vertical conduit runs; the
-    # low-voltage input adapter and power T body remain at their existing
-    # absolute anchors.
+    # Keep the riser entry axes at their approved absolute positions. The
+    # low-voltage run offsets left near ground before continuing vertically;
+    # its input adapter and the power T body keep their current anchors.
     POWER_RISER_X=15.055
     POWER_RISER_Y=12.5
     LOW_VOLTAGE_RISER_X=14
@@ -1446,8 +1446,114 @@ def build_enclosure(
         LOW_VOLTAGE_RISER_X,
         LOW_VOLTAGE_RISER_Y,
     )
+    # Two matching Carlon 45-degree elbows form a vertical offset toward
+    # negative X. The second bell overlaps the first elbow's plain outlet.
+    LOW_VOLTAGE_ELBOW_RADIUS=4.5
+    LOW_VOLTAGE_ELBOW_SOCKET_DEPTH=1.5
+    LOW_VOLTAGE_ELBOW_ANGLE=math.radians(45)
+    LOW_VOLTAGE_ELBOW_SIN=math.sin(LOW_VOLTAGE_ELBOW_ANGLE)
+    LOW_VOLTAGE_ELBOW_COS=math.cos(LOW_VOLTAGE_ELBOW_ANGLE)
+    LOW_VOLTAGE_ELBOW_LOCAL_END=(
+        LOW_VOLTAGE_ELBOW_RADIUS*LOW_VOLTAGE_ELBOW_SIN,
+        0,
+        LOW_VOLTAGE_ELBOW_RADIUS*(LOW_VOLTAGE_ELBOW_COS-1),
+    )
+    LOW_VOLTAGE_ELBOW_SPIGOT_LENGTH=1.0
+    LOW_VOLTAGE_ELBOW_LOCAL_OUTLET=(
+        LOW_VOLTAGE_ELBOW_LOCAL_END[0]
+        + LOW_VOLTAGE_ELBOW_SPIGOT_LENGTH*LOW_VOLTAGE_ELBOW_COS,
+        0,
+        LOW_VOLTAGE_ELBOW_LOCAL_END[2]
+        - LOW_VOLTAGE_ELBOW_SPIGOT_LENGTH*LOW_VOLTAGE_ELBOW_SIN,
+    )
+    # The elbow's local bend curves toward negative local out. Give it a
+    # right-handed basis whose out axis is positive world X.
+    LOW_VOLTAGE_FIRST_ELBOW_BASIS=(
+        (0, 0, 1),
+        (0, -1, 0),
+        (1, 0, 0),
+    )
+    LOW_VOLTAGE_FIRST_ELBOW_ANCHOR_Z=(
+        LOW_VOLTAGE_GROUND_Z+LOW_VOLTAGE_ELBOW_SOCKET_DEPTH
+    )
+    components.add(
+        "low_voltage_ground_sweep_elbow_1",
+        assembly="low_voltage_fittings",
+        component_type=CARLON_UA7AEB_BELL_END_45_ELBOW,
+        member="post_fr",
+        at=0,
+        face="narrow_pos",
+        absolute_anchor=(
+            LOW_VOLTAGE_RISER_X,
+            LOW_VOLTAGE_RISER_Y,
+            LOW_VOLTAGE_FIRST_ELBOW_ANCHOR_Z,
+        ),
+        component_basis=LOW_VOLTAGE_FIRST_ELBOW_BASIS,
+    )
+    lower_elbow=components["low_voltage_ground_sweep_elbow_1"].resolved(
+        members["post_fr"]
+    )
+    elbow_mount=CARLON_UA7AEB_BELL_END_45_ELBOW.mount_point
+    if elbow_mount is None:
+        raise ValueError("Carlon elbow model is missing its mount point")
+
+    def _elbow_path_point_world(
+        resolved: Any,
+        local_delta: tuple[float, float, float],
+    ) -> tuple[float, float, float]:
+        local_end=tuple(
+            elbow_mount[index]+local_delta[index]
+            for index in range(3)
+        )
+        return tuple(
+            resolved.origin[index]
+            + resolved.along_vec[index]*local_end[0]
+            + resolved.across_vec[index]*local_end[1]
+            + resolved.out_vec[index]*local_end[2]
+            for index in range(3)
+        )
+
+    LOW_VOLTAGE_ELBOW_JOINT=_elbow_path_point_world(
+        lower_elbow,
+        LOW_VOLTAGE_ELBOW_LOCAL_OUTLET,
+    )
+    LOW_VOLTAGE_SECOND_ELBOW_BASIS=(
+        (
+            -LOW_VOLTAGE_ELBOW_SIN,
+            0,
+            LOW_VOLTAGE_ELBOW_COS,
+        ),
+        (0, 1, 0),
+        (
+            -LOW_VOLTAGE_ELBOW_COS,
+            0,
+            -LOW_VOLTAGE_ELBOW_SIN,
+        ),
+    )
+    components.add(
+        "low_voltage_ground_sweep_elbow_2",
+        assembly="low_voltage_fittings",
+        component_type=CARLON_UA7AEB_BELL_END_45_ELBOW,
+        member="post_fr",
+        at=0,
+        face="narrow_pos",
+        absolute_anchor=LOW_VOLTAGE_ELBOW_JOINT,
+        component_basis=LOW_VOLTAGE_SECOND_ELBOW_BASIS,
+    )
+    upper_elbow=components["low_voltage_ground_sweep_elbow_2"].resolved(
+        members["post_fr"]
+    )
+    LOW_VOLTAGE_RISER_CONTINUATION_START=_elbow_path_point_world(
+        upper_elbow,
+        LOW_VOLTAGE_ELBOW_LOCAL_OUTLET,
+    )
+    LOW_VOLTAGE_RISER_CONTINUATION_END_Z=max(
+        LOW_VOLTAGE_INPUT_ADAPTER_END_Z,
+        LOW_VOLTAGE_RISER_CONTINUATION_START[2]+1.0,
+    )
+
     conduits.add(
-        "low_voltage_ground_riser",
+        "low_voltage_ground_riser_inlet",
         assembly="low_voltage_conduit",
         trade_size="3/4",
         points=(
@@ -1461,7 +1567,26 @@ def build_enclosure(
                 "post_fr",
                 LOW_VOLTAGE_RISER_X,
                 LOW_VOLTAGE_RISER_Y,
-                LOW_VOLTAGE_INPUT_ADAPTER_END_Z,
+                LOW_VOLTAGE_FIRST_ELBOW_ANCHOR_Z,
+            ),
+        ),
+    )
+    conduits.add(
+        "low_voltage_ground_riser",
+        assembly="low_voltage_conduit",
+        trade_size="3/4",
+        points=(
+            _member_relative_coord(
+                "post_fr",
+                LOW_VOLTAGE_RISER_CONTINUATION_START[0],
+                LOW_VOLTAGE_RISER_Y,
+                LOW_VOLTAGE_RISER_CONTINUATION_START[2],
+            ),
+            _member_relative_coord(
+                "post_fr",
+                LOW_VOLTAGE_RISER_CONTINUATION_START[0],
+                LOW_VOLTAGE_RISER_Y,
+                LOW_VOLTAGE_RISER_CONTINUATION_END_Z,
             ),
         ),
     )

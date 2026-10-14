@@ -49,10 +49,12 @@ underground conduit runs through the enclosure interior and clear of the full
 footing excavations before sweeping them up to the risers. Bring the modeled
 1 1/4-inch power riser out of the ground at its fixed modeled axis
 (x = 15.055 inches and y = 12.5 inches in the default model) and bring the
-modeled 3/4-inch low-voltage riser out at its fixed axis (x = 14 inches and
-y = 6.25 inches). These riser positions remain fixed while the center-rail
-assembly and its equipment move rearward. Leave both upper ends positioned for
-the later equipment connections.
+modeled 3/4-inch low-voltage riser out at its fixed ground-entry axis
+(x = 14 inches and y = 6.25 inches). At grade, use two matching Carlon
+45-degree belled elbows to offset the low-voltage run toward negative X, then
+continue vertically from the second elbow. These ground-entry positions remain
+fixed while the center-rail assembly and its equipment move rearward. Leave
+both upper ends positioned for the later equipment connections.
 
 Before covering the conduit, measure and photograph its centerline, depth, and
 the complete envelope of every sweep from protected reference points. Establish
@@ -85,6 +87,9 @@ New model objects:
 
 ```text
 power_ground_riser
+low_voltage_ground_riser_inlet
+low_voltage_ground_sweep_elbow_1
+low_voltage_ground_sweep_elbow_2
 low_voltage_ground_riser
 ```
 

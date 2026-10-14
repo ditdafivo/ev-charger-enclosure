@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
+import math
 import os
 from pathlib import Path
 from typing import Literal, overload
@@ -18,7 +19,8 @@ ComponentOrientation = Literal["up", "right", "down", "left", "inward"]
 Color = tuple[float, float, float, float]
 BoxPrimitive = tuple[Vector3, Vector3]
 ComponentPrimitiveAxis = Literal["along", "across", "out"]
-CylinderPrimitive = tuple[Vector3, ComponentPrimitiveAxis, float, float]
+CylinderPrimitive = tuple[Vector3, ComponentPrimitiveAxis | Vector3, float, float]
+ComponentBasis = tuple[Vector3, Vector3, Vector3]
 Matrix4 = tuple[
     tuple[float, float, float, float],
     tuple[float, float, float, float],
@@ -76,6 +78,29 @@ def _v_scale(v: Vector3, scale: float) -> Vector3:
     )
 
 
+def _v_dot(a: Vector3, b: Vector3) -> float:
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+
+
+def _v_cross(a: Vector3, b: Vector3) -> Vector3:
+    return (
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
+
+
+def _v_length(v: Vector3) -> float:
+    return math.sqrt(_v_dot(v, v))
+
+
+def _v_unit(v: Vector3) -> Vector3:
+    length = _v_length(v)
+    if length == 0:
+        raise ValueError("Cannot normalize a zero-length vector")
+    return _v_scale(v, 1 / length)
+
+
 def _v_mul_add(origin: Vector3, direction: Vector3, distance: float) -> Vector3:
     return _v_add(origin, _v_scale(direction, distance))
 
@@ -112,7 +137,7 @@ def _format_cylinder_primitives(
             "["
             + _format_vector(origin)
             + ", "
-            + scad_string(axis)
+            + (scad_string(axis) if isinstance(axis, str) else _format_vector(axis))
             + ", "
             + fmt_float(length)
             + ", "
@@ -157,11 +182,21 @@ def _validate_cylinder_primitives(
 ) -> None:
     for index, (origin, axis, length, diameter) in enumerate(value):
         _validate_vector3(f"{name}: cylinder_primitives[{index}] origin", origin)
-        if axis not in ("along", "across", "out"):
-            raise ValueError(
-                f"{name}: cylinder_primitives[{index}] axis must be 'along', "
-                f"'across', or 'out', got {axis!r}"
+        if isinstance(axis, str):
+            if axis not in ("along", "across", "out"):
+                raise ValueError(
+                    f"{name}: cylinder_primitives[{index}] axis must be 'along', "
+                    f"'across', 'out', or a direction vector, got {axis!r}"
+                )
+        else:
+            _validate_vector3(
+                f"{name}: cylinder_primitives[{index}] axis vector", axis
             )
+            if not all(math.isfinite(value) for value in axis) or _v_length(axis) == 0:
+                raise ValueError(
+                    f"{name}: cylinder_primitives[{index}] axis vector must be "
+                    f"finite and non-zero, got {axis!r}"
+                )
         if length <= 0 or diameter <= 0:
             raise ValueError(
                 f"{name}: cylinder_primitives[{index}] length and diameter must "
@@ -262,6 +297,7 @@ class ComponentType:
     box_primitives: tuple[BoxPrimitive, ...] = ()
     cylinder_primitives: tuple[CylinderPrimitive, ...] = ()
     include_primitive_envelope: bool = False
+    round_cylinder_joints: bool = False
 
     def __post_init__(self) -> None:
         _validate_vector3(f"{self.name}: size", self.size)
@@ -272,7 +308,6 @@ class ComponentType:
                     f"{self.name}: component dimensions must be positive, got "
                     f"{self.size}"
                 )
-
         if len(self.color) != 4:
             raise ValueError(f"{self.name}: color must be an RGBA 4-tuple")
 
@@ -316,6 +351,32 @@ class ComponentType:
             object.__setattr__(self, "mesh_matrix", _identity_matrix())
 
 
+def _primitive_axis_vector(axis: ComponentPrimitiveAxis | Vector3) -> Vector3:
+    if isinstance(axis, str):
+        return {
+            "along": (1.0, 0.0, 0.0),
+            "across": (0.0, 1.0, 0.0),
+            "out": (0.0, 0.0, 1.0),
+        }[axis]
+    return _v_unit(axis)
+
+
+def _validate_component_basis(name: str, basis: ComponentBasis) -> None:
+    if len(basis) != 3:
+        raise ValueError(f"{name}: component_basis must contain three vectors")
+    for index, vector in enumerate(basis):
+        _validate_vector3(f"{name}: component_basis[{index}]", vector)
+        if not all(math.isfinite(value) for value in vector):
+            raise ValueError(f"{name}: component_basis vectors must be finite")
+        if not math.isclose(_v_length(vector), 1.0, abs_tol=1e-6):
+            raise ValueError(f"{name}: component_basis vectors must be unit vectors")
+    pairs = ((0, 1), (0, 2), (1, 2))
+    if any(abs(_v_dot(basis[a], basis[b])) > 1e-6 for a, b in pairs):
+        raise ValueError(f"{name}: component_basis vectors must be orthogonal")
+    if _v_dot(_v_cross(basis[0], basis[1]), basis[2]) < 1 - 1e-6:
+        raise ValueError(f"{name}: component_basis must be right-handed")
+
+
 @dataclass(frozen=True)
 class ComponentInstance:
     name: str
@@ -327,6 +388,7 @@ class ComponentInstance:
     offset: Vector3 = (0.0, 0.0, 0.0)
     orientation: ComponentOrientation = "up"
     absolute_anchor: Vector3 | None = None
+    component_basis: ComponentBasis | None = None
 
     def __post_init__(self) -> None:
         if self.absolute_anchor is None:
@@ -338,6 +400,13 @@ class ComponentInstance:
         _validate_vector3(f"{self.name}: offset", self.offset)
         if self.absolute_anchor is not None:
             _validate_vector3(f"{self.name}: absolute_anchor", self.absolute_anchor)
+
+        if self.component_basis is not None:
+            _validate_component_basis(self.name, self.component_basis)
+            if self.absolute_anchor is None:
+                raise ValueError(
+                    f"{self.name}: component_basis requires an absolute_anchor"
+                )
 
         if self.face is not None and self.face not in FACE_NAMES:
             raise ValueError(
@@ -400,6 +469,8 @@ class ComponentInstance:
             across_vec,
             out_vec,
         )
+        if self.component_basis is not None:
+            along_vec, across_vec, out_vec = self.component_basis
 
         if self.absolute_anchor is not None:
             anchor = self.absolute_anchor
@@ -430,22 +501,26 @@ class ComponentInstance:
                     local_max[index] = max(
                         local_max[index], primitive_min[index] + primitive_size[index]
                     )
-            local_axis_index = {"along": 0, "across": 1, "out": 2}
             for primitive_origin, primitive_axis, length, diameter in (
                 self.component_type.cylinder_primitives
             ):
-                axis_index = local_axis_index[primitive_axis]
+                direction = _primitive_axis_vector(primitive_axis)
                 radius = diameter / 2
+                primitive_end = _v_add(
+                    primitive_origin,
+                    _v_scale(direction, length),
+                )
                 for index in range(3):
-                    padding = 0 if index == axis_index else radius
+                    padding = radius * math.sqrt(
+                        max(0.0, 1.0 - direction[index] ** 2)
+                    )
                     local_min[index] = min(
-                        local_min[index], primitive_origin[index] - padding
+                        local_min[index],
+                        min(primitive_origin[index], primitive_end[index]) - padding,
                     )
                     local_max[index] = max(
                         local_max[index],
-                        primitive_origin[index]
-                        + (length if index == axis_index else 0)
-                        + padding,
+                        max(primitive_origin[index], primitive_end[index]) + padding,
                     )
         corners = [
             _v_add(
@@ -483,6 +558,7 @@ class ComponentInstance:
             mesh_matrix=self.component_type.mesh_matrix,
             box_primitives=self.component_type.box_primitives,
             cylinder_primitives=self.component_type.cylinder_primitives,
+            round_cylinder_joints=self.component_type.round_cylinder_joints,
         )
 
 
@@ -506,6 +582,7 @@ class ResolvedComponent:
     mesh_matrix: Matrix4 | None
     box_primitives: tuple[BoxPrimitive, ...]
     cylinder_primitives: tuple[CylinderPrimitive, ...]
+    round_cylinder_joints: bool
 
     def scad_record(self, scad_dir: str | Path | None = None) -> str:
         mesh_path = (
@@ -534,7 +611,8 @@ class ResolvedComponent:
             f"{scad_string(mesh_path)}, "
             f"{_format_matrix(mesh_matrix)}, "
             f"{_format_box_primitives(self.box_primitives)}, "
-            f"{_format_cylinder_primitives(self.cylinder_primitives)}"
+            f"{_format_cylinder_primitives(self.cylinder_primitives)}, "
+            f"{str(self.round_cylinder_joints).lower()}"
             "]"
         )
 
@@ -580,6 +658,7 @@ class ComponentCollection(Mapping[str, ComponentInstance]):
         offset: Vector3 = (0.0, 0.0, 0.0),
         orientation: ComponentOrientation = "up",
         absolute_anchor: Vector3 | None = None,
+        component_basis: ComponentBasis | None = None,
     ) -> ComponentInstance:
         member_name = member.name if isinstance(member, (Lumber, AngledLumber)) else member
 
@@ -594,6 +673,7 @@ class ComponentCollection(Mapping[str, ComponentInstance]):
                 offset=offset,
                 orientation=orientation,
                 absolute_anchor=absolute_anchor,
+                component_basis=component_basis,
             )
         )
 
@@ -1072,6 +1152,103 @@ def _carlon_coupling(
             ),
         ),
     )
+
+
+def _carlon_belled_45_elbow(
+    catalog: str,
+    *,
+    trade_size: str,
+    outside_diameter: float,
+    bend_radius: float,
+    socket_depth: float,
+    socket_outside_diameter: float,
+    spigot_length: float,
+    segments: int = 36,
+) -> ComponentType:
+    angle = math.radians(45)
+    points: tuple[Vector3, ...] = tuple(
+        (
+            bend_radius * math.sin(angle * index / segments),
+            0.0,
+            bend_radius * (math.cos(angle * index / segments) - 1),
+        )
+        for index in range(segments + 1)
+    )
+
+    primitives: list[CylinderPrimitive] = [
+        ((-socket_depth, 0.0, 0.0), "along", socket_depth, socket_outside_diameter)
+    ]
+    for start, end in zip(points, points[1:]):
+        delta = _v_sub(end, start)
+        length = _v_length(delta)
+        primitives.append(
+            (start, _v_scale(delta, 1 / length), length, outside_diameter)
+        )
+    outlet_direction = (math.cos(angle), 0.0, -math.sin(angle))
+    primitives.append(
+        (points[-1], outlet_direction, spigot_length, outside_diameter)
+    )
+
+    local_min = [math.inf, math.inf, math.inf]
+    local_max = [-math.inf, -math.inf, -math.inf]
+    for origin, axis, length, diameter in primitives:
+        direction = _primitive_axis_vector(axis)
+        end = _v_add(origin, _v_scale(direction, length))
+        radius = diameter / 2
+        for index in range(3):
+            # A flat cylinder end extends radially only perpendicular to its
+            # axis. The end faces must not enlarge the bell below grade.
+            padding = radius * math.sqrt(max(0.0, 1-direction[index]**2))
+            local_min[index] = min(
+                local_min[index],
+                min(origin[index], end[index]) - padding,
+            )
+            local_max[index] = max(
+                local_max[index],
+                max(origin[index], end[index]) + padding,
+            )
+    for origin, axis, length, diameter in primitives[:-1]:
+        joint = _v_add(origin, _v_scale(_primitive_axis_vector(axis), length))
+        radius = diameter / 2
+        for index in range(3):
+            local_min[index] = min(local_min[index], joint[index]-radius)
+            local_max[index] = max(local_max[index], joint[index]+radius)
+
+    shift = tuple(-value for value in local_min)
+    shifted_primitives: tuple[CylinderPrimitive, ...] = tuple(
+        (
+            _v_add(origin, shift),
+            axis,
+            length,
+            diameter,
+        )
+        for origin, axis, length, diameter in primitives
+    )
+    return ComponentType(
+        name=f"carlon_{catalog.lower()}_{trade_size.replace('/', '_')}_45_belled_elbow",
+        size=tuple(local_max[index] - local_min[index] for index in range(3)),
+        color=_CARLON_GRAY,
+        default_face="narrow_pos",
+        mount_point=shift,  # The component anchor is the start of the bend.
+        shape="primitive_union",
+        cylinder_primitives=shifted_primitives,
+        round_cylinder_joints=True,
+    )
+
+
+# The Carlon UA7AEB is a 3/4-inch Schedule 40, standard-radius, belled 45° elbow.
+# ABB's Carlon catalog lists a 1.050-inch trade-size OD, 4.5-inch bend radius,
+# 1.5-inch minimum socket depth, and 6.12-inch overall size. The socket OD and
+# 1-inch plain-end length are visual approximations of that overall size.
+CARLON_UA7AEB_BELL_END_45_ELBOW = _carlon_belled_45_elbow(
+    "UA7AEB",
+    trade_size="3/4",
+    outside_diameter=1.050,
+    bend_radius=4.5,
+    socket_depth=1.5,
+    socket_outside_diameter=1.125,
+    spigot_length=1.0,
+)
 
 
 # Box-adapter stem diameters match the outside diameter of their conduit.

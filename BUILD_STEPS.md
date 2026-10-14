@@ -201,19 +201,17 @@ gusset_front_right
 
 Install the 15 7/8-inch `rail_lb` and `rail_rbu` 2x4 rails between their front
 and back posts. Their modeled bottom elevation is 12 1/4 inches above the
-nominal ground datum. Install the secondary right-side `rail_rb` with its
-modeled bottom at 7 1/4 inches. Keep all three wide faces horizontal.
+nominal ground datum. Keep both wide faces horizontal.
 
-Check that `rail_lb` and `rail_rbu` are level with one another, that `rail_rb`
-is level at its separate elevation, that the clear spacing between posts
-remains 15 7/8 inches, and that all four posts remain plumb. Adjust the temporary
-bracing rather than using these rails to pull the posts into place.
+Check that `rail_lb` and `rail_rbu` are level with one another, that the clear
+spacing between posts remains 15 7/8 inches, and that all four posts remain
+plumb. Adjust the temporary bracing rather than using these rails to pull the
+posts into place.
 
 New model objects:
 
 ```text
 rail_lb
-rail_rb
 rail_rbu
 ```
 
@@ -282,55 +280,32 @@ New model objects:
 rail_ft
 ```
 
-## 9. Add the main vertical rails (`main-vertical-rails`)
+## 9. Add the front center rail (`front-center-rail`)
 
-Install `front_center_rail` between `rail_fb` and `rail_ft`. Install
-`right_center_rail` between `rail_rbu` and `rail_rt`.
+Install `front_center_rail` between `rail_fb` and `rail_ft`.
 
-Check both rails for plumb. Their face orientation matters: the front center
-rail supports the power junction box and EV charger, while the right center
-rail supports the outlet backers, Wi-Fi access point, and low-voltage paths.
+Check the rail for plumb. Its face orientation matters because it supports the
+power junction box and EV charger.
 
 New model objects:
 
 ```text
 front_center_rail
-right_center_rail
 ```
 
-## 10. Add the street-light backing (`street-light-backing`)
-
-Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
-modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
-upper backer at 40 inches. Their rearward face position locates the outlet-box
-stack relative to the siding, and the bottom backer supports the horizontal
-street-light conduit run.
-
-Check that the backers are level, form a continuous field from z = 33 through
-43 1/2 inches, and share the modeled street-light centerline at
-x = 13 3/4 inches. The outlet box remains centered at z = 40 inches.
-
-New model objects:
-
-```text
-front_street_light_backer_bottom
-front_street_light_backer_lower
-front_street_light_backer_upper
-```
-
-## 11. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
+## 10. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
 
 Mount the EV charger body and its inseparable flexible cord and plug on
 `front_center_rail`, with the charger body shifted 2 inches downward from its
 former modeled position while the cord holster remains fixed. Confirm and
 record the physical location of its conduit
 input; this installed position controls the field-fit conduit connection in
-Step 13. Route the cord between the charger body, storage position, and
+Step 12. Route the cord between the charger body, storage position, and
 ground-level reach shown by the model.
 
 Check the flexible cord for strain relief, minimum bend radius, storage
 clearance, and absence of abrasion or pinch points. Repeat these checks after
-making the power connection in Step 13.
+making the power connection in Step 12.
 
 New model objects:
 
@@ -340,7 +315,7 @@ front_ev_charger_plug
 front_ev_charger_cable
 ```
 
-## 12. Preassemble and mount the power junction (`power-junction-assembly`)
+## 11. Preassemble and mount the power junction (`power-junction-assembly`)
 
 Before mounting the Carlon E987N power junction box, fit its rear-facing
 1 1/4-inch input adapter and coupling for the T-body branch and the two
@@ -373,9 +348,9 @@ power_junction_outlet_adapter
 power_junction_outlet_coupling
 ```
 
-## 13. Connect the power junction to the EV charger (`ev-charger-power`)
+## 12. Connect the power junction to the EV charger (`ev-charger-power`)
 
-Using the physical charger-input position recorded in Step 11, align the
+Using the physical charger-input position recorded in Step 10, align the
 1 1/4-inch ground riser and T body with the charger's conduit-port X coordinate.
 Set the T-body branch high enough that the complete conduit envelope passes
 above `rail_fb`, then run the full horizontal branch to the rear coupling on
@@ -397,6 +372,26 @@ power_ev_charger_feed
 power_ev_reducer
 power_ev_t_body
 power_t_junction_feed
+```
+
+## 13. Add the street-light backing (`street-light-backing`)
+
+Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
+modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
+upper backer at 40 inches. Their rearward face position locates the outlet-box
+stack relative to the siding, and the bottom backer supports the horizontal
+street-light conduit run.
+
+Check that the backers are level, form a continuous field from z = 33 through
+43 1/2 inches, and share the modeled street-light centerline at
+x = 13 3/4 inches. The outlet box remains centered at z = 40 inches.
+
+New model objects:
+
+```text
+front_street_light_backer_bottom
+front_street_light_backer_lower
+front_street_light_backer_upper
 ```
 
 ## 14. Rough in the street light (`street-light-rough-in`)
@@ -424,7 +419,15 @@ front_street_light_base_box
 power_street_light_feed
 ```
 
-## 15. Add the backing and rough in the right-side outlet (`outlet-rough-in`)
+## 15. Install the right-side framing, backing, and outlet (`outlet-rough-in`)
+
+Install the right-side `rail_rb` 2x4 between `post_fr` and `post_br`, with its
+modeled bottom at 7 1/4 inches above the nominal ground datum. Keep its wide
+face horizontal and check that it is level.
+
+Install `right_center_rail` vertically between `rail_rbu` and `rail_rt`, and
+check that it is plumb. It supports the outlet backers installed in this step,
+the Wi-Fi access point, and the low-voltage paths installed later.
 
 Install the two 6 11/16-inch 2x4 backers between `right_center_rail` and
 `post_br`. Their modeled lower-face elevations are approximately 13 5/8 and
@@ -444,6 +447,8 @@ outlet branch's #12 conductors only under the approved wiring design.
 New model objects:
 
 ```text
+rail_rb
+right_center_rail
 back_right_outlet_backer_lower
 back_right_outlet_backer_upper
 back_right_outlet

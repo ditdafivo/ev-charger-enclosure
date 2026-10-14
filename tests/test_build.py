@@ -273,7 +273,7 @@ class TopBracingBuildTests(unittest.TestCase):
             self.assertAlmostEqual(support.min_on("z"), 13.75)
             self.assertAlmostEqual(support.max_on("z"), 43.5)
         self.assertAlmostEqual(
-            enclosure.members["rail_lb"].center_on("z"),
+            enclosure.members["rail_lbu"].center_on("z"),
             enclosure.members["rail_rbu"].center_on("z"),
         )
         self.assertAlmostEqual(
@@ -289,11 +289,11 @@ class TopBracingBuildTests(unittest.TestCase):
             enclosure.members["rail_rbu"].max_on("z"),
         )
         self.assertAlmostEqual(
-            enclosure.members["rail_fb"].min_on("x"),
-            enclosure.members["rail_lb"].max_on("x"),
+            enclosure.members["rail_fbu"].min_on("x"),
+            enclosure.members["rail_lbu"].max_on("x"),
         )
         self.assertAlmostEqual(
-            enclosure.members["rail_fb"].max_on("x"),
+            enclosure.members["rail_fbu"].max_on("x"),
             enclosure.members["rail_rbu"].min_on("x"),
         )
         for name,minimum_x in (
@@ -1306,7 +1306,7 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertVectorAlmostEqual(box.box_size, (4, 4, 4))
         self.assertAlmostEqual(
             box.box_min[1]+box.box_size[1],
-            build.members["rail_fb"].min_on("y"),
+            build.members["rail_fbu"].min_on("y"),
         )
         self.assertVectorAlmostEqual(
             build.LOW_VOLTAGE_UPPER_ELBOW_OUTLET,
@@ -1708,7 +1708,7 @@ class ParameterizedBuildTests(unittest.TestCase):
             enclosure.members["right_center_rail"].center_on("y"),
             11.9375,
         )
-        for name in ("rail_fb", "rail_ft"):
+        for name in ("rail_fbu", "rail_ft"):
             with self.subTest(name=name):
                 self.assertAlmostEqual(
                     enclosure.members[name].center_on("y"),
@@ -1733,7 +1733,7 @@ class ParameterizedBuildTests(unittest.TestCase):
             (
                 "low_voltage_ground_riser_inlet",
                 14,
-                enclosure.members["rail_fb"].min_on("y")-0.9375,
+                enclosure.members["rail_fbu"].min_on("y")-0.9375,
             ),
         ):
             with self.subTest(name=name):
@@ -1795,7 +1795,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             low_voltage_box.box_min[1],
-            enclosure.members["rail_fb"].min_on("y")-low_voltage_box.box_size[1],
+            enclosure.members["rail_fbu"].min_on("y")-low_voltage_box.box_size[1],
         )
 
         outlet_feed = self.resolved_conduit(

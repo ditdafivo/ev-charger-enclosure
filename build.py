@@ -346,14 +346,25 @@ def build_enclosure(
     TAMBOUR_FRONT_HEADER_CENTER_Y=(
         members["brace_fl_bl"].center_on("y")+CENTER_RAIL_OFFSET
     )
-    RAIL_RBU_CENTER_Z=13
+    RAIL_UPPER_CENTER_Z=13
+    # The original right lower rail was centered at z=7. Lower both side rails
+    # and their front cross rail by one inch to create the junction-box seat.
+    RAIL_LOWER_CENTER_Z=6
     for name,support_a,support_b,position,cross_offset,position_axis,rotated in [
-        ("rail_rb","post_fr","post_br", 7, 0, None, True),
         (
-            "rail_lb",
+            "rail_rbl",
+            "post_fr",
+            "post_br",
+            RAIL_LOWER_CENTER_Z,
+            0,
+            None,
+            True,
+        ),
+        (
+            "rail_lbu",
             "post_fl",
             "post_bl",
-            RAIL_RBU_CENTER_Z,
+            RAIL_UPPER_CENTER_Z,
             0,
             None,
             True,
@@ -362,16 +373,25 @@ def build_enclosure(
             "rail_rbu",
             "post_fr",
             "post_br",
-            RAIL_RBU_CENTER_Z,
+            RAIL_UPPER_CENTER_Z,
             0,
             None,
             True,
         ),
         (
-            "rail_fb",
-            "rail_lb",
+            "rail_lbl",
+            "post_fl",
+            "post_bl",
+            RAIL_LOWER_CENTER_Z,
+            0,
+            None,
+            True,
+        ),
+        (
+            "rail_fbu",
+            "rail_lbu",
             "rail_rbu",
-            RAIL_RBU_CENTER_Z,
+            RAIL_UPPER_CENTER_Z,
             CENTER_RAIL_OFFSET,
             None,
             True,
@@ -389,14 +409,25 @@ def build_enclosure(
             rotated=rotated,
         )
 
+    members.between(
+        "rail_fbl",
+        assembly="frame",
+        type="2x4",
+        support_a="rail_lbl",
+        support_b="rail_rbl",
+        position=RAIL_LOWER_CENTER_Z,
+        cross_offset=CENTER_RAIL_OFFSET,
+        rotated=True,
+    )
+
     tambour_support_overlap_center_y=(
         max(
             members["brace_fl_bl"].min_on("y"),
-            members["rail_lb"].min_on("y"),
+            members["rail_lbu"].min_on("y"),
         )
         +min(
             members["brace_fl_bl"].max_on("y"),
-            members["rail_lb"].max_on("y"),
+            members["rail_lbu"].max_on("y"),
         )
     )/2
     tambour_support_cross_offset=(
@@ -406,7 +437,7 @@ def build_enclosure(
         (
             "rail_ltam",
             "brace_fl_bl",
-            "rail_lb",
+            "rail_lbu",
             members["post_fl"].center_on("x"),
         ),
         (
@@ -474,7 +505,7 @@ def build_enclosure(
         "front_center_rail",
         assembly="frame",
         type="2x4",
-        support_a="rail_fb",
+        support_a="rail_fbu",
         support_b="rail_ft",
         position=(WIDTH_4x4+FRAME_DIMS.x)/2,
         rotated=False,
@@ -710,7 +741,7 @@ def build_enclosure(
     LOW_VOLTAGE_RISER_X=14
     # Keep the default installed riser at y=6.25 while preserving the same
     # bottom-entry setback when the enclosure depth is parameterized.
-    LOW_VOLTAGE_RISER_Y=members["rail_fb"].min_on("y")-0.9375
+    LOW_VOLTAGE_RISER_Y=members["rail_fbu"].min_on("y")-0.9375
     LOW_VOLTAGE_GROUND_Z=grounds[0].resolved(members).z_at(
         LOW_VOLTAGE_RISER_X,
         LOW_VOLTAGE_RISER_Y,
@@ -734,7 +765,7 @@ def build_enclosure(
     )
     LOW_VOLTAGE_BOX_CENTER_X=LOW_VOLTAGE_ELBOW_OUTLET_X
     LOW_VOLTAGE_BOX_CENTER_Y=(
-        members["rail_fb"].min_on("y")
+        members["rail_fbu"].min_on("y")
         - CARLON_E987N_JUNCTION_BOX.size[1]/2
     )
     LOW_VOLTAGE_BOX_BOTTOM_Z=(
@@ -1128,7 +1159,7 @@ def build_enclosure(
     )
 
     # Keep the conduit layout at its approved absolute elevation.  It is
-    # intentionally independent of rail_fb while the box mounting is revised.
+    # intentionally independent of rail_fbu while the box mounting is revised.
     POWER_T_MAIN_CHANNEL_WIDTH=2+5/16
     POWER_T_AXIS_X=POWER_EV_ENTRY[0]
     POWER_T_AXIS_Y=POWER_EV_ENTRY[1]
@@ -1885,9 +1916,9 @@ def build_enclosure(
     LOW_VOLTAGE_RISER_BYPASS_Z=LOW_VOLTAGE_GLAND_END_Z-4
     LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z=LOW_VOLTAGE_GLAND_END_Z-2
     LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS=LOW_VOLTAGE_MINIMUM_BEND_RADIUS
-    # Preserve the approved cable route while rail_fb and the box mounting are
+    # Preserve the approved cable route while rail_fbu and the box mounting are
     # revised.  This is an absolute world-space elevation, not rail clearance.
-    LOW_VOLTAGE_RAIL_FB_CLEAR_Z=8.4375
+    LOW_VOLTAGE_RAIL_FBU_CLEAR_Z=8.4375
     LOW_VOLTAGE_POST_FL_POS_X=(
         members["post_fl"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
@@ -2059,7 +2090,7 @@ def build_enclosure(
     path_2_riser_climb=(
         path_2_riser_bypass[0],
         path_2_riser_bypass[1],
-        LOW_VOLTAGE_RAIL_FB_CLEAR_Z,
+        LOW_VOLTAGE_RAIL_FBU_CLEAR_Z,
     )
     path_2_front_rail=(
         LOW_VOLTAGE_FRONT_RAIL_POS_X,
@@ -2164,7 +2195,7 @@ def build_enclosure(
     path_3_riser_climb=(
         path_3_riser_bypass[0],
         path_3_riser_bypass[1],
-        LOW_VOLTAGE_RAIL_FB_CLEAR_Z,
+        LOW_VOLTAGE_RAIL_FBU_CLEAR_Z,
     )
     path_3_front_rail=(
         LOW_VOLTAGE_FRONT_RAIL_NEG_X,

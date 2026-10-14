@@ -68,7 +68,7 @@ the plug.
 
 The charger-riser arrangement aligns the 1 1/4-inch ground riser and T body
 with the charger's conduit-port X coordinate. Its complete horizontal branch
-runs 1/4 inch above `rail_fb` to the rear of the junction box, while the
+runs 1/4 inch above `rail_fbu` to the rear of the junction box, while the
 reduced 1-inch feed rises directly from the T body to the charger. Both feeds
 remain below or behind the front curtain envelope.
 

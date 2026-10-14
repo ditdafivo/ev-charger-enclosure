@@ -131,7 +131,7 @@ class BuildStepModelTests(unittest.TestCase):
         }
 
         self.assertEqual(len(model.build_steps), 23)
-        self.assertEqual(len(assigned), 141)
+        self.assertEqual(len(assigned), 143)
         self.assertEqual(
             set(assigned) | set(model.deferred_object_names),
             set(model.renderable_object_names()),

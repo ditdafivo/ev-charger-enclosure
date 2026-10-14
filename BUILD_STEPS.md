@@ -203,41 +203,49 @@ gusset_front_right
 
 ## 4. Add the lower side rails (`lower-side-rails`)
 
-Install the 15 7/8-inch `rail_lb` and `rail_rbu` 2x4 rails between their front
-and back posts. Their modeled bottom elevation is 12 1/4 inches above the
-nominal ground datum. Keep both wide faces horizontal.
+Install the 15 7/8-inch upper `rail_lbu` and `rail_rbu` 2x4 rails between their
+front and back posts. Their modeled bottom elevation is 12 1/4 inches above
+the nominal ground datum. Install the matching lower `rail_lbl` and `rail_rbl`
+between the same posts, with modeled bottoms at 5 1/4 inches. This places the
+lower pair one inch below the former right lower rail position. Keep all four
+wide faces horizontal.
 
-Check that `rail_lb` and `rail_rbu` are level with one another, that the clear
-spacing between posts remains 15 7/8 inches, and that all four posts remain
-plumb. Adjust the temporary bracing rather than using these rails to pull the
-posts into place.
+Check that each left/right pair is level, that the clear spacing between posts
+remains 15 7/8 inches, and that all four posts remain plumb. Adjust the
+temporary bracing rather than using these rails to pull the posts into place.
 
 New model objects:
 
 ```text
-rail_lb
+rail_lbu
 rail_rbu
+rail_lbl
+rail_rbl
 ```
 
 ## 5. Add the lower front cross rail (`lower-front-rail`)
 
-Install the 20 1/2-inch `rail_fb` between `rail_lb` and `rail_rbu`. Its modeled
-front face is offset toward the enclosure interior to support the front center
-rail. The conduit boxes and fittings retain their absolute modeled coordinates
-while their eventual mounting arrangement is deferred.
+Install the 20 1/2-inch upper `rail_fbu` between `rail_lbu` and `rail_rbu`, and
+the matching lower `rail_fbl` between `rail_lbl` and `rail_rbl`. Their modeled
+Y center coordinates are the same, and their front faces are offset toward the
+enclosure interior. `rail_fbl` provides a lower support edge for the power
+junction box installed in Step 11. The conduit boxes and fittings retain their
+absolute modeled coordinates while their eventual mounting arrangement is
+deferred.
 
-Check that it is level, square to the side rails, and correctly oriented before
-adding the vertical member in Step 9.
+Check both rails for level, square, and correct orientation before adding the
+vertical member in Step 9.
 
 New model objects:
 
 ```text
-rail_fb
+rail_fbu
+rail_fbl
 ```
 
 ## 6. Add the front support rails (`front-support-rails`)
 
-Install `rail_ltam` and `rail_rtam` vertically between `rail_lb`/`rail_rbu` and
+Install `rail_ltam` and `rail_rtam` vertically between `rail_lbu`/`rail_rbu` and
 the undersides of the top side 4x4s. Their modeled Y range is 4 1/4 to
 5 3/4 inches. Keep them plumb, parallel, and directly opposite one another.
 Leave their inner faces accessible for possible future tambour fittings.
@@ -286,7 +294,7 @@ rail_ft
 
 ## 9. Add the front center rail (`front-center-rail`)
 
-Install `front_center_rail` between `rail_fb` and `rail_ft`.
+Install `front_center_rail` between `rail_fbu` and `rail_ft`.
 
 Check the rail for plumb. Its face orientation matters because it supports the
 power junction box and EV charger.
@@ -327,8 +335,8 @@ right-side 1/2-inch light and receptacle outlets.
 The light outlet is forward of the receptacle outlet. Then mount the connected
 box on `front_center_rail`, spanning x = 13 to 17 inches in the default model,
 and y = 3.1875 to 7.1875 inches. Its bottom face remains at the modeled
-elevation of approximately z = 6.51 inches. Keep every fitting axis aligned
-with its conduit path.
+elevation of approximately z = 6.51 inches, supported along its lower edge by
+`rail_fbl`. Keep every fitting axis aligned with its conduit path.
 
 Check that the fittings are fully seated and clear of `front_center_rail`.
 Keep the rear fitting aligned with the raised 1 1/4-inch feed from the T body.
@@ -357,7 +365,7 @@ power_junction_outlet_coupling
 Using the physical charger-input position recorded in Step 10, align the
 1 1/4-inch ground riser and T body with the charger's conduit-port X coordinate.
 Set the T-body branch high enough that the complete conduit envelope passes
-above `rail_fb`, then run the full horizontal branch to the rear coupling on
+above `rail_fbu`, then run the full horizontal branch to the rear coupling on
 the junction box. Fit the reducer at the T body's upward outlet and run the
 straight 1-inch conduit to the bottom of the charger.
 
@@ -425,10 +433,6 @@ power_street_light_feed
 
 ## 15. Install the right-side framing, backing, and outlet (`outlet-rough-in`)
 
-Install the right-side `rail_rb` 2x4 between `post_fr` and `post_br`, with its
-modeled bottom at 7 1/4 inches above the nominal ground datum. Keep its wide
-face horizontal and check that it is level.
-
 Install `right_center_rail` vertically between `rail_rbu` and `rail_rt`, and
 check that it is plumb. It supports the outlet backers installed in this step,
 the Wi-Fi access point, and the low-voltage paths installed later.
@@ -451,7 +455,6 @@ outlet branch's #12 conductors only under the approved wiring design.
 New model objects:
 
 ```text
-rail_rb
 right_center_rail
 back_right_outlet_backer_lower
 back_right_outlet_backer_upper
@@ -465,7 +468,7 @@ Mount the low-voltage junction box with its bottom adapter centered at the
 upper 45-degree elbow outlet (nominally x = 10.657, y = 6.25, z = 9.912
 inches). The adapter meets that outlet directly. The box spans approximately
 x = 8.657 to 12.657 and y = 3.1875 to 7.1875 inches, with its center at
-z = 13.382 inches. Its back is flush with the front face of `rail_fb`; the
+z = 13.382 inches. Its back is flush with the front face of `rail_fbu`; the
 bottom entry is offset toward the back at y = 6.25 inches to meet the elbow.
 The power junction spans x = 13 to 17 inches. Future backing lumber may be
 added but is not included. Field-locate the bottom opening from the as-built
@@ -479,7 +482,7 @@ cables have room to leave the forward glands in negative Z before sweeping
 toward the center framing. Route the blue Cat 6 feeds beside the 3/4-inch
 riser, retaining the modeled clearance. Use
 the modeled 0.625-inch upward turn beneath the glands, remain on the negative-Y
-side of `rail_fb` until above it. Use the gentle departure spline modeled for
+side of `rail_fbu` until above it. Use the gentle departure spline modeled for
 the dark-brown street-light cable; it bottoms at z = 8.63 inches without a flat
 horizontal run.
 

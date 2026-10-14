@@ -37,7 +37,8 @@ class TambourInstalledDetails:
     channel_wall_thickness: float
     mounting_flange_thickness: float
     flange_extension: float
-    slat_end_engagement: float
+    slat_end_engagement: float  # Overall wall height, including the base.
+    slat_total_end_clearance: float = 0.0
     segment_seams: tuple[float, ...] = ()
     joint_gap: float = 0.0
     loading_section_length: float = 0.0
@@ -71,6 +72,10 @@ class TambourInstalledDetails:
             value = getattr(self, field_name)
             if not math.isfinite(value) or value <= 0:
                 raise ValueError(f"{field_name} must be finite and positive")
+        if self.usable_channel_depth <= 0:
+            raise ValueError("overall wall height must exceed mounting flange thickness")
+        if not math.isfinite(self.slat_total_end_clearance) or self.slat_total_end_clearance < 0:
+            raise ValueError("slat_total_end_clearance must be finite and non-negative")
         if self.webbing_count < 1:
             raise ValueError("webbing_count must be at least one")
         if self.joint_gap < 0 or self.loading_section_length < 0:
@@ -89,6 +94,11 @@ class TambourInstalledDetails:
             )
         if len(self.webbing_color) != 4 or len(self.handle_color) != 4:
             raise ValueError("installed-detail colors must be RGBA 4-tuples")
+
+
+    @property
+    def usable_channel_depth(self) -> float:
+        return self.slat_end_engagement - self.mounting_flange_thickness
 
 
 def _format_vector(values: Iterable[float]) -> str:
@@ -385,6 +395,19 @@ class TambourDoor:
             if any(index >= slat_count for index in details.pull_slat_indices):
                 raise ValueError(f"{self.name}: pull slat index exceeds the curtain")
 
+        slat_length = None
+        if self.installed_details is not None:
+            details = self.installed_details
+            # Track datums are mounting faces; channel bottoms project inward.
+            slat_length = min(_v_length(_v_sub(r, l)) for l, r in zip(resolved_left, resolved_right)) - 2 * details.mounting_flange_thickness - details.slat_total_end_clearance
+            if slat_length <= 0:
+                raise ValueError(f"{self.name}: channel bottoms leave no slat length")
+            lateral_play = details.slat_total_end_clearance
+            nearest_webbing_edge = slat_length / (details.webbing_count + 1) - details.webbing_width / 2
+            hardware_inset = min(nearest_webbing_edge, (slat_length - details.handle_width) / 2)
+            if hardware_inset < details.usable_channel_depth + lateral_play / 2:
+                raise ValueError(f"{self.name}: hardware enters the channels during sideways movement")
+
         def resolve_slats(
             distances: Iterable[float],
         ) -> tuple[ResolvedTambourSlat, ...]:
@@ -400,6 +423,10 @@ class TambourDoor:
                 span = _v_unit(_v_sub(right_point, left_point))
                 inward = _v_unit(_v_cross(span, tangent))
                 center_offset = _v_scale(inward, -self.slat_track_offset)
+                if slat_length is not None:
+                    midpoint = _v_scale(_v_add(left_point, right_point), 0.5)
+                    left_point = _v_sub(midpoint, _v_scale(span, slat_length / 2))
+                    right_point = _v_add(midpoint, _v_scale(span, slat_length / 2))
                 slats.append(
                     (
                         _v_add(left_point, center_offset),

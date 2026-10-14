@@ -59,12 +59,16 @@ class TambourFabricationConfig:
     end_stop_insertion: float = 12.0
     running_clearance: float = 0.5
     nozzle_width: float = 0.6
-    wall_thickness: float = 2.4
+    wall_thickness: float = 4.8
     mounting_flange_thickness: float = 4.8
-    # Keep the complete 34.9 mm track footprint inside nominal 1.5 inch
-    # backing with slightly more than 1/16 inch of margin on each edge.
+    # Retain the flange extension; the 39.7 mm footprint needs wider backing.
     flange_extension: float = 8.2
-    slat_end_engagement: float = 12.0
+    # Compatibility name: overall wall height, including the base thickness.
+    slat_end_engagement: float = 40.0
+    opening_width_variation: float = inches(1)
+    slat_total_end_clearance: float = inches(1 / 16)
+    minimum_slat_capture: float = inches(1 / 4)
+    minimum_backing_width: float = inches(1.75)
     mounting_hole_diameter: float = 4.5
     expansion_slot_length: float = 8.0
     joint_expansion_gap: float = 0.6
@@ -107,6 +111,9 @@ class TambourFabricationConfig:
             "mounting_flange_thickness",
             "flange_extension",
             "slat_end_engagement",
+            "slat_total_end_clearance",
+            "minimum_slat_capture",
+            "minimum_backing_width",
             "mounting_hole_diameter",
             "joint_expansion_gap",
             "collar_clearance",
@@ -130,6 +137,14 @@ class TambourFabricationConfig:
             value = getattr(self, field_name)
             if not math.isfinite(value) or value <= 0:
                 raise ValueError(f"{field_name} must be a finite positive number")
+        if not math.isfinite(self.opening_width_variation) or self.opening_width_variation < 0:
+            raise ValueError("opening_width_variation must be finite and non-negative")
+        if self.usable_channel_depth <= 0:
+            raise ValueError("overall wall height must exceed mounting flange thickness")
+        if self.worst_case_slat_capture < self.minimum_slat_capture:
+            raise ValueError("insufficient slat capture at maximum opening width and sideways movement")
+        if self.minimum_backing_width < self.mounting_footprint_width + inches(1 / 8):
+            raise ValueError("backing must leave at least 1/16 inch margin on each flange edge")
         if self.slat_gap < 0:
             raise ValueError("slat_gap cannot be negative")
         if self.wall_thickness < 4 * self.nozzle_width:
@@ -159,6 +174,31 @@ class TambourFabricationConfig:
             self.rear_vertical_length - self.bend_stub_length
         ):
             raise ValueError("loading section leaves no fixed rear track")
+
+    @property
+    def usable_channel_depth(self) -> float:
+        return self.slat_end_engagement - self.mounting_flange_thickness
+
+    @property
+    def worst_case_slat_capture(self) -> float:
+        """Opposite-end capture when one end touches its channel bottom."""
+        return self.usable_channel_depth - self.opening_width_variation - self.slat_total_end_clearance
+
+    def fitted_slat_length(self, minimum_bottom_spacing: float, maximum_bottom_spacing: float) -> float:
+        """Fit a common slat length to measured channel bottoms, in mm."""
+        if not all(math.isfinite(v) and v > 0 for v in (minimum_bottom_spacing, maximum_bottom_spacing)):
+            raise ValueError("channel-bottom spacings must be finite and positive")
+        if maximum_bottom_spacing < minimum_bottom_spacing:
+            raise ValueError("maximum channel-bottom spacing cannot be less than minimum")
+        length = minimum_bottom_spacing - self.slat_total_end_clearance
+        if length <= 0:
+            raise ValueError("end clearance leaves no slat length")
+        if maximum_bottom_spacing - minimum_bottom_spacing > self.opening_width_variation + 1e-9:
+            raise ValueError("measured opening variation exceeds the design allowance")
+        capture = self.usable_channel_depth - (maximum_bottom_spacing - length)
+        if capture < self.minimum_slat_capture - 1e-9:
+            raise ValueError("insufficient slat capture for measured channel-bottom spacings")
+        return length
 
     @property
     def slat_pitch(self) -> float:
@@ -531,10 +571,10 @@ def make_joint_preview(config: TambourFabricationConfig) -> Compound:
 def make_end_stop(config: TambourFabricationConfig) -> Part:
     internal = config.channel_internal_width
     insertion = config.end_stop_insertion
-    result = Box(
+    result = Location((0, 0, config.mounting_flange_thickness)) * Box(
         internal - 0.4,
         insertion,
-        config.slat_end_engagement - config.mounting_flange_thickness,
+        config.usable_channel_depth,
         align=(Align.CENTER, Align.MIN, Align.MIN),
     )
     result += Location((0, 0, 0)) * Box(
@@ -548,7 +588,7 @@ def make_end_stop(config: TambourFabricationConfig) -> Part:
     result -= Location((0, insertion / 2, 0)) * Box(
         4.0,
         insertion + 6.0,
-        4.0,
+        config.mounting_flange_thickness + 4.0,
         align=(Align.CENTER, Align.CENTER, Align.MIN),
     )
     return result

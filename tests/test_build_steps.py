@@ -130,12 +130,20 @@ class BuildStepModelTests(unittest.TestCase):
             for name in step.object_names
         }
 
-        self.assertEqual(len(model.build_steps), 27)
+        self.assertEqual(len(model.build_steps), 23)
         self.assertEqual(len(assigned), 143)
-        self.assertEqual(set(assigned), set(model.renderable_object_names()))
+        self.assertEqual(
+            set(assigned) | set(model.deferred_object_names),
+            set(model.renderable_object_names()),
+        )
         self.assertEqual(
             model.build_steps[0].object_names,
-            ("power_ground_riser", "low_voltage_ground_riser"),
+            (
+                "power_ground_riser",
+                "low_voltage_ground_riser_inlet",
+                "low_voltage_ground_sweep_elbow_1",
+                "low_voltage_ground_sweep_elbow_2",
+            ),
         )
         self.assertEqual(
             model.build_steps[-1].object_names,
@@ -144,63 +152,64 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertEqual(step_by_object["post_fl"], 2)
         self.assertEqual(step_by_object["footing_fl"], 2)
         self.assertNotIn("rail_l_tambour", step_by_object)
-        self.assertEqual(step_by_object["tambour_ceiling_panel"], 13)
-        self.assertEqual(step_by_object["enclosure_tambour_track"], 11)
-        self.assertEqual(step_by_object["enclosure_tambour_door"], 12)
-        self.assertEqual(step_by_object["front_street_light_backer_lower"], 14)
-        self.assertEqual(step_by_object["front_street_light_backer_bottom"], 14)
+        self.assertIn("tambour_ceiling_panel", model.deferred_object_names)
+        self.assertIn("enclosure_tambour_track", model.deferred_object_names)
+        self.assertIn("enclosure_tambour_door", model.deferred_object_names)
+        self.assertEqual(step_by_object["front_street_light_backer_lower"], 13)
+        self.assertEqual(step_by_object["front_street_light_backer_bottom"], 13)
         self.assertEqual(step_by_object["brace_fl_fr"], 3)
         self.assertEqual(step_by_object["brace_bl_fr"], 3)
         self.assertEqual(step_by_object["gusset_back_left"], 3)
         self.assertNotIn("brace_br_fl", step_by_object)
-        self.assertEqual(step_by_object["front_ev_charger_body"], 15)
-        self.assertEqual(step_by_object["front_ev_charger_plug"], 15)
-        self.assertEqual(step_by_object["front_ev_charger_cable"], 15)
-        self.assertEqual(step_by_object["power_junction_box"], 16)
+        self.assertEqual(step_by_object["front_ev_charger_body"], 10)
+        self.assertEqual(step_by_object["front_ev_charger_plug"], 10)
+        self.assertEqual(step_by_object["front_ev_charger_cable"], 10)
+        self.assertEqual(step_by_object["power_junction_box"], 11)
         self.assertEqual(step_by_object["power_ground_riser"], 1)
-        self.assertEqual(step_by_object["low_voltage_ground_riser"], 1)
-        self.assertEqual(step_by_object["power_ev_charger_feed"], 17)
-        self.assertEqual(step_by_object["power_ev_t_body"], 17)
-        self.assertEqual(step_by_object["power_t_junction_feed"], 17)
-        self.assertEqual(step_by_object["power_ev_reducer"], 17)
+        self.assertEqual(step_by_object["low_voltage_ground_riser_inlet"], 1)
+        self.assertEqual(step_by_object["power_ev_charger_feed"], 12)
+        self.assertEqual(step_by_object["power_ev_t_body"], 12)
+        self.assertEqual(step_by_object["power_t_junction_feed"], 12)
+        self.assertEqual(step_by_object["power_ev_reducer"], 12)
         self.assertEqual(step_by_object["rail_ltam"], 6)
         self.assertEqual(step_by_object["rail_rtam"], 6)
         self.assertEqual(step_by_object["rail_rbu"], 4)
-        self.assertEqual(step_by_object["left_tambour_bend_backer"], 10)
-        self.assertEqual(step_by_object["right_tambour_bend_backer"], 10)
+        self.assertIn("left_tambour_bend_backer", model.deferred_object_names)
+        self.assertIn("right_tambour_bend_backer", model.deferred_object_names)
         self.assertEqual(step_by_object["rail_lt"], 7)
         self.assertEqual(step_by_object["rail_rt"], 7)
         self.assertEqual(step_by_object["rail_ft"], 8)
         self.assertEqual(step_by_object["front_center_rail"], 9)
-        self.assertEqual(step_by_object["right_center_rail"], 9)
-        self.assertEqual(step_by_object["roof_shim_brace_fl_fr"], 24)
-        self.assertEqual(step_by_object["back_right_outlet_backer_lower"], 19)
-        self.assertEqual(step_by_object["back_right_outlet"], 19)
+        self.assertEqual(step_by_object["right_center_rail"], 15)
+        self.assertEqual(step_by_object["roof_shim_brace_fl_fr"], 20)
+        self.assertEqual(step_by_object["enclosure_siding_top_5"], 20)
+        self.assertEqual(step_by_object["back_right_outlet_backer_lower"], 15)
+        self.assertEqual(step_by_object["back_right_outlet"], 15)
 
     def test_generated_scad_contains_step_controls_and_routing(self) -> None:
         scad = build.model.to_scad()
 
-        self.assertIn("build_step = 28;", scad)
-        self.assertIn("build_step_count = 27;", scad)
+        self.assertIn("build_step = 24;", scad)
+        self.assertIn("build_step_count = 23;", scad)
         self.assertIn('["power_ground_riser", 1]', scad)
-        self.assertIn('["low_voltage_ground_riser", 1]', scad)
+        self.assertIn('["low_voltage_ground_riser_inlet", 1]', scad)
         self.assertIn('["post_fl", 2]', scad)
         self.assertIn('["footing_fl", 2]', scad)
         self.assertIn('["brace_fl_fr", 3]', scad)
         self.assertIn('["gusset_back_left", 3]', scad)
-        self.assertIn('["enclosure_tambour_track", 11]', scad)
-        self.assertIn('["enclosure_tambour_door", 12]', scad)
-        self.assertIn('["front_ev_charger_body", 15]', scad)
-        self.assertIn('["front_ev_charger_cable", 15]', scad)
-        self.assertIn('["power_junction_box", 16]', scad)
-        self.assertIn('["power_ev_charger_feed", 17]', scad)
-        self.assertIn('["power_ev_t_body", 17]', scad)
-        self.assertIn('["power_t_junction_feed", 17]', scad)
-        self.assertIn('["tambour_ceiling_panel", 13]', scad)
-        self.assertIn('["roof_shim_brace_fl_fr", 24]', scad)
-        self.assertIn('["back_right_outlet_backer_lower", 19]', scad)
-        self.assertIn('["back_right_outlet", 19]', scad)
-        self.assertIn('["back_right_outlet_cover", 27]', scad)
+        self.assertIn('"enclosure_tambour_track"', scad)
+        self.assertIn('"enclosure_tambour_door"', scad)
+        self.assertIn('["front_ev_charger_body", 10]', scad)
+        self.assertIn('["front_ev_charger_cable", 10]', scad)
+        self.assertIn('["power_junction_box", 11]', scad)
+        self.assertIn('["power_ev_charger_feed", 12]', scad)
+        self.assertIn('["power_ev_t_body", 12]', scad)
+        self.assertIn('["power_t_junction_feed", 12]', scad)
+        self.assertIn('["roof_shim_brace_fl_fr", 20]', scad)
+        self.assertIn('["back_right_outlet_backer_lower", 15]', scad)
+        self.assertIn('["back_right_outlet", 15]', scad)
+        self.assertIn('["back_right_outlet_cover", 23]', scad)
+        self.assertIn("show_deferred = false;", scad)
         self.assertIn("build_step == floor(build_step)", scad)
         self.assertIn("function object_is_visible(name)", scad)
         self.assertIn("function object_is_highlighted(name)", scad)
@@ -211,13 +220,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn("/* [Individual Lumber] */", scad)
         self.assertIn("/* [Individual Components] */", scad)
         self.assertIn("// rail ft\nshow_lumber_rail_ft = true;", scad)
-        self.assertIn(
-            "// tambour ceiling panel\n"
-            "show_component_tambour_ceiling_panel = true;",
-            scad,
-        )
         self.assertIn("show_lumber_rail_ft = true;", scad)
-        self.assertIn("show_component_tambour_ceiling_panel = true;", scad)
         self.assertIn("function lumber_object_is_enabled(name)", scad)
         self.assertIn("function component_object_is_enabled(name)", scad)
         self.assertIn("&& lumber_object_is_enabled(l_name(p))", scad)
@@ -238,7 +241,10 @@ class BuildStepModelTests(unittest.TestCase):
 
         self.assertNotIn("build_step = 28;", generic_scad)
         self.assertNotIn("build_step = 28;", custom_scad)
-        self.assertIn("function object_is_visible(name) = true;", generic_scad)
+        self.assertIn(
+            "function object_is_visible(name) = !object_is_deferred(name) || show_deferred;",
+            generic_scad,
+        )
 
 
 if __name__ == "__main__":

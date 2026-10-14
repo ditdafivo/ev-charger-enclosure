@@ -10,6 +10,8 @@
 
 // true: fully open; false: fully closed
 tambour_door_open = true;
+// Show tambour parts retained for possible future installation
+show_deferred = false;
 siding = true;
 ground = false;
 footings = true;
@@ -140,6 +142,15 @@ assert(
     str("yzgrid_region must be an integer from -2 through 2; got ", yzgrid_region)
 );
 
+deferred_objects = [
+    {{ deferred_object_records | join(',\n    ') }}
+];
+function object_is_deferred(name) =
+    len([
+        for (deferred_name = deferred_objects)
+            if (deferred_name == name) deferred_name
+    ]) > 0;
+
 {% if build_step_count %}
 build_step_count = {{ build_step_count }};
 build_step_objects = [
@@ -166,11 +177,15 @@ function object_build_step(name) =
     assert(len(matches) == 1, str("No unique build step for object ", name))
     matches[0];
 function object_is_visible(name) =
-    object_build_step(name) <= build_step;
+    object_is_deferred(name)
+        ? show_deferred && build_step == build_step_count + 1
+        : object_build_step(name) <= build_step;
 function object_is_highlighted(name) =
-    build_step > 0 && object_build_step(name) == build_step;
+    object_is_deferred(name)
+        ? false
+        : build_step > 0 && object_build_step(name) == build_step;
 {% else %}
-function object_is_visible(name) = true;
+function object_is_visible(name) = !object_is_deferred(name) || show_deferred;
 function object_is_highlighted(name) = false;
 {% endif %}
 function build_step_highlight_color() = [1.0, 0.82, 0.0, 1.0];
@@ -335,6 +350,7 @@ function c_mesh_path(c) = c[14];
 function c_mesh_matrix(c) = c[15];
 function c_box_primitives(c) = c[16];
 function c_cylinder_primitives(c) = c[17];
+function c_round_cylinder_joints(c) = c[18];
 function c_max(c) = v_add(c_min(c), c_size(c));
 function c_center(c) = v_mid(c_min(c), c_max(c));
 
@@ -414,6 +430,11 @@ function cp_origin(p) = p[0];
 function cp_axis(p) = p[1];
 function cp_length(p) = p[2];
 function cp_diameter(p) = p[3];
+function cp_direction(p) =
+    is_string(cp_axis(p)) ?
+        cp_axis(p) == "along" ? [1, 0, 0] :
+        cp_axis(p) == "across" ? [0, 1, 0] : [0, 0, 1] :
+    v_unit(cp_axis(p));
 
 function xygrid_line_color(coordinate) =
     coordinate % 10 == 0 ? [0.90, 0.16, 0.12, 0.75] :
@@ -493,15 +514,26 @@ module component_name(c) {
 }
 
 module render_component_cylinder(p) {
-    translate(cp_origin(p)) {
-        if (cp_axis(p) == "along")
-            rotate([0, 90, 0])
-                cylinder(h = cp_length(p), d = cp_diameter(p), $fn = 36);
-        else if (cp_axis(p) == "across")
-            rotate([-90, 0, 0])
-                cylinder(h = cp_length(p), d = cp_diameter(p), $fn = 36);
-        else
+    direction = cp_direction(p);
+    rotation_axis = v_cross([0, 0, 1], direction);
+    rotation_length = v_len(rotation_axis);
+    normalized_axis = rotation_length > 1e-9 ?
+        v_scale(rotation_axis, 1 / rotation_length) : [1, 0, 0];
+    angle = rotation_length > 1e-9 ? acos(direction[2]) :
+        direction[2] < 0 ? 180 : 0;
+
+    translate(cp_origin(p))
+        rotate(a = angle, v = normalized_axis)
             cylinder(h = cp_length(p), d = cp_diameter(p), $fn = 36);
+}
+
+module render_component_cylinder_joints(c) {
+    // Round only internal segment junctions; the bell mouth and outlet stay flat.
+    for (i = [0 : len(c_cylinder_primitives(c)) - 2]) {
+        p = c_cylinder_primitives(c)[i];
+        direction = cp_direction(p);
+        translate(v_add(cp_origin(p), v_scale(direction, cp_length(p))))
+            sphere(d = cp_diameter(p), $fn = 24);
     }
 }
 
@@ -520,6 +552,8 @@ module render_component(c, highlighted = false) {
                     }
                     for (p = c_cylinder_primitives(c))
                         render_component_cylinder(p);
+                    if (c_round_cylinder_joints(c))
+                        render_component_cylinder_joints(c);
                 }
         } else {
             translate(c_min(c))
@@ -693,7 +727,10 @@ module render_tambour_service_parts(points, opening_dir, installed) {
         );
     if (stop_length > 0)
         tambour_oriented_box(
-            v_add(start, v_scale(travel_dir, stop_length / 2)),
+            v_add(
+                v_add(start, v_scale(travel_dir, stop_length / 2)),
+                v_scale(opening_dir, ti_engagement(installed) / 2)
+            ),
             opening_dir,
             travel_dir,
             depth_dir,

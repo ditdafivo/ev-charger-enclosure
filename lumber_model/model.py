@@ -91,6 +91,7 @@ class Model:
     routed_seats: list[RoutedSeat]
     purchased_items: list[PurchasedItem]
     build_steps: tuple[BuildStep, ...]
+    deferred_object_names: tuple[str, ...]
     xygrid_origin: XYOrigin
 
     def __init__(
@@ -111,6 +112,7 @@ class Model:
         purchased_items: Iterable[PurchasedItem] | None = None,
         build_steps: Iterable[BuildStep] | None = None,
         xygrid_origin: XYOrigin = (0, 0),
+        deferred_object_names: Iterable[str] | None = None,
     ):
         if isinstance(pieces, Mapping):
             self.pieces = list(pieces.values())
@@ -170,6 +172,7 @@ class Model:
         self.purchased_items = list(purchased_items or ())
 
         self.build_steps = tuple(build_steps or ())
+        self.deferred_object_names = tuple(deferred_object_names or ())
         self.xygrid_origin = xygrid_origin
 
     @classmethod
@@ -446,6 +449,30 @@ class Model:
         )
 
     def _validate_build_steps(self) -> None:
+        model_names = self.renderable_object_names()
+        duplicate_model_names = sorted(
+            {name for name in model_names if model_names.count(name) > 1}
+        )
+        if duplicate_model_names:
+            raise ValueError(
+                "Build-step object names must be unique across model categories: "
+                f"{duplicate_model_names}"
+            )
+
+        deferred_names = list(self.deferred_object_names)
+        duplicate_deferred = sorted(
+            {name for name in deferred_names if deferred_names.count(name) > 1}
+        )
+        if duplicate_deferred:
+            raise ValueError(
+                "Deferred model objects are listed more than once: "
+                f"{duplicate_deferred}"
+            )
+
+        unknown_deferred = sorted(set(deferred_names) - set(model_names))
+        if unknown_deferred:
+            raise ValueError(f"Unknown deferred model objects: {unknown_deferred}")
+
         if not self.build_steps:
             return
 
@@ -455,16 +482,6 @@ class Model:
             raise ValueError(
                 "Build step numbers must be sequential starting at 1: "
                 f"{numbers}"
-            )
-
-        model_names = self.renderable_object_names()
-        duplicate_model_names = sorted(
-            {name for name in model_names if model_names.count(name) > 1}
-        )
-        if duplicate_model_names:
-            raise ValueError(
-                "Build-step object names must be unique across model categories: "
-                f"{duplicate_model_names}"
             )
 
         assigned_names = [
@@ -479,7 +496,16 @@ class Model:
                 f"{duplicate_assignments}"
             )
 
-        missing = sorted(set(model_names) - set(assigned_names))
+        assigned_and_deferred = set(assigned_names) & set(deferred_names)
+        if assigned_and_deferred:
+            raise ValueError(
+                "Model objects cannot be both assigned to a build step and "
+                f"deferred: {sorted(assigned_and_deferred)}"
+            )
+
+        missing = sorted(
+            set(model_names) - set(assigned_names) - set(deferred_names)
+        )
         unknown = sorted(set(assigned_names) - set(model_names))
         if missing or unknown:
             details = []
@@ -855,6 +881,9 @@ class Model:
             for name in step.object_names
         ]
 
+    def scad_deferred_object_records(self) -> list[str]:
+        return [json.dumps(name) for name in self.deferred_object_names]
+
     def _model_bounds(self) -> ModelBounds | None:
         """Return bounds for all potentially rendered geometry."""
         bounds = [math.inf, -math.inf, math.inf, -math.inf, math.inf, -math.inf]
@@ -1176,6 +1205,7 @@ class Model:
             siding_records=self.scad_siding_records(),
             xygrid_origin=self._scad_xygrid_origin(),
             build_step_records=self.scad_build_step_records(),
+            deferred_object_records=self.scad_deferred_object_records(),
             build_step_count=len(self.build_steps),
             **grid_context,
         )

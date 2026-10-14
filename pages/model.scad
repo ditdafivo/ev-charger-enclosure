@@ -10,11 +10,13 @@
 
 // true: fully open; false: fully closed
 tambour_door_open = true;
+// Show tambour parts retained for possible future installation
+show_deferred = false;
 siding = true;
 ground = false;
 footings = true;
 center_gland_cat6 = true;
-build_step = 28; // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
+build_step = 24; // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
 
 
 labels = false;
@@ -68,14 +70,18 @@ show_lumber_brace_bl_br = true;
 show_lumber_brace_fr_br = true;
 // brace bl fr
 show_lumber_brace_bl_fr = true;
-// rail rb
-show_lumber_rail_rb = true;
-// rail lb
-show_lumber_rail_lb = true;
+// rail rbl
+show_lumber_rail_rbl = true;
+// rail lbu
+show_lumber_rail_lbu = true;
 // rail rbu
 show_lumber_rail_rbu = true;
-// rail fb
-show_lumber_rail_fb = true;
+// rail lbl
+show_lumber_rail_lbl = true;
+// rail fbu
+show_lumber_rail_fbu = true;
+// rail fbl
+show_lumber_rail_fbl = true;
 // rail ltam
 show_lumber_rail_ltam = true;
 // rail rtam
@@ -105,6 +111,10 @@ show_lumber_front_street_light_backer_upper = true;
 show_component_left_tambour_bend_backer = true;
 // right tambour bend backer
 show_component_right_tambour_bend_backer = true;
+// left tambour vertical backing
+show_component_left_tambour_vertical_backing = true;
+// right tambour vertical backing
+show_component_right_tambour_vertical_backing = true;
 // gusset back left
 show_component_gusset_back_left = true;
 // gusset front right
@@ -161,192 +171,203 @@ show_component_power_junction_light_coupling = true;
 show_component_power_junction_outlet_adapter = true;
 // power junction outlet coupling
 show_component_power_junction_outlet_coupling = true;
+// low voltage ground sweep elbow 1
+show_component_low_voltage_ground_sweep_elbow_1 = true;
+// low voltage ground sweep elbow 2
+show_component_low_voltage_ground_sweep_elbow_2 = true;
 // tambour ceiling panel
 show_component_tambour_ceiling_panel = true;
 
 /* [Hidden] */
 
 lumber_object_toggles = [
-    ["post_fl", show_lumber_post_fl],    ["post_fr", show_lumber_post_fr],    ["post_bl", show_lumber_post_bl],    ["post_br", show_lumber_post_br],    ["brace_fl_fr", show_lumber_brace_fl_fr],    ["brace_fl_bl", show_lumber_brace_fl_bl],    ["brace_bl_br", show_lumber_brace_bl_br],    ["brace_fr_br", show_lumber_brace_fr_br],    ["brace_bl_fr", show_lumber_brace_bl_fr],    ["rail_rb", show_lumber_rail_rb],    ["rail_lb", show_lumber_rail_lb],    ["rail_rbu", show_lumber_rail_rbu],    ["rail_fb", show_lumber_rail_fb],    ["rail_ltam", show_lumber_rail_ltam],    ["rail_rtam", show_lumber_rail_rtam],    ["rail_lt", show_lumber_rail_lt],    ["rail_rt", show_lumber_rail_rt],    ["rail_ft", show_lumber_rail_ft],    ["front_center_rail", show_lumber_front_center_rail],    ["right_center_rail", show_lumber_right_center_rail],    ["back_right_outlet_backer_lower", show_lumber_back_right_outlet_backer_lower],    ["back_right_outlet_backer_upper", show_lumber_back_right_outlet_backer_upper],    ["front_street_light_backer_bottom", show_lumber_front_street_light_backer_bottom],    ["front_street_light_backer_lower", show_lumber_front_street_light_backer_lower],    ["front_street_light_backer_upper", show_lumber_front_street_light_backer_upper]];
+    ["post_fl", show_lumber_post_fl],    ["post_fr", show_lumber_post_fr],    ["post_bl", show_lumber_post_bl],    ["post_br", show_lumber_post_br],    ["brace_fl_fr", show_lumber_brace_fl_fr],    ["brace_fl_bl", show_lumber_brace_fl_bl],    ["brace_bl_br", show_lumber_brace_bl_br],    ["brace_fr_br", show_lumber_brace_fr_br],    ["brace_bl_fr", show_lumber_brace_bl_fr],    ["rail_rbl", show_lumber_rail_rbl],    ["rail_lbu", show_lumber_rail_lbu],    ["rail_rbu", show_lumber_rail_rbu],    ["rail_lbl", show_lumber_rail_lbl],    ["rail_fbu", show_lumber_rail_fbu],    ["rail_fbl", show_lumber_rail_fbl],    ["rail_ltam", show_lumber_rail_ltam],    ["rail_rtam", show_lumber_rail_rtam],    ["rail_lt", show_lumber_rail_lt],    ["rail_rt", show_lumber_rail_rt],    ["rail_ft", show_lumber_rail_ft],    ["front_center_rail", show_lumber_front_center_rail],    ["right_center_rail", show_lumber_right_center_rail],    ["back_right_outlet_backer_lower", show_lumber_back_right_outlet_backer_lower],    ["back_right_outlet_backer_upper", show_lumber_back_right_outlet_backer_upper],    ["front_street_light_backer_bottom", show_lumber_front_street_light_backer_bottom],    ["front_street_light_backer_lower", show_lumber_front_street_light_backer_lower],    ["front_street_light_backer_upper", show_lumber_front_street_light_backer_upper]];
 
 component_object_toggles = [
-    ["left_tambour_bend_backer", show_component_left_tambour_bend_backer],    ["right_tambour_bend_backer", show_component_right_tambour_bend_backer],    ["gusset_back_left", show_component_gusset_back_left],    ["gusset_front_right", show_component_gusset_front_right],    ["roof_shim_brace_fl_fr", show_component_roof_shim_brace_fl_fr],    ["roof_shim_brace_fl_bl", show_component_roof_shim_brace_fl_bl],    ["roof_shim_brace_bl_br", show_component_roof_shim_brace_bl_br],    ["roof_shim_brace_fr_br", show_component_roof_shim_brace_fr_br],    ["low_voltage_termination_box", show_component_low_voltage_termination_box],    ["low_voltage_input_adapter", show_component_low_voltage_input_adapter],    ["low_voltage_cable_gland_1", show_component_low_voltage_cable_gland_1],    ["low_voltage_cable_gland_2", show_component_low_voltage_cable_gland_2],    ["low_voltage_cable_gland_3", show_component_low_voltage_cable_gland_3],    ["front_street_light_base_box", show_component_front_street_light_base_box],    ["front_street_light_extension_ring", show_component_front_street_light_extension_ring],    ["front_street_light", show_component_front_street_light],    ["front_ev_charger_plug", show_component_front_ev_charger_plug],    ["front_ev_charger_body", show_component_front_ev_charger_body],    ["front_wifi_access_point", show_component_front_wifi_access_point],    ["back_right_outlet", show_component_back_right_outlet],    ["back_right_outlet_cover", show_component_back_right_outlet_cover],    ["power_junction_box", show_component_power_junction_box],    ["power_ev_t_body", show_component_power_ev_t_body],    ["power_junction_input_adapter", show_component_power_junction_input_adapter],    ["power_junction_input_coupling", show_component_power_junction_input_coupling],    ["power_ev_reducer", show_component_power_ev_reducer],    ["power_junction_light_adapter", show_component_power_junction_light_adapter],    ["power_junction_light_coupling", show_component_power_junction_light_coupling],    ["power_junction_outlet_adapter", show_component_power_junction_outlet_adapter],    ["power_junction_outlet_coupling", show_component_power_junction_outlet_coupling],    ["tambour_ceiling_panel", show_component_tambour_ceiling_panel]];
+    ["left_tambour_bend_backer", show_component_left_tambour_bend_backer],    ["right_tambour_bend_backer", show_component_right_tambour_bend_backer],    ["left_tambour_vertical_backing", show_component_left_tambour_vertical_backing],    ["right_tambour_vertical_backing", show_component_right_tambour_vertical_backing],    ["gusset_back_left", show_component_gusset_back_left],    ["gusset_front_right", show_component_gusset_front_right],    ["roof_shim_brace_fl_fr", show_component_roof_shim_brace_fl_fr],    ["roof_shim_brace_fl_bl", show_component_roof_shim_brace_fl_bl],    ["roof_shim_brace_bl_br", show_component_roof_shim_brace_bl_br],    ["roof_shim_brace_fr_br", show_component_roof_shim_brace_fr_br],    ["low_voltage_termination_box", show_component_low_voltage_termination_box],    ["low_voltage_input_adapter", show_component_low_voltage_input_adapter],    ["low_voltage_cable_gland_1", show_component_low_voltage_cable_gland_1],    ["low_voltage_cable_gland_2", show_component_low_voltage_cable_gland_2],    ["low_voltage_cable_gland_3", show_component_low_voltage_cable_gland_3],    ["front_street_light_base_box", show_component_front_street_light_base_box],    ["front_street_light_extension_ring", show_component_front_street_light_extension_ring],    ["front_street_light", show_component_front_street_light],    ["front_ev_charger_plug", show_component_front_ev_charger_plug],    ["front_ev_charger_body", show_component_front_ev_charger_body],    ["front_wifi_access_point", show_component_front_wifi_access_point],    ["back_right_outlet", show_component_back_right_outlet],    ["back_right_outlet_cover", show_component_back_right_outlet_cover],    ["power_junction_box", show_component_power_junction_box],    ["power_ev_t_body", show_component_power_ev_t_body],    ["power_junction_input_adapter", show_component_power_junction_input_adapter],    ["power_junction_input_coupling", show_component_power_junction_input_coupling],    ["power_ev_reducer", show_component_power_ev_reducer],    ["power_junction_light_adapter", show_component_power_junction_light_adapter],    ["power_junction_light_coupling", show_component_power_junction_light_coupling],    ["power_junction_outlet_adapter", show_component_power_junction_outlet_adapter],    ["power_junction_outlet_coupling", show_component_power_junction_outlet_coupling],    ["low_voltage_ground_sweep_elbow_1", show_component_low_voltage_ground_sweep_elbow_1],    ["low_voltage_ground_sweep_elbow_2", show_component_low_voltage_ground_sweep_elbow_2],    ["tambour_ceiling_panel", show_component_tambour_ceiling_panel]];
 
 pieces = [
     ["post_fl", "posts", "4x4", "z", [0, 0, -32], 79, true],
     ["post_fr", "posts", "4x4", "z", [24, 0, -32], 78.25, true],
-    ["post_bl", "posts", "4x4", "z", [0, 18.375, -32], 78.25, true],
-    ["post_br", "posts", "4x4", "z", [24, 18.375, -32], 79, true],
+    ["post_bl", "posts", "4x4", "z", [0, 19.375, -32], 78.25, true],
+    ["post_br", "posts", "4x4", "z", [24, 19.375, -32], 79, true],
     ["brace_fl_fr", "frame", "2x4", "x", [3.5, 0, 45.5], 20.5, true],
-    ["brace_fl_bl", "frame", "4x4", "y", [0, 3.5, 43.5], 14.875, true],
-    ["brace_bl_br", "frame", "2x4", "x", [3.5, 18.375, 45.5], 20.5, true],
-    ["brace_fr_br", "frame", "4x4", "y", [24, 3.5, 43.5], 14.875, true],
-    ["brace_bl_fr", "frame", "1x6", "angled", [-0.198, 21.6164, 46.625], 35.1332, true, [27.698, 0.2586, 46.625], 4.9067, 0.75, -37.4386, [[0, 18.375], [24, 0], [27.5, 0], [27.5, 3.5], [3.5, 21.875], [0, 21.875]]],
-    ["rail_rb", "frame", "2x4", "y", [24, 3.5, 6.25], 14.875, true],
-    ["rail_lb", "frame", "2x4", "y", [0, 3.5, 12.25], 14.875, true],
-    ["rail_rbu", "frame", "2x4", "y", [24, 3.5, 12.25], 14.875, true],
-    ["rail_fb", "frame", "2x4", "x", [3.5, 6.1875, 12.25], 20.5, true],
+    ["brace_fl_bl", "frame", "4x4", "y", [0, 3.5, 43.5], 15.875, true],
+    ["brace_bl_br", "frame", "2x4", "x", [3.5, 19.375, 45.5], 20.5, true],
+    ["brace_fr_br", "frame", "4x4", "y", [24, 3.5, 43.5], 15.875, true],
+    ["brace_bl_fr", "frame", "1x6", "angled", [-0.1648, 22.6708, 46.625], 35.7665, true, [27.6648, 0.2042, 46.625], 4.9218, 0.75, -38.9136, [[0, 19.375], [24, 0], [27.5, 0], [27.5, 3.5], [3.5, 22.875], [0, 22.875]]],
+    ["rail_rbl", "frame", "2x4", "y", [24, 3.5, 5.25], 15.875, true],
+    ["rail_lbu", "frame", "2x4", "y", [0, 3.5, 12.25], 15.875, true],
+    ["rail_rbu", "frame", "2x4", "y", [24, 3.5, 12.25], 15.875, true],
+    ["rail_lbl", "frame", "2x4", "y", [0, 3.5, 5.25], 15.875, true],
+    ["rail_fbu", "frame", "2x4", "x", [3.5, 7.1875, 12.25], 20.5, true],
+    ["rail_fbl", "frame", "2x4", "x", [3.5, 7.1875, 5.25], 20.5, true],
     ["rail_ltam", "frame", "2x4", "z", [0, 4.25, 13.75], 29.75, true],
     ["rail_rtam", "frame", "2x4", "z", [24, 4.25, 13.75], 29.75, true],
-    ["rail_lt", "frame", "2x4", "y", [0, 5.75, 40.875], 12.625, true],
-    ["rail_rt", "frame", "2x4", "y", [24, 5.75, 40.875], 12.625, true],
-    ["rail_ft", "frame", "2x4", "x", [3.5, 6.1875, 40.875], 20.5, true],
-    ["front_center_rail", "frame", "2x4", "z", [13, 6.1875, 13.75], 27.125, false],
-    ["right_center_rail", "frame", "2x4", "z", [24, 10.1875, 13.75], 27.125, true],
-    ["back_right_outlet_backer_lower", "electrical_backing", "2x4", "y", [24.95, 11.6875, 13.63], 6.6875, false],
-    ["back_right_outlet_backer_upper", "electrical_backing", "2x4", "y", [24.95, 11.6875, 18.87], 6.6875, false],
+    ["rail_lt", "frame", "2x4", "y", [0, 5.75, 40.875], 13.625, true],
+    ["rail_rt", "frame", "2x4", "y", [24, 5.75, 40.875], 13.625, true],
+    ["rail_ft", "frame", "2x4", "x", [3.5, 7.1875, 40.875], 20.5, true],
+    ["front_center_rail", "frame", "2x4", "z", [13, 7.1875, 13.75], 27.125, false],
+    ["right_center_rail", "frame", "2x4", "z", [24, 11.1875, 13.75], 27.125, true],
+    ["back_right_outlet_backer_lower", "electrical_backing", "2x4", "y", [24.95, 12.6875, 13.63], 6.6875, false],
+    ["back_right_outlet_backer_upper", "electrical_backing", "2x4", "y", [24.95, 12.6875, 18.87], 6.6875, false],
     ["front_street_light_backer_bottom", "electrical_backing", "2x4", "x", [3.5, 2.3, 33], 20.5, false],
     ["front_street_light_backer_lower", "electrical_backing", "2x4", "x", [3.5, 2.3, 36.5], 20.5, false],
     ["front_street_light_backer_upper", "electrical_backing", "2x4", "x", [3.5, 2.3, 40], 20.5, false]
 ];
 
 routed_seats = [
-    ["route_brace_fl_bl_for_brace_bl_fr", "brace_fl_bl", [[0, 18.375], [3.5, 15.6953], [3.5, 18.375]], 0.75, 47],
-    ["route_brace_bl_br_for_brace_bl_fr", "brace_bl_br", [[8.0714, 18.375], [3.5, 21.875], [3.5, 18.375]], 0.75, 47],
-    ["route_brace_fr_br_for_brace_bl_fr", "brace_fr_br", [[27.5, 3.5], [24, 6.1797], [24, 3.5]], 0.75, 47],
-    ["route_brace_fl_fr_for_brace_bl_fr", "brace_fl_fr", [[19.4286, 3.5], [24, 0], [24, 3.5]], 0.75, 47]
+    ["route_brace_fl_bl_for_brace_bl_fr", "brace_fl_bl", [[0, 19.375], [3.5, 16.5495], [3.5, 19.375]], 0.75, 47],
+    ["route_brace_bl_br_for_brace_bl_fr", "brace_bl_br", [[7.8355, 19.375], [3.5, 22.875], [3.5, 19.375]], 0.75, 47],
+    ["route_brace_fr_br_for_brace_bl_fr", "brace_fr_br", [[27.5, 3.5], [24, 6.3255], [24, 3.5]], 0.75, 47],
+    ["route_brace_fl_fr_for_brace_bl_fr", "brace_fl_fr", [[19.6645, 3.5], [24, 0], [24, 3.5]], 0.75, 47]
 ];
 
 components = [
-    ["left_tambour_bend_backer", "tambour_supports", "three_quarter_inch_plywood_tambour_bend_backer", "rail_ltam", "narrow_pos", 28.625, [2.75, 5.75, 42.375], [0.75, 1.5, 1.125], [0.72, 0.58, 0.38, 1], "box", [2.75, 5.75, 42.375], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["right_tambour_bend_backer", "tambour_supports", "three_quarter_inch_plywood_tambour_bend_backer", "rail_rtam", "narrow_pos", 28.625, [24, 5.75, 42.375], [0.75, 1.5, 1.125], [0.72, 0.58, 0.38, 1], "box", [24, 5.75, 42.375], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["gusset_back_left", "top_bracing_hardware", "custom_6x6_g90_gusset_with_number_9_pan_head_screws", "post_bl", "wide_neg", 78.25, [0.25, 15.625, 47], [6, 6, 0.184], [0.62, 0.66, 0.68, 1], "primitive_union", [0.25, 15.625, 47], [1, -0, -0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6, 6, 0.074]]], [[[0.75, 0.75, 0.074], "out", 0.045, 0.35], [[0.75, 0.75, 0.119], "out", 0.035, 0.315], [[0.75, 0.75, 0.154], "out", 0.025, 0.252], [[0.75, 0.75, 0.179], "out", 0.005, 0.147], [[0.75, 2.25, 0.074], "out", 0.045, 0.35], [[0.75, 2.25, 0.119], "out", 0.035, 0.315], [[0.75, 2.25, 0.154], "out", 0.025, 0.252], [[0.75, 2.25, 0.179], "out", 0.005, 0.147], [[0.75, 3.75, 0.074], "out", 0.045, 0.35], [[0.75, 3.75, 0.119], "out", 0.035, 0.315], [[0.75, 3.75, 0.154], "out", 0.025, 0.252], [[0.75, 3.75, 0.179], "out", 0.005, 0.147], [[0.75, 5.25, 0.074], "out", 0.045, 0.35], [[0.75, 5.25, 0.119], "out", 0.035, 0.315], [[0.75, 5.25, 0.154], "out", 0.025, 0.252], [[0.75, 5.25, 0.179], "out", 0.005, 0.147], [[2.25, 0.75, 0.074], "out", 0.045, 0.35], [[2.25, 0.75, 0.119], "out", 0.035, 0.315], [[2.25, 0.75, 0.154], "out", 0.025, 0.252], [[2.25, 0.75, 0.179], "out", 0.005, 0.147], [[2.25, 2.25, 0.074], "out", 0.045, 0.35], [[2.25, 2.25, 0.119], "out", 0.035, 0.315], [[2.25, 2.25, 0.154], "out", 0.025, 0.252], [[2.25, 2.25, 0.179], "out", 0.005, 0.147], [[2.25, 3.75, 0.074], "out", 0.045, 0.35], [[2.25, 3.75, 0.119], "out", 0.035, 0.315], [[2.25, 3.75, 0.154], "out", 0.025, 0.252], [[2.25, 3.75, 0.179], "out", 0.005, 0.147], [[2.25, 5.25, 0.074], "out", 0.045, 0.35], [[2.25, 5.25, 0.119], "out", 0.035, 0.315], [[2.25, 5.25, 0.154], "out", 0.025, 0.252], [[2.25, 5.25, 0.179], "out", 0.005, 0.147], [[3.75, 0.75, 0.074], "out", 0.045, 0.35], [[3.75, 0.75, 0.119], "out", 0.035, 0.315], [[3.75, 0.75, 0.154], "out", 0.025, 0.252], [[3.75, 0.75, 0.179], "out", 0.005, 0.147], [[3.75, 2.25, 0.074], "out", 0.045, 0.35], [[3.75, 2.25, 0.119], "out", 0.035, 0.315], [[3.75, 2.25, 0.154], "out", 0.025, 0.252], [[3.75, 2.25, 0.179], "out", 0.005, 0.147], [[3.75, 3.75, 0.074], "out", 0.045, 0.35], [[3.75, 3.75, 0.119], "out", 0.035, 0.315], [[3.75, 3.75, 0.154], "out", 0.025, 0.252], [[3.75, 3.75, 0.179], "out", 0.005, 0.147], [[3.75, 5.25, 0.074], "out", 0.045, 0.35], [[3.75, 5.25, 0.119], "out", 0.035, 0.315], [[3.75, 5.25, 0.154], "out", 0.025, 0.252], [[3.75, 5.25, 0.179], "out", 0.005, 0.147], [[5.25, 0.75, 0.074], "out", 0.045, 0.35], [[5.25, 0.75, 0.119], "out", 0.035, 0.315], [[5.25, 0.75, 0.154], "out", 0.025, 0.252], [[5.25, 0.75, 0.179], "out", 0.005, 0.147], [[5.25, 2.25, 0.074], "out", 0.045, 0.35], [[5.25, 2.25, 0.119], "out", 0.035, 0.315], [[5.25, 2.25, 0.154], "out", 0.025, 0.252], [[5.25, 2.25, 0.179], "out", 0.005, 0.147], [[5.25, 3.75, 0.074], "out", 0.045, 0.35], [[5.25, 3.75, 0.119], "out", 0.035, 0.315], [[5.25, 3.75, 0.154], "out", 0.025, 0.252], [[5.25, 3.75, 0.179], "out", 0.005, 0.147], [[5.25, 5.25, 0.074], "out", 0.045, 0.35], [[5.25, 5.25, 0.119], "out", 0.035, 0.315], [[5.25, 5.25, 0.154], "out", 0.025, 0.252], [[5.25, 5.25, 0.179], "out", 0.005, 0.147]]],
-    ["gusset_front_right", "top_bracing_hardware", "custom_6x6_g90_gusset_with_number_9_pan_head_screws", "post_fr", "wide_pos", 78.25, [21.25, 0.25, 47], [6, 6, 0.184], [0.62, 0.66, 0.68, 1], "primitive_union", [27.25, 0.25, 47], [-1, -0, -0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6, 6, 0.074]]], [[[0.75, 0.75, 0.074], "out", 0.045, 0.35], [[0.75, 0.75, 0.119], "out", 0.035, 0.315], [[0.75, 0.75, 0.154], "out", 0.025, 0.252], [[0.75, 0.75, 0.179], "out", 0.005, 0.147], [[0.75, 2.25, 0.074], "out", 0.045, 0.35], [[0.75, 2.25, 0.119], "out", 0.035, 0.315], [[0.75, 2.25, 0.154], "out", 0.025, 0.252], [[0.75, 2.25, 0.179], "out", 0.005, 0.147], [[0.75, 3.75, 0.074], "out", 0.045, 0.35], [[0.75, 3.75, 0.119], "out", 0.035, 0.315], [[0.75, 3.75, 0.154], "out", 0.025, 0.252], [[0.75, 3.75, 0.179], "out", 0.005, 0.147], [[0.75, 5.25, 0.074], "out", 0.045, 0.35], [[0.75, 5.25, 0.119], "out", 0.035, 0.315], [[0.75, 5.25, 0.154], "out", 0.025, 0.252], [[0.75, 5.25, 0.179], "out", 0.005, 0.147], [[2.25, 0.75, 0.074], "out", 0.045, 0.35], [[2.25, 0.75, 0.119], "out", 0.035, 0.315], [[2.25, 0.75, 0.154], "out", 0.025, 0.252], [[2.25, 0.75, 0.179], "out", 0.005, 0.147], [[2.25, 2.25, 0.074], "out", 0.045, 0.35], [[2.25, 2.25, 0.119], "out", 0.035, 0.315], [[2.25, 2.25, 0.154], "out", 0.025, 0.252], [[2.25, 2.25, 0.179], "out", 0.005, 0.147], [[2.25, 3.75, 0.074], "out", 0.045, 0.35], [[2.25, 3.75, 0.119], "out", 0.035, 0.315], [[2.25, 3.75, 0.154], "out", 0.025, 0.252], [[2.25, 3.75, 0.179], "out", 0.005, 0.147], [[2.25, 5.25, 0.074], "out", 0.045, 0.35], [[2.25, 5.25, 0.119], "out", 0.035, 0.315], [[2.25, 5.25, 0.154], "out", 0.025, 0.252], [[2.25, 5.25, 0.179], "out", 0.005, 0.147], [[3.75, 0.75, 0.074], "out", 0.045, 0.35], [[3.75, 0.75, 0.119], "out", 0.035, 0.315], [[3.75, 0.75, 0.154], "out", 0.025, 0.252], [[3.75, 0.75, 0.179], "out", 0.005, 0.147], [[3.75, 2.25, 0.074], "out", 0.045, 0.35], [[3.75, 2.25, 0.119], "out", 0.035, 0.315], [[3.75, 2.25, 0.154], "out", 0.025, 0.252], [[3.75, 2.25, 0.179], "out", 0.005, 0.147], [[3.75, 3.75, 0.074], "out", 0.045, 0.35], [[3.75, 3.75, 0.119], "out", 0.035, 0.315], [[3.75, 3.75, 0.154], "out", 0.025, 0.252], [[3.75, 3.75, 0.179], "out", 0.005, 0.147], [[3.75, 5.25, 0.074], "out", 0.045, 0.35], [[3.75, 5.25, 0.119], "out", 0.035, 0.315], [[3.75, 5.25, 0.154], "out", 0.025, 0.252], [[3.75, 5.25, 0.179], "out", 0.005, 0.147], [[5.25, 0.75, 0.074], "out", 0.045, 0.35], [[5.25, 0.75, 0.119], "out", 0.035, 0.315], [[5.25, 0.75, 0.154], "out", 0.025, 0.252], [[5.25, 0.75, 0.179], "out", 0.005, 0.147], [[5.25, 2.25, 0.074], "out", 0.045, 0.35], [[5.25, 2.25, 0.119], "out", 0.035, 0.315], [[5.25, 2.25, 0.154], "out", 0.025, 0.252], [[5.25, 2.25, 0.179], "out", 0.005, 0.147], [[5.25, 3.75, 0.074], "out", 0.045, 0.35], [[5.25, 3.75, 0.119], "out", 0.035, 0.315], [[5.25, 3.75, 0.154], "out", 0.025, 0.252], [[5.25, 3.75, 0.179], "out", 0.005, 0.147], [[5.25, 5.25, 0.074], "out", 0.045, 0.35], [[5.25, 5.25, 0.119], "out", 0.035, 0.315], [[5.25, 5.25, 0.154], "out", 0.025, 0.252], [[5.25, 5.25, 0.179], "out", 0.005, 0.147]]],
-    ["roof_shim_brace_fl_fr", "roof_shims", "continuous_pt_roof_shim_brace_fl_fr", "brace_fl_fr", "narrow_pos", 0, [0, 0, 47], [21.25, 3.5, 0.25], [0.44, 0.26, 0.11, 1], "box", [0, 0, 47], [1, 0, 0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["roof_shim_brace_fl_bl", "roof_shims", "continuous_pt_roof_shim_brace_fl_bl", "brace_fl_bl", "narrow_pos", 0, [0, 3.5, 47], [3.5, 12.125, 0.25], [0.44, 0.26, 0.11, 1], "box", [0, 3.5, 47], [0, 1, 0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["roof_shim_brace_bl_br", "roof_shims", "continuous_pt_roof_shim_brace_bl_br", "brace_bl_br", "narrow_pos", 2.75, [6.25, 18.375, 47], [21.25, 3.5, 0.25], [0.44, 0.26, 0.11, 1], "box", [6.25, 18.375, 47], [1, 0, 0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["roof_shim_brace_fr_br", "roof_shims", "continuous_pt_roof_shim_brace_fr_br", "brace_fr_br", "narrow_pos", 2.75, [24, 6.25, 47], [3.5, 12.125, 0.25], [0.44, 0.26, 0.11, 1], "box", [24, 6.25, 47], [0, 1, 0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["low_voltage_termination_box", "low_voltage_fittings", "carlon_e987n_junction_box", "front_center_rail", "wide_neg", 0, [10, 2.1875, 11], [4, 4, 4], [0.55, 0.57, 0.58, 1], "primitive_union", [10, 6.1875, 11], [0, 0, 1], [1, 0, 0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [4, 4, 3.875]], [[0, 0, 3.875], [4, 4, 0.125]]], []],
-    ["low_voltage_input_adapter", "low_voltage_fittings", "carlon_e943e_male_terminal_adapter", "front_center_rail", "wide_neg", 0, [11.355, 3.5425, 9.53], [1.29, 1.29, 1.47], [0.55, 0.57, 0.58, 1], "primitive_union", [12.645, 4.8325, 11], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.645, 0.645], "along", 0.553, 1.29], [[0.553, 0.645, 0.645], "along", 0.917, 1.064]]],
-    ["low_voltage_cable_gland_1", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [10.3, 2.4375, 10.25], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [11.3, 3.4375, 11], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]]],
-    ["low_voltage_cable_gland_2", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [11.5, 2.4375, 10.25], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [12.5, 3.4375, 11], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]]],
-    ["low_voltage_cable_gland_3", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [12.7, 2.4375, 10.25], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [13.7, 3.4375, 11], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]]],
-    ["front_street_light_base_box", "electrical", "commercial_electric_wrb550b_outlet_box", "front_street_light_backer_lower", "narrow_neg", 10.25, [11.65, 0.7, 37.3], [4.2, 1.6, 5.4], [0.3, 0.16, 0.07, 1], "primitive_union", [11.65, 2.3, 37.3], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[2.1, 2.7, 0], "out", 1.6, 4], [[2.1, 0, 0.8], "across", 0.7, 1.15], [[2.1, 4.7, 0.8], "across", 0.7, 1.15], [[0, 2.7, 0.8], "along", 0.7, 1.15], [[3.5, 2.7, 0.8], "along", 0.7, 1.15], [[2.1, 5.3, 0.8], "across", 0.1, 1.3], [[0, 2.7, 0.8], "along", 0.1, 1.3], [[4.1, 2.7, 0.8], "along", 0.1, 1.3], [[2.1, 2.7, 0], "out", 0.1, 1.3]]],
-    ["front_street_light_extension_ring", "electrical", "commercial_electric_wre450g_extension_ring", "front_street_light_backer_lower", "narrow_neg", 10.25, [11.55, -1, 37.8], [4.4, 1.7, 4.4], [0.55, 0.57, 0.58, 1], "primitive_union", [11.55, 0.7, 37.8], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[2.2, 2.2, 0], "out", 1.7, 4], [[2.2, 0, 0.85], "across", 0.7, 1.15], [[2.2, 3.7, 0.85], "across", 0.7, 1.15], [[0, 2.2, 0.85], "along", 0.7, 1.15], [[3.7, 2.2, 0.85], "along", 0.7, 1.15], [[2.2, 0, 0.85], "across", 0.1, 1.3], [[2.2, 4.3, 0.85], "across", 0.1, 1.3], [[0, 2.2, 0.85], "along", 0.1, 1.3], [[4.3, 2.2, 0.85], "along", 0.1, 1.3]]],
-    ["front_street_light", "electrical", "generic_downward_street_light", "front_street_light_backer_lower", "narrow_neg", 10.25, [4.75, -5, 38], [18, 4, 4], [0.08, 0.09, 0.1, 1], "box", [4.75, -1, 38], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["front_ev_charger_plug", "electrical", "ev_charger_plug", "front_center_rail", "wide_pos", 24.625, [11.75, 9.6875, 28.2099], [4, 8.6, 10.1651], [0.9137, 0.1137, 0.1765, 1], "mesh", [11.75, 9.6875, 28.2099], [0, 0, 1], [1, 0, 0], [0, 1, 0], "ev_charger_plug.stl", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["front_ev_charger_body", "electrical", "ev_charger_body", "front_center_rail", "wide_pos", 0, [9.85, 9.6875, 22.35], [7.8, 3.9, 7.9], [0.055, 0.055, 0.06, 1], "mesh", [9.85, 9.6875, 22.35], [0, 0, 1], [1, 0, 0], [0, 1, 0], "wallbox_pulsar_plus_body.stl", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["front_wifi_access_point", "electrical", "wifi_access_point", "right_center_rail", "narrow_pos", 24.125, [24.1, 11.6875, 32.475], [3.3, 1.34, 5.4], [0.74, 0.78, 0.8, 1], "box", [24.1, 11.6875, 32.475], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []],
-    ["back_right_outlet", "electrical", "carlon_e980dfn_outlet_box", "back_right_outlet_backer_lower", "narrow_pos", 5.1875, [26.45, 15.475, 15.15], [2.3, 2.8, 5.7], [0.55, 0.57, 0.58, 1], "primitive_union", [26.45, 18.275, 15.15], [0, 0, 1], [-0, -1, -0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0.58, 0, 0], [4.54, 2.8, 2.3]], [[0, 0.95, 0], [0.58, 0.9, 0.3]], [[5.12, 0.95, 0], [0.58, 0.9, 0.3]]], [[[0, 1.4, 0.566], "along", 0.58, 1.15]]],
-    ["back_right_outlet_cover", "electrical", "intermatic_wp5100bl_in_use_cover", "back_right_outlet_backer_lower", "narrow_pos", 5.1875, [28.75, 14.545, 14.835], [2.75, 4.66, 6.33], [0.03, 0.03, 0.03, 1], "primitive_union", [28.75, 19.205, 14.835], [0, 0, 1], [-0, -1, -0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6.33, 4.66, 0.18]], [[0.22, 0.18, 0.18], [5.89, 4.3, 2.57]], [[0, 2, 2.45], [0.32, 0.66, 0.3]]], [[[0.2, 0.14, 0.35], "along", 5.93, 0.28]]],
-    ["power_junction_box", "electrical_conduit_fittings", "carlon_e987n_junction_box", "front_center_rail", "wide_neg", 0, [15, 2.1875, 6.5383], [4, 4, 4], [0.55, 0.57, 0.58, 1], "primitive_union", [15, 6.1875, 6.5383], [0, 0, 1], [1, 0, 0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [4, 4, 3.875]], [[0, 0, 3.875], [4, 4, 0.125]]], []],
-    ["power_ev_t_body", "electrical_conduit_fittings", "carlon_e983g_conduit_t_body", "front_center_rail", "narrow_pos", 0, [13.975, 9.0687, 4.5019], [2.75, 3.375, 8.6562], [0.55, 0.57, 0.58, 1], "primitive_union", [13.975, 12.4437, 13.1581], [-0, -0, -1], [-0, -1, -0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [8.6562, 2.3125, 2.75]], [[2.9531, 2.3125, 0], [2.75, 1.0625, 2.75]]], []],
-    ["power_junction_input_adapter", "electrical_conduit_fittings", "carlon_e996g_box_adapter", "front_center_rail", "wide_neg", 0, [14.375, 6.1875, 7.855], [1.95, 1.25, 1.95], [0.55, 0.57, 0.58, 1], "primitive_union", [14.375, 6.1875, 7.855], [-0, 1, -0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.975, 0.975], "along", 1.25, 1.66], [[0.9, 0.975, 0.975], "along", 0.35, 1.95]]],
-    ["power_junction_input_coupling", "electrical_conduit_fittings", "carlon_e940g_coupling", "front_center_rail", "wide_neg", 0, [14.3578, 6.8125, 7.8378], [1.9844, 2.125, 1.9844], [0.55, 0.57, 0.58, 1], "primitive_union", [14.3578, 6.8125, 7.8378], [-0, 1, -0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.9922, 0.9922], "along", 2.125, 1.9844]]],
-    ["power_ev_reducer", "electrical_conduit_fittings", "carlon_e950gf_reducer_bushing", "front_center_rail", "narrow_pos", 0, [14.52, 10.4575, 13.1581], [1.66, 1.66, 1.1406], [0.55, 0.57, 0.58, 1], "primitive_union", [14.52, 10.4575, 13.1581], [0, 0, 1], [0, 1, 0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.83, 0.83], "along", 0.75, 1.66], [[0.75, 0.83, 0.83], "along", 0.3906, 1.315]]],
-    ["power_junction_light_adapter", "electrical_conduit_fittings", "carlon_e996d_box_adapter", "front_center_rail", "wide_neg", 0, [19, 2.6325, 7.9833], [0.85, 1.11, 1.11], [0.55, 0.57, 0.58, 1], "primitive_union", [19, 3.7425, 9.0933], [1, 0, 0], [-0, -0, -1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.555, 0.555], "along", 0.85, 0.84], [[0.612, 0.555, 0.555], "along", 0.238, 1.11]]],
-    ["power_junction_light_coupling", "electrical_conduit_fittings", "carlon_e940d_coupling", "front_center_rail", "wide_neg", 0, [19.425, 2.6328, 7.9836], [1.5, 1.1094, 1.1094], [0.55, 0.57, 0.58, 1], "primitive_union", [19.425, 3.7422, 9.093], [1, 0, 0], [-0, -0, -1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5547, 0.5547], "along", 1.5, 1.1094]]],
-    ["power_junction_outlet_adapter", "electrical_conduit_fittings", "carlon_e996d_box_adapter", "front_center_rail", "wide_neg", 0, [19, 4.6325, 7.9833], [0.85, 1.11, 1.11], [0.55, 0.57, 0.58, 1], "primitive_union", [19, 5.7425, 9.0933], [1, 0, 0], [-0, -0, -1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.555, 0.555], "along", 0.85, 0.84], [[0.612, 0.555, 0.555], "along", 0.238, 1.11]]],
-    ["power_junction_outlet_coupling", "electrical_conduit_fittings", "carlon_e940d_coupling", "front_center_rail", "wide_neg", 0, [19.425, 4.6328, 7.9836], [1.5, 1.1094, 1.1094], [0.55, 0.57, 0.58, 1], "primitive_union", [19.425, 5.7422, 9.093], [1, 0, 0], [-0, -0, -1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5547, 0.5547], "along", 1.5, 1.1094]]],
-    ["tambour_ceiling_panel", "tambour_guard", "quarter_inch_exterior_plywood_panel", "brace_fl_bl", "wide_pos", 6.1875, [3.5, 9.6875, 43.25], [20.5, 7.9375, 0.25], [0.72, 0.58, 0.38, 1], "box", [3.5, 9.6875, 43.25], [0, 1, 0], [0, 0, 1], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], []]
+    ["left_tambour_bend_backer", "tambour_supports", "three_quarter_inch_plywood_tambour_bend_backer", "rail_ltam", "narrow_pos", 28.625, [2.75, 5.625, 42.375], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [2.75, 5.625, 42.375], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["right_tambour_bend_backer", "tambour_supports", "three_quarter_inch_plywood_tambour_bend_backer", "rail_rtam", "narrow_pos", 28.625, [24, 5.625, 42.375], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [24, 5.625, 42.375], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["left_tambour_vertical_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_ltam", "narrow_pos", 0, [2.75, 4.125, 13.75], [0.75, 1.75, 29.75], [0.72, 0.58, 0.38, 1], "box", [2.75, 4.125, 13.75], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["right_tambour_vertical_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_rtam", "narrow_pos", 0, [24, 4.125, 13.75], [0.75, 1.75, 29.75], [0.72, 0.58, 0.38, 1], "box", [24, 4.125, 13.75], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["gusset_back_left", "top_bracing_hardware", "custom_6x6_g90_gusset_with_number_9_pan_head_screws", "post_bl", "wide_neg", 78.25, [0.25, 16.625, 47], [6, 6, 0.184], [0.62, 0.66, 0.68, 1], "primitive_union", [0.25, 16.625, 47], [1, -0, -0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6, 6, 0.074]]], [[[0.75, 0.75, 0.074], "out", 0.045, 0.35], [[0.75, 0.75, 0.119], "out", 0.035, 0.315], [[0.75, 0.75, 0.154], "out", 0.025, 0.252], [[0.75, 0.75, 0.179], "out", 0.005, 0.147], [[0.75, 2.25, 0.074], "out", 0.045, 0.35], [[0.75, 2.25, 0.119], "out", 0.035, 0.315], [[0.75, 2.25, 0.154], "out", 0.025, 0.252], [[0.75, 2.25, 0.179], "out", 0.005, 0.147], [[0.75, 3.75, 0.074], "out", 0.045, 0.35], [[0.75, 3.75, 0.119], "out", 0.035, 0.315], [[0.75, 3.75, 0.154], "out", 0.025, 0.252], [[0.75, 3.75, 0.179], "out", 0.005, 0.147], [[0.75, 5.25, 0.074], "out", 0.045, 0.35], [[0.75, 5.25, 0.119], "out", 0.035, 0.315], [[0.75, 5.25, 0.154], "out", 0.025, 0.252], [[0.75, 5.25, 0.179], "out", 0.005, 0.147], [[2.25, 0.75, 0.074], "out", 0.045, 0.35], [[2.25, 0.75, 0.119], "out", 0.035, 0.315], [[2.25, 0.75, 0.154], "out", 0.025, 0.252], [[2.25, 0.75, 0.179], "out", 0.005, 0.147], [[2.25, 2.25, 0.074], "out", 0.045, 0.35], [[2.25, 2.25, 0.119], "out", 0.035, 0.315], [[2.25, 2.25, 0.154], "out", 0.025, 0.252], [[2.25, 2.25, 0.179], "out", 0.005, 0.147], [[2.25, 3.75, 0.074], "out", 0.045, 0.35], [[2.25, 3.75, 0.119], "out", 0.035, 0.315], [[2.25, 3.75, 0.154], "out", 0.025, 0.252], [[2.25, 3.75, 0.179], "out", 0.005, 0.147], [[2.25, 5.25, 0.074], "out", 0.045, 0.35], [[2.25, 5.25, 0.119], "out", 0.035, 0.315], [[2.25, 5.25, 0.154], "out", 0.025, 0.252], [[2.25, 5.25, 0.179], "out", 0.005, 0.147], [[3.75, 0.75, 0.074], "out", 0.045, 0.35], [[3.75, 0.75, 0.119], "out", 0.035, 0.315], [[3.75, 0.75, 0.154], "out", 0.025, 0.252], [[3.75, 0.75, 0.179], "out", 0.005, 0.147], [[3.75, 2.25, 0.074], "out", 0.045, 0.35], [[3.75, 2.25, 0.119], "out", 0.035, 0.315], [[3.75, 2.25, 0.154], "out", 0.025, 0.252], [[3.75, 2.25, 0.179], "out", 0.005, 0.147], [[3.75, 3.75, 0.074], "out", 0.045, 0.35], [[3.75, 3.75, 0.119], "out", 0.035, 0.315], [[3.75, 3.75, 0.154], "out", 0.025, 0.252], [[3.75, 3.75, 0.179], "out", 0.005, 0.147], [[3.75, 5.25, 0.074], "out", 0.045, 0.35], [[3.75, 5.25, 0.119], "out", 0.035, 0.315], [[3.75, 5.25, 0.154], "out", 0.025, 0.252], [[3.75, 5.25, 0.179], "out", 0.005, 0.147], [[5.25, 0.75, 0.074], "out", 0.045, 0.35], [[5.25, 0.75, 0.119], "out", 0.035, 0.315], [[5.25, 0.75, 0.154], "out", 0.025, 0.252], [[5.25, 0.75, 0.179], "out", 0.005, 0.147], [[5.25, 2.25, 0.074], "out", 0.045, 0.35], [[5.25, 2.25, 0.119], "out", 0.035, 0.315], [[5.25, 2.25, 0.154], "out", 0.025, 0.252], [[5.25, 2.25, 0.179], "out", 0.005, 0.147], [[5.25, 3.75, 0.074], "out", 0.045, 0.35], [[5.25, 3.75, 0.119], "out", 0.035, 0.315], [[5.25, 3.75, 0.154], "out", 0.025, 0.252], [[5.25, 3.75, 0.179], "out", 0.005, 0.147], [[5.25, 5.25, 0.074], "out", 0.045, 0.35], [[5.25, 5.25, 0.119], "out", 0.035, 0.315], [[5.25, 5.25, 0.154], "out", 0.025, 0.252], [[5.25, 5.25, 0.179], "out", 0.005, 0.147]], false],
+    ["gusset_front_right", "top_bracing_hardware", "custom_6x6_g90_gusset_with_number_9_pan_head_screws", "post_fr", "wide_pos", 78.25, [21.25, 0.25, 47], [6, 6, 0.184], [0.62, 0.66, 0.68, 1], "primitive_union", [27.25, 0.25, 47], [-1, -0, -0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6, 6, 0.074]]], [[[0.75, 0.75, 0.074], "out", 0.045, 0.35], [[0.75, 0.75, 0.119], "out", 0.035, 0.315], [[0.75, 0.75, 0.154], "out", 0.025, 0.252], [[0.75, 0.75, 0.179], "out", 0.005, 0.147], [[0.75, 2.25, 0.074], "out", 0.045, 0.35], [[0.75, 2.25, 0.119], "out", 0.035, 0.315], [[0.75, 2.25, 0.154], "out", 0.025, 0.252], [[0.75, 2.25, 0.179], "out", 0.005, 0.147], [[0.75, 3.75, 0.074], "out", 0.045, 0.35], [[0.75, 3.75, 0.119], "out", 0.035, 0.315], [[0.75, 3.75, 0.154], "out", 0.025, 0.252], [[0.75, 3.75, 0.179], "out", 0.005, 0.147], [[0.75, 5.25, 0.074], "out", 0.045, 0.35], [[0.75, 5.25, 0.119], "out", 0.035, 0.315], [[0.75, 5.25, 0.154], "out", 0.025, 0.252], [[0.75, 5.25, 0.179], "out", 0.005, 0.147], [[2.25, 0.75, 0.074], "out", 0.045, 0.35], [[2.25, 0.75, 0.119], "out", 0.035, 0.315], [[2.25, 0.75, 0.154], "out", 0.025, 0.252], [[2.25, 0.75, 0.179], "out", 0.005, 0.147], [[2.25, 2.25, 0.074], "out", 0.045, 0.35], [[2.25, 2.25, 0.119], "out", 0.035, 0.315], [[2.25, 2.25, 0.154], "out", 0.025, 0.252], [[2.25, 2.25, 0.179], "out", 0.005, 0.147], [[2.25, 3.75, 0.074], "out", 0.045, 0.35], [[2.25, 3.75, 0.119], "out", 0.035, 0.315], [[2.25, 3.75, 0.154], "out", 0.025, 0.252], [[2.25, 3.75, 0.179], "out", 0.005, 0.147], [[2.25, 5.25, 0.074], "out", 0.045, 0.35], [[2.25, 5.25, 0.119], "out", 0.035, 0.315], [[2.25, 5.25, 0.154], "out", 0.025, 0.252], [[2.25, 5.25, 0.179], "out", 0.005, 0.147], [[3.75, 0.75, 0.074], "out", 0.045, 0.35], [[3.75, 0.75, 0.119], "out", 0.035, 0.315], [[3.75, 0.75, 0.154], "out", 0.025, 0.252], [[3.75, 0.75, 0.179], "out", 0.005, 0.147], [[3.75, 2.25, 0.074], "out", 0.045, 0.35], [[3.75, 2.25, 0.119], "out", 0.035, 0.315], [[3.75, 2.25, 0.154], "out", 0.025, 0.252], [[3.75, 2.25, 0.179], "out", 0.005, 0.147], [[3.75, 3.75, 0.074], "out", 0.045, 0.35], [[3.75, 3.75, 0.119], "out", 0.035, 0.315], [[3.75, 3.75, 0.154], "out", 0.025, 0.252], [[3.75, 3.75, 0.179], "out", 0.005, 0.147], [[3.75, 5.25, 0.074], "out", 0.045, 0.35], [[3.75, 5.25, 0.119], "out", 0.035, 0.315], [[3.75, 5.25, 0.154], "out", 0.025, 0.252], [[3.75, 5.25, 0.179], "out", 0.005, 0.147], [[5.25, 0.75, 0.074], "out", 0.045, 0.35], [[5.25, 0.75, 0.119], "out", 0.035, 0.315], [[5.25, 0.75, 0.154], "out", 0.025, 0.252], [[5.25, 0.75, 0.179], "out", 0.005, 0.147], [[5.25, 2.25, 0.074], "out", 0.045, 0.35], [[5.25, 2.25, 0.119], "out", 0.035, 0.315], [[5.25, 2.25, 0.154], "out", 0.025, 0.252], [[5.25, 2.25, 0.179], "out", 0.005, 0.147], [[5.25, 3.75, 0.074], "out", 0.045, 0.35], [[5.25, 3.75, 0.119], "out", 0.035, 0.315], [[5.25, 3.75, 0.154], "out", 0.025, 0.252], [[5.25, 3.75, 0.179], "out", 0.005, 0.147], [[5.25, 5.25, 0.074], "out", 0.045, 0.35], [[5.25, 5.25, 0.119], "out", 0.035, 0.315], [[5.25, 5.25, 0.154], "out", 0.025, 0.252], [[5.25, 5.25, 0.179], "out", 0.005, 0.147]], false],
+    ["roof_shim_brace_fl_fr", "roof_shims", "continuous_pt_roof_shim_brace_fl_fr", "brace_fl_fr", "narrow_pos", 0, [0, 0, 47], [21.25, 3.5, 0.25], [0.44, 0.26, 0.11, 1], "box", [0, 0, 47], [1, 0, 0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["roof_shim_brace_fl_bl", "roof_shims", "continuous_pt_roof_shim_brace_fl_bl", "brace_fl_bl", "narrow_pos", 0, [0, 3.5, 47], [3.5, 13.125, 0.25], [0.44, 0.26, 0.11, 1], "box", [0, 3.5, 47], [0, 1, 0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["roof_shim_brace_bl_br", "roof_shims", "continuous_pt_roof_shim_brace_bl_br", "brace_bl_br", "narrow_pos", 2.75, [6.25, 19.375, 47], [21.25, 3.5, 0.25], [0.44, 0.26, 0.11, 1], "box", [6.25, 19.375, 47], [1, 0, 0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["roof_shim_brace_fr_br", "roof_shims", "continuous_pt_roof_shim_brace_fr_br", "brace_fr_br", "narrow_pos", 2.75, [24, 6.25, 47], [3.5, 13.125, 0.25], [0.44, 0.26, 0.11, 1], "box", [24, 6.25, 47], [0, 1, 0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["low_voltage_termination_box", "low_voltage_fittings", "carlon_e987n_junction_box", "front_center_rail", "wide_neg", 0, [8.6569, 3.1875, 11.3825], [4, 4, 4], [0.55, 0.57, 0.58, 1], "primitive_union", [8.6569, 7.1875, 11.3825], [0, 0, 1], [1, 0, 0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [4, 4, 3.875]], [[0, 0, 3.875], [4, 4, 0.125]]], [], false],
+    ["low_voltage_input_adapter", "low_voltage_fittings", "carlon_e943e_male_terminal_adapter", "front_center_rail", "wide_neg", 0, [10.0119, 5.605, 9.9125], [1.29, 1.29, 1.47], [0.55, 0.57, 0.58, 1], "primitive_union", [11.3019, 6.895, 11.3825], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.645, 0.645], "along", 0.553, 1.29], [[0.553, 0.645, 0.645], "along", 0.917, 1.064]], false],
+    ["low_voltage_cable_gland_1", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [8.9569, 3.4375, 10.6325], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [9.9569, 4.4375, 11.3825], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]], false],
+    ["low_voltage_cable_gland_2", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [10.1569, 3.4375, 10.6325], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [11.1569, 4.4375, 11.3825], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]], false],
+    ["low_voltage_cable_gland_3", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [11.3569, 3.4375, 10.6325], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [12.3569, 4.4375, 11.3825], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]], false],
+    ["front_street_light_base_box", "electrical", "commercial_electric_wrb550b_outlet_box", "front_street_light_backer_lower", "narrow_neg", 10.25, [11.65, 0.7, 37.3], [4.2, 1.6, 5.4], [0.3, 0.16, 0.07, 1], "primitive_union", [11.65, 2.3, 37.3], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[2.1, 2.7, 0], "out", 1.6, 4], [[2.1, 0, 0.8], "across", 0.7, 1.15], [[2.1, 4.7, 0.8], "across", 0.7, 1.15], [[0, 2.7, 0.8], "along", 0.7, 1.15], [[3.5, 2.7, 0.8], "along", 0.7, 1.15], [[2.1, 5.3, 0.8], "across", 0.1, 1.3], [[0, 2.7, 0.8], "along", 0.1, 1.3], [[4.1, 2.7, 0.8], "along", 0.1, 1.3], [[2.1, 2.7, 0], "out", 0.1, 1.3]], false],
+    ["front_street_light_extension_ring", "electrical", "commercial_electric_wre450g_extension_ring", "front_street_light_backer_lower", "narrow_neg", 10.25, [11.55, -1, 37.8], [4.4, 1.7, 4.4], [0.55, 0.57, 0.58, 1], "primitive_union", [11.55, 0.7, 37.8], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[2.2, 2.2, 0], "out", 1.7, 4], [[2.2, 0, 0.85], "across", 0.7, 1.15], [[2.2, 3.7, 0.85], "across", 0.7, 1.15], [[0, 2.2, 0.85], "along", 0.7, 1.15], [[3.7, 2.2, 0.85], "along", 0.7, 1.15], [[2.2, 0, 0.85], "across", 0.1, 1.3], [[2.2, 4.3, 0.85], "across", 0.1, 1.3], [[0, 2.2, 0.85], "along", 0.1, 1.3], [[4.3, 2.2, 0.85], "along", 0.1, 1.3]], false],
+    ["front_street_light", "electrical", "generic_downward_street_light", "front_street_light_backer_lower", "narrow_neg", 10.25, [4.75, -5, 38], [18, 4, 4], [0.08, 0.09, 0.1, 1], "box", [4.75, -1, 38], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["front_ev_charger_plug", "electrical", "ev_charger_plug", "front_center_rail", "wide_pos", 24.625, [11.75, 10.6875, 28.2099], [4, 8.6, 10.1651], [0.9137, 0.1137, 0.1765, 1], "mesh", [11.75, 10.6875, 28.2099], [0, 0, 1], [1, 0, 0], [0, 1, 0], "ev_charger_plug.stl", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["front_ev_charger_body", "electrical", "ev_charger_body", "front_center_rail", "wide_pos", 0, [9.85, 10.6875, 22.35], [7.8, 3.9, 7.9], [0.055, 0.055, 0.06, 1], "mesh", [9.85, 10.6875, 22.35], [0, 0, 1], [1, 0, 0], [0, 1, 0], "wallbox_pulsar_plus_body.stl", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["front_wifi_access_point", "electrical", "wifi_access_point", "right_center_rail", "narrow_pos", 24.125, [24.1, 12.6875, 32.475], [3.3, 1.34, 5.4], [0.74, 0.78, 0.8, 1], "box", [24.1, 12.6875, 32.475], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["back_right_outlet", "electrical", "carlon_e980dfn_outlet_box", "back_right_outlet_backer_lower", "narrow_pos", 5.1875, [26.45, 16.475, 15.15], [2.3, 2.8, 5.7], [0.55, 0.57, 0.58, 1], "primitive_union", [26.45, 19.275, 15.15], [0, 0, 1], [-0, -1, -0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0.58, 0, 0], [4.54, 2.8, 2.3]], [[0, 0.95, 0], [0.58, 0.9, 0.3]], [[5.12, 0.95, 0], [0.58, 0.9, 0.3]]], [[[0, 1.4, 0.566], "along", 0.58, 1.15]], false],
+    ["back_right_outlet_cover", "electrical", "intermatic_wp5100bl_in_use_cover", "back_right_outlet_backer_lower", "narrow_pos", 5.1875, [28.75, 15.545, 14.835], [2.75, 4.66, 6.33], [0.03, 0.03, 0.03, 1], "primitive_union", [28.75, 20.205, 14.835], [0, 0, 1], [-0, -1, -0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6.33, 4.66, 0.18]], [[0.22, 0.18, 0.18], [5.89, 4.3, 2.57]], [[0, 2, 2.45], [0.32, 0.66, 0.3]]], [[[0.2, 0.14, 0.35], "along", 5.93, 0.28]], false],
+    ["power_junction_box", "electrical_conduit_fittings", "carlon_e987n_junction_box", "front_center_rail", "wide_neg", 0, [13, 3.1875, 6.5105], [4, 4, 4], [0.55, 0.57, 0.58, 1], "primitive_union", [13, 7.1875, 6.5105], [0, 0, 1], [1, 0, 0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [4, 4, 3.875]], [[0, 0, 3.875], [4, 4, 0.125]]], [], false],
+    ["power_ev_t_body", "electrical_conduit_fittings", "carlon_e983g_conduit_t_body", "front_center_rail", "narrow_pos", 0, [13.975, 10.0687, 4.5019], [2.75, 3.375, 8.6562], [0.55, 0.57, 0.58, 1], "primitive_union", [13.975, 13.4437, 13.1581], [-0, -0, -1], [-0, -1, -0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [8.6562, 2.3125, 2.75]], [[2.9531, 2.3125, 0], [2.75, 1.0625, 2.75]]], [], false],
+    ["power_junction_input_adapter", "electrical_conduit_fittings", "carlon_e996g_box_adapter", "front_center_rail", "wide_neg", 0, [14.375, 7.1875, 7.855], [1.95, 1.25, 1.95], [0.55, 0.57, 0.58, 1], "primitive_union", [14.375, 7.1875, 7.855], [-0, 1, -0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.975, 0.975], "along", 1.25, 1.66], [[0.9, 0.975, 0.975], "along", 0.35, 1.95]], false],
+    ["power_junction_input_coupling", "electrical_conduit_fittings", "carlon_e940g_coupling", "front_center_rail", "wide_neg", 0, [14.3578, 7.8125, 7.8378], [1.9844, 2.125, 1.9844], [0.55, 0.57, 0.58, 1], "primitive_union", [14.3578, 7.8125, 7.8378], [-0, 1, -0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.9922, 0.9922], "along", 2.125, 1.9844]], false],
+    ["power_ev_reducer", "electrical_conduit_fittings", "carlon_e950gf_reducer_bushing", "front_center_rail", "narrow_pos", 0, [14.52, 11.4575, 13.1581], [1.66, 1.66, 1.1406], [0.55, 0.57, 0.58, 1], "primitive_union", [14.52, 11.4575, 13.1581], [0, 0, 1], [0, 1, 0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.83, 0.83], "along", 0.75, 1.66], [[0.75, 0.83, 0.83], "along", 0.3906, 1.315]], false],
+    ["power_junction_light_adapter", "electrical_conduit_fittings", "carlon_e996d_box_adapter", "front_center_rail", "wide_neg", 0, [17, 3.6325, 7.9555], [0.85, 1.11, 1.11], [0.55, 0.57, 0.58, 1], "primitive_union", [17, 4.7425, 9.0655], [1, 0, 0], [-0, -0, -1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.555, 0.555], "along", 0.85, 0.84], [[0.612, 0.555, 0.555], "along", 0.238, 1.11]], false],
+    ["power_junction_light_coupling", "electrical_conduit_fittings", "carlon_e940d_coupling", "front_center_rail", "wide_neg", 0, [17.425, 3.6328, 7.9558], [1.5, 1.1094, 1.1094], [0.55, 0.57, 0.58, 1], "primitive_union", [17.425, 4.7422, 9.0652], [1, 0, 0], [-0, -0, -1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5547, 0.5547], "along", 1.5, 1.1094]], false],
+    ["power_junction_outlet_adapter", "electrical_conduit_fittings", "carlon_e996d_box_adapter", "front_center_rail", "wide_neg", 0, [17, 5.6325, 7.9555], [0.85, 1.11, 1.11], [0.55, 0.57, 0.58, 1], "primitive_union", [17, 6.7425, 9.0655], [1, 0, 0], [-0, -0, -1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.555, 0.555], "along", 0.85, 0.84], [[0.612, 0.555, 0.555], "along", 0.238, 1.11]], false],
+    ["power_junction_outlet_coupling", "electrical_conduit_fittings", "carlon_e940d_coupling", "front_center_rail", "wide_neg", 0, [17.425, 5.6328, 7.9558], [1.5, 1.1094, 1.1094], [0.55, 0.57, 0.58, 1], "primitive_union", [17.425, 6.7422, 9.0652], [1, 0, 0], [-0, -0, -1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5547, 0.5547], "along", 1.5, 1.1094]], false],
+    ["low_voltage_ground_sweep_elbow_1", "low_voltage_fittings", "carlon_ua7aeb_3_4_45_belled_elbow", "post_fr", "narrow_pos", 0, [11.6036, 5.6875, 0.3414], [2.9589, 1.125, 5.7603], [0.55, 0.57, 0.58, 1], "primitive_union", [11.6036, 6.8125, 0.3414], [0, 0, 1], [0, -1, 0], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5625, 2.3964], "along", 1.5, 1.125], [[1.5, 0.5625, 2.3964], [0.9999, 0, -0.0109], 0.0982, 1.05], [[1.5982, 0.5625, 2.3953], [0.9995, 0, -0.0327], 0.0982, 1.05], [[1.6963, 0.5625, 2.3921], [0.9985, 0, -0.0545], 0.0982, 1.05], [[1.7943, 0.5625, 2.3867], [0.9971, 0, -0.0763], 0.0982, 1.05], [[1.8922, 0.5625, 2.3792], [0.9952, 0, -0.098], 0.0982, 1.05], [[1.9899, 0.5625, 2.3696], [0.9928, 0, -0.1197], 0.0982, 1.05], [[2.0874, 0.5625, 2.3579], [0.99, 0, -0.1413], 0.0982, 1.05], [[2.1846, 0.5625, 2.344], [0.9866, 0, -0.1629], 0.0982, 1.05], [[2.2814, 0.5625, 2.328], [0.9829, 0, -0.1844], 0.0982, 1.05], [[2.3779, 0.5625, 2.3099], [0.9786, 0, -0.2058], 0.0982, 1.05], [[2.474, 0.5625, 2.2897], [0.9739, 0, -0.2271], 0.0982, 1.05], [[2.5696, 0.5625, 2.2674], [0.9687, 0, -0.2483], 0.0982, 1.05], [[2.6647, 0.5625, 2.243], [0.963, 0, -0.2693], 0.0982, 1.05], [[2.7592, 0.5625, 2.2166], [0.9569, 0, -0.2903], 0.0982, 1.05], [[2.8532, 0.5625, 2.1881], [0.9504, 0, -0.3111], 0.0982, 1.05], [[2.9465, 0.5625, 2.1575], [0.9434, 0, -0.3317], 0.0982, 1.05], [[3.0391, 0.5625, 2.125], [0.9359, 0, -0.3523], 0.0982, 1.05], [[3.131, 0.5625, 2.0904], [0.928, 0, -0.3726], 0.0982, 1.05], [[3.2221, 0.5625, 2.0538], [0.9197, 0, -0.3927], 0.0982, 1.05], [[3.3124, 0.5625, 2.0153], [0.9109, 0, -0.4127], 0.0982, 1.05], [[3.4018, 0.5625, 1.9747], [0.9016, 0, -0.4325], 0.0982, 1.05], [[3.4903, 0.5625, 1.9323], [0.892, 0, -0.452], 0.0982, 1.05], [[3.5779, 0.5625, 1.8879], [0.8819, 0, -0.4714], 0.0982, 1.05], [[3.6644, 0.5625, 1.8416], [0.8714, 0, -0.4905], 0.0982, 1.05], [[3.75, 0.5625, 1.7935], [0.8605, 0, -0.5094], 0.0982, 1.05], [[3.8345, 0.5625, 1.7435], [0.8492, 0, -0.5281], 0.0982, 1.05], [[3.9178, 0.5625, 1.6916], [0.8375, 0, -0.5465], 0.0982, 1.05], [[4.0001, 0.5625, 1.638], [0.8254, 0, -0.5646], 0.0982, 1.05], [[4.0811, 0.5625, 1.5825], [0.8128, 0, -0.5825], 0.0982, 1.05], [[4.1609, 0.5625, 1.5254], [0.7999, 0, -0.6001], 0.0982, 1.05], [[4.2394, 0.5625, 1.4664], [0.7867, 0, -0.6174], 0.0982, 1.05], [[4.3167, 0.5625, 1.4058], [0.773, 0, -0.6344], 0.0982, 1.05], [[4.3925, 0.5625, 1.3436], [0.759, 0, -0.6511], 0.0982, 1.05], [[4.4671, 0.5625, 1.2796], [0.7446, 0, -0.6675], 0.0982, 1.05], [[4.5402, 0.5625, 1.2141], [0.7299, 0, -0.6836], 0.0982, 1.05], [[4.6118, 0.5625, 1.147], [0.7148, 0, -0.6994], 0.0982, 1.05], [[4.682, 0.5625, 1.0783], [0.7071, 0, -0.7071], 1, 1.05]], true],
+    ["low_voltage_ground_sweep_elbow_2", "low_voltage_fittings", "carlon_ua7aeb_3_4_45_belled_elbow", "post_fr", "narrow_pos", 0, [8.5646, 5.6875, 4.2721], [6.1654, 1.125, 6.1654], [0.55, 0.57, 0.58, 1], "primitive_union", [14.73, 5.6875, 6.3643], [-0.7071, 0, 0.7071], [0, 1, 0], [-0.7071, 0, -0.7071], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5625, 2.3964], "along", 1.5, 1.125], [[1.5, 0.5625, 2.3964], [0.9999, 0, -0.0109], 0.0982, 1.05], [[1.5982, 0.5625, 2.3953], [0.9995, 0, -0.0327], 0.0982, 1.05], [[1.6963, 0.5625, 2.3921], [0.9985, 0, -0.0545], 0.0982, 1.05], [[1.7943, 0.5625, 2.3867], [0.9971, 0, -0.0763], 0.0982, 1.05], [[1.8922, 0.5625, 2.3792], [0.9952, 0, -0.098], 0.0982, 1.05], [[1.9899, 0.5625, 2.3696], [0.9928, 0, -0.1197], 0.0982, 1.05], [[2.0874, 0.5625, 2.3579], [0.99, 0, -0.1413], 0.0982, 1.05], [[2.1846, 0.5625, 2.344], [0.9866, 0, -0.1629], 0.0982, 1.05], [[2.2814, 0.5625, 2.328], [0.9829, 0, -0.1844], 0.0982, 1.05], [[2.3779, 0.5625, 2.3099], [0.9786, 0, -0.2058], 0.0982, 1.05], [[2.474, 0.5625, 2.2897], [0.9739, 0, -0.2271], 0.0982, 1.05], [[2.5696, 0.5625, 2.2674], [0.9687, 0, -0.2483], 0.0982, 1.05], [[2.6647, 0.5625, 2.243], [0.963, 0, -0.2693], 0.0982, 1.05], [[2.7592, 0.5625, 2.2166], [0.9569, 0, -0.2903], 0.0982, 1.05], [[2.8532, 0.5625, 2.1881], [0.9504, 0, -0.3111], 0.0982, 1.05], [[2.9465, 0.5625, 2.1575], [0.9434, 0, -0.3317], 0.0982, 1.05], [[3.0391, 0.5625, 2.125], [0.9359, 0, -0.3523], 0.0982, 1.05], [[3.131, 0.5625, 2.0904], [0.928, 0, -0.3726], 0.0982, 1.05], [[3.2221, 0.5625, 2.0538], [0.9197, 0, -0.3927], 0.0982, 1.05], [[3.3124, 0.5625, 2.0153], [0.9109, 0, -0.4127], 0.0982, 1.05], [[3.4018, 0.5625, 1.9747], [0.9016, 0, -0.4325], 0.0982, 1.05], [[3.4903, 0.5625, 1.9323], [0.892, 0, -0.452], 0.0982, 1.05], [[3.5779, 0.5625, 1.8879], [0.8819, 0, -0.4714], 0.0982, 1.05], [[3.6644, 0.5625, 1.8416], [0.8714, 0, -0.4905], 0.0982, 1.05], [[3.75, 0.5625, 1.7935], [0.8605, 0, -0.5094], 0.0982, 1.05], [[3.8345, 0.5625, 1.7435], [0.8492, 0, -0.5281], 0.0982, 1.05], [[3.9178, 0.5625, 1.6916], [0.8375, 0, -0.5465], 0.0982, 1.05], [[4.0001, 0.5625, 1.638], [0.8254, 0, -0.5646], 0.0982, 1.05], [[4.0811, 0.5625, 1.5825], [0.8128, 0, -0.5825], 0.0982, 1.05], [[4.1609, 0.5625, 1.5254], [0.7999, 0, -0.6001], 0.0982, 1.05], [[4.2394, 0.5625, 1.4664], [0.7867, 0, -0.6174], 0.0982, 1.05], [[4.3167, 0.5625, 1.4058], [0.773, 0, -0.6344], 0.0982, 1.05], [[4.3925, 0.5625, 1.3436], [0.759, 0, -0.6511], 0.0982, 1.05], [[4.4671, 0.5625, 1.2796], [0.7446, 0, -0.6675], 0.0982, 1.05], [[4.5402, 0.5625, 1.2141], [0.7299, 0, -0.6836], 0.0982, 1.05], [[4.6118, 0.5625, 1.147], [0.7148, 0, -0.6994], 0.0982, 1.05], [[4.682, 0.5625, 1.0783], [0.7071, 0, -0.7071], 1, 1.05]], true],
+    ["tambour_ceiling_panel", "tambour_guard", "quarter_inch_exterior_plywood_panel", "brace_fl_bl", "wide_pos", 7.1875, [3.5, 10.6875, 43.25], [20.5, 7.9375, 0.25], [0.72, 0.58, 0.38, 1], "box", [3.5, 10.6875, 43.25], [0, 1, 0], [0, 0, 1], [1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false]
 ];
 
 conduits = [
-    ["power_ground_riser", "electrical_conduit", "1-1/4", 1.66, [0.78, 0.8, 0.78, 1], [[15.055, 12.5, 0.1171], [15.055, 12.5, 4.5019]], []],
-    ["power_t_junction_feed", "electrical_conduit", "1-1/4", 1.66, [0.78, 0.8, 0.78, 1], [[15.35, 9.0687, 8.83], [15.35, 8.9375, 8.83]], []],
-    ["power_ev_charger_feed", "electrical_conduit", "1", 1.315, [0.78, 0.8, 0.78, 1], [[15.35, 11.2875, 14.2988], [15.35, 11.2875, 22.35]], []],
-    ["power_street_light_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[20.925, 3.1875, 8.5383], [21.08, 3.1875, 8.5383], [21.4063, 3.1861, 8.5596], [21.727, 3.1819, 8.6233], [22.0367, 3.1749, 8.7281], [22.33, 3.1654, 8.8725], [22.6019, 3.1533, 9.0538], [22.8478, 3.1391, 9.2689], [23.0634, 3.1228, 9.5142], [23.2451, 3.1048, 9.7855], [23.3897, 3.0854, 10.0782], [23.4948, 3.065, 10.3872], [23.5586, 3.0438, 10.7072], [23.58, 3.0222, 11.0328], [23.58, 1.6984, 31.0066], [23.5543, 1.6725, 31.3973], [23.4778, 1.647, 31.7813], [23.3516, 1.6225, 32.1521], [23.1781, 1.5992, 32.5033], [22.9601, 1.5776, 32.8289], [22.7013, 1.5581, 33.1232], [22.4063, 1.541, 33.3814], [22.08, 1.5266, 33.599], [21.7281, 1.5151, 33.7721], [21.3565, 1.5068, 33.898], [20.9716, 1.5017, 33.9744], [20.58, 1.5, 34], [16.75, 1.5, 34], [16.3584, 1.5, 34.0257], [15.9735, 1.5, 34.1022], [15.6019, 1.5, 34.2284], [15.25, 1.5, 34.4019], [14.9237, 1.5, 34.6199], [14.6287, 1.5, 34.8787], [14.3699, 1.5, 35.1737], [14.1519, 1.5, 35.5], [13.9784, 1.5, 35.8519], [13.8522, 1.5, 36.2235], [13.7757, 1.5, 36.6084], [13.75, 1.5, 37], [13.75, 1.5, 37.3]], [[1, 2.5], [2, 3], [3, 3]]],
-    ["power_back_right_outlet_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[20.925, 5.1875, 8.5383], [23.016, 5.1875, 8.5383], [23.5381, 5.2217, 8.5383], [24.0513, 5.3238, 8.5383], [24.5467, 5.492, 8.5383], [25.016, 5.7234, 8.5383], [25.451, 6.0141, 8.5383], [25.8444, 6.3591, 8.5383], [26.1894, 6.7525, 8.5383], [26.4801, 7.1875, 8.5383], [26.7115, 7.6568, 8.5383], [26.8797, 8.1522, 8.5383], [26.9818, 8.6654, 8.5383], [27.016, 9.1875, 8.5383], [27.016, 12.875, 8.5383], [27.016, 13.3971, 8.5725], [27.016, 13.9103, 8.6746], [27.016, 14.4057, 8.8427], [27.016, 14.875, 9.0742], [27.016, 15.31, 9.3649], [27.016, 15.7034, 9.7098], [27.016, 16.0484, 10.1032], [27.016, 16.3391, 10.5383], [27.016, 16.5705, 11.0075], [27.016, 16.7387, 11.503], [27.016, 16.8408, 12.0162], [27.016, 16.875, 12.5383], [27.016, 16.875, 15.15]], [[1, 4], [2, 4]]],
-    ["low_voltage_ground_riser", "low_voltage_conduit", "3/4", 1.05, [0.78, 0.8, 0.78, 1], [[14, 6.25, 0.3282], [14, 6.25, 9.53]], []]
+    ["power_ground_riser", "electrical_conduit", "1-1/4", 1.66, [0.78, 0.8, 0.78, 1], [[15.055, 12.5, 0.1434], [15.055, 12.5, 4.5019]], []],
+    ["power_t_junction_feed", "electrical_conduit", "1-1/4", 1.66, [0.78, 0.8, 0.78, 1], [[15.35, 10.0687, 8.83], [15.35, 9.9375, 8.83]], []],
+    ["power_ev_charger_feed", "electrical_conduit", "1", 1.315, [0.78, 0.8, 0.78, 1], [[15.35, 12.2875, 14.2988], [15.35, 12.2875, 22.35]], []],
+    ["power_street_light_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[18.925, 4.1875, 8.5105], [21.08, 4.1875, 8.5105], [21.4063, 4.1853, 8.5318], [21.727, 4.1786, 8.5952], [22.0367, 4.1675, 8.6997], [22.33, 4.1524, 8.8436], [22.6019, 4.1333, 9.0243], [22.8478, 4.1107, 9.2387], [23.0634, 4.0849, 9.4832], [23.2451, 4.0564, 9.7536], [23.3897, 4.0257, 10.0453], [23.4948, 3.9932, 10.3532], [23.5586, 3.9596, 10.6722], [23.58, 3.9254, 10.9967], [23.58, 1.8146, 31.0165], [23.5543, 1.7735, 31.406], [23.4778, 1.7331, 31.7887], [23.3516, 1.6942, 32.1583], [23.1781, 1.6573, 32.5083], [22.9601, 1.6231, 32.8328], [22.7013, 1.5921, 33.1262], [22.4063, 1.565, 33.3835], [22.08, 1.5421, 33.6003], [21.7281, 1.5239, 33.7729], [21.3565, 1.5107, 33.8983], [20.9716, 1.5027, 33.9745], [20.58, 1.5, 34], [16.75, 1.5, 34], [16.3584, 1.5, 34.0257], [15.9735, 1.5, 34.1022], [15.6019, 1.5, 34.2284], [15.25, 1.5, 34.4019], [14.9237, 1.5, 34.6199], [14.6287, 1.5, 34.8787], [14.3699, 1.5, 35.1737], [14.1519, 1.5, 35.5], [13.9784, 1.5, 35.8519], [13.8522, 1.5, 36.2235], [13.7757, 1.5, 36.6084], [13.75, 1.5, 37], [13.75, 1.5, 37.3]], [[1, 2.5], [2, 3], [3, 3]]],
+    ["power_back_right_outlet_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[18.925, 6.1875, 8.5105], [23.016, 6.1875, 8.5105], [23.5381, 6.2217, 8.5105], [24.0513, 6.3238, 8.5105], [24.5467, 6.492, 8.5105], [25.016, 6.7234, 8.5105], [25.451, 7.0141, 8.5105], [25.8444, 7.3591, 8.5105], [26.1894, 7.7525, 8.5105], [26.4801, 8.1875, 8.5105], [26.7115, 8.6568, 8.5105], [26.8797, 9.1522, 8.5105], [26.9818, 9.6654, 8.5105], [27.016, 10.1875, 8.5105], [27.016, 13.875, 8.5105], [27.016, 14.3971, 8.5447], [27.016, 14.9103, 8.6468], [27.016, 15.4057, 8.815], [27.016, 15.875, 9.0464], [27.016, 16.31, 9.3371], [27.016, 16.7034, 9.6821], [27.016, 17.0484, 10.0754], [27.016, 17.3391, 10.5105], [27.016, 17.5705, 10.9798], [27.016, 17.7387, 11.4752], [27.016, 17.8408, 11.9884], [27.016, 17.875, 12.5105], [27.016, 17.875, 15.15]], [[1, 4], [2, 4]]],
+    ["low_voltage_ground_riser_inlet", "low_voltage_conduit", "3/4", 1.05, [0.78, 0.8, 0.78, 1], [[14, 6.25, 0.3414], [14, 6.25, 1.8414]], []]
 ];
 
 cables = [
-    ["front_ev_charger_cable", "ev_charger_cable", 1, [0.055, 0.055, 0.06, 1], [[12.11, 11.2875, 22.35], [12.11, 11.2875, 7.6105], [12.1442, 11.2875, 7.0884], [12.2463, 11.2875, 6.5753], [12.4145, 11.2875, 6.0798], [12.6459, 11.2875, 5.6105], [12.9366, 11.2875, 5.1755], [13.2816, 11.2875, 4.7821], [13.675, 11.2875, 4.4371], [14.11, 11.2875, 4.1464], [14.5793, 11.2875, 3.915], [15.0747, 11.2875, 3.7468], [15.5879, 11.2875, 3.6448], [16.11, 11.2875, 3.6105], [16.6321, 11.2875, 3.6448], [17.1453, 11.2875, 3.7468], [17.6407, 11.2875, 3.915], [18.11, 11.2875, 4.1464], [18.545, 11.2875, 4.4371], [18.9384, 11.2875, 4.7821], [19.2834, 11.2875, 5.1755], [19.5741, 11.2875, 5.6105], [19.8055, 11.2875, 6.0798], [19.9737, 11.2875, 6.5753], [20.0758, 11.2875, 7.0884], [20.11, 11.2875, 7.6105], [20.11, 11.2875, 8.9474], [20.11, 11.2875, 34.377], [20.0643, 11.2875, 35.0736], [19.9282, 11.2875, 35.7583], [19.7038, 11.2875, 36.4193], [19.395, 11.2875, 37.0454], [19.0072, 11.2875, 37.6258], [18.5469, 11.2875, 38.1507], [18.022, 11.2875, 38.611], [17.4416, 11.2875, 38.9988], [16.8155, 11.2875, 39.3076], [16.1544, 11.2875, 39.532], [15.4697, 11.2875, 39.6682], [14.7731, 11.2875, 39.7138], [14.0765, 11.2875, 39.6682], [13.3919, 11.2875, 39.532], [12.7308, 11.2875, 39.3076], [12.1047, 11.2875, 38.9988], [11.5243, 11.2875, 38.611], [10.9994, 11.2875, 38.1507], [10.5391, 11.2875, 37.6258], [10.1513, 11.2875, 37.0454], [9.8425, 11.2875, 36.4193], [9.6181, 11.2875, 35.7583], [9.4819, 11.2875, 35.0736], [9.4363, 11.2875, 34.377], [9.4363, 11.2875, 8.9474], [9.4779, 11.2916, 8.2503], [9.6029, 11.3032, 7.562], [9.8108, 11.3219, 6.8919], [10.1, 11.3468, 6.2493], [10.468, 11.3772, 5.6439], [10.911, 11.4125, 5.0853], [11.4242, 11.452, 4.5829], [12.001, 11.4949, 4.1459], [12.634, 11.5406, 3.7829], [13.314, 11.5884, 3.5017], [14.0308, 11.6376, 3.3091], [14.7731, 11.6875, 3.2105], [15.5285, 11.7374, 3.2102], [16.2836, 11.7866, 3.3103], [17.0248, 11.8344, 3.5115], [17.7379, 11.8801, 3.8123], [18.4089, 11.923, 4.2092], [19.0242, 11.9625, 4.6964], [19.5707, 11.9978, 5.2661], [20.0365, 12.0282, 5.9086], [20.4111, 12.0531, 6.6121], [20.6857, 12.0718, 7.3631], [20.8535, 12.0834, 8.1469], [20.91, 12.0875, 8.9474], [20.91, 12.0875, 34.377], [20.8575, 12.0875, 35.178], [20.7009, 12.0875, 35.9653], [20.4429, 12.0875, 36.7254], [20.0878, 12.0875, 37.4454], [19.6418, 12.0875, 38.1129], [19.1126, 12.0875, 38.7164], [18.509, 12.0875, 39.2457], [17.8416, 12.0875, 39.6916], [17.1216, 12.0875, 40.0467], [16.3615, 12.0875, 40.3047], [15.5742, 12.0875, 40.4613], [14.7731, 12.0875, 40.5138], [13.9721, 12.0875, 40.4613], [13.1848, 12.0875, 40.3047], [12.4247, 12.0875, 40.0467], [11.7047, 12.0875, 39.6916], [11.0373, 12.0875, 39.2457], [10.4337, 12.0875, 38.7164], [9.9045, 12.0875, 38.1129], [9.4585, 12.0875, 37.4454], [9.1034, 12.0875, 36.7254], [8.8454, 12.0875, 35.9653], [8.6888, 12.0875, 35.178], [8.6363, 12.0875, 34.377], [8.6363, 12.0875, 8.9474], [8.6848, 12.0916, 8.1458], [8.8302, 12.1032, 7.355], [9.0717, 12.1219, 6.5858], [9.4072, 12.1468, 5.8493], [9.8333, 12.1772, 5.1569], [10.3453, 12.2125, 4.5196], [10.9371, 12.252, 3.9482], [11.601, 12.2949, 3.4531], [12.3278, 12.3406, 3.0438], [13.1069, 12.3884, 2.729], [13.9264, 12.4376, 2.5159], [14.7731, 12.4875, 2.4105], [15.6329, 12.5374, 2.417], [16.4907, 12.5866, 2.5376], [17.3309, 12.6344, 2.7724], [18.1379, 12.6801, 3.1195], [18.8959, 12.723, 3.5745], [19.5899, 12.7625, 4.1307], [20.2054, 12.7978, 4.7791], [20.7293, 12.8282, 5.5086], [21.1502, 12.8531, 6.3059], [21.4584, 12.8718, 7.1561], [21.6466, 12.8834, 8.0425], [21.71, 12.8875, 8.9474], [21.71, 12.8875, 34.377], [21.6507, 12.8875, 35.2824], [21.4736, 12.8875, 36.1724], [21.182, 12.8875, 37.0316], [20.7806, 12.8875, 37.8454], [20.2765, 12.8875, 38.5999], [19.6782, 12.8875, 39.2821], [18.996, 12.8875, 39.8804], [18.2416, 12.8875, 40.3845], [17.4278, 12.8875, 40.7858], [16.5685, 12.8875, 41.0775], [15.6786, 12.8875, 41.2545], [14.7731, 12.8875, 41.3138], [13.8677, 12.8875, 41.2545], [12.9778, 12.8875, 41.0775], [12.1185, 12.8875, 40.7858], [11.3047, 12.8875, 40.3845], [10.5503, 12.8875, 39.8804], [9.868, 12.8875, 39.2821], [9.2698, 12.8875, 38.5999], [8.7657, 12.8875, 37.8454], [8.3643, 12.8875, 37.0316], [8.0727, 12.8875, 36.1724], [7.8956, 12.8875, 35.2824], [7.8363, 12.8875, 34.377], [7.8363, 12.8875, 13.6737], [7.8616, 12.9106, 13.151], [7.937, 12.9795, 12.6373], [8.0614, 13.093, 12.1413], [8.2324, 13.2492, 11.6716], [8.4473, 13.4454, 11.2361], [8.7023, 13.6783, 10.8423], [8.9931, 13.9438, 10.497], [9.3147, 14.2375, 10.206], [9.6616, 14.5543, 9.9743], [10.0279, 14.8887, 9.806], [10.4072, 15.2351, 9.7038], [10.7931, 15.5875, 9.6695], [11.1791, 15.9399, 9.7038], [11.5584, 16.2863, 9.806], [11.9247, 16.6207, 9.9743], [12.2716, 16.9375, 10.206], [12.5932, 17.2312, 10.497], [12.884, 17.4967, 10.8423], [13.139, 17.7296, 11.2361], [13.3539, 17.9258, 11.6716], [13.5249, 18.082, 12.1413], [13.6492, 18.1955, 12.6373], [13.7247, 18.2644, 13.151], [13.75, 18.2875, 13.6737], [13.75, 18.2875, 28.2099]], 300],
-    ["low_voltage_street_light_service", "low_voltage_cabling", 0.125, [0.18, 0.07, 0.025, 1], [[10.8, 2.9375, 10.25], [10.7891, 2.9357, 10.0103], [10.7571, 2.9305, 9.7905], [10.7052, 2.9219, 9.5898], [10.6347, 2.9104, 9.4074], [10.5468, 2.896, 9.2423], [10.4427, 2.8789, 9.0938], [10.3236, 2.8593, 8.9608], [10.1907, 2.8375, 8.8426], [10.0453, 2.8137, 8.7383], [9.8885, 2.7879, 8.647], [9.7216, 2.7606, 8.5679], [9.5457, 2.7317, 8.5], [9.3621, 2.7016, 8.4426], [9.1721, 2.6704, 8.3947], [8.9767, 2.6383, 8.3555], [8.7773, 2.6056, 8.3241], [8.575, 2.5724, 8.2996], [8.3711, 2.539, 8.2812], [8.1668, 2.5055, 8.2681], [7.9633, 2.4721, 8.2593], [7.7617, 2.439, 8.2539], [7.5634, 2.4065, 8.2512], [7.3695, 2.3746, 8.2501], [7.1813, 2.3438, 8.25], [6.993, 2.3129, 8.2743], [6.7991, 2.281, 8.3452], [6.6008, 2.2485, 8.46], [6.3992, 2.2154, 8.6157], [6.1957, 2.182, 8.8097], [5.9914, 2.1485, 9.0391], [5.7875, 2.1151, 9.301], [5.5852, 2.0819, 9.5926], [5.3858, 2.0492, 9.9111], [5.1904, 2.0171, 10.2538], [5.0004, 1.9859, 10.6177], [4.8168, 1.9558, 11], [4.6409, 1.9269, 11.398], [4.474, 1.8996, 11.8087], [4.3172, 1.8738, 12.2295], [4.1718, 1.85, 12.6574], [4.0389, 1.8282, 13.0897], [3.9198, 1.8086, 13.5234], [3.8157, 1.7915, 13.9559], [3.7278, 1.7771, 14.3843], [3.6573, 1.7656, 14.8057], [3.6054, 1.757, 15.2173], [3.5734, 1.7518, 15.6164], [3.5625, 1.75, 16], [3.5625, 1.75, 43.4375], [3.5796, 1.75, 43.6986], [3.6306, 1.75, 43.9551], [3.7147, 1.75, 44.2029], [3.8304, 1.75, 44.4375], [3.9758, 1.75, 44.655], [4.1483, 1.75, 44.8517], [4.345, 1.75, 45.0242], [4.5625, 1.75, 45.1696], [4.7971, 1.75, 45.2853], [5.0449, 1.75, 45.3694], [5.3014, 1.75, 45.4204], [5.5625, 1.75, 45.4375], [7.5, 1.75, 45.4375], [7.625, 1.7487, 45.4375], [7.75, 1.7451, 45.4375], [7.875, 1.7393, 45.4375], [8, 1.7315, 45.4375], [8.125, 1.722, 45.4375], [8.25, 1.7109, 45.4375], [8.375, 1.6986, 45.4375], [8.5, 1.6852, 45.4375], [8.625, 1.6709, 45.4375], [8.75, 1.656, 45.4375], [8.875, 1.6406, 45.4375], [9, 1.625, 45.4375], [9.125, 1.6094, 45.4375], [9.25, 1.594, 45.4375], [9.375, 1.5791, 45.4375], [9.5, 1.5648, 45.4375], [9.625, 1.5514, 45.4375], [9.75, 1.5391, 45.4375], [9.875, 1.528, 45.4375], [10, 1.5185, 45.4375], [10.125, 1.5107, 45.4375], [10.25, 1.5049, 45.4375], [10.375, 1.5013, 45.4375], [10.5, 1.5, 45.4375], [10.75, 1.5, 45.4375], [10.9132, 1.5, 45.4268], [11.0735, 1.5, 45.3949], [11.2284, 1.5, 45.3423], [11.375, 1.5, 45.27], [11.511, 1.5, 45.1792], [11.6339, 1.5, 45.0714], [11.7417, 1.5, 44.9485], [11.8325, 1.5, 44.8125], [11.9048, 1.5, 44.6659], [11.9574, 1.5, 44.511], [11.9893, 1.5, 44.3507], [12, 1.5, 44.1875], [12.0107, 1.5, 44.0243], [12.0426, 1.5, 43.864], [12.0952, 1.5, 43.7091], [12.1675, 1.5, 43.5625], [12.2583, 1.5, 43.4265], [12.3661, 1.5, 43.3036], [12.489, 1.5, 43.1958], [12.625, 1.5, 43.105], [12.7716, 1.5, 43.0327], [12.9265, 1.5, 42.9801], [13.0868, 1.5, 42.9482], [13.25, 1.5, 42.9375], [14.25, 1.5, 42.9375], [14.4132, 1.5, 42.9482], [14.5735, 1.5, 42.9801], [14.7284, 1.5, 43.0327], [14.875, 1.5, 43.105], [15.011, 1.5, 43.1958], [15.1339, 1.5, 43.3036], [15.2417, 1.5, 43.4265], [15.3325, 1.5, 43.5625], [15.4048, 1.5, 43.7091], [15.4574, 1.5, 43.864], [15.4893, 1.5, 44.0243], [15.5, 1.5, 44.1875], [15.4893, 1.5, 44.3507], [15.4574, 1.5, 44.511], [15.4048, 1.5, 44.6659], [15.3325, 1.5, 44.8125], [15.2417, 1.5, 44.9485], [15.1339, 1.5, 45.0714], [15.011, 1.5, 45.1792], [14.875, 1.5, 45.27], [14.7284, 1.5, 45.3423], [14.5735, 1.5, 45.3949], [14.4132, 1.5, 45.4268], [14.25, 1.5, 45.4375], [13.75, 1.5, 45.4375]], 58.8567],
-    ["low_voltage_wifi_feed", "low_voltage_cabling", 0.125, [0.05, 0.2, 0.8, 1], [[13.2, 2.9375, 10.25], [13.2, 2.9325, 10.1149], [13.2, 2.9187, 9.9612], [13.2, 2.8975, 9.791], [13.2, 2.8704, 9.6065], [13.2, 2.8389, 9.4098], [13.2, 2.8047, 9.2031], [13.2, 2.7691, 8.9886], [13.2, 2.7338, 8.7685], [13.2, 2.7002, 8.5449], [13.2, 2.6698, 8.32], [13.2, 2.6443, 8.096], [13.2, 2.625, 7.875], [13.2, 2.6135, 7.6592], [13.2, 2.6114, 7.4508], [13.2, 2.6201, 7.252], [13.2, 2.6412, 7.0648], [13.2, 2.6762, 6.8916], [13.2, 2.7266, 6.7344], [13.2, 2.7939, 6.5954], [13.2, 2.8796, 6.4769], [13.2, 2.9854, 6.3809], [13.2, 3.1126, 6.3096], [13.2, 3.2628, 6.2653], [13.2, 3.4375, 6.25], [13.2, 3.5615, 6.25], [13.2, 3.6432, 6.2554], [13.2, 3.7235, 6.2713], [13.2, 3.8011, 6.2977], [13.2, 3.8745, 6.3339], [13.2, 3.9426, 6.3794], [13.2001, 4.0041, 6.4334], [13.2001, 4.0581, 6.4949], [13.2002, 4.1036, 6.563], [13.2004, 4.1398, 6.6364], [13.2007, 4.1662, 6.714], [13.2011, 4.1821, 6.7943], [13.2017, 4.1875, 6.876], [13.4164, 4.1875, 8.4375], [13.5159, 4.2065, 8.6574], [13.638, 4.2613, 8.8684], [13.7841, 4.3486, 9.0722], [13.9525, 4.4653, 9.2708], [14.135, 4.608, 9.4661], [14.3136, 4.7734, 9.6598], [14.4601, 4.9584, 9.8538], [14.5447, 5.1597, 10.05], [14.5625, 5.374, 10.2502], [14.5625, 5.5981, 10.4564], [14.5625, 5.8287, 10.6703], [14.5625, 6.0625, 10.8938], [14.5625, 6.2963, 11.1287], [14.5625, 6.5269, 11.377], [14.5625, 6.751, 11.6404], [14.5625, 6.9653, 11.9208], [14.5625, 7.1666, 12.2202], [14.5625, 7.3516, 12.5402], [14.5625, 7.517, 12.8829], [14.5625, 7.6597, 13.25], [14.5625, 7.7764, 13.6434], [14.5625, 7.8637, 14.065], [14.5625, 7.9185, 14.5166], [14.5625, 7.9375, 15], [14.5625, 7.9375, 38.75], [14.5625, 7.9482, 38.9132], [14.5625, 7.9801, 39.0735], [14.5625, 8.0327, 39.2284], [14.5625, 8.105, 39.375], [14.5625, 8.1958, 39.511], [14.5625, 8.3036, 39.6339], [14.5625, 8.4265, 39.7417], [14.5625, 8.5625, 39.8325], [14.5625, 8.7091, 39.9048], [14.5625, 8.864, 39.9574], [14.5625, 9.0243, 39.9893], [14.5625, 9.1875, 40], [14.5625, 8.5, 40], [14.5625, 8.6632, 40.0107], [14.5625, 8.8235, 40.0426], [14.5625, 8.9784, 40.0952], [14.5625, 9.125, 40.1675], [14.5625, 9.261, 40.2583], [14.5625, 9.3839, 40.3661], [14.5625, 9.4917, 40.489], [14.5625, 9.5825, 40.625], [14.5625, 9.6548, 40.7716], [14.5625, 9.7074, 40.9265], [14.5625, 9.7393, 41.0868], [14.5625, 9.75, 41.25], [14.5625, 9.75, 40.3125], [14.5732, 9.75, 40.4757], [14.6051, 9.75, 40.636], [14.6577, 9.75, 40.7909], [14.73, 9.75, 40.9375], [14.8208, 9.75, 41.0735], [14.9286, 9.75, 41.1964], [15.0515, 9.75, 41.3042], [15.1875, 9.75, 41.395], [15.3341, 9.75, 41.4673], [15.489, 9.75, 41.5199], [15.6493, 9.75, 41.5518], [15.8125, 9.75, 41.5625], [23.1875, 9.75, 41.5625], [23.2854, 9.7564, 41.5625], [23.3816, 9.7756, 41.5625], [23.4745, 9.8071, 41.5625], [23.5625, 9.8505, 41.5625], [23.6441, 9.905, 41.5625], [23.7178, 9.9697, 41.5625], [23.7825, 10.0434, 41.5625], [23.837, 10.125, 41.5625], [23.8804, 10.213, 41.5625], [23.9119, 10.3059, 41.5625], [23.9311, 10.4021, 41.5625], [23.9375, 10.5, 41.5625], [23.9375, 10.125, 41.5625], [23.9375, 10.2229, 41.5561], [23.9375, 10.3191, 41.5369], [23.9375, 10.412, 41.5054], [23.9375, 10.5, 41.462], [23.9375, 10.5816, 41.4075], [23.9375, 10.6553, 41.3428], [23.9375, 10.72, 41.2691], [23.9375, 10.7745, 41.1875], [23.9375, 10.8179, 41.0995], [23.9375, 10.8494, 41.0066], [23.9375, 10.8686, 40.9104], [23.9375, 10.875, 40.8125], [23.9375, 10.875, 31.175], [23.9375, 10.881, 31.0836], [23.9375, 10.8989, 30.9938], [23.9375, 10.9283, 30.9071], [23.9375, 10.9688, 30.825], [23.9375, 11.0197, 30.7489], [23.9375, 11.08, 30.68], [23.9375, 11.1489, 30.6197], [23.9375, 11.225, 30.5688], [23.9375, 11.3071, 30.5283], [23.9375, 11.3938, 30.4989], [23.9375, 11.4836, 30.481], [23.9375, 11.575, 30.475], [23.9375, 11.6575, 30.475], [23.9435, 11.7489, 30.475], [23.9614, 11.8387, 30.475], [23.9908, 11.9254, 30.475], [24.0313, 12.0075, 30.475], [24.0822, 12.0836, 30.475], [24.1425, 12.1525, 30.475], [24.2114, 12.2128, 30.475], [24.2875, 12.2637, 30.475], [24.3696, 12.3042, 30.475], [24.4563, 12.3336, 30.475], [24.5461, 12.3515, 30.475], [24.6375, 12.3575, 30.475], [24.95, 12.3575, 30.475], [25.0544, 12.3575, 30.4818], [25.1571, 12.3575, 30.5023], [25.2561, 12.3575, 30.5359], [25.35, 12.3575, 30.5822], [25.437, 12.3575, 30.6403], [25.5157, 12.3575, 30.7093], [25.5847, 12.3575, 30.788], [25.6428, 12.3575, 30.875], [25.6891, 12.3575, 30.9689], [25.7227, 12.3575, 31.0679], [25.7432, 12.3575, 31.1706], [25.75, 12.3575, 31.275], [25.75, 12.3575, 32.475]], 71.352],
-    ["low_voltage_ev_charger_feed", "low_voltage_cabling", 0.125, [0.05, 0.2, 0.8, 1], [[12, 2.9375, 10.25], [12.0036, 2.9325, 10.1149], [12.014, 2.9187, 9.9612], [12.0306, 2.8975, 9.791], [12.0528, 2.8704, 9.6065], [12.0799, 2.8389, 9.4098], [12.1113, 2.8047, 9.2031], [12.1465, 2.7691, 8.9886], [12.1847, 2.7338, 8.7685], [12.2254, 2.7002, 8.5449], [12.268, 2.6698, 8.32], [12.3118, 2.6443, 8.096], [12.3563, 2.625, 7.875], [12.4007, 2.6135, 7.6592], [12.4445, 2.6114, 7.4508], [12.4871, 2.6201, 7.252], [12.5278, 2.6412, 7.0648], [12.566, 2.6762, 6.8916], [12.6012, 2.7266, 6.7344], [12.6326, 2.7939, 6.5954], [12.6597, 2.8796, 6.4769], [12.6819, 2.9854, 6.3809], [12.6985, 3.1126, 6.3096], [12.7089, 3.2628, 6.2653], [12.7125, 3.4375, 6.25], [12.7125, 3.5625, 6.25], [12.7125, 3.6441, 6.2553], [12.7125, 3.7243, 6.2713], [12.7125, 3.8017, 6.2976], [12.7125, 3.875, 6.3337], [12.7125, 3.943, 6.3792], [12.7125, 4.0044, 6.4331], [12.7125, 4.0583, 6.4945], [12.7125, 4.1038, 6.5625], [12.7125, 4.1399, 6.6358], [12.7125, 4.1662, 6.7132], [12.7125, 4.1822, 6.7934], [12.7125, 4.1875, 6.875], [12.7125, 4.1875, 8.4375], [12.7136, 4.2068, 8.6625], [12.7169, 4.2625, 8.888], [12.7222, 4.3513, 9.1152], [12.7292, 4.4699, 9.3449], [12.7377, 4.615, 9.5782], [12.7477, 4.7832, 9.816], [12.7588, 4.9713, 10.0594], [12.7708, 5.1759, 10.3093], [12.7837, 5.3938, 10.5667], [12.7971, 5.6216, 10.8325], [12.811, 5.856, 11.1079], [12.825, 6.0938, 11.3938], [12.839, 6.3315, 11.691], [12.8529, 6.5659, 12.0008], [12.8663, 6.7937, 12.324], [12.8792, 7.0116, 12.6616], [12.8912, 7.2162, 13.0146], [12.9023, 7.4043, 13.384], [12.9123, 7.5725, 13.7708], [12.9208, 7.7176, 14.1759], [12.9278, 7.8362, 14.6004], [12.9331, 7.925, 15.0453], [12.9364, 7.9807, 15.5115], [12.9375, 8, 16], [12.9375, 8, 19.9], [12.9375, 8.0068, 20.0044], [12.9375, 8.0273, 20.1071], [12.9375, 8.0609, 20.2061], [12.9375, 8.1072, 20.3], [12.9375, 8.1653, 20.387], [12.9375, 8.2343, 20.4657], [12.9375, 8.313, 20.5347], [12.9375, 8.4, 20.5928], [12.9375, 8.4939, 20.6391], [12.9375, 8.5929, 20.6727], [12.9375, 8.6956, 20.6932], [12.9375, 8.8, 20.7], [12.9375, 9.75, 20.7], [12.9391, 9.8432, 20.7059], [12.9439, 9.9351, 20.7229], [12.9519, 10.0259, 20.7504], [12.963, 10.1155, 20.7875], [12.9771, 10.2039, 20.8335], [12.9941, 10.291, 20.8875], [13.0142, 10.3769, 20.9488], [13.037, 10.4616, 21.0167], [13.0627, 10.545, 21.0902], [13.0912, 10.6271, 21.1687], [13.1224, 10.7079, 21.2514], [13.1562, 10.7875, 21.3375], [13.1927, 10.8658, 21.4262], [13.2317, 10.9427, 21.5167], [13.2732, 11.0183, 21.6082], [13.3171, 11.0926, 21.7], [13.3635, 11.1655, 21.7913], [13.4121, 11.2371, 21.8813], [13.463, 11.3073, 21.9691], [13.5162, 11.3762, 22.0542], [13.5715, 11.4436, 22.1355], [13.629, 11.5096, 22.2125], [13.6885, 11.5743, 22.2842], [13.75, 11.6375, 22.35]], 24.716]
+    ["front_ev_charger_cable", "ev_charger_cable", 1, [0.055, 0.055, 0.06, 1], [[12.11, 12.2875, 22.35], [12.11, 12.2875, 7.5956], [12.1442, 12.2875, 7.0735], [12.2463, 12.2875, 6.5603], [12.4145, 12.2875, 6.0649], [12.6459, 12.2875, 5.5956], [12.9366, 12.2875, 5.1606], [13.2816, 12.2875, 4.7672], [13.675, 12.2875, 4.4222], [14.11, 12.2875, 4.1315], [14.5793, 12.2875, 3.9001], [15.0747, 12.2875, 3.7319], [15.5879, 12.2875, 3.6298], [16.11, 12.2875, 3.5956], [16.6321, 12.2875, 3.6298], [17.1453, 12.2875, 3.7319], [17.6407, 12.2875, 3.9001], [18.11, 12.2875, 4.1315], [18.545, 12.2875, 4.4222], [18.9384, 12.2875, 4.7672], [19.2834, 12.2875, 5.1606], [19.5741, 12.2875, 5.5956], [19.8055, 12.2875, 6.0649], [19.9737, 12.2875, 6.5603], [20.0758, 12.2875, 7.0735], [20.11, 12.2875, 7.5956], [20.11, 12.2875, 8.9325], [20.11, 12.2875, 34.377], [20.0643, 12.2875, 35.0736], [19.9282, 12.2875, 35.7583], [19.7038, 12.2875, 36.4193], [19.395, 12.2875, 37.0454], [19.0072, 12.2875, 37.6258], [18.5469, 12.2875, 38.1507], [18.022, 12.2875, 38.611], [17.4416, 12.2875, 38.9988], [16.8155, 12.2875, 39.3076], [16.1544, 12.2875, 39.532], [15.4697, 12.2875, 39.6682], [14.7731, 12.2875, 39.7138], [14.0765, 12.2875, 39.6682], [13.3919, 12.2875, 39.532], [12.7308, 12.2875, 39.3076], [12.1047, 12.2875, 38.9988], [11.5243, 12.2875, 38.611], [10.9994, 12.2875, 38.1507], [10.5391, 12.2875, 37.6258], [10.1513, 12.2875, 37.0454], [9.8425, 12.2875, 36.4193], [9.6181, 12.2875, 35.7583], [9.4819, 12.2875, 35.0736], [9.4363, 12.2875, 34.377], [9.4363, 12.2875, 8.9325], [9.4779, 12.2916, 8.2353], [9.6029, 12.3032, 7.5471], [9.8108, 12.3219, 6.877], [10.1, 12.3468, 6.2344], [10.468, 12.3772, 5.629], [10.911, 12.4125, 5.0703], [11.4242, 12.452, 4.568], [12.001, 12.4949, 4.131], [12.634, 12.5406, 3.768], [13.314, 12.5884, 3.4868], [14.0308, 12.6376, 3.2941], [14.7731, 12.6875, 3.1956], [15.5285, 12.7374, 3.1952], [16.2836, 12.7866, 3.2954], [17.0248, 12.8344, 3.4966], [17.7379, 12.8801, 3.7974], [18.4089, 12.923, 4.1942], [19.0242, 12.9625, 4.6814], [19.5707, 12.9978, 5.2512], [20.0365, 13.0282, 5.8937], [20.4111, 13.0531, 6.5971], [20.6857, 13.0718, 7.3482], [20.8535, 13.0834, 8.132], [20.91, 13.0875, 8.9325], [20.91, 13.0875, 34.377], [20.8575, 13.0875, 35.178], [20.7009, 13.0875, 35.9653], [20.4429, 13.0875, 36.7254], [20.0878, 13.0875, 37.4454], [19.6418, 13.0875, 38.1129], [19.1126, 13.0875, 38.7164], [18.509, 13.0875, 39.2457], [17.8416, 13.0875, 39.6916], [17.1216, 13.0875, 40.0467], [16.3615, 13.0875, 40.3047], [15.5742, 13.0875, 40.4613], [14.7731, 13.0875, 40.5138], [13.9721, 13.0875, 40.4613], [13.1848, 13.0875, 40.3047], [12.4247, 13.0875, 40.0467], [11.7047, 13.0875, 39.6916], [11.0373, 13.0875, 39.2457], [10.4337, 13.0875, 38.7164], [9.9045, 13.0875, 38.1129], [9.4585, 13.0875, 37.4454], [9.1034, 13.0875, 36.7254], [8.8454, 13.0875, 35.9653], [8.6888, 13.0875, 35.178], [8.6363, 13.0875, 34.377], [8.6363, 13.0875, 8.9325], [8.6848, 13.0916, 8.1309], [8.8302, 13.1032, 7.3401], [9.0717, 13.1219, 6.5708], [9.4072, 13.1468, 5.8344], [9.8333, 13.1772, 5.142], [10.3453, 13.2125, 4.5047], [10.9371, 13.252, 3.9333], [11.601, 13.2949, 3.4382], [12.3278, 13.3406, 3.0289], [13.1069, 13.3884, 2.714], [13.9264, 13.4376, 2.501], [14.7731, 13.4875, 2.3956], [15.6329, 13.5374, 2.4021], [16.4907, 13.5866, 2.5226], [17.3309, 13.6344, 2.7575], [18.1379, 13.6801, 3.1046], [18.8959, 13.723, 3.5596], [19.5899, 13.7625, 4.1158], [20.2054, 13.7978, 4.7642], [20.7293, 13.8282, 5.4937], [21.1502, 13.8531, 6.291], [21.4584, 13.8718, 7.1411], [21.6466, 13.8834, 8.0275], [21.71, 13.8875, 8.9325], [21.71, 13.8875, 34.377], [21.6507, 13.8875, 35.2824], [21.4736, 13.8875, 36.1724], [21.182, 13.8875, 37.0316], [20.7806, 13.8875, 37.8454], [20.2765, 13.8875, 38.5999], [19.6782, 13.8875, 39.2821], [18.996, 13.8875, 39.8804], [18.2416, 13.8875, 40.3845], [17.4278, 13.8875, 40.7858], [16.5685, 13.8875, 41.0775], [15.6786, 13.8875, 41.2545], [14.7731, 13.8875, 41.3138], [13.8677, 13.8875, 41.2545], [12.9778, 13.8875, 41.0775], [12.1185, 13.8875, 40.7858], [11.3047, 13.8875, 40.3845], [10.5503, 13.8875, 39.8804], [9.868, 13.8875, 39.2821], [9.2698, 13.8875, 38.5999], [8.7657, 13.8875, 37.8454], [8.3643, 13.8875, 37.0316], [8.0727, 13.8875, 36.1724], [7.8956, 13.8875, 35.2824], [7.8363, 13.8875, 34.377], [7.8363, 13.8875, 13.7185], [7.8616, 13.9106, 13.1958], [7.937, 13.9795, 12.6821], [8.0614, 14.093, 12.1861], [8.2324, 14.2492, 11.7164], [8.4473, 14.4454, 11.2809], [8.7023, 14.6783, 10.8871], [8.9931, 14.9438, 10.5418], [9.3147, 15.2375, 10.2508], [9.6616, 15.5543, 10.0191], [10.0279, 15.8887, 9.8508], [10.4072, 16.2351, 9.7486], [10.7931, 16.5875, 9.7143], [11.1791, 16.9399, 9.7486], [11.5584, 17.2863, 9.8508], [11.9247, 17.6207, 10.0191], [12.2716, 17.9375, 10.2508], [12.5932, 18.2312, 10.5418], [12.884, 18.4967, 10.8871], [13.139, 18.7296, 11.2809], [13.3539, 18.9258, 11.7164], [13.5249, 19.082, 12.1861], [13.6492, 19.1955, 12.6821], [13.7247, 19.2644, 13.1958], [13.75, 19.2875, 13.7185], [13.75, 19.2875, 28.2099]], 300],
+    ["low_voltage_street_light_service", "low_voltage_cabling", 0.125, [0.18, 0.07, 0.025, 1], [[9.4569, 3.9375, 10.6325], [9.4489, 3.9346, 10.3927], [9.4257, 3.9259, 10.173], [9.3879, 3.9119, 9.9723], [9.3362, 3.8927, 9.7899], [9.2714, 3.8687, 9.6248], [9.1941, 3.84, 9.4762], [9.1052, 3.807, 9.3433], [9.0053, 3.7699, 9.2251], [8.8951, 3.729, 9.1207], [8.7755, 3.6846, 9.0295], [8.6471, 3.637, 8.9503], [8.5106, 3.5863, 8.8825], [8.3668, 3.533, 8.825], [8.2164, 3.4772, 8.7771], [8.0602, 3.4192, 8.7379], [7.8988, 3.3593, 8.7065], [7.733, 3.2977, 8.6821], [7.5634, 3.2348, 8.6637], [7.391, 3.1708, 8.6506], [7.2163, 3.106, 8.6417], [7.0401, 3.0406, 8.6364], [6.8631, 2.9749, 8.6336], [6.686, 2.9092, 8.6326], [6.5097, 2.8438, 8.6325], [6.3333, 2.7783, 8.6548], [6.1563, 2.7126, 8.7201], [5.9793, 2.6469, 8.826], [5.8031, 2.5815, 8.9699], [5.6284, 2.5167, 9.1493], [5.4559, 2.4527, 9.3618], [5.2864, 2.3898, 9.6048], [5.1206, 2.3282, 9.8759], [4.9592, 2.2683, 10.1726], [4.8029, 2.2103, 10.4924], [4.6525, 2.1545, 10.8327], [4.5087, 2.1012, 11.1912], [4.3723, 2.0505, 11.5654], [4.2438, 2.0029, 11.9526], [4.1242, 1.9585, 12.3505], [4.0141, 1.9176, 12.7566], [3.9142, 1.8805, 13.1683], [3.8252, 1.8475, 13.5832], [3.748, 1.8188, 13.9988], [3.6832, 1.7948, 14.4126], [3.6315, 1.7756, 14.8221], [3.5936, 1.7616, 15.2248], [3.5704, 1.7529, 15.6183], [3.5625, 1.75, 16], [3.5625, 1.75, 43.4375], [3.5796, 1.75, 43.6986], [3.6306, 1.75, 43.9551], [3.7147, 1.75, 44.2029], [3.8304, 1.75, 44.4375], [3.9758, 1.75, 44.655], [4.1483, 1.75, 44.8517], [4.345, 1.75, 45.0242], [4.5625, 1.75, 45.1696], [4.7971, 1.75, 45.2853], [5.0449, 1.75, 45.3694], [5.3014, 1.75, 45.4204], [5.5625, 1.75, 45.4375], [7.5, 1.75, 45.4375], [7.625, 1.7487, 45.4375], [7.75, 1.7451, 45.4375], [7.875, 1.7393, 45.4375], [8, 1.7315, 45.4375], [8.125, 1.722, 45.4375], [8.25, 1.7109, 45.4375], [8.375, 1.6986, 45.4375], [8.5, 1.6852, 45.4375], [8.625, 1.6709, 45.4375], [8.75, 1.656, 45.4375], [8.875, 1.6406, 45.4375], [9, 1.625, 45.4375], [9.125, 1.6094, 45.4375], [9.25, 1.594, 45.4375], [9.375, 1.5791, 45.4375], [9.5, 1.5648, 45.4375], [9.625, 1.5514, 45.4375], [9.75, 1.5391, 45.4375], [9.875, 1.528, 45.4375], [10, 1.5185, 45.4375], [10.125, 1.5107, 45.4375], [10.25, 1.5049, 45.4375], [10.375, 1.5013, 45.4375], [10.5, 1.5, 45.4375], [10.75, 1.5, 45.4375], [10.9132, 1.5, 45.4268], [11.0735, 1.5, 45.3949], [11.2284, 1.5, 45.3423], [11.375, 1.5, 45.27], [11.511, 1.5, 45.1792], [11.6339, 1.5, 45.0714], [11.7417, 1.5, 44.9485], [11.8325, 1.5, 44.8125], [11.9048, 1.5, 44.6659], [11.9574, 1.5, 44.511], [11.9893, 1.5, 44.3507], [12, 1.5, 44.1875], [12.0107, 1.5, 44.0243], [12.0426, 1.5, 43.864], [12.0952, 1.5, 43.7091], [12.1675, 1.5, 43.5625], [12.2583, 1.5, 43.4265], [12.3661, 1.5, 43.3036], [12.489, 1.5, 43.1958], [12.625, 1.5, 43.105], [12.7716, 1.5, 43.0327], [12.9265, 1.5, 42.9801], [13.0868, 1.5, 42.9482], [13.25, 1.5, 42.9375], [14.25, 1.5, 42.9375], [14.4132, 1.5, 42.9482], [14.5735, 1.5, 42.9801], [14.7284, 1.5, 43.0327], [14.875, 1.5, 43.105], [15.011, 1.5, 43.1958], [15.1339, 1.5, 43.3036], [15.2417, 1.5, 43.4265], [15.3325, 1.5, 43.5625], [15.4048, 1.5, 43.7091], [15.4574, 1.5, 43.864], [15.4893, 1.5, 44.0243], [15.5, 1.5, 44.1875], [15.4893, 1.5, 44.3507], [15.4574, 1.5, 44.511], [15.4048, 1.5, 44.6659], [15.3325, 1.5, 44.8125], [15.2417, 1.5, 44.9485], [15.1339, 1.5, 45.0714], [15.011, 1.5, 45.1792], [14.875, 1.5, 45.27], [14.7284, 1.5, 45.3423], [14.5735, 1.5, 45.3949], [14.4132, 1.5, 45.4268], [14.25, 1.5, 45.4375], [13.75, 1.5, 45.4375]], 57.8676],
+    ["low_voltage_wifi_feed", "low_voltage_cabling", 0.125, [0.05, 0.2, 0.8, 1], [[11.8569, 3.9375, 10.6325], [11.8569, 3.9379, 10.4974], [11.8569, 3.9396, 10.3437], [11.8569, 3.9431, 10.1735], [11.8569, 3.9491, 9.9889], [11.8569, 3.9581, 9.7923], [11.8569, 3.9707, 9.5856], [11.8569, 3.9876, 9.3711], [11.8569, 4.0093, 9.151], [11.8569, 4.0364, 8.9274], [11.8569, 4.0695, 8.7025], [11.8569, 4.1093, 8.4785], [11.8569, 4.1562, 8.2575], [11.8569, 4.211, 8.0417], [11.8569, 4.2742, 7.8333], [11.8569, 4.3464, 7.6344], [11.8569, 4.4282, 7.4473], [11.8569, 4.5202, 7.274], [11.8569, 4.623, 7.1168], [11.8569, 4.7372, 6.9779], [11.8569, 4.8634, 6.8593], [11.8569, 5.0022, 6.7633], [11.8569, 5.1542, 6.6921], [11.8569, 5.3199, 6.6477], [11.8569, 5.5, 6.6325], [11.8569, 5.624, 6.6325], [11.8569, 5.7057, 6.6378], [11.8569, 5.786, 6.6538], [11.8569, 5.8636, 6.6801], [11.8569, 5.937, 6.7163], [11.8569, 6.0051, 6.7618], [11.857, 6.0666, 6.8158], [11.8573, 6.1206, 6.8774], [11.8576, 6.1661, 6.9455], [11.8583, 6.2023, 7.0189], [11.8593, 6.2287, 7.0964], [11.8608, 6.2446, 7.1768], [11.863, 6.25, 7.2585], [12.1922, 6.25, 8.4375], [12.4061, 6.2636, 8.6804], [12.679, 6.3029, 8.9104], [13.0051, 6.3655, 9.1296], [13.3705, 6.4491, 9.3403], [13.7498, 6.5513, 9.5444], [14.1031, 6.6699, 9.7441], [14.3792, 6.8025, 9.9416], [14.5315, 6.9468, 10.1389], [14.5625, 7.1003, 10.3381], [14.5625, 7.2609, 10.5414], [14.5625, 7.4262, 10.7509], [14.5625, 7.5938, 10.9688], [14.5625, 7.7613, 11.197], [14.5625, 7.9266, 11.4377], [14.5625, 8.0872, 11.6931], [14.5625, 8.2407, 11.9653], [14.5625, 8.385, 12.2563], [14.5625, 8.5176, 12.5684], [14.5625, 8.6362, 12.9035], [14.5625, 8.7384, 13.2639], [14.5625, 8.822, 13.6516], [14.5625, 8.8846, 14.0688], [14.5625, 8.9239, 14.5176], [14.5625, 8.9375, 15], [14.5625, 8.9375, 38.75], [14.5625, 8.9482, 38.9132], [14.5625, 8.9801, 39.0735], [14.5625, 9.0327, 39.2284], [14.5625, 9.105, 39.375], [14.5625, 9.1958, 39.511], [14.5625, 9.3036, 39.6339], [14.5625, 9.4265, 39.7417], [14.5625, 9.5625, 39.8325], [14.5625, 9.7091, 39.9048], [14.5625, 9.864, 39.9574], [14.5625, 10.0243, 39.9893], [14.5625, 10.1875, 40], [14.5625, 9.5, 40], [14.5625, 9.6632, 40.0107], [14.5625, 9.8235, 40.0426], [14.5625, 9.9784, 40.0952], [14.5625, 10.125, 40.1675], [14.5625, 10.261, 40.2583], [14.5625, 10.3839, 40.3661], [14.5625, 10.4917, 40.489], [14.5625, 10.5825, 40.625], [14.5625, 10.6548, 40.7716], [14.5625, 10.7074, 40.9265], [14.5625, 10.7393, 41.0868], [14.5625, 10.75, 41.25], [14.5625, 10.75, 40.3125], [14.5732, 10.75, 40.4757], [14.6051, 10.75, 40.636], [14.6577, 10.75, 40.7909], [14.73, 10.75, 40.9375], [14.8208, 10.75, 41.0735], [14.9286, 10.75, 41.1964], [15.0515, 10.75, 41.3042], [15.1875, 10.75, 41.395], [15.3341, 10.75, 41.4673], [15.489, 10.75, 41.5199], [15.6493, 10.75, 41.5518], [15.8125, 10.75, 41.5625], [23.1875, 10.75, 41.5625], [23.2854, 10.7564, 41.5625], [23.3816, 10.7756, 41.5625], [23.4745, 10.8071, 41.5625], [23.5625, 10.8505, 41.5625], [23.6441, 10.905, 41.5625], [23.7178, 10.9697, 41.5625], [23.7825, 11.0434, 41.5625], [23.837, 11.125, 41.5625], [23.8804, 11.213, 41.5625], [23.9119, 11.3059, 41.5625], [23.9311, 11.4021, 41.5625], [23.9375, 11.5, 41.5625], [23.9375, 11.125, 41.5625], [23.9375, 11.2229, 41.5561], [23.9375, 11.3191, 41.5369], [23.9375, 11.412, 41.5054], [23.9375, 11.5, 41.462], [23.9375, 11.5816, 41.4075], [23.9375, 11.6553, 41.3428], [23.9375, 11.72, 41.2691], [23.9375, 11.7745, 41.1875], [23.9375, 11.8179, 41.0995], [23.9375, 11.8494, 41.0066], [23.9375, 11.8686, 40.9104], [23.9375, 11.875, 40.8125], [23.9375, 11.875, 31.175], [23.9375, 11.881, 31.0836], [23.9375, 11.8989, 30.9938], [23.9375, 11.9283, 30.9071], [23.9375, 11.9688, 30.825], [23.9375, 12.0197, 30.7489], [23.9375, 12.08, 30.68], [23.9375, 12.1489, 30.6197], [23.9375, 12.225, 30.5688], [23.9375, 12.3071, 30.5283], [23.9375, 12.3938, 30.4989], [23.9375, 12.4836, 30.481], [23.9375, 12.575, 30.475], [23.9375, 12.6575, 30.475], [23.9435, 12.7489, 30.475], [23.9614, 12.8387, 30.475], [23.9908, 12.9254, 30.475], [24.0313, 13.0075, 30.475], [24.0822, 13.0836, 30.475], [24.1425, 13.1525, 30.475], [24.2114, 13.2128, 30.475], [24.2875, 13.2637, 30.475], [24.3696, 13.3042, 30.475], [24.4563, 13.3336, 30.475], [24.5461, 13.3515, 30.475], [24.6375, 13.3575, 30.475], [24.95, 13.3575, 30.475], [25.0544, 13.3575, 30.4818], [25.1571, 13.3575, 30.5023], [25.2561, 13.3575, 30.5359], [25.35, 13.3575, 30.5822], [25.437, 13.3575, 30.6403], [25.5157, 13.3575, 30.7093], [25.5847, 13.3575, 30.788], [25.6428, 13.3575, 30.875], [25.6891, 13.3575, 30.9689], [25.7227, 13.3575, 31.0679], [25.7432, 13.3575, 31.1706], [25.75, 13.3575, 31.275], [25.75, 13.3575, 32.475]], 71.4724],
+    ["low_voltage_ev_charger_feed", "low_voltage_cabling", 0.125, [0.05, 0.2, 0.8, 1], [[10.6569, 3.9375, 10.6325], [10.6605, 3.9379, 10.4974], [10.6709, 3.9396, 10.3437], [10.6875, 3.9431, 10.1735], [10.7096, 3.9491, 9.9889], [10.7367, 3.9581, 9.7923], [10.7682, 3.9707, 9.5856], [10.8033, 3.9876, 9.3711], [10.8416, 4.0093, 9.151], [10.8823, 4.0364, 8.9274], [10.9249, 4.0695, 8.7025], [10.9687, 4.1093, 8.4785], [11.0131, 4.1562, 8.2575], [11.0575, 4.211, 8.0417], [11.1013, 4.2742, 7.8333], [11.1439, 4.3464, 7.6344], [11.1846, 4.4282, 7.4473], [11.2229, 4.5202, 7.274], [11.258, 4.623, 7.1168], [11.2895, 4.7372, 6.9779], [11.3166, 4.8634, 6.8593], [11.3387, 5.0022, 6.7633], [11.3553, 5.1542, 6.6921], [11.3657, 5.3199, 6.6477], [11.3694, 5.5, 6.6325], [11.3694, 5.625, 6.6325], [11.3694, 5.7066, 6.6378], [11.3694, 5.7868, 6.6538], [11.3694, 5.8642, 6.68], [11.3694, 5.9375, 6.7162], [11.3694, 6.0055, 6.7616], [11.3694, 6.0669, 6.8155], [11.3694, 6.1208, 6.877], [11.3694, 6.1663, 6.945], [11.3694, 6.2024, 7.0183], [11.3694, 6.2287, 7.0957], [11.3694, 6.2447, 7.1759], [11.3694, 6.25, 7.2575], [11.3694, 6.25, 8.4375], [11.3773, 6.2639, 8.6625], [11.4002, 6.3041, 8.888], [11.4367, 6.3682, 9.1152], [11.4855, 6.4537, 9.3449], [11.5452, 6.5583, 9.5782], [11.6144, 6.6797, 9.816], [11.6917, 6.8154, 10.0594], [11.7759, 6.963, 10.3093], [11.8655, 7.1201, 10.5667], [11.9592, 7.2844, 10.8325], [12.0556, 7.4535, 11.1079], [12.1534, 7.625, 11.3938], [12.2512, 7.7965, 11.691], [12.3476, 7.9656, 12.0008], [12.4413, 8.1299, 12.324], [12.5309, 8.287, 12.6616], [12.6151, 8.4346, 13.0146], [12.6925, 8.5703, 13.384], [12.7617, 8.6917, 13.7708], [12.8213, 8.7963, 14.1759], [12.8701, 8.8818, 14.6004], [12.9066, 8.9459, 15.0453], [12.9296, 8.9861, 15.5115], [12.9375, 9, 16], [12.9375, 9, 19.9], [12.9375, 9.0068, 20.0044], [12.9375, 9.0273, 20.1071], [12.9375, 9.0609, 20.2061], [12.9375, 9.1072, 20.3], [12.9375, 9.1653, 20.387], [12.9375, 9.2343, 20.4657], [12.9375, 9.313, 20.5347], [12.9375, 9.4, 20.5928], [12.9375, 9.4939, 20.6391], [12.9375, 9.5929, 20.6727], [12.9375, 9.6956, 20.6932], [12.9375, 9.8, 20.7], [12.9375, 10.75, 20.7], [12.9391, 10.8432, 20.7059], [12.9439, 10.9351, 20.7229], [12.9519, 11.0259, 20.7504], [12.963, 11.1155, 20.7875], [12.9771, 11.2039, 20.8335], [12.9941, 11.291, 20.8875], [13.0142, 11.3769, 20.9488], [13.037, 11.4616, 21.0167], [13.0627, 11.545, 21.0902], [13.0912, 11.6271, 21.1687], [13.1224, 11.7079, 21.2514], [13.1562, 11.7875, 21.3375], [13.1927, 11.8658, 21.4262], [13.2317, 11.9427, 21.5167], [13.2732, 12.0183, 21.6082], [13.3171, 12.0926, 21.7], [13.3635, 12.1655, 21.7913], [13.4121, 12.2371, 21.8813], [13.463, 12.3073, 21.9691], [13.5162, 12.3762, 22.0542], [13.5715, 12.4436, 22.1355], [13.629, 12.5096, 22.2125], [13.6885, 12.5743, 22.2842], [13.75, 12.6375, 22.35]], 24.2062]
 ];
 
 grounds = [
-    ["ground", [12, 9.1875, 0.125], [-0.0416, 0.0407, 0.9983], 48, [0.24, 0.42, 0.24, 0.35], 0.05]
+    ["ground", [12, 9.6875, 0.125], [-0.0416, 0.0386, 0.9984], 48, [0.24, 0.42, 0.24, 0.35], 0.05]
 ];
 
 footing_parts = [
     ["footing_fl", [1.75, 1.75, -18], 10, -36, 0, [0.46, 0.43, 0.37, 0.45]],
     ["footing_fr", [25.75, 1.75, -18], 10, -36, 0, [0.46, 0.43, 0.37, 0.45]],
-    ["footing_bl", [1.75, 20.125, -18], 10, -36, 0, [0.46, 0.43, 0.37, 0.45]],
-    ["footing_br", [25.75, 20.125, -18], 10, -36, 0, [0.46, 0.43, 0.37, 0.45]]
+    ["footing_bl", [1.75, 21.125, -18], 10, -36, 0, [0.46, 0.43, 0.37, 0.45]],
+    ["footing_br", [25.75, 21.125, -18], 10, -36, 0, [0.46, 0.43, 0.37, 0.45]]
 ];
 
 tambours = [
-    ["enclosure_tambour_door", "tambour_door", [0.35, 0.37, 0.39, 1], [0.1, 0.12, 0.14, 1], 0.5, 0.7812, 0.75, 0.5, 0, [[3.5, 21, 3], [3.5, 21, 41.75], [3.5, 20.9986, 41.8359], [3.5, 20.9944, 41.9217], [3.5, 20.9874, 42.0073], [3.5, 20.9775, 42.0926], [3.5, 20.9649, 42.1776], [3.5, 20.9496, 42.2621], [3.5, 20.9314, 42.3461], [3.5, 20.9106, 42.4294], [3.5, 20.887, 42.512], [3.5, 20.8607, 42.5938], [3.5, 20.8318, 42.6747], [3.5, 20.8002, 42.7545], [3.5, 20.766, 42.8334], [3.5, 20.7293, 42.911], [3.5, 20.69, 42.9874], [3.5, 20.6483, 43.0625], [3.5, 20.6042, 43.1362], [3.5, 20.5576, 43.2084], [3.5, 20.5087, 43.279], [3.5, 20.4576, 43.348], [3.5, 20.4042, 43.4153], [3.5, 20.3486, 43.4808], [3.5, 20.2909, 43.5444], [3.5, 20.2312, 43.6062], [3.5, 20.1694, 43.6659], [3.5, 20.1058, 43.7236], [3.5, 20.0403, 43.7792], [3.5, 19.973, 43.8326], [3.5, 19.904, 43.8837], [3.5, 19.8334, 43.9326], [3.5, 19.7612, 43.9792], [3.5, 19.6875, 44.0233], [3.5, 19.6124, 44.065], [3.5, 19.536, 44.1043], [3.5, 19.4584, 44.141], [3.5, 19.3795, 44.1752], [3.5, 19.2997, 44.2068], [3.5, 19.2188, 44.2357], [3.5, 19.137, 44.262], [3.5, 19.0544, 44.2856], [3.5, 18.9711, 44.3064], [3.5, 18.8871, 44.3246], [3.5, 18.8026, 44.3399], [3.5, 18.7176, 44.3525], [3.5, 18.6323, 44.3624], [3.5, 18.5467, 44.3694], [3.5, 18.4609, 44.3736], [3.5, 18.375, 44.375], [3.5, 7.625, 44.375], [3.5, 7.5391, 44.3736], [3.5, 7.4533, 44.3694], [3.5, 7.3677, 44.3624], [3.5, 7.2824, 44.3525], [3.5, 7.1974, 44.3399], [3.5, 7.1129, 44.3246], [3.5, 7.0289, 44.3064], [3.5, 6.9456, 44.2856], [3.5, 6.863, 44.262], [3.5, 6.7812, 44.2357], [3.5, 6.7003, 44.2068], [3.5, 6.6205, 44.1752], [3.5, 6.5416, 44.141], [3.5, 6.464, 44.1043], [3.5, 6.3876, 44.065], [3.5, 6.3125, 44.0233], [3.5, 6.2388, 43.9792], [3.5, 6.1666, 43.9326], [3.5, 6.096, 43.8837], [3.5, 6.027, 43.8326], [3.5, 5.9597, 43.7792], [3.5, 5.8942, 43.7236], [3.5, 5.8306, 43.6659], [3.5, 5.7688, 43.6062], [3.5, 5.7091, 43.5444], [3.5, 5.6514, 43.4808], [3.5, 5.5958, 43.4153], [3.5, 5.5424, 43.348], [3.5, 5.4913, 43.279], [3.5, 5.4424, 43.2084], [3.5, 5.3958, 43.1362], [3.5, 5.3517, 43.0625], [3.5, 5.31, 42.9874], [3.5, 5.2707, 42.911], [3.5, 5.234, 42.8334], [3.5, 5.1998, 42.7545], [3.5, 5.1682, 42.6747], [3.5, 5.1393, 42.5938], [3.5, 5.113, 42.512], [3.5, 5.0894, 42.4294], [3.5, 5.0686, 42.3461], [3.5, 5.0504, 42.2621], [3.5, 5.0351, 42.1776], [3.5, 5.0225, 42.0926], [3.5, 5.0126, 42.0073], [3.5, 5.0056, 41.9217], [3.5, 5.0014, 41.8359], [3.5, 5, 41.75], [3.5, 5, 16]], [[24, 21, 3], [24, 21, 41.75], [24, 20.9986, 41.8359], [24, 20.9944, 41.9217], [24, 20.9874, 42.0073], [24, 20.9775, 42.0926], [24, 20.9649, 42.1776], [24, 20.9496, 42.2621], [24, 20.9314, 42.3461], [24, 20.9106, 42.4294], [24, 20.887, 42.512], [24, 20.8607, 42.5938], [24, 20.8318, 42.6747], [24, 20.8002, 42.7545], [24, 20.766, 42.8334], [24, 20.7293, 42.911], [24, 20.69, 42.9874], [24, 20.6483, 43.0625], [24, 20.6042, 43.1362], [24, 20.5576, 43.2084], [24, 20.5087, 43.279], [24, 20.4576, 43.348], [24, 20.4042, 43.4153], [24, 20.3486, 43.4808], [24, 20.2909, 43.5444], [24, 20.2312, 43.6062], [24, 20.1694, 43.6659], [24, 20.1058, 43.7236], [24, 20.0403, 43.7792], [24, 19.973, 43.8326], [24, 19.904, 43.8837], [24, 19.8334, 43.9326], [24, 19.7612, 43.9792], [24, 19.6875, 44.0233], [24, 19.6124, 44.065], [24, 19.536, 44.1043], [24, 19.4584, 44.141], [24, 19.3795, 44.1752], [24, 19.2997, 44.2068], [24, 19.2188, 44.2357], [24, 19.137, 44.262], [24, 19.0544, 44.2856], [24, 18.9711, 44.3064], [24, 18.8871, 44.3246], [24, 18.8026, 44.3399], [24, 18.7176, 44.3525], [24, 18.6323, 44.3624], [24, 18.5467, 44.3694], [24, 18.4609, 44.3736], [24, 18.375, 44.375], [24, 7.625, 44.375], [24, 7.5391, 44.3736], [24, 7.4533, 44.3694], [24, 7.3677, 44.3624], [24, 7.2824, 44.3525], [24, 7.1974, 44.3399], [24, 7.1129, 44.3246], [24, 7.0289, 44.3064], [24, 6.9456, 44.2856], [24, 6.863, 44.262], [24, 6.7812, 44.2357], [24, 6.7003, 44.2068], [24, 6.6205, 44.1752], [24, 6.5416, 44.141], [24, 6.464, 44.1043], [24, 6.3876, 44.065], [24, 6.3125, 44.0233], [24, 6.2388, 43.9792], [24, 6.1666, 43.9326], [24, 6.096, 43.8837], [24, 6.027, 43.8326], [24, 5.9597, 43.7792], [24, 5.8942, 43.7236], [24, 5.8306, 43.6659], [24, 5.7688, 43.6062], [24, 5.7091, 43.5444], [24, 5.6514, 43.4808], [24, 5.5958, 43.4153], [24, 5.5424, 43.348], [24, 5.4913, 43.279], [24, 5.4424, 43.2084], [24, 5.3958, 43.1362], [24, 5.3517, 43.0625], [24, 5.31, 42.9874], [24, 5.2707, 42.911], [24, 5.234, 42.8334], [24, 5.1998, 42.7545], [24, 5.1682, 42.6747], [24, 5.1393, 42.5938], [24, 5.113, 42.512], [24, 5.0894, 42.4294], [24, 5.0686, 42.3461], [24, 5.0504, 42.2621], [24, 5.0351, 42.1776], [24, 5.0225, 42.0926], [24, 5.0126, 42.0073], [24, 5.0056, 41.9217], [24, 5.0014, 41.8359], [24, 5, 41.75], [24, 5, 16]], [[1, 2.625], [2, 2.625]], [[[3.5, 20.6419, 43.0733], [24, 20.6419, 43.0733], [0, -0.5141, 0.8577]], [[3.5, 20.1541, 43.6798], [24, 20.1541, 43.6798], [0, -0.741, 0.6716]], [[3.5, 19.5099, 44.1166], [24, 19.5099, 44.1166], [0, -0.904, 0.4276]], [[3.5, 18.766, 44.3454], [24, 18.766, 44.3454], [0, -0.9892, 0.1467]], [[3.5, 17.9862, 44.375], [24, 17.9862, 44.375], [0, -1, 0]], [[3.5, 17.205, 44.375], [24, 17.205, 44.375], [0, -1, 0]], [[3.5, 16.4237, 44.375], [24, 16.4237, 44.375], [0, -1, 0]], [[3.5, 15.6425, 44.375], [24, 15.6425, 44.375], [0, -1, 0]], [[3.5, 14.8612, 44.375], [24, 14.8612, 44.375], [0, -1, 0]], [[3.5, 14.08, 44.375], [24, 14.08, 44.375], [0, -1, 0]], [[3.5, 13.2987, 44.375], [24, 13.2987, 44.375], [0, -1, 0]], [[3.5, 12.5175, 44.375], [24, 12.5175, 44.375], [0, -1, 0]], [[3.5, 11.7362, 44.375], [24, 11.7362, 44.375], [0, -1, 0]], [[3.5, 10.955, 44.375], [24, 10.955, 44.375], [0, -1, 0]], [[3.5, 10.1737, 44.375], [24, 10.1737, 44.375], [0, -1, 0]], [[3.5, 9.3925, 44.375], [24, 9.3925, 44.375], [0, -1, 0]], [[3.5, 8.6112, 44.375], [24, 8.6112, 44.375], [0, -1, 0]], [[3.5, 7.83, 44.375], [24, 7.83, 44.375], [0, -1, 0]], [[3.5, 7.0534, 44.3117], [24, 7.0534, 44.3117], [0, -0.9775, -0.2111]], [[3.5, 6.3272, 44.0315], [24, 6.3272, 44.0315], [0, -0.8741, -0.4858]], [[3.5, 5.7152, 43.5507], [24, 5.7152, 43.5507], [0, -0.6954, -0.7186]], [[3.5, 5.271, 42.9115], [24, 5.271, 42.9115], [0, -0.4569, -0.8895]], [[3.5, 5.0339, 42.1701], [24, 5.0339, 42.1701], [0, -0.1467, -0.9892]], [[3.5, 5, 41.3906], [24, 5, 41.3906], [0, 0, -1]], [[3.5, 5, 40.6094], [24, 5, 40.6094], [0, 0, -1]], [[3.5, 5, 39.8281], [24, 5, 39.8281], [0, 0, -1]], [[3.5, 5, 39.0469], [24, 5, 39.0469], [0, 0, -1]], [[3.5, 5, 38.2656], [24, 5, 38.2656], [0, 0, -1]], [[3.5, 5, 37.4844], [24, 5, 37.4844], [0, 0, -1]], [[3.5, 5, 36.7031], [24, 5, 36.7031], [0, 0, -1]], [[3.5, 5, 35.9219], [24, 5, 35.9219], [0, 0, -1]], [[3.5, 5, 35.1406], [24, 5, 35.1406], [0, 0, -1]], [[3.5, 5, 34.3594], [24, 5, 34.3594], [0, 0, -1]], [[3.5, 5, 33.5781], [24, 5, 33.5781], [0, 0, -1]], [[3.5, 5, 32.7969], [24, 5, 32.7969], [0, 0, -1]], [[3.5, 5, 32.0156], [24, 5, 32.0156], [0, 0, -1]], [[3.5, 5, 31.2344], [24, 5, 31.2344], [0, 0, -1]], [[3.5, 5, 30.4531], [24, 5, 30.4531], [0, 0, -1]], [[3.5, 5, 29.6719], [24, 5, 29.6719], [0, 0, -1]], [[3.5, 5, 28.8906], [24, 5, 28.8906], [0, 0, -1]], [[3.5, 5, 28.1094], [24, 5, 28.1094], [0, 0, -1]], [[3.5, 5, 27.3281], [24, 5, 27.3281], [0, 0, -1]], [[3.5, 5, 26.5469], [24, 5, 26.5469], [0, 0, -1]], [[3.5, 5, 25.7656], [24, 5, 25.7656], [0, 0, -1]], [[3.5, 5, 24.9844], [24, 5, 24.9844], [0, 0, -1]], [[3.5, 5, 24.2031], [24, 5, 24.2031], [0, 0, -1]], [[3.5, 5, 23.4219], [24, 5, 23.4219], [0, 0, -1]], [[3.5, 5, 22.6406], [24, 5, 22.6406], [0, 0, -1]], [[3.5, 5, 21.8594], [24, 5, 21.8594], [0, 0, -1]], [[3.5, 5, 21.0781], [24, 5, 21.0781], [0, 0, -1]], [[3.5, 5, 20.2969], [24, 5, 20.2969], [0, 0, -1]], [[3.5, 5, 19.5156], [24, 5, 19.5156], [0, 0, -1]], [[3.5, 5, 18.7344], [24, 5, 18.7344], [0, 0, -1]], [[3.5, 5, 17.9531], [24, 5, 17.9531], [0, 0, -1]], [[3.5, 5, 17.1719], [24, 5, 17.1719], [0, 0, -1]], [[3.5, 5, 16.3906], [24, 5, 16.3906], [0, 0, -1]]], [[[3.5, 21, 3.3906], [24, 21, 3.3906], [0, 0, 1]], [[3.5, 21, 4.1719], [24, 21, 4.1719], [0, 0, 1]], [[3.5, 21, 4.9531], [24, 21, 4.9531], [0, 0, 1]], [[3.5, 21, 5.7344], [24, 21, 5.7344], [0, 0, 1]], [[3.5, 21, 6.5156], [24, 21, 6.5156], [0, 0, 1]], [[3.5, 21, 7.2969], [24, 21, 7.2969], [0, 0, 1]], [[3.5, 21, 8.0781], [24, 21, 8.0781], [0, 0, 1]], [[3.5, 21, 8.8594], [24, 21, 8.8594], [0, 0, 1]], [[3.5, 21, 9.6406], [24, 21, 9.6406], [0, 0, 1]], [[3.5, 21, 10.4219], [24, 21, 10.4219], [0, 0, 1]], [[3.5, 21, 11.2031], [24, 21, 11.2031], [0, 0, 1]], [[3.5, 21, 11.9844], [24, 21, 11.9844], [0, 0, 1]], [[3.5, 21, 12.7656], [24, 21, 12.7656], [0, 0, 1]], [[3.5, 21, 13.5469], [24, 21, 13.5469], [0, 0, 1]], [[3.5, 21, 14.3281], [24, 21, 14.3281], [0, 0, 1]], [[3.5, 21, 15.1094], [24, 21, 15.1094], [0, 0, 1]], [[3.5, 21, 15.8906], [24, 21, 15.8906], [0, 0, 1]], [[3.5, 21, 16.6719], [24, 21, 16.6719], [0, 0, 1]], [[3.5, 21, 17.4531], [24, 21, 17.4531], [0, 0, 1]], [[3.5, 21, 18.2344], [24, 21, 18.2344], [0, 0, 1]], [[3.5, 21, 19.0156], [24, 21, 19.0156], [0, 0, 1]], [[3.5, 21, 19.7969], [24, 21, 19.7969], [0, 0, 1]], [[3.5, 21, 20.5781], [24, 21, 20.5781], [0, 0, 1]], [[3.5, 21, 21.3594], [24, 21, 21.3594], [0, 0, 1]], [[3.5, 21, 22.1406], [24, 21, 22.1406], [0, 0, 1]], [[3.5, 21, 22.9219], [24, 21, 22.9219], [0, 0, 1]], [[3.5, 21, 23.7031], [24, 21, 23.7031], [0, 0, 1]], [[3.5, 21, 24.4844], [24, 21, 24.4844], [0, 0, 1]], [[3.5, 21, 25.2656], [24, 21, 25.2656], [0, 0, 1]], [[3.5, 21, 26.0469], [24, 21, 26.0469], [0, 0, 1]], [[3.5, 21, 26.8281], [24, 21, 26.8281], [0, 0, 1]], [[3.5, 21, 27.6094], [24, 21, 27.6094], [0, 0, 1]], [[3.5, 21, 28.3906], [24, 21, 28.3906], [0, 0, 1]], [[3.5, 21, 29.1719], [24, 21, 29.1719], [0, 0, 1]], [[3.5, 21, 29.9531], [24, 21, 29.9531], [0, 0, 1]], [[3.5, 21, 30.7344], [24, 21, 30.7344], [0, 0, 1]], [[3.5, 21, 31.5156], [24, 21, 31.5156], [0, 0, 1]], [[3.5, 21, 32.2969], [24, 21, 32.2969], [0, 0, 1]], [[3.5, 21, 33.0781], [24, 21, 33.0781], [0, 0, 1]], [[3.5, 21, 33.8594], [24, 21, 33.8594], [0, 0, 1]], [[3.5, 21, 34.6406], [24, 21, 34.6406], [0, 0, 1]], [[3.5, 21, 35.4219], [24, 21, 35.4219], [0, 0, 1]], [[3.5, 21, 36.2031], [24, 21, 36.2031], [0, 0, 1]], [[3.5, 21, 36.9844], [24, 21, 36.9844], [0, 0, 1]], [[3.5, 21, 37.7656], [24, 21, 37.7656], [0, 0, 1]], [[3.5, 21, 38.5469], [24, 21, 38.5469], [0, 0, 1]], [[3.5, 21, 39.3281], [24, 21, 39.3281], [0, 0, 1]], [[3.5, 21, 40.1094], [24, 21, 40.1094], [0, 0, 1]], [[3.5, 21, 40.8906], [24, 21, 40.8906], [0, 0, 1]], [[3.5, 21, 41.6719], [24, 21, 41.6719], [0, 0, 1]], [[3.5, 20.9062, 42.4447], [24, 20.9062, 42.4447], [0, -0.2746, 0.9616]], [[3.5, 20.5911, 43.1564], [24, 20.5911, 43.1564], [0, -0.5419, 0.8404]], [[3.5, 20.0812, 43.7444], [24, 20.0812, 43.7444], [0, -0.7625, 0.647]], [[3.5, 19.4213, 44.1571], [24, 19.4213, 44.1571], [0, -0.9175, 0.3977]], [[3.5, 18.6694, 44.3581], [24, 18.6694, 44.3581], [0, -0.9934, 0.1143]], [[3.5, 17.8888, 44.375], [24, 17.8888, 44.375], [0, -1, 0]]], [0.5394, 0.0945, 0.189, 0.3228, 0.4724, [[[3.5, 21, 6.937], [24, 21, 6.937], [0, 0, 1]], [[3.5, 21, 18.2789], [24, 21, 18.2789], [0, 0, 1]], [[3.5, 21, 29.6207], [24, 21, 29.6207], [0, 0, 1]], [[3.5, 21, 40.9626], [24, 21, 40.9626], [0, 0, 1]], [[3.5, 17.5874, 44.375], [24, 17.5874, 44.375], [0, -1, 0]], [[3.5, 8.4122, 44.375], [24, 8.4122, 44.375], [0, -1, 0]], [[3.5, 5, 40.9622], [24, 5, 40.9622], [0, 0, -1]], [[3.5, 5, 32.6414], [24, 5, 32.6414], [0, 0, -1]], [[3.5, 5, 24.3205], [24, 5, 24.3205], [0, 0, -1]]], 0.0236, 3.937, 0.4724, 3, 1, 0.0625, [0, 23], 11.811, 0.7106, 0.625, [0.08, 0.08, 0.08, 1], [0.28, 0.3, 0.32, 1], 0.0625], "enclosure_tambour_track", "tambour_track"]
+    ["enclosure_tambour_door", "tambour_door", [0.35, 0.37, 0.39, 1], [0.1, 0.12, 0.14, 1], 0.5, 0.7812, 0.75, 0.5, 0, [[3.5, 22, 3], [3.5, 22, 41.75], [3.5, 21.9986, 41.8359], [3.5, 21.9944, 41.9217], [3.5, 21.9874, 42.0073], [3.5, 21.9775, 42.0926], [3.5, 21.9649, 42.1776], [3.5, 21.9496, 42.2621], [3.5, 21.9314, 42.3461], [3.5, 21.9106, 42.4294], [3.5, 21.887, 42.512], [3.5, 21.8607, 42.5938], [3.5, 21.8318, 42.6747], [3.5, 21.8002, 42.7545], [3.5, 21.766, 42.8334], [3.5, 21.7293, 42.911], [3.5, 21.69, 42.9874], [3.5, 21.6483, 43.0625], [3.5, 21.6042, 43.1362], [3.5, 21.5576, 43.2084], [3.5, 21.5087, 43.279], [3.5, 21.4576, 43.348], [3.5, 21.4042, 43.4153], [3.5, 21.3486, 43.4808], [3.5, 21.2909, 43.5444], [3.5, 21.2312, 43.6062], [3.5, 21.1694, 43.6659], [3.5, 21.1058, 43.7236], [3.5, 21.0403, 43.7792], [3.5, 20.973, 43.8326], [3.5, 20.904, 43.8837], [3.5, 20.8334, 43.9326], [3.5, 20.7612, 43.9792], [3.5, 20.6875, 44.0233], [3.5, 20.6124, 44.065], [3.5, 20.536, 44.1043], [3.5, 20.4584, 44.141], [3.5, 20.3795, 44.1752], [3.5, 20.2997, 44.2068], [3.5, 20.2188, 44.2357], [3.5, 20.137, 44.262], [3.5, 20.0544, 44.2856], [3.5, 19.9711, 44.3064], [3.5, 19.8871, 44.3246], [3.5, 19.8026, 44.3399], [3.5, 19.7176, 44.3525], [3.5, 19.6323, 44.3624], [3.5, 19.5467, 44.3694], [3.5, 19.4609, 44.3736], [3.5, 19.375, 44.375], [3.5, 7.625, 44.375], [3.5, 7.5391, 44.3736], [3.5, 7.4533, 44.3694], [3.5, 7.3677, 44.3624], [3.5, 7.2824, 44.3525], [3.5, 7.1974, 44.3399], [3.5, 7.1129, 44.3246], [3.5, 7.0289, 44.3064], [3.5, 6.9456, 44.2856], [3.5, 6.863, 44.262], [3.5, 6.7812, 44.2357], [3.5, 6.7003, 44.2068], [3.5, 6.6205, 44.1752], [3.5, 6.5416, 44.141], [3.5, 6.464, 44.1043], [3.5, 6.3876, 44.065], [3.5, 6.3125, 44.0233], [3.5, 6.2388, 43.9792], [3.5, 6.1666, 43.9326], [3.5, 6.096, 43.8837], [3.5, 6.027, 43.8326], [3.5, 5.9597, 43.7792], [3.5, 5.8942, 43.7236], [3.5, 5.8306, 43.6659], [3.5, 5.7688, 43.6062], [3.5, 5.7091, 43.5444], [3.5, 5.6514, 43.4808], [3.5, 5.5958, 43.4153], [3.5, 5.5424, 43.348], [3.5, 5.4913, 43.279], [3.5, 5.4424, 43.2084], [3.5, 5.3958, 43.1362], [3.5, 5.3517, 43.0625], [3.5, 5.31, 42.9874], [3.5, 5.2707, 42.911], [3.5, 5.234, 42.8334], [3.5, 5.1998, 42.7545], [3.5, 5.1682, 42.6747], [3.5, 5.1393, 42.5938], [3.5, 5.113, 42.512], [3.5, 5.0894, 42.4294], [3.5, 5.0686, 42.3461], [3.5, 5.0504, 42.2621], [3.5, 5.0351, 42.1776], [3.5, 5.0225, 42.0926], [3.5, 5.0126, 42.0073], [3.5, 5.0056, 41.9217], [3.5, 5.0014, 41.8359], [3.5, 5, 41.75], [3.5, 5, 16]], [[24, 22, 3], [24, 22, 41.75], [24, 21.9986, 41.8359], [24, 21.9944, 41.9217], [24, 21.9874, 42.0073], [24, 21.9775, 42.0926], [24, 21.9649, 42.1776], [24, 21.9496, 42.2621], [24, 21.9314, 42.3461], [24, 21.9106, 42.4294], [24, 21.887, 42.512], [24, 21.8607, 42.5938], [24, 21.8318, 42.6747], [24, 21.8002, 42.7545], [24, 21.766, 42.8334], [24, 21.7293, 42.911], [24, 21.69, 42.9874], [24, 21.6483, 43.0625], [24, 21.6042, 43.1362], [24, 21.5576, 43.2084], [24, 21.5087, 43.279], [24, 21.4576, 43.348], [24, 21.4042, 43.4153], [24, 21.3486, 43.4808], [24, 21.2909, 43.5444], [24, 21.2312, 43.6062], [24, 21.1694, 43.6659], [24, 21.1058, 43.7236], [24, 21.0403, 43.7792], [24, 20.973, 43.8326], [24, 20.904, 43.8837], [24, 20.8334, 43.9326], [24, 20.7612, 43.9792], [24, 20.6875, 44.0233], [24, 20.6124, 44.065], [24, 20.536, 44.1043], [24, 20.4584, 44.141], [24, 20.3795, 44.1752], [24, 20.2997, 44.2068], [24, 20.2188, 44.2357], [24, 20.137, 44.262], [24, 20.0544, 44.2856], [24, 19.9711, 44.3064], [24, 19.8871, 44.3246], [24, 19.8026, 44.3399], [24, 19.7176, 44.3525], [24, 19.6323, 44.3624], [24, 19.5467, 44.3694], [24, 19.4609, 44.3736], [24, 19.375, 44.375], [24, 7.625, 44.375], [24, 7.5391, 44.3736], [24, 7.4533, 44.3694], [24, 7.3677, 44.3624], [24, 7.2824, 44.3525], [24, 7.1974, 44.3399], [24, 7.1129, 44.3246], [24, 7.0289, 44.3064], [24, 6.9456, 44.2856], [24, 6.863, 44.262], [24, 6.7812, 44.2357], [24, 6.7003, 44.2068], [24, 6.6205, 44.1752], [24, 6.5416, 44.141], [24, 6.464, 44.1043], [24, 6.3876, 44.065], [24, 6.3125, 44.0233], [24, 6.2388, 43.9792], [24, 6.1666, 43.9326], [24, 6.096, 43.8837], [24, 6.027, 43.8326], [24, 5.9597, 43.7792], [24, 5.8942, 43.7236], [24, 5.8306, 43.6659], [24, 5.7688, 43.6062], [24, 5.7091, 43.5444], [24, 5.6514, 43.4808], [24, 5.5958, 43.4153], [24, 5.5424, 43.348], [24, 5.4913, 43.279], [24, 5.4424, 43.2084], [24, 5.3958, 43.1362], [24, 5.3517, 43.0625], [24, 5.31, 42.9874], [24, 5.2707, 42.911], [24, 5.234, 42.8334], [24, 5.1998, 42.7545], [24, 5.1682, 42.6747], [24, 5.1393, 42.5938], [24, 5.113, 42.512], [24, 5.0894, 42.4294], [24, 5.0686, 42.3461], [24, 5.0504, 42.2621], [24, 5.0351, 42.1776], [24, 5.0225, 42.0926], [24, 5.0126, 42.0073], [24, 5.0056, 41.9217], [24, 5.0014, 41.8359], [24, 5, 41.75], [24, 5, 16]], [[1, 2.625], [2, 2.625]], [[[3.7202, 20.9873, 43.8212], [23.7798, 20.9873, 43.8212], [0, -0.7833, 0.6217]], [[3.7202, 20.309, 44.203], [23.7798, 20.309, 44.203], [0, -0.93, 0.3675]], [[3.7202, 19.5486, 44.3692], [23.7798, 19.5486, 44.3692], [0, -0.9967, 0.0817]], [[3.7202, 18.7675, 44.375], [23.7798, 18.7675, 44.375], [0, -1, 0]], [[3.7202, 17.9862, 44.375], [23.7798, 17.9862, 44.375], [0, -1, 0]], [[3.7202, 17.205, 44.375], [23.7798, 17.205, 44.375], [0, -1, 0]], [[3.7202, 16.4237, 44.375], [23.7798, 16.4237, 44.375], [0, -1, 0]], [[3.7202, 15.6425, 44.375], [23.7798, 15.6425, 44.375], [0, -1, 0]], [[3.7202, 14.8612, 44.375], [23.7798, 14.8612, 44.375], [0, -1, 0]], [[3.7202, 14.08, 44.375], [23.7798, 14.08, 44.375], [0, -1, 0]], [[3.7202, 13.2987, 44.375], [23.7798, 13.2987, 44.375], [0, -1, 0]], [[3.7202, 12.5175, 44.375], [23.7798, 12.5175, 44.375], [0, -1, 0]], [[3.7202, 11.7362, 44.375], [23.7798, 11.7362, 44.375], [0, -1, 0]], [[3.7202, 10.955, 44.375], [23.7798, 10.955, 44.375], [0, -1, 0]], [[3.7202, 10.1737, 44.375], [23.7798, 10.1737, 44.375], [0, -1, 0]], [[3.7202, 9.3925, 44.375], [23.7798, 9.3925, 44.375], [0, -1, 0]], [[3.7202, 8.6112, 44.375], [23.7798, 8.6112, 44.375], [0, -1, 0]], [[3.7202, 7.83, 44.375], [23.7798, 7.83, 44.375], [0, -1, 0]], [[3.7202, 7.0534, 44.3117], [23.7798, 7.0534, 44.3117], [0, -0.9775, -0.2111]], [[3.7202, 6.3272, 44.0315], [23.7798, 6.3272, 44.0315], [0, -0.8741, -0.4858]], [[3.7202, 5.7152, 43.5507], [23.7798, 5.7152, 43.5507], [0, -0.6954, -0.7186]], [[3.7202, 5.271, 42.9115], [23.7798, 5.271, 42.9115], [0, -0.4569, -0.8895]], [[3.7202, 5.0339, 42.1701], [23.7798, 5.0339, 42.1701], [0, -0.1467, -0.9892]], [[3.7202, 5, 41.3906], [23.7798, 5, 41.3906], [0, 0, -1]], [[3.7202, 5, 40.6094], [23.7798, 5, 40.6094], [0, 0, -1]], [[3.7202, 5, 39.8281], [23.7798, 5, 39.8281], [0, 0, -1]], [[3.7202, 5, 39.0469], [23.7798, 5, 39.0469], [0, 0, -1]], [[3.7202, 5, 38.2656], [23.7798, 5, 38.2656], [0, 0, -1]], [[3.7202, 5, 37.4844], [23.7798, 5, 37.4844], [0, 0, -1]], [[3.7202, 5, 36.7031], [23.7798, 5, 36.7031], [0, 0, -1]], [[3.7202, 5, 35.9219], [23.7798, 5, 35.9219], [0, 0, -1]], [[3.7202, 5, 35.1406], [23.7798, 5, 35.1406], [0, 0, -1]], [[3.7202, 5, 34.3594], [23.7798, 5, 34.3594], [0, 0, -1]], [[3.7202, 5, 33.5781], [23.7798, 5, 33.5781], [0, 0, -1]], [[3.7202, 5, 32.7969], [23.7798, 5, 32.7969], [0, 0, -1]], [[3.7202, 5, 32.0156], [23.7798, 5, 32.0156], [0, 0, -1]], [[3.7202, 5, 31.2344], [23.7798, 5, 31.2344], [0, 0, -1]], [[3.7202, 5, 30.4531], [23.7798, 5, 30.4531], [0, 0, -1]], [[3.7202, 5, 29.6719], [23.7798, 5, 29.6719], [0, 0, -1]], [[3.7202, 5, 28.8906], [23.7798, 5, 28.8906], [0, 0, -1]], [[3.7202, 5, 28.1094], [23.7798, 5, 28.1094], [0, 0, -1]], [[3.7202, 5, 27.3281], [23.7798, 5, 27.3281], [0, 0, -1]], [[3.7202, 5, 26.5469], [23.7798, 5, 26.5469], [0, 0, -1]], [[3.7202, 5, 25.7656], [23.7798, 5, 25.7656], [0, 0, -1]], [[3.7202, 5, 24.9844], [23.7798, 5, 24.9844], [0, 0, -1]], [[3.7202, 5, 24.2031], [23.7798, 5, 24.2031], [0, 0, -1]], [[3.7202, 5, 23.4219], [23.7798, 5, 23.4219], [0, 0, -1]], [[3.7202, 5, 22.6406], [23.7798, 5, 22.6406], [0, 0, -1]], [[3.7202, 5, 21.8594], [23.7798, 5, 21.8594], [0, 0, -1]], [[3.7202, 5, 21.0781], [23.7798, 5, 21.0781], [0, 0, -1]], [[3.7202, 5, 20.2969], [23.7798, 5, 20.2969], [0, 0, -1]], [[3.7202, 5, 19.5156], [23.7798, 5, 19.5156], [0, 0, -1]], [[3.7202, 5, 18.7344], [23.7798, 5, 18.7344], [0, 0, -1]], [[3.7202, 5, 17.9531], [23.7798, 5, 17.9531], [0, 0, -1]], [[3.7202, 5, 17.1719], [23.7798, 5, 17.1719], [0, 0, -1]], [[3.7202, 5, 16.3906], [23.7798, 5, 16.3906], [0, 0, -1]]], [[[3.7202, 22, 3.3906], [23.7798, 22, 3.3906], [0, 0, 1]], [[3.7202, 22, 4.1719], [23.7798, 22, 4.1719], [0, 0, 1]], [[3.7202, 22, 4.9531], [23.7798, 22, 4.9531], [0, 0, 1]], [[3.7202, 22, 5.7344], [23.7798, 22, 5.7344], [0, 0, 1]], [[3.7202, 22, 6.5156], [23.7798, 22, 6.5156], [0, 0, 1]], [[3.7202, 22, 7.2969], [23.7798, 22, 7.2969], [0, 0, 1]], [[3.7202, 22, 8.0781], [23.7798, 22, 8.0781], [0, 0, 1]], [[3.7202, 22, 8.8594], [23.7798, 22, 8.8594], [0, 0, 1]], [[3.7202, 22, 9.6406], [23.7798, 22, 9.6406], [0, 0, 1]], [[3.7202, 22, 10.4219], [23.7798, 22, 10.4219], [0, 0, 1]], [[3.7202, 22, 11.2031], [23.7798, 22, 11.2031], [0, 0, 1]], [[3.7202, 22, 11.9844], [23.7798, 22, 11.9844], [0, 0, 1]], [[3.7202, 22, 12.7656], [23.7798, 22, 12.7656], [0, 0, 1]], [[3.7202, 22, 13.5469], [23.7798, 22, 13.5469], [0, 0, 1]], [[3.7202, 22, 14.3281], [23.7798, 22, 14.3281], [0, 0, 1]], [[3.7202, 22, 15.1094], [23.7798, 22, 15.1094], [0, 0, 1]], [[3.7202, 22, 15.8906], [23.7798, 22, 15.8906], [0, 0, 1]], [[3.7202, 22, 16.6719], [23.7798, 22, 16.6719], [0, 0, 1]], [[3.7202, 22, 17.4531], [23.7798, 22, 17.4531], [0, 0, 1]], [[3.7202, 22, 18.2344], [23.7798, 22, 18.2344], [0, 0, 1]], [[3.7202, 22, 19.0156], [23.7798, 22, 19.0156], [0, 0, 1]], [[3.7202, 22, 19.7969], [23.7798, 22, 19.7969], [0, 0, 1]], [[3.7202, 22, 20.5781], [23.7798, 22, 20.5781], [0, 0, 1]], [[3.7202, 22, 21.3594], [23.7798, 22, 21.3594], [0, 0, 1]], [[3.7202, 22, 22.1406], [23.7798, 22, 22.1406], [0, 0, 1]], [[3.7202, 22, 22.9219], [23.7798, 22, 22.9219], [0, 0, 1]], [[3.7202, 22, 23.7031], [23.7798, 22, 23.7031], [0, 0, 1]], [[3.7202, 22, 24.4844], [23.7798, 22, 24.4844], [0, 0, 1]], [[3.7202, 22, 25.2656], [23.7798, 22, 25.2656], [0, 0, 1]], [[3.7202, 22, 26.0469], [23.7798, 22, 26.0469], [0, 0, 1]], [[3.7202, 22, 26.8281], [23.7798, 22, 26.8281], [0, 0, 1]], [[3.7202, 22, 27.6094], [23.7798, 22, 27.6094], [0, 0, 1]], [[3.7202, 22, 28.3906], [23.7798, 22, 28.3906], [0, 0, 1]], [[3.7202, 22, 29.1719], [23.7798, 22, 29.1719], [0, 0, 1]], [[3.7202, 22, 29.9531], [23.7798, 22, 29.9531], [0, 0, 1]], [[3.7202, 22, 30.7344], [23.7798, 22, 30.7344], [0, 0, 1]], [[3.7202, 22, 31.5156], [23.7798, 22, 31.5156], [0, 0, 1]], [[3.7202, 22, 32.2969], [23.7798, 22, 32.2969], [0, 0, 1]], [[3.7202, 22, 33.0781], [23.7798, 22, 33.0781], [0, 0, 1]], [[3.7202, 22, 33.8594], [23.7798, 22, 33.8594], [0, 0, 1]], [[3.7202, 22, 34.6406], [23.7798, 22, 34.6406], [0, 0, 1]], [[3.7202, 22, 35.4219], [23.7798, 22, 35.4219], [0, 0, 1]], [[3.7202, 22, 36.2031], [23.7798, 22, 36.2031], [0, 0, 1]], [[3.7202, 22, 36.9844], [23.7798, 22, 36.9844], [0, 0, 1]], [[3.7202, 22, 37.7656], [23.7798, 22, 37.7656], [0, 0, 1]], [[3.7202, 22, 38.5469], [23.7798, 22, 38.5469], [0, 0, 1]], [[3.7202, 22, 39.3281], [23.7798, 22, 39.3281], [0, 0, 1]], [[3.7202, 22, 40.1094], [23.7798, 22, 40.1094], [0, 0, 1]], [[3.7202, 22, 40.8906], [23.7798, 22, 40.8906], [0, 0, 1]], [[3.7202, 22, 41.6719], [23.7798, 22, 41.6719], [0, 0, 1]], [[3.7202, 21.9062, 42.4447], [23.7798, 21.9062, 42.4447], [0, -0.2746, 0.9616]], [[3.7202, 21.5911, 43.1564], [23.7798, 21.5911, 43.1564], [0, -0.5419, 0.8404]], [[3.7202, 21.0812, 43.7444], [23.7798, 21.0812, 43.7444], [0, -0.7625, 0.647]], [[3.7202, 20.4213, 44.1571], [23.7798, 20.4213, 44.1571], [0, -0.9175, 0.3977]], [[3.7202, 19.6694, 44.3581], [23.7798, 19.6694, 44.3581], [0, -0.9934, 0.1143]], [[3.7202, 18.8888, 44.375], [23.7798, 18.8888, 44.375], [0, -1, 0]]], [0.5394, 0.189, 0.189, 0.3228, 1.5748, [[[3.5, 22, 6.937], [24, 22, 6.937], [0, 0, 1]], [[3.5, 22, 18.2789], [24, 22, 18.2789], [0, 0, 1]], [[3.5, 22, 29.6207], [24, 22, 29.6207], [0, 0, 1]], [[3.5, 22, 40.9626], [24, 22, 40.9626], [0, 0, 1]], [[3.5, 18.5874, 44.375], [24, 18.5874, 44.375], [0, -1, 0]], [[3.5, 8.4122, 44.375], [24, 8.4122, 44.375], [0, -1, 0]], [[3.5, 5, 40.9622], [24, 5, 40.9622], [0, 0, -1]], [[3.5, 5, 32.6414], [24, 5, 32.6414], [0, 0, -1]], [[3.5, 5, 24.3205], [24, 5, 24.3205], [0, 0, -1]]], 0.0236, 3.937, 0.4724, 3, 1, 0.0625, [0, 23], 11.811, 0.7106, 0.625, [0.08, 0.08, 0.08, 1], [0.28, 0.3, 0.32, 1], 0.0625], "enclosure_tambour_track", "tambour_track"]
 ];
 
 siding_parts = [
     ["enclosure_siding_top_1", "composite_decking", [0, 0, 47.25], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_top_2", "composite_decking", [0, 5.6875, 47.25], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_top_3", "composite_decking", [0, 11.375, 47.25], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_top_4", "composite_decking", [0, 17.0625, 47.25], [27.5, 4.8125, 1], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_top_4", "composite_decking", [0, 17.0625, 47.25], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_top_5", "composite_decking", [0, 22.75, 47.25], [27.5, 0.125, 1], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_1", "composite_decking", [0, -1, 42.5], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_1", "composite_decking", [-1, -1, 42.5], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_1", "composite_decking", [27.5, -1, 42.5], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_top_left", "composite_decking", [0, 21.875, 42.5], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_top_header", "composite_decking", [3.5, 21.875, 44.375], [20.5, 1, 3.625], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_top_right", "composite_decking", [24, 21.875, 42.5], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_1", "composite_decking", [-1, -1, 42.5], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_1", "composite_decking", [27.5, -1, 42.5], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_top_left", "composite_decking", [0, 22.875, 42.5], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_top_header", "composite_decking", [3.5, 22.875, 44.375], [20.5, 1, 3.625], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_top_right", "composite_decking", [24, 22.875, 42.5], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_2_1", "composite_decking", [0, -1, 36.8125], [11.55, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_2_2", "composite_decking", [15.95, -1, 36.8125], [11.55, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_2_3", "composite_decking", [11.55, -1, 36.8125], [4.4, 1, 0.9875], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_2_4", "composite_decking", [11.55, -1, 42.2], [4.4, 1, 0.1125], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_2", "composite_decking", [-1, -1, 36.8125], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_2", "composite_decking", [27.5, -1, 36.8125], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_2", "composite_decking", [0, 21.875, 36.8125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_2", "composite_decking", [24, 21.875, 36.8125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_2", "composite_decking", [-1, -1, 36.8125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_2", "composite_decking", [27.5, -1, 36.8125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_left_2", "composite_decking", [0, 22.875, 36.8125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_right_2", "composite_decking", [24, 22.875, 36.8125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_3", "composite_decking", [0, -1, 31.125], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_3", "composite_decking", [-1, -1, 31.125], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_3", "composite_decking", [27.5, -1, 31.125], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_3", "composite_decking", [0, 21.875, 31.125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_3", "composite_decking", [24, 21.875, 31.125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_3", "composite_decking", [-1, -1, 31.125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_3", "composite_decking", [27.5, -1, 31.125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_left_3", "composite_decking", [0, 22.875, 31.125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_right_3", "composite_decking", [24, 22.875, 31.125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_4", "composite_decking", [0, -1, 25.4375], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_4", "composite_decking", [-1, -1, 25.4375], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_4", "composite_decking", [27.5, -1, 25.4375], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_4", "composite_decking", [0, 21.875, 25.4375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_4", "composite_decking", [24, 21.875, 25.4375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_4", "composite_decking", [-1, -1, 25.4375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_4", "composite_decking", [27.5, -1, 25.4375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_left_4", "composite_decking", [0, 22.875, 25.4375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_right_4", "composite_decking", [24, 22.875, 25.4375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_5", "composite_decking", [0, -1, 19.75], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_5", "composite_decking", [-1, -1, 19.75], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_5_1", "composite_decking", [27.5, -1, 19.75], [1, 16.475, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_5_2", "composite_decking", [27.5, 18.275, 19.75], [1, 4.6, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_5_3", "composite_decking", [27.5, 15.475, 20.85], [1, 2.8, 4.4], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_5", "composite_decking", [0, 21.875, 19.75], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_5", "composite_decking", [24, 21.875, 19.75], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_5", "composite_decking", [-1, -1, 19.75], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_5_1", "composite_decking", [27.5, -1, 19.75], [1, 17.475, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_5_2", "composite_decking", [27.5, 19.275, 19.75], [1, 4.6, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_5_3", "composite_decking", [27.5, 16.475, 20.85], [1, 2.8, 4.4], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_left_5", "composite_decking", [0, 22.875, 19.75], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_right_5", "composite_decking", [24, 22.875, 19.75], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_6", "composite_decking", [0, -1, 14.0625], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_6", "composite_decking", [-1, -1, 14.0625], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_6_1", "composite_decking", [27.5, -1, 14.0625], [1, 16.475, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_6_2", "composite_decking", [27.5, 18.275, 14.0625], [1, 4.6, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_6_3", "composite_decking", [27.5, 15.475, 14.0625], [1, 2.8, 1.0875], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_6", "composite_decking", [0, 21.875, 14.0625], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_6", "composite_decking", [24, 21.875, 14.0625], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_6", "composite_decking", [-1, -1, 14.0625], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_6_1", "composite_decking", [27.5, -1, 14.0625], [1, 17.475, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_6_2", "composite_decking", [27.5, 19.275, 14.0625], [1, 4.6, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_6_3", "composite_decking", [27.5, 16.475, 14.0625], [1, 2.8, 1.0875], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_left_6", "composite_decking", [0, 22.875, 14.0625], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_right_6", "composite_decking", [24, 22.875, 14.0625], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_7", "composite_decking", [0, -1, 8.375], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_7", "composite_decking", [-1, -1, 8.375], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_7", "composite_decking", [27.5, -1, 8.375], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_7", "composite_decking", [0, 21.875, 8.375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_7", "composite_decking", [24, 21.875, 8.375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_7", "composite_decking", [-1, -1, 8.375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_7", "composite_decking", [27.5, -1, 8.375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_left_7", "composite_decking", [0, 22.875, 8.375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_right_7", "composite_decking", [24, 22.875, 8.375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_8", "composite_decking", [0, -1, 2.6875], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_8", "composite_decking", [-1, -1, 2.6875], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_8", "composite_decking", [27.5, -1, 2.6875], [1, 23.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_8", "composite_decking", [0, 21.875, 2.6875], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_8", "composite_decking", [24, 21.875, 2.6875], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_8", "composite_decking", [-1, -1, 2.6875], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_8", "composite_decking", [27.5, -1, 2.6875], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_left_8", "composite_decking", [0, 22.875, 2.6875], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_right_8", "composite_decking", [24, 22.875, 2.6875], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_front_9", "composite_decking", [0, -1, 2], [27.5, 1, 0.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_9", "composite_decking", [-1, -1, 2], [1, 23.875, 0.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_9", "composite_decking", [27.5, -1, 2], [1, 23.875, 0.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_9", "composite_decking", [0, 21.875, 2], [3.5, 1, 0.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_9", "composite_decking", [24, 21.875, 2], [3.5, 1, 0.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_left_9", "composite_decking", [-1, -1, 2], [1, 24.875, 0.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_right_9", "composite_decking", [27.5, -1, 2], [1, 24.875, 0.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_left_9", "composite_decking", [0, 22.875, 2], [3.5, 1, 0.5], [0.17, 0.18, 0.19, 1]],
+    ["enclosure_siding_rear_right_9", "composite_decking", [24, 22.875, 2], [3.5, 1, 0.5], [0.17, 0.18, 0.19, 1]],
     ["enclosure_siding_angle_front_left_a", "black_aluminum_angle", [-1, -1.125, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
     ["enclosure_siding_angle_front_left_b", "black_aluminum_angle", [-1.125, -1, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
     ["enclosure_siding_angle_front_right_a", "black_aluminum_angle", [27.25, -1.125, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
     ["enclosure_siding_angle_front_right_b", "black_aluminum_angle", [28.5, -1, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_rear_left_a", "black_aluminum_angle", [-1, 22.875, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_rear_left_b", "black_aluminum_angle", [-1.125, 21.625, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_rear_right_a", "black_aluminum_angle", [27.25, 22.875, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_rear_right_b", "black_aluminum_angle", [28.5, 21.625, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_left_a", "black_aluminum_angle", [2.25, 22.875, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_left_b", "black_aluminum_angle", [3.5, 21.625, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_right_a", "black_aluminum_angle", [24, 22.875, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_right_b", "black_aluminum_angle", [23.875, 21.625, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_header_face", "black_aluminum_angle", [3.5, 22.875, 44.375], [20.5, 0.125, 1.25], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_header_bottom", "black_aluminum_angle", [3.5, 21.625, 44.25], [20.5, 1.25, 0.125], [0.03, 0.03, 0.03, 1]]
+    ["enclosure_siding_angle_rear_left_a", "black_aluminum_angle", [-1, 23.875, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_rear_left_b", "black_aluminum_angle", [-1.125, 22.625, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_rear_right_a", "black_aluminum_angle", [27.25, 23.875, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_rear_right_b", "black_aluminum_angle", [28.5, 22.625, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_tambour_left_a", "black_aluminum_angle", [2.25, 23.875, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_tambour_left_b", "black_aluminum_angle", [3.5, 22.625, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_tambour_right_a", "black_aluminum_angle", [24, 23.875, 2], [1.25, 0.125, 46], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_tambour_right_b", "black_aluminum_angle", [23.875, 22.625, 2], [0.125, 1.25, 46], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_tambour_header_face", "black_aluminum_angle", [3.5, 23.875, 44.375], [20.5, 0.125, 1.25], [0.03, 0.03, 0.03, 1]],
+    ["enclosure_siding_angle_tambour_header_bottom", "black_aluminum_angle", [3.5, 22.625, 44.25], [20.5, 1.25, 0.125], [0.03, 0.03, 0.03, 1]]
 ];
 
-xygrid_bounds = [-36.9595, 60.9595, -39.7737, 58.1487];
+xygrid_bounds = [-36.9595, 60.9595, -39.2776, 58.6526];
 xygrid_origin = [0, 0];
 model_bounds = [-37, 61, -40, 59, -37, 50];
 
@@ -375,10 +396,27 @@ assert(
     str("yzgrid_region must be an integer from -2 through 2; got ", yzgrid_region)
 );
 
-build_step_count = 27;
+deferred_objects = [
+    "left_tambour_vertical_backing",
+    "right_tambour_vertical_backing",
+    "left_tambour_bend_backer",
+    "right_tambour_bend_backer",
+    "tambour_ceiling_panel",
+    "enclosure_tambour_track",
+    "enclosure_tambour_door"
+];
+function object_is_deferred(name) =
+    len([
+        for (deferred_name = deferred_objects)
+            if (deferred_name == name) deferred_name
+    ]) > 0;
+
+build_step_count = 23;
 build_step_objects = [
     ["power_ground_riser", 1],
-    ["low_voltage_ground_riser", 1],
+    ["low_voltage_ground_riser_inlet", 1],
+    ["low_voltage_ground_sweep_elbow_1", 1],
+    ["low_voltage_ground_sweep_elbow_2", 1],
     ["post_fl", 2],
     ["post_fr", 2],
     ["post_bl", 2],
@@ -394,132 +432,130 @@ build_step_objects = [
     ["brace_bl_fr", 3],
     ["gusset_back_left", 3],
     ["gusset_front_right", 3],
-    ["rail_lb", 4],
-    ["rail_rb", 4],
+    ["rail_lbu", 4],
     ["rail_rbu", 4],
-    ["rail_fb", 5],
+    ["rail_lbl", 4],
+    ["rail_rbl", 4],
+    ["rail_fbu", 5],
+    ["rail_fbl", 5],
     ["rail_ltam", 6],
     ["rail_rtam", 6],
     ["rail_lt", 7],
     ["rail_rt", 7],
     ["rail_ft", 8],
     ["front_center_rail", 9],
-    ["right_center_rail", 9],
-    ["left_tambour_bend_backer", 10],
-    ["right_tambour_bend_backer", 10],
-    ["enclosure_tambour_track", 11],
-    ["enclosure_tambour_door", 12],
-    ["tambour_ceiling_panel", 13],
-    ["front_street_light_backer_bottom", 14],
-    ["front_street_light_backer_lower", 14],
-    ["front_street_light_backer_upper", 14],
-    ["front_ev_charger_body", 15],
-    ["front_ev_charger_plug", 15],
-    ["front_ev_charger_cable", 15],
-    ["power_junction_box", 16],
-    ["power_junction_input_adapter", 16],
-    ["power_junction_input_coupling", 16],
-    ["power_junction_light_adapter", 16],
-    ["power_junction_light_coupling", 16],
-    ["power_junction_outlet_adapter", 16],
-    ["power_junction_outlet_coupling", 16],
-    ["power_ev_charger_feed", 17],
-    ["power_ev_reducer", 17],
-    ["power_ev_t_body", 17],
-    ["power_t_junction_feed", 17],
-    ["front_street_light_base_box", 18],
-    ["power_street_light_feed", 18],
-    ["back_right_outlet_backer_lower", 19],
-    ["back_right_outlet_backer_upper", 19],
-    ["back_right_outlet", 19],
-    ["power_back_right_outlet_feed", 19],
-    ["low_voltage_termination_box", 20],
-    ["low_voltage_input_adapter", 20],
-    ["low_voltage_cable_gland_1", 20],
-    ["low_voltage_cable_gland_2", 20],
-    ["low_voltage_cable_gland_3", 20],
-    ["front_wifi_access_point", 21],
-    ["low_voltage_wifi_feed", 21],
-    ["low_voltage_street_light_service", 22],
-    ["low_voltage_ev_charger_feed", 23],
-    ["roof_shim_brace_fl_fr", 24],
-    ["roof_shim_brace_fl_bl", 24],
-    ["roof_shim_brace_bl_br", 24],
-    ["roof_shim_brace_fr_br", 24],
-    ["enclosure_siding_top_1", 24],
-    ["enclosure_siding_top_2", 24],
-    ["enclosure_siding_top_3", 24],
-    ["enclosure_siding_top_4", 24],
-    ["enclosure_siding_front_1", 24],
-    ["enclosure_siding_left_1", 24],
-    ["enclosure_siding_right_1", 24],
-    ["enclosure_siding_rear_top_left", 24],
-    ["enclosure_siding_rear_top_header", 24],
-    ["enclosure_siding_rear_top_right", 24],
-    ["enclosure_siding_front_2_1", 24],
-    ["enclosure_siding_front_2_2", 24],
-    ["enclosure_siding_front_2_3", 24],
-    ["enclosure_siding_front_2_4", 24],
-    ["enclosure_siding_left_2", 24],
-    ["enclosure_siding_right_2", 24],
-    ["enclosure_siding_rear_left_2", 24],
-    ["enclosure_siding_rear_right_2", 24],
-    ["enclosure_siding_front_3", 24],
-    ["enclosure_siding_left_3", 24],
-    ["enclosure_siding_right_3", 24],
-    ["enclosure_siding_rear_left_3", 24],
-    ["enclosure_siding_rear_right_3", 24],
-    ["enclosure_siding_front_4", 24],
-    ["enclosure_siding_left_4", 24],
-    ["enclosure_siding_right_4", 24],
-    ["enclosure_siding_rear_left_4", 24],
-    ["enclosure_siding_rear_right_4", 24],
-    ["enclosure_siding_front_5", 24],
-    ["enclosure_siding_left_5", 24],
-    ["enclosure_siding_right_5_1", 24],
-    ["enclosure_siding_right_5_2", 24],
-    ["enclosure_siding_right_5_3", 24],
-    ["enclosure_siding_rear_left_5", 24],
-    ["enclosure_siding_rear_right_5", 24],
-    ["enclosure_siding_front_6", 24],
-    ["enclosure_siding_left_6", 24],
-    ["enclosure_siding_right_6_1", 24],
-    ["enclosure_siding_right_6_2", 24],
-    ["enclosure_siding_right_6_3", 24],
-    ["enclosure_siding_rear_left_6", 24],
-    ["enclosure_siding_rear_right_6", 24],
-    ["enclosure_siding_front_7", 24],
-    ["enclosure_siding_left_7", 24],
-    ["enclosure_siding_right_7", 24],
-    ["enclosure_siding_rear_left_7", 24],
-    ["enclosure_siding_rear_right_7", 24],
-    ["enclosure_siding_front_8", 24],
-    ["enclosure_siding_left_8", 24],
-    ["enclosure_siding_right_8", 24],
-    ["enclosure_siding_rear_left_8", 24],
-    ["enclosure_siding_rear_right_8", 24],
-    ["enclosure_siding_front_9", 24],
-    ["enclosure_siding_left_9", 24],
-    ["enclosure_siding_right_9", 24],
-    ["enclosure_siding_rear_left_9", 24],
-    ["enclosure_siding_rear_right_9", 24],
-    ["enclosure_siding_angle_front_left_a", 25],
-    ["enclosure_siding_angle_front_left_b", 25],
-    ["enclosure_siding_angle_front_right_a", 25],
-    ["enclosure_siding_angle_front_right_b", 25],
-    ["enclosure_siding_angle_rear_left_a", 25],
-    ["enclosure_siding_angle_rear_left_b", 25],
-    ["enclosure_siding_angle_rear_right_a", 25],
-    ["enclosure_siding_angle_rear_right_b", 25],
-    ["enclosure_siding_angle_tambour_left_a", 25],
-    ["enclosure_siding_angle_tambour_left_b", 25],
-    ["enclosure_siding_angle_tambour_right_a", 25],
-    ["enclosure_siding_angle_tambour_right_b", 25],
-    ["enclosure_siding_angle_tambour_header_face", 25],
-    ["enclosure_siding_angle_tambour_header_bottom", 25],
-    ["front_street_light_extension_ring", 26],
-    ["front_street_light", 26],
-    ["back_right_outlet_cover", 27]
+    ["front_ev_charger_body", 10],
+    ["front_ev_charger_plug", 10],
+    ["front_ev_charger_cable", 10],
+    ["power_junction_box", 11],
+    ["power_junction_input_adapter", 11],
+    ["power_junction_input_coupling", 11],
+    ["power_junction_light_adapter", 11],
+    ["power_junction_light_coupling", 11],
+    ["power_junction_outlet_adapter", 11],
+    ["power_junction_outlet_coupling", 11],
+    ["power_ev_charger_feed", 12],
+    ["power_ev_reducer", 12],
+    ["power_ev_t_body", 12],
+    ["power_t_junction_feed", 12],
+    ["front_street_light_backer_bottom", 13],
+    ["front_street_light_backer_lower", 13],
+    ["front_street_light_backer_upper", 13],
+    ["front_street_light_base_box", 14],
+    ["power_street_light_feed", 14],
+    ["right_center_rail", 15],
+    ["back_right_outlet_backer_lower", 15],
+    ["back_right_outlet_backer_upper", 15],
+    ["back_right_outlet", 15],
+    ["power_back_right_outlet_feed", 15],
+    ["low_voltage_termination_box", 16],
+    ["low_voltage_input_adapter", 16],
+    ["low_voltage_cable_gland_1", 16],
+    ["low_voltage_cable_gland_2", 16],
+    ["low_voltage_cable_gland_3", 16],
+    ["front_wifi_access_point", 17],
+    ["low_voltage_wifi_feed", 17],
+    ["low_voltage_street_light_service", 18],
+    ["low_voltage_ev_charger_feed", 19],
+    ["roof_shim_brace_fl_fr", 20],
+    ["roof_shim_brace_fl_bl", 20],
+    ["roof_shim_brace_bl_br", 20],
+    ["roof_shim_brace_fr_br", 20],
+    ["enclosure_siding_top_1", 20],
+    ["enclosure_siding_top_2", 20],
+    ["enclosure_siding_top_3", 20],
+    ["enclosure_siding_top_4", 20],
+    ["enclosure_siding_top_5", 20],
+    ["enclosure_siding_front_1", 20],
+    ["enclosure_siding_left_1", 20],
+    ["enclosure_siding_right_1", 20],
+    ["enclosure_siding_rear_top_left", 20],
+    ["enclosure_siding_rear_top_header", 20],
+    ["enclosure_siding_rear_top_right", 20],
+    ["enclosure_siding_front_2_1", 20],
+    ["enclosure_siding_front_2_2", 20],
+    ["enclosure_siding_front_2_3", 20],
+    ["enclosure_siding_front_2_4", 20],
+    ["enclosure_siding_left_2", 20],
+    ["enclosure_siding_right_2", 20],
+    ["enclosure_siding_rear_left_2", 20],
+    ["enclosure_siding_rear_right_2", 20],
+    ["enclosure_siding_front_3", 20],
+    ["enclosure_siding_left_3", 20],
+    ["enclosure_siding_right_3", 20],
+    ["enclosure_siding_rear_left_3", 20],
+    ["enclosure_siding_rear_right_3", 20],
+    ["enclosure_siding_front_4", 20],
+    ["enclosure_siding_left_4", 20],
+    ["enclosure_siding_right_4", 20],
+    ["enclosure_siding_rear_left_4", 20],
+    ["enclosure_siding_rear_right_4", 20],
+    ["enclosure_siding_front_5", 20],
+    ["enclosure_siding_left_5", 20],
+    ["enclosure_siding_right_5_1", 20],
+    ["enclosure_siding_right_5_2", 20],
+    ["enclosure_siding_right_5_3", 20],
+    ["enclosure_siding_rear_left_5", 20],
+    ["enclosure_siding_rear_right_5", 20],
+    ["enclosure_siding_front_6", 20],
+    ["enclosure_siding_left_6", 20],
+    ["enclosure_siding_right_6_1", 20],
+    ["enclosure_siding_right_6_2", 20],
+    ["enclosure_siding_right_6_3", 20],
+    ["enclosure_siding_rear_left_6", 20],
+    ["enclosure_siding_rear_right_6", 20],
+    ["enclosure_siding_front_7", 20],
+    ["enclosure_siding_left_7", 20],
+    ["enclosure_siding_right_7", 20],
+    ["enclosure_siding_rear_left_7", 20],
+    ["enclosure_siding_rear_right_7", 20],
+    ["enclosure_siding_front_8", 20],
+    ["enclosure_siding_left_8", 20],
+    ["enclosure_siding_right_8", 20],
+    ["enclosure_siding_rear_left_8", 20],
+    ["enclosure_siding_rear_right_8", 20],
+    ["enclosure_siding_front_9", 20],
+    ["enclosure_siding_left_9", 20],
+    ["enclosure_siding_right_9", 20],
+    ["enclosure_siding_rear_left_9", 20],
+    ["enclosure_siding_rear_right_9", 20],
+    ["enclosure_siding_angle_front_left_a", 21],
+    ["enclosure_siding_angle_front_left_b", 21],
+    ["enclosure_siding_angle_front_right_a", 21],
+    ["enclosure_siding_angle_front_right_b", 21],
+    ["enclosure_siding_angle_rear_left_a", 21],
+    ["enclosure_siding_angle_rear_left_b", 21],
+    ["enclosure_siding_angle_rear_right_a", 21],
+    ["enclosure_siding_angle_rear_right_b", 21],
+    ["enclosure_siding_angle_tambour_left_a", 21],
+    ["enclosure_siding_angle_tambour_left_b", 21],
+    ["enclosure_siding_angle_tambour_right_a", 21],
+    ["enclosure_siding_angle_tambour_right_b", 21],
+    ["enclosure_siding_angle_tambour_header_face", 21],
+    ["enclosure_siding_angle_tambour_header_bottom", 21],
+    ["front_street_light_extension_ring", 22],
+    ["front_street_light", 22],
+    ["back_right_outlet_cover", 23]
 ];
 
 assert(
@@ -542,9 +578,13 @@ function object_build_step(name) =
     assert(len(matches) == 1, str("No unique build step for object ", name))
     matches[0];
 function object_is_visible(name) =
-    object_build_step(name) <= build_step;
+    object_is_deferred(name)
+        ? show_deferred && build_step == build_step_count + 1
+        : object_build_step(name) <= build_step;
 function object_is_highlighted(name) =
-    build_step > 0 && object_build_step(name) == build_step;
+    object_is_deferred(name)
+        ? false
+        : build_step > 0 && object_build_step(name) == build_step;
 function build_step_highlight_color() = [1.0, 0.82, 0.0, 1.0];
 function lumber_object_is_enabled(name) =
     let(matches = [
@@ -707,6 +747,7 @@ function c_mesh_path(c) = c[14];
 function c_mesh_matrix(c) = c[15];
 function c_box_primitives(c) = c[16];
 function c_cylinder_primitives(c) = c[17];
+function c_round_cylinder_joints(c) = c[18];
 function c_max(c) = v_add(c_min(c), c_size(c));
 function c_center(c) = v_mid(c_min(c), c_max(c));
 
@@ -786,6 +827,11 @@ function cp_origin(p) = p[0];
 function cp_axis(p) = p[1];
 function cp_length(p) = p[2];
 function cp_diameter(p) = p[3];
+function cp_direction(p) =
+    is_string(cp_axis(p)) ?
+        cp_axis(p) == "along" ? [1, 0, 0] :
+        cp_axis(p) == "across" ? [0, 1, 0] : [0, 0, 1] :
+    v_unit(cp_axis(p));
 
 function xygrid_line_color(coordinate) =
     coordinate % 10 == 0 ? [0.90, 0.16, 0.12, 0.75] :
@@ -865,15 +911,26 @@ module component_name(c) {
 }
 
 module render_component_cylinder(p) {
-    translate(cp_origin(p)) {
-        if (cp_axis(p) == "along")
-            rotate([0, 90, 0])
-                cylinder(h = cp_length(p), d = cp_diameter(p), $fn = 36);
-        else if (cp_axis(p) == "across")
-            rotate([-90, 0, 0])
-                cylinder(h = cp_length(p), d = cp_diameter(p), $fn = 36);
-        else
+    direction = cp_direction(p);
+    rotation_axis = v_cross([0, 0, 1], direction);
+    rotation_length = v_len(rotation_axis);
+    normalized_axis = rotation_length > 1e-9 ?
+        v_scale(rotation_axis, 1 / rotation_length) : [1, 0, 0];
+    angle = rotation_length > 1e-9 ? acos(direction[2]) :
+        direction[2] < 0 ? 180 : 0;
+
+    translate(cp_origin(p))
+        rotate(a = angle, v = normalized_axis)
             cylinder(h = cp_length(p), d = cp_diameter(p), $fn = 36);
+}
+
+module render_component_cylinder_joints(c) {
+    // Round only internal segment junctions; the bell mouth and outlet stay flat.
+    for (i = [0 : len(c_cylinder_primitives(c)) - 2]) {
+        p = c_cylinder_primitives(c)[i];
+        direction = cp_direction(p);
+        translate(v_add(cp_origin(p), v_scale(direction, cp_length(p))))
+            sphere(d = cp_diameter(p), $fn = 24);
     }
 }
 
@@ -892,6 +949,8 @@ module render_component(c, highlighted = false) {
                     }
                     for (p = c_cylinder_primitives(c))
                         render_component_cylinder(p);
+                    if (c_round_cylinder_joints(c))
+                        render_component_cylinder_joints(c);
                 }
         } else {
             translate(c_min(c))
@@ -1065,7 +1124,10 @@ module render_tambour_service_parts(points, opening_dir, installed) {
         );
     if (stop_length > 0)
         tambour_oriented_box(
-            v_add(start, v_scale(travel_dir, stop_length / 2)),
+            v_add(
+                v_add(start, v_scale(travel_dir, stop_length / 2)),
+                v_scale(opening_dir, ti_engagement(installed) / 2)
+            ),
             opening_dir,
             travel_dir,
             depth_dir,

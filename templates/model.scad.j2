@@ -217,6 +217,7 @@ function l_thickness(l) = len(l) > 9 ? l[9] : 0;
 function l_angle(l) = len(l) > 10 ? l[10] : 0;
 function l_footprint(l) = len(l) > 11 ? l[11] : [];
 function l_is_angled(l) = l_axis(l) == "angled";
+function l_wide(l) = !l_is_angled(l) && len(l) > 7 ? l[7] : l_dims(l_type(l))[1];
 
 function rs_name(r) = r[0];
 function rs_member(r) = r[1];
@@ -254,19 +255,19 @@ function l_size(l) =
     l_axis(l) == "x" ?
         [
             l_len(l),
-            l_rotated(l) ? l_dims(l_type(l))[1] : l_dims(l_type(l))[0],
-            l_rotated(l) ? l_dims(l_type(l))[0] : l_dims(l_type(l))[1]
+            l_rotated(l) ? l_wide(l) : l_dims(l_type(l))[0],
+            l_rotated(l) ? l_dims(l_type(l))[0] : l_wide(l)
         ] :
     l_axis(l) == "y" ?
         [
-            l_rotated(l) ? l_dims(l_type(l))[1] : l_dims(l_type(l))[0],
+            l_rotated(l) ? l_wide(l) : l_dims(l_type(l))[0],
             l_len(l),
-            l_rotated(l) ? l_dims(l_type(l))[0] : l_dims(l_type(l))[1]
+            l_rotated(l) ? l_dims(l_type(l))[0] : l_wide(l)
         ] :
     l_axis(l) == "z" ?
         [
-            l_rotated(l) ? l_dims(l_type(l))[1] : l_dims(l_type(l))[0],
-            l_rotated(l) ? l_dims(l_type(l))[0] : l_dims(l_type(l))[1],
+            l_rotated(l) ? l_wide(l) : l_dims(l_type(l))[0],
+            l_rotated(l) ? l_dims(l_type(l))[0] : l_wide(l),
             l_len(l)
         ] :
     [1, 1, 1];

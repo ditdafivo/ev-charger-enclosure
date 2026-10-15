@@ -35,9 +35,9 @@ by a qualified installer.
   them in the completed-model view; they do not appear in numbered steps.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
-  - `build_step = 1..23`: show earlier objects normally, highlight objects from
+  - `build_step = 1..24`: show earlier objects normally, highlight objects from
     the selected step, and hide objects from later steps.
-  - `build_step = 24`: show the completed model in its normal colors.
+  - `build_step = 25`: show the completed model in its normal colors.
 - An invalid positive step number should fail clearly during generation rather
   than silently display an incomplete or misleading model.
 
@@ -712,17 +712,59 @@ New model objects:
 back_right_outlet_cover
 ```
 
+## 24. Install the wood power-cord bumper (`power-cord-guard`)
+
+Cut two 13 1/2-inch 2x4 uprights and one 6 1/4-by-13 1/2-inch panel from
+1/4-inch exterior plywood. Rip the upright depth to approximately 3 inches;
+the exact modeled depth places the panel's rear face 1/4 inch beyond the T
+body's positive-Y face. Install the uprights on edge with their rear faces
+against the positive-Y faces of both `rail_fbl` and `rail_fbu`. In the default
+model, the left upright occupies x = 12.225 to 13.725 inches and the right
+upright x = 16.975 to 18.475 inches. Both start at z = 3/4 inch and end at
+z = 14 1/4 inches, about 1 inch above the T body. Their inner edges have a
+nominal 1/4-inch clearance from the T.
+
+Fasten each upright into each rail with one 4-inch exterior structural wood
+screw, using pilot holes and the screw maker's installation guidance. Recess
+the heads below the upright front faces so the plywood seats flat. Check
+the screw locations against all installed electrical runs before drilling; the
+screws must stop inside the wood rails. No guard fastener enters a conduit,
+fitting, junction box, or the soil.
+
+Fasten the plywood to the positive-Y ends of the uprights with four removable
+1 1/2-inch #10 exterior truss-head screws per side, spaced along the height
+and clear of the rail fasteners. The panel's modeled rear face is at
+y = 13.6937 inches. Seal its faces and edges and smooth every cord-contact
+edge; keep screw heads low and smooth.
+
+Before fastening, trial-fit the wood and panel around the actual T, reducer,
+branch, riser, and charger feed. Remove the panel and confirm the T cover can
+be opened and removed between the uprights. Place and remove the actual
+charging cord repeatedly. Its loops should rest outside the bumper, and cord
+contact must not flex the plywood or uprights into any conduit or fitting. If
+the actual clearance or stiffness is inadequate, adjust the cut and fit before
+installation. The modeled flexible-cord path remains schematic and is not a
+placement template for the real cord.
+
+New model objects:
+
+```text
+power_guard_left_upright
+power_guard_right_upright
+power_guard_removable_panel
+```
+
 ## Model coverage checklist
 
-The 23 steps above assign all active construction objects exactly once.
+The 24 steps above assign all active construction objects exactly once.
 Seven deferred tambour objects remain available in the model for future
 reference and are hidden unless `show_deferred` is enabled in the completed
 view.
 
 | Category | Modeled count | Assigned steps |
 | --- | ---: | --- |
-| Lumber members | 25 | 2-9, 10, 15 |
-| Components and fittings | 28 | 3, 11-17, 20, 22-23 |
+| Lumber members | 27 | 2-9, 10, 15, 24 |
+| Components and fittings | 29 | 3, 11-17, 20, 22-24 |
 | Footings | 4 | 2 |
 | Conduit runs | 6 | 1, 13-15 |
 | Cable paths | 4 | 11, 17-19 |

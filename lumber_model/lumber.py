@@ -50,6 +50,7 @@ class Lumber:
     start: Coordinate | Vector3
     length: float
     rotated: bool = True
+    finished_wide: float | None = None
 
     def __post_init__(self) -> None:
         if self.type not in ACTUAL_DIMS:
@@ -60,6 +61,14 @@ class Lumber:
 
         if self.length <= 0:
             raise ValueError(f"{self.name}: length must be positive, got {self.length}")
+
+        if self.finished_wide is not None and not (
+            0 < self.finished_wide <= ACTUAL_DIMS[self.type][1]
+        ):
+            raise ValueError(
+                f"{self.name}: finished wide dimension must be positive and no "
+                f"greater than stock width {ACTUAL_DIMS[self.type][1]}"
+            )
 
         if isinstance(self.start, AbsoluteCoord):
             object.__setattr__(
@@ -76,6 +85,7 @@ class Lumber:
     @property
     def size(self) -> Vector3:
         narrow, wide = self.dims
+        wide = self.finished_wide if self.finished_wide is not None else wide
 
         if self.axis == "x":
             return (
@@ -313,8 +323,18 @@ class Lumber:
             "size_x": round(self.size[0], 4),
             "size_y": round(self.size[1], 4),
             "size_z": round(self.size[2], 4),
-            "stock_width_in": round(self.dims[1] if self.rotated else self.dims[0], 4),
-            "finished_width_in": round(self.dims[1] if self.rotated else self.dims[0], 4),
+            "stock_width_in": round(
+                self.dims[1]
+                if self.finished_wide is not None or self.rotated
+                else self.dims[0],
+                4,
+            ),
+            "finished_width_in": round(
+                self.finished_wide
+                if self.finished_wide is not None
+                else (self.dims[1] if self.rotated else self.dims[0]),
+                4,
+            ),
             "start_cut_angle_deg": "",
             "end_cut_angle_deg": "",
         }
@@ -331,7 +351,8 @@ class Lumber:
             f"[{fmt_float(sx)}, {fmt_float(sy)}, {fmt_float(sz)}], "
             f"{fmt_float(self.length)}, "
             f"{scad_bool(self.rotated)}"
-            "]"
+            + (f", {fmt_float(self.finished_wide)}" if self.finished_wide is not None else "")
+            + "]"
         )
 
 

@@ -543,6 +543,12 @@ class Model:
             for row in [piece.fabrication_row()]
             if row is not None
         )
+        rows.extend(
+            row
+            for item in self.purchased_items
+            for row in [item.fabrication_row()]
+            if row is not None
+        )
         return rows
 
     def write_fabrication_csv(self, path: str | Path) -> None:
@@ -589,10 +595,20 @@ class Model:
                 round(length, 4),
                 round(piece.stock_width, 4)
                 if isinstance(piece, AngledLumber)
-                else round(piece.dims[1] if piece.rotated else piece.dims[0], 4),
+                else round(
+                    piece.dims[1]
+                    if piece.finished_wide is not None or piece.rotated
+                    else piece.dims[0],
+                    4,
+                ),
                 round(piece.width, 4)
                 if isinstance(piece, AngledLumber)
-                else round(piece.dims[1] if piece.rotated else piece.dims[0], 4),
+                else round(
+                    piece.finished_wide
+                    if piece.finished_wide is not None
+                    else (piece.dims[1] if piece.rotated else piece.dims[0]),
+                    4,
+                ),
                 round(piece.cut_angle_deg, 2)
                 if isinstance(piece, AngledLumber) and piece.footprint is None
                 else "",

@@ -54,6 +54,7 @@ class LumberCollection(Mapping[str, LumberPiece]):
         start: Coordinate,
         length: float,
         rotated: bool = True,
+        finished_wide: float | None = None,
     ) -> Lumber:
         return self._store(
             Lumber(
@@ -64,6 +65,7 @@ class LumberCollection(Mapping[str, LumberPiece]):
                 start=resolve_coordinate(f"{name}: start", start, self),
                 length=length,
                 rotated=rotated,
+                finished_wide=finished_wide,
             )
         )
 

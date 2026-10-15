@@ -69,14 +69,18 @@ class PurchasedItem:
     assembly: str
     description: str
     qty: int
+    category: str = "hardware"
+    cut_size: tuple[float, float, float] | None = None
 
     def __post_init__(self) -> None:
         if self.qty <= 0:
             raise ValueError(f"{self.name}: quantity must be positive")
+        if self.cut_size is not None and any(size <= 0 for size in self.cut_size):
+            raise ValueError(f"{self.name}: cut dimensions must be positive")
 
     def bom_row(self) -> dict[str, Any]:
         return {
-            "category": "hardware",
+            "category": self.category,
             "assembly": self.assembly,
             "name": self.name,
             "type": self.description,
@@ -98,6 +102,25 @@ class PurchasedItem:
             "total_linear_ft": "",
             "stock_length_ft": "",
             "stock_board_qty": "",
+        }
+
+    def fabrication_row(self) -> dict[str, Any] | None:
+        if self.cut_size is None:
+            return None
+        width, height, thickness = self.cut_size
+        return {
+            "name": self.name,
+            "member": self.name,
+            "operation": f"cut {self.description}",
+            "depth_in": round(thickness, 4),
+            "depth_display": inches_to_fraction_text(thickness),
+            "area_sq_in": round(width * height, 4),
+            "top_z": "",
+            "min_x": 0,
+            "max_x": round(width, 4),
+            "min_y": 0,
+            "max_y": round(height, 4),
+            "polygon_xy": f"0 0; {width:.4f} 0; {width:.4f} {height:.4f}; 0 {height:.4f}",
         }
 
 

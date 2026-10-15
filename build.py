@@ -2276,6 +2276,55 @@ def build_enclosure(
             color=color,
         )
 
+    # The removable plywood panel carries cord contact into two uprights
+    # anchored to the front rails.  Clearances follow the modeled T envelope.
+    POWER_GUARD_CLEARANCE=0.25
+    POWER_GUARD_T=components["power_ev_t_body"].resolved(members["front_center_rail"])
+    POWER_GUARD_LEFT_X=POWER_GUARD_T.box_min[0]-POWER_GUARD_CLEARANCE-1.5
+    POWER_GUARD_RIGHT_X=(
+        POWER_GUARD_T.box_min[0]+POWER_GUARD_T.box_size[0]+POWER_GUARD_CLEARANCE
+    )
+    POWER_GUARD_REAR_Y=members["rail_fbl"].max_on("y")
+    POWER_GUARD_PANEL_Y=(
+        POWER_GUARD_T.box_min[1]+POWER_GUARD_T.box_size[1]
+        +POWER_GUARD_CLEARANCE
+    )
+    POWER_GUARD_UPRIGHT_DEPTH=POWER_GUARD_PANEL_Y-POWER_GUARD_REAR_Y
+    if not 0 < POWER_GUARD_UPRIGHT_DEPTH <= 3.5:
+        raise ValueError("power guard upright cannot be ripped from a 2x4")
+    POWER_GUARD_BOTTOM_Z=0.75
+    POWER_GUARD_TOP_Z=math.ceil((POWER_T_TOP_Z+1)*4)/4
+    POWER_GUARD_SPAN=(POWER_GUARD_RIGHT_X+1.5)-POWER_GUARD_LEFT_X
+    for side,x in (("left",POWER_GUARD_LEFT_X),("right",POWER_GUARD_RIGHT_X)):
+        members.add(
+            f"power_guard_{side}_upright",
+            assembly="power_cord_guard",
+            type="2x4",
+            axis="z",
+            start=AbsoluteCoord(x,POWER_GUARD_REAR_Y,POWER_GUARD_BOTTOM_Z),
+            length=POWER_GUARD_TOP_Z-POWER_GUARD_BOTTOM_Z,
+            rotated=False,
+            finished_wide=POWER_GUARD_UPRIGHT_DEPTH,
+        )
+    components.add(
+        "power_guard_removable_panel",
+        assembly="power_cord_guard",
+        component_type=ComponentType(
+            name="quarter_inch_exterior_plywood_guard_panel",
+            size=(POWER_GUARD_TOP_Z-POWER_GUARD_BOTTOM_Z, POWER_GUARD_SPAN, 0.25),
+            color=(0.52, 0.36, 0.20, 1),
+            mount_point=(0, 0, 0),
+        ),
+        member="power_guard_left_upright",
+        at=0,
+        absolute_anchor=(
+            POWER_GUARD_LEFT_X,
+            POWER_GUARD_PANEL_Y,
+            POWER_GUARD_BOTTOM_Z,
+        ),
+        component_basis=((0, 0, 1), (1, 0, 0), (0, 1, 0)),
+    )
+
     model = Model(
         members,
         components=components,
@@ -2304,6 +2353,27 @@ def build_enclosure(
                 "roof_shims",
                 f"continuous ripped PT lumber, {ROOF_SHIM_THICKNESS:g} in thick",
                 4,
+            ),
+            PurchasedItem(
+                "power_guard_rail_screw",
+                "power_cord_guard_hardware",
+                "exterior structural wood screw, 4 in",
+                4,
+            ),
+            PurchasedItem(
+                "power_guard_panel_screw",
+                "power_cord_guard_hardware",
+                "#10 exterior truss-head screw, 1 1/2 in",
+                8,
+            ),
+            PurchasedItem(
+                "power_guard_removable_panel",
+                "power_cord_guard",
+                f"1/4 in exterior plywood panel, {POWER_GUARD_SPAN:g} x "
+                f"{POWER_GUARD_TOP_Z-POWER_GUARD_BOTTOM_Z:g} in",
+                1,
+                category="sheet",
+                cut_size=(POWER_GUARD_SPAN, POWER_GUARD_TOP_Z-POWER_GUARD_BOTTOM_Z, 0.25),
             ),
         ),
         xygrid_origin=(

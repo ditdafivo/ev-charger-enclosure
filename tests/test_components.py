@@ -7,7 +7,7 @@ from lumber_model import (
     AngledLumber,
     CARLON_E980DFN_HUB_DEPTH,
     CARLON_E980DFN_OUTLET_BOX,
-    CARLON_E983G_CONDUIT_T_BODY,
+    IPEX_SCEPTER_STB40S_TYPE_TB_BODY,
     CARLON_E986G_LB_CONDUIT_BODY,
     CARLON_E989NNJ_JUNCTION_BOX,
     CARLON_E940D_COUPLING,
@@ -771,22 +771,21 @@ class ComponentValidationTests(unittest.TestCase):
         for actual, expected in zip(mount_point, expected_mount_point, strict=True):
             self.assertAlmostEqual(actual, expected)
 
-    def test_carlon_e983g_geometry(self) -> None:
-        expected_size = (8.65625, 3.375, 2.75)
-        expected_mount_point = (4.328125, 1.6875, 0.0)
-        expected_primitives = (
-            ((0.0, 0.0, 0.0), (8.65625, 2.3125, 2.75)),
-            ((2.953125, 2.3125, 0.0), (2.75, 1.0625, 2.75)),
-        )
+    def test_ipex_scepter_stb40s_type_tb_geometry(self) -> None:
+        body = IPEX_SCEPTER_STB40S_TYPE_TB_BODY
 
-        self.assertEqual(CARLON_E983G_CONDUIT_T_BODY.name, "carlon_e983g_conduit_t_body")
-        self.assertEqual(CARLON_E983G_CONDUIT_T_BODY.shape, "primitive_union")
-        self.assertEqual(CARLON_E983G_CONDUIT_T_BODY.default_face, "wide_neg")
-        self.assertEqual(CARLON_E983G_CONDUIT_T_BODY.size, expected_size)
-        self.assertEqual(CARLON_E983G_CONDUIT_T_BODY.mount_point, expected_mount_point)
+        self.assertEqual(body.name, "ipex_scepter_stb40s_type_tb_body")
+        self.assertEqual(body.shape, "primitive_union")
+        self.assertEqual(body.default_face, "wide_neg")
+        self.assertEqual(body.size, (7.9, 2.3, 3.6))
+        self.assertEqual(body.mount_point, (3.95, 1.15, 0.0))
         self.assertEqual(
-            CARLON_E983G_CONDUIT_T_BODY.box_primitives,
-            expected_primitives,
+            body.box_primitives,
+            (((0.0, 0.0, 0.0), (7.9, 2.3, 2.5)),),
+        )
+        self.assertEqual(
+            body.cylinder_primitives,
+            (((3.95, 1.15, 2.5), "out", 1.1, 1.7),),
         )
 
     def test_carlon_e986g_lb_geometry(self) -> None:
@@ -849,8 +848,8 @@ class ComponentValidationTests(unittest.TestCase):
 
         components = ComponentCollection()
         components.add(
-            "conduit_t",
-            component_type=CARLON_E983G_CONDUIT_T_BODY,
+            "conduit_tb",
+            component_type=IPEX_SCEPTER_STB40S_TYPE_TB_BODY,
             member="post",
             at=20,
             orientation="left",
@@ -859,8 +858,8 @@ class ComponentValidationTests(unittest.TestCase):
         scad = Model(members, components=components).to_scad()
 
         self.assertIn('"primitive_union"', scad)
-        self.assertIn("[[0, 0, 0], [8.6562, 2.3125, 2.75]]", scad)
-        self.assertIn("[[2.9531, 2.3125, 0], [2.75, 1.0625, 2.75]]", scad)
+        self.assertIn("[[0, 0, 0], [7.9, 2.3, 2.5]]", scad)
+        self.assertIn("[[3.95, 1.15, 2.5], \"out\", 1.1, 1.7]", scad)
         self.assertIn("function c_box_primitives(c) = c[16];", scad)
         self.assertIn("for (p = c_box_primitives(c))", scad)
         self.assertIn("cube(p_size(p));", scad)
@@ -875,8 +874,8 @@ class ComponentValidationTests(unittest.TestCase):
             length=48,
         )
         component = ComponentInstance(
-            name="conduit_t",
-            component_type=CARLON_E983G_CONDUIT_T_BODY,
+            name="conduit_tb",
+            component_type=IPEX_SCEPTER_STB40S_TYPE_TB_BODY,
             member="post",
             at=20,
         )
@@ -884,8 +883,8 @@ class ComponentValidationTests(unittest.TestCase):
         record = component.resolved(member).scad_record()
 
         self.assertIn('"primitive_union"', record)
-        self.assertIn("[[0, 0, 0], [8.6562, 2.3125, 2.75]]", record)
-        self.assertIn("[[2.9531, 2.3125, 0], [2.75, 1.0625, 2.75]]", record)
+        self.assertIn("[[0, 0, 0], [7.9, 2.3, 2.5]]", record)
+        self.assertIn("[[3.95, 1.15, 2.5], \"out\", 1.1, 1.7]", record)
 
     def test_cylinder_primitive_scad_is_rendered(self) -> None:
         members = LumberCollection()

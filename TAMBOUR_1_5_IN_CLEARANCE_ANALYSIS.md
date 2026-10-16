@@ -66,13 +66,13 @@ the plug.
 
 ### Charger-feed conduit
 
-The charger-riser arrangement aligns the 1 1/4-inch ground riser and T body
+The charger-riser arrangement aligns the 1 1/4-inch ground riser and Type TB body
 with the charger's conduit-port X coordinate. Its complete horizontal branch
 runs 1/4 inch above `rail_fbu` to the rear of the junction box, while the
-reduced 1-inch feed rises directly from the T body to the charger. Both feeds
+reduced 1-inch feed rises directly from the Type TB body to the charger. Both feeds
 remain below or behind the front curtain envelope.
 
-The #6 charger group bypasses the junction box through the T body. The box's
+The #6 charger group bypasses the junction box through the Type TB body. The box's
 remaining #12 groups require 18 cubic inches against its modeled 49-cubic-inch
 marking, leaving 31 cubic inches.
 

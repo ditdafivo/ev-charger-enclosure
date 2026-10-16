@@ -793,7 +793,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
         )
 
     def test_charger_riser_stays_below_or_behind_front_curtain(self) -> None:
-        branch=build.conduits["power_t_junction_feed"].resolved(
+        branch=build.conduits["power_tb_junction_feed"].resolved(
             build.components.as_dict(),
             build.members.as_dict(),
         )
@@ -992,7 +992,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         expected_types = {
             "power_junction_input_adapter": "carlon_e996g_box_adapter",
             "power_junction_input_coupling": "carlon_e940g_coupling",
-            "power_ev_t_body": "carlon_e983g_conduit_t_body",
+            "power_ev_tb_body": "ipex_scepter_stb40s_type_tb_body",
             "power_ev_reducer": "carlon_e950gf_reducer_bushing",
         }
         for name, expected_type in expected_types.items():
@@ -1008,7 +1008,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertNotIn("power_junction_ev_coupling", build.components)
 
         riser = self.resolved_conduit("power_ground_riser")
-        branch = self.resolved_conduit("power_t_junction_feed")
+        branch = self.resolved_conduit("power_tb_junction_feed")
         ev = self.resolved_conduit("power_ev_charger_feed")
         self.assertVectorAlmostEqual(
             riser.points[0][:2],
@@ -1028,9 +1028,9 @@ class PowerJunctionBuildTests(unittest.TestCase):
             8,
         )
         self.assertEqual(
-            build.conduits["power_t_junction_feed"].points,
+            build.conduits["power_tb_junction_feed"].points,
             (
-                build.POWER_T_BRANCH_ANCHOR,
+                build.POWER_TB_BRANCH_ANCHOR,
                 build.POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR,
             ),
         )
@@ -1081,7 +1081,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
     def test_riser_and_equipment_feeds_use_relative_endpoints(self) -> None:
         enclosure = build.default_build
         riser = self.resolved_conduit("power_ground_riser", enclosure)
-        branch = self.resolved_conduit("power_t_junction_feed", enclosure)
+        branch = self.resolved_conduit("power_tb_junction_feed", enclosure)
         ev = self.resolved_conduit("power_ev_charger_feed", enclosure)
         light = self.resolved_conduit("power_street_light_feed", enclosure)
 
@@ -1107,7 +1107,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertTrue(
             all(
                 isinstance(point, ComponentAnchor)
-                for point in enclosure.conduits["power_t_junction_feed"].points
+                for point in enclosure.conduits["power_tb_junction_feed"].points
             )
         )
         self.assertEqual(branch.points[0][0], enclosure.POWER_EV_ENTRY[0])

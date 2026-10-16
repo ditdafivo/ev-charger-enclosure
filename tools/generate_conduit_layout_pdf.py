@@ -130,7 +130,7 @@ def _draw_dimension_reference(
 
 def generate(output_path: Path) -> None:
     enclosure = build.default_build
-    power_center = (enclosure.POWER_T_AXIS_X, enclosure.POWER_T_AXIS_Y)
+    power_center = (enclosure.POWER_TB_AXIS_X, enclosure.POWER_TB_AXIS_Y)
     low_voltage_center = (
         enclosure.LOW_VOLTAGE_INPUT_X,
         enclosure.LOW_VOLTAGE_INPUT_Y,

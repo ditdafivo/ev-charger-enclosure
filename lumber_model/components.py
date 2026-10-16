@@ -1349,41 +1349,50 @@ EV_CHARGER_PLUG = ComponentType(
 )
 
 
-_CARLON_E983G_L1 = 8 + 21 / 32
-_CARLON_E983G_H = 2 + 5 / 16
-_CARLON_E983G_Q = 2 + 1 / 2
-_CARLON_E983G_W = 2 + 3 / 4
-_CARLON_E983G_SIDE_CHANNEL_WIDTH = _CARLON_E983G_W
-_CARLON_E983G_SIDE_PROTRUSION = _CARLON_E983G_H - 0.5 * _CARLON_E983G_Q
-_CARLON_E983G_FULL_WIDTH = _CARLON_E983G_H + _CARLON_E983G_SIDE_PROTRUSION
+# IPEX Scepter Type TB, 1-1/4-inch catalog dimensions: A=7.9, C=2.3,
+# I=3.6, B=1.1, and E=1.7 inches. The rear hub is modeled along the local
+# out axis, away from the removable-cover face.
+_IPEX_STB40S_LENGTH = 7.9
+_IPEX_STB40S_BODY_WIDTH = 2.3
+_IPEX_STB40S_BODY_DEPTH = 2.5
+_IPEX_STB40S_REAR_HUB_DEPTH = 1.1
+_IPEX_STB40S_REAR_HUB_DIAMETER = 1.7
 
-CARLON_E983G_CONDUIT_T_BODY = ComponentType(
-    name="carlon_e983g_conduit_t_body",
-    size=(_CARLON_E983G_L1, _CARLON_E983G_FULL_WIDTH, _CARLON_E983G_W),
+IPEX_SCEPTER_STB40S_TYPE_TB_BODY = ComponentType(
+    name="ipex_scepter_stb40s_type_tb_body",
+    size=(
+        _IPEX_STB40S_LENGTH,
+        _IPEX_STB40S_BODY_WIDTH,
+        _IPEX_STB40S_BODY_DEPTH + _IPEX_STB40S_REAR_HUB_DEPTH,
+    ),
     color=(0.55, 0.57, 0.58, 1.0),
     default_face="wide_neg",
     mount_point=(
-        _CARLON_E983G_L1 / 2,
-        _CARLON_E983G_FULL_WIDTH / 2,
+        _IPEX_STB40S_LENGTH / 2,
+        _IPEX_STB40S_BODY_WIDTH / 2,
         0.0,
     ),
     shape="primitive_union",
     box_primitives=(
         (
             (0.0, 0.0, 0.0),
-            (_CARLON_E983G_L1, _CARLON_E983G_H, _CARLON_E983G_W),
+            (
+                _IPEX_STB40S_LENGTH,
+                _IPEX_STB40S_BODY_WIDTH,
+                _IPEX_STB40S_BODY_DEPTH,
+            ),
         ),
+    ),
+    cylinder_primitives=(
         (
             (
-                (_CARLON_E983G_L1 - _CARLON_E983G_SIDE_CHANNEL_WIDTH) / 2,
-                _CARLON_E983G_H,
-                0.0,
+                _IPEX_STB40S_LENGTH / 2,
+                _IPEX_STB40S_BODY_WIDTH / 2,
+                _IPEX_STB40S_BODY_DEPTH,
             ),
-            (
-                _CARLON_E983G_SIDE_CHANNEL_WIDTH,
-                _CARLON_E983G_SIDE_PROTRUSION,
-                _CARLON_E983G_W,
-            ),
+            "out",
+            _IPEX_STB40S_REAR_HUB_DEPTH,
+            _IPEX_STB40S_REAR_HUB_DIAMETER,
         ),
     ),
 )

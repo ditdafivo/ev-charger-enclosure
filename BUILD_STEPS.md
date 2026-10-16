@@ -330,8 +330,8 @@ front_ev_charger_cable
 ## 11. Preassemble and mount the power junction (`power-junction-assembly`)
 
 Before mounting the Carlon E987N power junction box, fit its rear-facing
-1 1/4-inch input adapter and coupling for the T-body branch and the two
-right-side 1/2-inch light and receptacle outlets.
+1 1/4-inch input adapter and coupling for the rear port of the Type TB body and
+the two right-side 1/2-inch light and receptacle outlets.
 The light outlet is forward of the receptacle outlet. Then mount the connected
 box on `front_center_rail`, spanning x = 13 to 17 inches in the default model,
 and y = 3.1875 to 7.1875 inches. Its bottom face remains at the modeled
@@ -339,10 +339,11 @@ elevation of approximately z = 6.51 inches, supported along its lower edge by
 `rail_fbl`. Keep every fitting axis aligned with its conduit path.
 
 Check that the fittings are fully seated and clear of `front_center_rail`.
-Keep the rear fitting aligned with the raised 1 1/4-inch feed from the T body.
+Keep the rear fitting aligned with the raised 1 1/4-inch feed from the Type TB body.
 
-The #6 charger group continues vertically through the T body and bypasses the
-junction box. The #12 supply group branches through the T into the box, where
+The #6 charger group continues vertically through the Type TB body and bypasses
+the junction box. The #12 supply group branches through the Type TB body's rear
+port into the box, where
 its hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs
 and the #12 equipment grounds are spliced. The modeled junction-box calculation
 is 18.00 in³ against an assumed 49.00 in³ marked capacity. Verify the marking
@@ -363,10 +364,10 @@ power_junction_outlet_coupling
 ## 12. Connect the power junction to the EV charger (`ev-charger-power`)
 
 Using the physical charger-input position recorded in Step 10, align the
-1 1/4-inch ground riser and T body with the charger's conduit-port X coordinate.
-Set the T-body branch high enough that the complete conduit envelope passes
+1 1/4-inch ground riser and Type TB body with the charger's conduit-port X coordinate.
+Set the TB-body rear port high enough that the complete conduit envelope passes
 above `rail_fbu`, then run the full horizontal branch to the rear coupling on
-the junction box. Fit the reducer at the T body's upward outlet and run the
+the junction box. Fit the reducer at the Type TB body's upward outlet and run the
 straight 1-inch conduit to the bottom of the charger.
 
 Check alignment at the riser, junction box, top adapter and coupling, and
@@ -382,8 +383,8 @@ New model objects:
 ```text
 power_ev_charger_feed
 power_ev_reducer
-power_ev_t_body
-power_t_junction_feed
+power_ev_tb_body
+power_tb_junction_feed
 ```
 
 ## 13. Add the street-light backing (`street-light-backing`)
@@ -716,13 +717,13 @@ back_right_outlet_cover
 
 Cut two 13 1/2-inch 2x4 uprights and one 6 1/4-by-13 1/2-inch panel from
 1/4-inch exterior plywood. Rip the upright depth to approximately 3 inches;
-the exact modeled depth places the panel's rear face 1/4 inch beyond the T
-body's positive-Y face. Install the uprights on edge with their rear faces
+the exact modeled depth places the panel's rear face 1/4 inch beyond the Type TB
+body's positive-Y cover face. Install the uprights on edge with their rear faces
 against the positive-Y faces of both `rail_fbl` and `rail_fbu`. In the default
 model, the left upright occupies x = 12.225 to 13.725 inches and the right
 upright x = 16.975 to 18.475 inches. Both start at z = 3/4 inch and end at
-z = 14 1/4 inches, about 1 inch above the T body. Their inner edges have a
-nominal 1/4-inch clearance from the T.
+z = 14 1/4 inches, about 1 inch above the Type TB body. Their inner edges have a
+nominal 1/4-inch clearance from the Type TB body.
 
 Fasten each upright into each rail with one 4-inch exterior structural wood
 screw, using pilot holes and the screw maker's installation guidance. Recess

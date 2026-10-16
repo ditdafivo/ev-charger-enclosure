@@ -13,7 +13,7 @@ from typing import Any, Sequence
 from lumber_model import (
     CARLON_E980DFN_HUB_DEPTH,
     CARLON_E980DFN_OUTLET_BOX,
-    CARLON_E983G_CONDUIT_T_BODY,
+    IPEX_SCEPTER_STB40S_TYPE_TB_BODY,
     CARLON_E950GF_REDUCER_BUSHING,
     CARLON_E940D_COUPLING,
     CARLON_E940G_COUPLING,
@@ -1160,67 +1160,68 @@ def build_enclosure(
 
     # Keep the conduit layout at its approved absolute elevation.  It is
     # intentionally independent of rail_fbu while the box mounting is revised.
-    POWER_T_MAIN_CHANNEL_WIDTH=2+5/16
-    POWER_T_AXIS_X=POWER_EV_ENTRY[0]
-    POWER_T_AXIS_Y=POWER_EV_ENTRY[1]
+    POWER_TB_AXIS_X=POWER_EV_ENTRY[0]
+    POWER_TB_AXIS_Y=POWER_EV_ENTRY[1]
     # Keep the riser entry axes at their approved absolute positions. The
-    # low-voltage run offsets left near ground; the power T body keeps its
+    # low-voltage run offsets left near ground; the power TB body keeps its
     # current anchor.
     POWER_RISER_X=15.055
     POWER_RISER_Y=12.5
-    POWER_T_CENTER_Z=8.83
-    POWER_T_BOTTOM_Z=(
-        POWER_T_CENTER_Z-CARLON_E983G_CONDUIT_T_BODY.size[0]/2
+    POWER_TB_CENTER_Z=8.83
+    POWER_TB_BODY_DEPTH=2.5
+    POWER_TB_BOTTOM_Z=(
+        POWER_TB_CENTER_Z-IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[0]/2
     )
-    POWER_T_ANCHOR_X=(
-        POWER_T_AXIS_X-CARLON_E983G_CONDUIT_T_BODY.size[2]/2
-    )
-    POWER_T_ANCHOR_Y=(
-        POWER_T_AXIS_Y
-        - (
-            CARLON_E983G_CONDUIT_T_BODY.size[1]
-            - POWER_T_MAIN_CHANNEL_WIDTH
-        )/2
-    )
+    # The body sits with its removable-cover side toward positive Y. Its rear
+    # hub points toward the junction box along negative Y.
+    POWER_TB_COVER_SIDE_Y=POWER_TB_AXIS_Y+POWER_TB_BODY_DEPTH/2
     components.add(
-        "power_ev_t_body",
+        "power_ev_tb_body",
         assembly="electrical_conduit_fittings",
-        component_type=CARLON_E983G_CONDUIT_T_BODY,
+        component_type=IPEX_SCEPTER_STB40S_TYPE_TB_BODY,
         member="front_center_rail",
         at=0,
-        face="narrow_pos",
+        face="wide_neg",
         absolute_anchor=(
-            POWER_T_ANCHOR_X,
-            POWER_T_ANCHOR_Y,
-            POWER_T_CENTER_Z,
+            POWER_TB_AXIS_X,
+            POWER_TB_COVER_SIDE_Y,
+            POWER_TB_CENTER_Z,
         ),
         orientation="down",
     )
-    POWER_T_TOP_ANCHOR=ComponentAnchor(
-        "power_ev_t_body",
-        position=(0, POWER_T_MAIN_CHANNEL_WIDTH/2),
+    POWER_TB_VERTICAL_PORT_DEPTH_OFFSET=(
+        POWER_TB_BODY_DEPTH/2-IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[2]/2
     )
-    POWER_T_BOTTOM_ANCHOR=ComponentAnchor(
-        "power_ev_t_body",
+    POWER_TB_TOP_ANCHOR=ComponentAnchor(
+        "power_ev_tb_body",
+        position=(0, IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[1]/2),
+        depth_offset=POWER_TB_VERTICAL_PORT_DEPTH_OFFSET,
+    )
+    POWER_TB_BOTTOM_ANCHOR=ComponentAnchor(
+        "power_ev_tb_body",
         position=(
-            CARLON_E983G_CONDUIT_T_BODY.size[0],
-            POWER_T_MAIN_CHANNEL_WIDTH/2,
+            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[0],
+            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[1]/2,
         ),
+        depth_offset=POWER_TB_VERTICAL_PORT_DEPTH_OFFSET,
     )
-    POWER_T_BRANCH_ANCHOR=ComponentAnchor(
-        "power_ev_t_body",
+    POWER_TB_BRANCH_ANCHOR=ComponentAnchor(
+        "power_ev_tb_body",
         position=(
-            CARLON_E983G_CONDUIT_T_BODY.size[0]/2,
-            CARLON_E983G_CONDUIT_T_BODY.size[1],
+            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[0]/2,
+            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[1]/2,
+        ),
+        depth_offset=(
+            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[2]/2
         ),
     )
 
     # The junction input is on its rear face, aligned with the raised branch.
-    POWER_JUNCTION_T_PORT_X=POWER_T_AXIS_X
-    POWER_JUNCTION_T_PORT_Y=(
+    POWER_JUNCTION_TB_PORT_X=POWER_TB_AXIS_X
+    POWER_JUNCTION_TB_PORT_Y=(
         POWER_JUNCTION_CENTER_Y+CARLON_E987N_JUNCTION_BOX.size[1]/2
     )
-    POWER_JUNCTION_T_PORT_Z=POWER_T_CENTER_Z
+    POWER_JUNCTION_TB_PORT_Z=POWER_TB_CENTER_Z
     components.add(
         "power_junction_input_adapter",
         assembly="electrical_conduit_fittings",
@@ -1229,9 +1230,9 @@ def build_enclosure(
         at=0,
         face="wide_neg",
         absolute_anchor=(
-            POWER_JUNCTION_T_PORT_X,
-            POWER_JUNCTION_T_PORT_Y,
-            POWER_JUNCTION_T_PORT_Z,
+            POWER_JUNCTION_TB_PORT_X,
+            POWER_JUNCTION_TB_PORT_Y,
+            POWER_JUNCTION_TB_PORT_Z,
         ),
         orientation="inward",
     )
@@ -1243,9 +1244,9 @@ def build_enclosure(
         at=0,
         face="wide_neg",
         absolute_anchor=(
-            POWER_JUNCTION_T_PORT_X,
-            POWER_JUNCTION_T_PORT_Y+CARLON_E996G_BOX_ADAPTER.size[0]/2,
-            POWER_JUNCTION_T_PORT_Z,
+            POWER_JUNCTION_TB_PORT_X,
+            POWER_JUNCTION_TB_PORT_Y+CARLON_E996G_BOX_ADAPTER.size[0]/2,
+            POWER_JUNCTION_TB_PORT_Z,
         ),
         orientation="inward",
     )
@@ -1256,8 +1257,8 @@ def build_enclosure(
             CARLON_E940G_COUPLING.size[1]/2,
         ),
     )
-    POWER_T_TOP_Z=(
-        POWER_T_CENTER_Z+CARLON_E983G_CONDUIT_T_BODY.size[0]/2
+    POWER_TB_TOP_Z=(
+        POWER_TB_CENTER_Z+IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[0]/2
     )
     components.add(
         "power_ev_reducer",
@@ -1267,9 +1268,9 @@ def build_enclosure(
         at=0,
         face="narrow_pos",
         absolute_anchor=(
-            POWER_T_AXIS_X,
-            POWER_T_AXIS_Y,
-            POWER_T_TOP_Z,
+            POWER_TB_AXIS_X,
+            POWER_TB_AXIS_Y,
+            POWER_TB_TOP_Z,
         ),
     )
 
@@ -1338,9 +1339,9 @@ def build_enclosure(
 
     conduits = ConduitCollection()
 
-    POWER_T_GROUND_Z=grounds[0].resolved(members).z_at(
-        POWER_T_AXIS_X,
-        POWER_T_AXIS_Y,
+    POWER_TB_GROUND_Z=grounds[0].resolved(members).z_at(
+        POWER_TB_AXIS_X,
+        POWER_TB_AXIS_Y,
     )
     POWER_RISER_GROUND_Z=grounds[0].resolved(members).z_at(
         POWER_RISER_X,
@@ -1360,15 +1361,15 @@ def build_enclosure(
                 "front_center_rail",
                 POWER_RISER_X,
                 POWER_RISER_Y,
-                POWER_T_BOTTOM_Z,
+                POWER_TB_BOTTOM_Z,
             ),
         ),
     )
     conduits.add(
-        "power_t_junction_feed",
+        "power_tb_junction_feed",
         trade_size="1-1/4",
         points=(
-            POWER_T_BRANCH_ANCHOR,
+            POWER_TB_BRANCH_ANCHOR,
             POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR,
         ),
     )
@@ -2277,23 +2278,25 @@ def build_enclosure(
         )
 
     # The removable plywood panel carries cord contact into two uprights
-    # anchored to the front rails.  Clearances follow the modeled T envelope.
+    # anchored to the front rails.  Clearances follow the modeled TB envelope.
     POWER_GUARD_CLEARANCE=0.25
-    POWER_GUARD_T=components["power_ev_t_body"].resolved(members["front_center_rail"])
-    POWER_GUARD_LEFT_X=POWER_GUARD_T.box_min[0]-POWER_GUARD_CLEARANCE-1.5
+    POWER_GUARD_TB_BODY=components["power_ev_tb_body"].resolved(members["front_center_rail"])
+    POWER_GUARD_LEFT_X=POWER_GUARD_TB_BODY.box_min[0]-POWER_GUARD_CLEARANCE-1.5
     POWER_GUARD_RIGHT_X=(
-        POWER_GUARD_T.box_min[0]+POWER_GUARD_T.box_size[0]+POWER_GUARD_CLEARANCE
+        POWER_GUARD_TB_BODY.box_min[0]
+        +POWER_GUARD_TB_BODY.box_size[0]
+        +POWER_GUARD_CLEARANCE
     )
     POWER_GUARD_REAR_Y=members["rail_fbl"].max_on("y")
     POWER_GUARD_PANEL_Y=(
-        POWER_GUARD_T.box_min[1]+POWER_GUARD_T.box_size[1]
+        POWER_GUARD_TB_BODY.box_min[1]+POWER_GUARD_TB_BODY.box_size[1]
         +POWER_GUARD_CLEARANCE
     )
     POWER_GUARD_UPRIGHT_DEPTH=POWER_GUARD_PANEL_Y-POWER_GUARD_REAR_Y
     if not 0 < POWER_GUARD_UPRIGHT_DEPTH <= 3.5:
         raise ValueError("power guard upright cannot be ripped from a 2x4")
     POWER_GUARD_BOTTOM_Z=0.75
-    POWER_GUARD_TOP_Z=math.ceil((POWER_T_TOP_Z+1)*4)/4
+    POWER_GUARD_TOP_Z=math.ceil((POWER_TB_TOP_Z+1)*4)/4
     POWER_GUARD_SPAN=(POWER_GUARD_RIGHT_X+1.5)-POWER_GUARD_LEFT_X
     for side,x in (("left",POWER_GUARD_LEFT_X),("right",POWER_GUARD_RIGHT_X)):
         members.add(

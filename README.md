@@ -33,6 +33,24 @@ generated Pages deployments from getting ahead of the source code on GitHub.
 The `--width`, `--depth`, and `--height` options customize the enclosure. Run
 `uv run build.py --help` for their descriptions.
 
+The default level finished post tops are at `z = 49.625` inches, with `z = 0`
+at the outside corner of `post_fl`. The surveyed vertical ground-to-top heights
+are 49 5/8 inches at front-left, 49 1/4 at front-right, 48 1/2 at back-left,
+and 47 at back-right. Ground elevations at those outside corners are therefore
+0, 3/8, 1 1/8, and 2 5/8 inches. A bilinear surface matches all four readings;
+beyond the surveyed rectangle it holds the nearest edge elevation. Ground
+references for conduit, cable clearance, and footing tops use that same surface.
+The rendered surface is triangulated with less than 0.002-inch interpolation
+error inside the surveyed rectangle.
+
+`--height` changes the level post-top elevation above the front-left datum;
+the surveyed ground stays fixed. The installed diagonal is friction-fitted
+between the corner posts and secured by the two gussets. The diagonal and
+perimeter bracing finish flush with the level post tops at `z = 49.625`.
+The existing 1/4-inch roof shims put roof support at `49.875` and the finished
+roof at `50.875`. Post bottoms remain at the assumed `z = -32` datum; the survey
+does not establish their actual buried lengths.
+
 ## First deployment
 
 GitHub Pages must use GitHub Actions as its publishing source. If the first

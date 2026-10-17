@@ -158,10 +158,10 @@ class XYGridTests(unittest.TestCase):
     def test_full_enclosure_ranges_cover_all_renderable_geometry(self) -> None:
         self.assertEqual(
             build.model._grid_slider_range(0),
-            "-37:1:61",
+            "-36:1:63",
         )
-        self.assertEqual(build.model._grid_slider_range(1), "-40:1:59")
-        self.assertEqual(build.model._grid_slider_range(2), "-37:1:50")
+        self.assertEqual(build.model._grid_slider_range(1), "-38:1:61")
+        self.assertEqual(build.model._grid_slider_range(2), "-37:1:52")
 
 
 if __name__ == "__main__":

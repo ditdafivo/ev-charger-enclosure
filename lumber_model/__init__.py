@@ -66,7 +66,7 @@ from lumber_model.conduit import (
     cubic_bezier_conduit_points,
 )
 from lumber_model.constants import ACTUAL_DIMS, AXES, AXIS_INDEX, Axis, LumberType
-from lumber_model.ground import GroundPlane, ResolvedGroundPlane
+from lumber_model.ground import GroundPlane, ResolvedGroundPlane, GroundSurface, ResolvedGroundSurface
 from lumber_model.footing import (
     DEFAULT_GRAVEL_COLOR,
     Footing,
@@ -166,6 +166,7 @@ __all__ = [
     "PurchasedItem",
     "RoutedSeat",
     "GroundPlane",
+    "GroundSurface",
     "Lumber",
     "LumberCollection",
     "LumberPiece",
@@ -180,6 +181,7 @@ __all__ = [
     "ResolvedCableRun",
     "ResolvedComponent",
     "ResolvedGroundPlane",
+    "ResolvedGroundSurface",
     "ResolvedFooting",
     "ResolvedTambourDoor",
     "SidingColor",

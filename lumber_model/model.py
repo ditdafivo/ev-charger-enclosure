@@ -25,7 +25,7 @@ from lumber_model.formatting import (
 from lumber_model.geometry import Vector3
 from lumber_model.footing import Footing
 from lumber_model.fabrication import PurchasedItem, RoutedSeat
-from lumber_model.ground import GroundPlane
+from lumber_model.ground import GroundPlane, GroundSurface, ResolvedGroundSurface
 from lumber_model.lumber import AngledLumber, LumberPiece
 from lumber_model.siding import CompositeSiding
 from lumber_model.tambour import TambourDoor
@@ -84,7 +84,7 @@ class Model:
     components: list[ComponentInstance]
     conduits: list[ConduitRun]
     cables: list[CableRun]
-    grounds: list[GroundPlane]
+    grounds: list[GroundPlane | GroundSurface]
     footings: list[Footing]
     tambours: list[TambourDoor]
     sidings: list[CompositeSiding]
@@ -102,7 +102,7 @@ class Model:
         | None = None,
         conduits: Mapping[str, ConduitRun] | Iterable[ConduitRun] | None = None,
         cables: Mapping[str, CableRun] | Iterable[CableRun] | None = None,
-        grounds: Mapping[str, GroundPlane] | Iterable[GroundPlane] | None = None,
+        grounds: Mapping[str, GroundPlane | GroundSurface] | Iterable[GroundPlane | GroundSurface] | None = None,
         footings: Mapping[str, Footing] | Iterable[Footing] | None = None,
         tambours: Mapping[str, TambourDoor] | Iterable[TambourDoor] | None = None,
         sidings: Mapping[str, CompositeSiding]
@@ -1071,6 +1071,17 @@ class Model:
 
         for ground in self.grounds:
             resolved = ground.resolved(self)
+            if isinstance(resolved, ResolvedGroundSurface):
+                min_z, max_z = resolved.z_bounds
+                _include_box(
+                    bounds,
+                    resolved.center[0]-resolved.radius,
+                    resolved.center[0]+resolved.radius,
+                    resolved.center[1]-resolved.radius,
+                    resolved.center[1]+resolved.radius,
+                    min_z, max_z,
+                )
+                continue
             normal = resolved.normal
             extents = tuple(
                 resolved.radius * math.sqrt(max(0, 1 - normal[index] ** 2))

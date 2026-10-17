@@ -8,7 +8,7 @@ from typing import overload
 from lumber_model.components import ResolvedComponent
 from lumber_model.formatting import fmt_float, scad_string
 from lumber_model.geometry import Vector3, rounded_polyline_points
-from lumber_model.ground import ResolvedGroundPlane
+from lumber_model.ground import ResolvedGroundPlane, ResolvedGroundSurface
 
 
 CableColor = tuple[float, float, float, float]
@@ -249,15 +249,12 @@ def _component_local_point(
     )
 
 
-def _ground_z(ground: ResolvedGroundPlane, x: float, y: float) -> float:
+def _ground_z(ground: ResolvedGroundPlane | ResolvedGroundSurface, x: float, y: float) -> float:
     normal = ground.normal
     if abs(normal[2]) < 1e-9:
         raise ValueError("Cable clearance requires a non-vertical ground plane")
 
-    return ground.origin[2] - (
-        normal[0] * (x - ground.origin[0])
-        + normal[1] * (y - ground.origin[1])
-    ) / normal[2]
+    return ground.z_at(x, y)
 
 
 def _append_point(points: list[Vector3], point: Vector3) -> None:
@@ -485,7 +482,7 @@ def _trim_to_length_and_terminate(
 def ev_charger_cable_points(
     body: ResolvedComponent,
     plug: ResolvedComponent,
-    ground: ResolvedGroundPlane,
+    ground: ResolvedGroundPlane | ResolvedGroundSurface,
     *,
     length: float = 25 * 12,
     diameter: float = 0.8,

@@ -2,7 +2,10 @@
 
 This guide describes the modeled construction sequence for the fixed enclosure
 design: 24-inch left-to-right post center spacing, 19 3/8-inch front-to-back post
-center spacing, 47 inches above grade, and 32 inches of each post below grade.
+center spacing, and level finished post tops 49 5/8 inches above the front-left
+outside-corner ground datum. The other surveyed ground-to-top heights are
+49 1/4 inches at front-right, 48 1/2 at back-left, and 47 at back-right.
+All model Z elevations use that front-left ground datum.
 Dimensions and cut lengths below apply to this design only.
 
 The generated BOM and cut list remain the authoritative material references
@@ -95,10 +98,12 @@ low_voltage_ground_sweep_elbow_2
 ## 2. Install the four posts (`posts`)
 
 Excavate and fill four 10-inch-diameter gravel footings from 36 inches below
-the nominal ground datum to grade, centered on the post centerlines. Position
-the four 79-inch 4x4 posts on the 24-by-19 3/8-inch centerline rectangle. The
-model places each post 32 inches below grade and 47 inches above grade, leaving
-4 inches of gravel beneath it.
+the front-left ground datum to local grade, centered on the post centerlines.
+Position four 4x4 posts on the 24-by-19 3/8-inch centerline rectangle with all
+finished tops level at `z = 49.625`. The model assumes bottoms at `z = -32`,
+so each modeled post is 81 5/8 inches long, with 4 inches of gravel beneath it.
+Actual buried lengths were not measured. The uneven ground matches the four
+outside-corner readings; footing tops follow grade at their centerlines.
 
 **Before rental day:** Complete the required utility locate and compare each
 entire footing circle with the preserved no-auger corridors and recorded
@@ -162,16 +167,16 @@ footing_br
 
 ## 3. Add the complete top bracing (`top-bracing`)
 
-Install 2x4 front and back perimeter braces and top-flush 4x4 left and right
-braces. The back-left and front-right posts stop at `z = 46.25`; do not rabbet
-them. Route only the four side-brace regions listed in
-`output/fabrication.csv` to a uniform 3/4-inch depth. Dry-fit the approximately
-35.766-inch-long rectangular blank cut from a stress-rated nominal 1x6; cut it
-slightly long rather than rounding the minimum downward. Rip it slightly proud
-of the calculated 4.922-inch minimum finished width, fit it on the modeled
-post-center line, and jigsaw the end profiles listed in `output/fabrication.csv`.
-Its full section must occupy `z = 46.25` to `47.00`, cover both complete post
-tops, and stop at their exterior XY faces.
+The installed diagonal was cut to friction fit between the back-left and
+front-right posts and secured with gussets. Keep the four finished post tops,
+2x4 front/back perimeter braces, and 4x4 left/right braces flush at
+`z = 49.625`. The flat 1x6 diagonal occupies `z = 48.875` to `49.625` and ends
+against the posts' opposing front/back faces. It does not cover their tops.
+
+The modeled full-width 5.5-inch board needs a rectangular blank at least
+31.369 inches long. Use the generated end profile as a layout reference and
+preserve the actual friction fit against both posts. The modeled 3/4-inch
+seats in `output/fabrication.csv` occur only in the left and right side braces.
 
 Install one laser-cut 6-by-6-by-0.074-inch G90 galvanized-steel gusset at each
 involved corner. Orient each square from the two exterior post faces toward the
@@ -260,8 +265,8 @@ rail_rtam
 ## 7. Add the side receiver rails (`upper-side-rails`)
 
 Install `rail_lt` and `rail_rt` from the corresponding front support rail to
-the back post; their modeled lower and upper faces are at `z = 40 7/8` and
-`42 3/8` inches. Keep both wide faces horizontal.
+the back post; their modeled lower and upper faces are at `z = 43 1/2` and
+`45` inches. Keep both wide faces horizontal.
 
 Check the receiver rails for level and confirm that the two upper rails remain
 opposite one another. Their front ends depend on the plumb support rails
@@ -278,7 +283,7 @@ rail_rt
 ## 8. Add the upper front cross rail (`upper-front-rail`)
 
 Install the 20 1/2-inch 2x4 `rail_ft` between `rail_lt` and `rail_rt`, with its
-lower and upper faces at `z = 40 7/8` and `42 3/8` inches. Its modeled Y range
+lower and upper faces at `z = 43 1/2` and `45` inches. Its modeled Y range
 is `7 3/16` to `10 11/16` inches. Fasten its complete end faces to the side
 rails; the former separate vertical header-support blocks are not used.
 
@@ -574,9 +579,9 @@ Install the composite boards after the framing, interior equipment, conduit,
 and cable routes are installed and inspected. Only siding trim and the fixtures
 or covers that mount outside the siding follow this step.
 
-The model represents 48 physical cuts as 58 rendered pieces because
-boards interrupted by the street-light and outlet openings, and the top rear
-board surrounding the tambour opening, are split into multiple solids.
+The generated siding cut list accounts for boards interrupted by the
+street-light and outlet openings and the top rear board surrounding the tambour
+opening. Those boards are split into multiple rendered solids.
 
 Maintain the modeled bottom elevation of 2 inches and the front-light,
 right-outlet, and rear-tambour openings. Dry-fit opening courses before cutting
@@ -621,9 +626,7 @@ enclosure_siding_rear_left_4
 enclosure_siding_rear_right_4
 enclosure_siding_front_5
 enclosure_siding_left_5
-enclosure_siding_right_5_1
-enclosure_siding_right_5_2
-enclosure_siding_right_5_3
+enclosure_siding_right_5
 enclosure_siding_rear_left_5
 enclosure_siding_rear_right_5
 enclosure_siding_front_6
@@ -635,7 +638,9 @@ enclosure_siding_rear_left_6
 enclosure_siding_rear_right_6
 enclosure_siding_front_7
 enclosure_siding_left_7
-enclosure_siding_right_7
+enclosure_siding_right_7_1
+enclosure_siding_right_7_2
+enclosure_siding_right_7_3
 enclosure_siding_rear_left_7
 enclosure_siding_rear_right_7
 enclosure_siding_front_8

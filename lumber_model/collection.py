@@ -112,6 +112,7 @@ class LumberCollection(Mapping[str, LumberPiece]):
         rotated: bool = True,
         extend_within_support_xy: bool = False,
         cover_supports_xy: bool = False,
+        fit_between_support_faces: Axis | None = None,
     ) -> AngledLumber:
         """
         Create a horizontal diagonal member between the inside corners of posts.
@@ -122,6 +123,9 @@ class LumberCollection(Mapping[str, LumberPiece]):
         cover_supports_xy, the member instead follows the support-center line,
         is ripped to their maximum projected width, extends across both support
         profiles, and is clipped to their combined exterior XY bounds.
+        fit_between_support_faces instead cuts a full-stock-width blank to the
+        opposing inside faces on the specified X or Y axis, without covering
+        the posts. Its profiled ends can bear against those faces.
         """
         a = self.resolve(support_a)
         b = self.resolve(support_b)
@@ -135,6 +139,12 @@ class LumberCollection(Mapping[str, LumberPiece]):
                 "cover_supports_xy are mutually exclusive"
             )
 
+        if fit_between_support_faces is not None and (
+            fit_between_support_faces not in ("x", "y")
+            or extend_within_support_xy or cover_supports_xy
+        ):
+            raise ValueError(f"{name}: face fitting requires X or Y and no extension mode")
+
         a_center = a.center
         b_center = b.center
 
@@ -146,7 +156,7 @@ class LumberCollection(Mapping[str, LumberPiece]):
         finished_width: float | None = None
         footprint: tuple[tuple[float, float], ...] | None = None
 
-        if cover_supports_xy:
+        if cover_supports_xy or fit_between_support_faces is not None:
             dx = b_center[0] - a_center[0]
             dy = b_center[1] - a_center[1]
             center_length = math.hypot(dx, dy)
@@ -167,6 +177,8 @@ class LumberCollection(Mapping[str, LumberPiece]):
                 projected_extent(b, normal),
             )
             stock_width = ACTUAL_DIMS[type][1 if rotated else 0]
+            if fit_between_support_faces is not None:
+                finished_width = stock_width
             if finished_width > stock_width:
                 raise ValueError(
                     f"{name}: required finished width {finished_width} exceeds "
@@ -194,6 +206,28 @@ class LumberCollection(Mapping[str, LumberPiece]):
                 min_y=min(a.min_on("y"), b.min_on("y")),
                 max_y=max(a.max_on("y"), b.max_on("y")),
             )
+            if fit_between_support_faces is not None:
+                axis = fit_between_support_faces
+                inside_min = min(a.max_on(axis), b.max_on(axis))
+                inside_max = max(a.min_on(axis), b.min_on(axis))
+                if inside_min >= inside_max:
+                    raise ValueError(f"{name}: support faces must have a clear gap on {axis}")
+                footprint = clip_polygon_to_box(
+                    footprint,
+                    min_x=inside_min if axis == "x" else min(a.min_on("x"), b.min_on("x")),
+                    max_x=inside_max if axis == "x" else max(a.max_on("x"), b.max_on("x")),
+                    min_y=inside_min if axis == "y" else min(a.min_on("y"), b.min_on("y")),
+                    max_y=inside_max if axis == "y" else max(a.max_on("y"), b.max_on("y")),
+                )
+                # Tight rectangular stock envelope around the final end cuts.
+                projections = [
+                    (x-a_center[0])*along[0] + (y-a_center[1])*along[1]
+                    for x, y in footprint
+                ]
+                a_x = a_center[0] + min(projections)*along[0]
+                a_y = a_center[1] + min(projections)*along[1]
+                b_x = a_center[0] + max(projections)*along[0]
+                b_y = a_center[1] + max(projections)*along[1]
         elif extend_within_support_xy:
             dx = b_x - a_x
             dy = b_y - a_y

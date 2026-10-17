@@ -335,19 +335,21 @@ front_ev_charger_cable
 ## 11. Preassemble and mount the power junction (`power-junction-assembly`)
 
 Before mounting the Carlon E987N power junction box, fit its rear-facing
-1 1/4-inch input adapter and coupling for the rear port of the Type TB body and
+3/4-inch male input fitting for the shallow pull box and
 the two right-side 1/2-inch light and receptacle outlets.
-The light outlet is forward of the receptacle outlet. Then mount the connected
+Cut the entry holes to suit the actual male threads. Insert each fitting from
+outside with a sealing washer against the exterior wall and tighten a locknut
+inside. The light outlet is forward of the receptacle outlet. Then mount the connected
 box on `front_center_rail`, spanning x = 13 to 17 inches in the default model,
 and y = 3.1875 to 7.1875 inches. Its bottom face remains at the modeled
 elevation of approximately z = 6.51 inches, supported along its lower edge by
 `rail_fbl`. Keep every fitting axis aligned with its conduit path.
 
-Check that the fittings are fully seated and clear of `front_center_rail`.
-Keep the rear fitting aligned with the raised 1 1/4-inch feed from the Type TB body.
+Check that the fittings and internal locknuts are clear of `front_center_rail`.
+Keep the rear fitting aligned with the raised 3/4-inch feed from the shallow pull box.
 
-The #6 charger group continues vertically through the Type TB body and bypasses
-the junction box. The #12 supply group branches through the Type TB body's rear
+The #6 charger group continues vertically through the 4×4×2-inch pull box and bypasses
+the junction box. The #12 supply group branches through the 4×4×2-inch pull box's rear
 port into the box, where
 its hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs
 and the #12 equipment grounds are spliced. The modeled junction-box calculation
@@ -359,23 +361,34 @@ New model objects:
 ```text
 power_junction_box
 power_junction_input_adapter
-power_junction_input_coupling
+power_junction_input_adapter_sealing_washer
+power_junction_input_adapter_locknut
 power_junction_light_adapter
-power_junction_light_coupling
+power_junction_light_adapter_sealing_washer
+power_junction_light_adapter_locknut
 power_junction_outlet_adapter
-power_junction_outlet_coupling
+power_junction_outlet_adapter_sealing_washer
+power_junction_outlet_adapter_locknut
 ```
 
 ## 12. Connect the power junction to the EV charger (`ev-charger-power`)
 
-Using the physical charger-input position recorded in Step 10, align the
-1 1/4-inch ground riser and Type TB body with the charger's conduit-port X coordinate.
-Set the TB-body rear port high enough that the complete conduit envelope passes
-above `rail_fbu`, then run the full horizontal branch to the rear coupling on
-the junction box. Fit the reducer at the Type TB body's upward outlet and run the
-straight 1-inch conduit to the bottom of the charger.
+Using the physical charger-input position recorded in Step 10, install the
+4×4×2-inch junction box in place of the IPEX STB40S, with its removable cover
+facing positive Y. Cut holes for a 1-inch top male fitting, a 3/4-inch back
+male fitting toward the power junction, and the retained 1 1/4-inch bottom riser
+male fitting. Clamp each entry with an exterior sealing washer and an interior
+locknut; the box wall is not tapped. Keep the top fitting on the charger entry
+axis and the bottom fitting on the existing riser axis.
 
-Check alignment at the riser, junction box, top adapter and coupling, and
+The box center is z = 8.83 inches, with bottom and top at 6.83 and 10.83 inches.
+Run the 3/4-inch branch from the back fitting to the 3/4-inch male fitting on
+the rear of the 4×4×4-inch power junction box. Run straight 1-inch conduit from
+the top fitting to the charger; the old top reducer and box-adapter/coupling
+pairs are removed. Fitting and clamp geometry is a planning envelope; lay out
+hole sizes and seating depths from the selected hardware.
+
+Check alignment at the riser, junction box, top fitting, and
 charger entry. Route the unspliced #6 charger group through this conduit
 according to the approved electrical design. Verify that the power path remains
 clear of the cord-storage volume and adjacent framing. Check the flexible cord
@@ -387,9 +400,17 @@ New model objects:
 
 ```text
 power_ev_charger_feed
-power_ev_reducer
-power_ev_tb_body
-power_tb_junction_feed
+power_ev_top_adapter
+power_ev_top_adapter_sealing_washer
+power_ev_top_adapter_locknut
+power_ev_pull_box
+power_ev_bottom_adapter
+power_ev_bottom_adapter_sealing_washer
+power_ev_bottom_adapter_locknut
+power_ev_back_adapter
+power_ev_back_adapter_sealing_washer
+power_ev_back_adapter_locknut
+power_pull_box_junction_feed
 ```
 
 ## 13. Add the street-light backing (`street-light-backing`)
@@ -472,7 +493,8 @@ power_back_right_outlet_feed
 
 Mount the low-voltage junction box with its bottom adapter centered at the
 upper 45-degree elbow outlet (nominally x = 10.657, y = 6.25, z = 9.912
-inches). The adapter meets that outlet directly. The box spans approximately
+inches). The male fitting meets that outlet directly; insert its thread through a cut
+hole with an exterior sealing washer and an interior locknut. The box spans approximately
 x = 8.657 to 12.657 and y = 3.1875 to 7.1875 inches, with its center at
 z = 13.382 inches. Its back is flush with the front face of `rail_fbu`; the
 bottom entry is offset toward the back at y = 6.25 inches to meet the elbow.
@@ -497,6 +519,8 @@ New model objects:
 ```text
 low_voltage_termination_box
 low_voltage_input_adapter
+low_voltage_input_adapter_sealing_washer
+low_voltage_input_adapter_locknut
 low_voltage_cable_gland_1
 low_voltage_cable_gland_2
 low_voltage_cable_gland_3
@@ -720,15 +744,15 @@ back_right_outlet_cover
 
 ## 24. Install the wood power-cord bumper (`power-cord-guard`)
 
-Cut two 13 1/2-inch 2x4 uprights and one 6 1/4-by-13 1/2-inch panel from
-1/4-inch exterior plywood. Rip the upright depth to approximately 3 inches;
-the exact modeled depth places the panel's rear face 1/4 inch beyond the Type TB
-body's positive-Y cover face. Install the uprights on edge with their rear faces
+Cut two 11 1/4-inch 2x4 uprights and one 7 1/2-by-11 1/4-inch panel from
+1/4-inch exterior plywood. Rip the upright depth to approximately 2 7/8 inches;
+the exact modeled depth places the panel's rear face 1/4 inch beyond the
+pull box's positive-Y cover face. Install the uprights on edge with their rear faces
 against the positive-Y faces of both `rail_fbl` and `rail_fbu`. In the default
-model, the left upright occupies x = 12.225 to 13.725 inches and the right
-upright x = 16.975 to 18.475 inches. Both start at z = 3/4 inch and end at
-z = 14 1/4 inches, about 1 inch above the Type TB body. Their inner edges have a
-nominal 1/4-inch clearance from the Type TB body.
+model, the left upright occupies x = 11.6 to 13.1 inches and the right
+upright x = 17.6 to 19.1 inches. Both start at z = 3/4 inch and end at
+z = 12 inches, about 1 inch above the 4×4×2-inch pull box. Their inner edges have a
+nominal 1/4-inch clearance from the 4×4×2-inch pull box.
 
 Fasten each upright into each rail with one 4-inch exterior structural wood
 screw, using pilot holes and the screw maker's installation guidance. Recess
@@ -740,11 +764,12 @@ fitting, junction box, or the soil.
 Fasten the plywood to the positive-Y ends of the uprights with four removable
 1 1/2-inch #10 exterior truss-head screws per side, spaced along the height
 and clear of the rail fasteners. The panel's modeled rear face is at
-y = 13.6937 inches. Seal its faces and edges and smooth every cord-contact
+y = 13.5375 inches. Seal its faces and edges and smooth every cord-contact
 edge; keep screw heads low and smooth.
 
-Before fastening, trial-fit the wood and panel around the actual T, reducer,
-branch, riser, and charger feed. Remove the panel and confirm the T cover can
+Before fastening, trial-fit the wood and panel around the actual pull box,
+threaded fittings, branch, riser, and charger feed. Remove the panel and confirm
+the pull-box cover can
 be opened and removed between the uprights. Place and remove the actual
 charging cord repeatedly. Its loops should rest outside the bumper, and cord
 contact must not flex the plywood or uprights into any conduit or fitting. If

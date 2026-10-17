@@ -131,7 +131,7 @@ class BuildStepModelTests(unittest.TestCase):
         }
 
         self.assertEqual(len(model.build_steps), 24)
-        self.assertEqual(len(assigned), 146)
+        self.assertEqual(len(assigned), 159)
         self.assertEqual(
             set(assigned) | set(model.deferred_object_names),
             set(model.renderable_object_names()),
@@ -169,9 +169,9 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertEqual(step_by_object["power_ground_riser"], 1)
         self.assertEqual(step_by_object["low_voltage_ground_riser_inlet"], 1)
         self.assertEqual(step_by_object["power_ev_charger_feed"], 12)
-        self.assertEqual(step_by_object["power_ev_tb_body"], 12)
-        self.assertEqual(step_by_object["power_tb_junction_feed"], 12)
-        self.assertEqual(step_by_object["power_ev_reducer"], 12)
+        self.assertEqual(step_by_object["power_ev_pull_box"], 12)
+        self.assertEqual(step_by_object["power_pull_box_junction_feed"], 12)
+        self.assertEqual(step_by_object["power_ev_top_adapter"], 12)
         self.assertEqual(step_by_object["rail_ltam"], 6)
         self.assertEqual(step_by_object["rail_rtam"], 6)
         self.assertEqual(step_by_object["rail_rbu"], 4)
@@ -204,8 +204,8 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn('["front_ev_charger_cable", 10]', scad)
         self.assertIn('["power_junction_box", 11]', scad)
         self.assertIn('["power_ev_charger_feed", 12]', scad)
-        self.assertIn('["power_ev_tb_body", 12]', scad)
-        self.assertIn('["power_tb_junction_feed", 12]', scad)
+        self.assertIn('["power_ev_pull_box", 12]', scad)
+        self.assertIn('["power_pull_box_junction_feed", 12]', scad)
         self.assertIn('["roof_shim_brace_fl_fr", 20]', scad)
         self.assertIn('["back_right_outlet_backer_lower", 15]', scad)
         self.assertIn('["back_right_outlet", 15]', scad)

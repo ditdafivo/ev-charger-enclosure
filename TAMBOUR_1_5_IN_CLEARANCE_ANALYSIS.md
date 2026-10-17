@@ -66,15 +66,16 @@ the plug.
 
 ### Charger-feed conduit
 
-The charger-riser arrangement aligns the 1 1/4-inch ground riser and Type TB body
-with the charger's conduit-port X coordinate. Its complete horizontal branch
-runs 1/4 inch above `rail_fbu` to the rear of the junction box, while the
-reduced 1-inch feed rises directly from the Type TB body to the charger. Both feeds
+The charger-riser arrangement uses a 4×4×2-inch pull box in place of the
+IPEX STB40S. A 1 1/4-inch bottom male fitting retains the ground riser, a
+1-inch top male fitting feeds the charger, and a 3/4-inch back male fitting
+feeds the 4×4×4-inch power junction. All conduit entries through these boxes
+use cut holes, exterior sealing washers, and interior locknuts. Both feeds
 remain below or behind the front curtain envelope.
 
-The #6 charger group bypasses the junction box through the Type TB body. The box's
-remaining #12 groups require 18 cubic inches against its modeled 49-cubic-inch
-marking, leaving 31 cubic inches.
+The #6 charger group bypasses the power junction through the shallow pull box.
+The power junction's remaining #12 groups require 18 cubic inches against its
+modeled 49-cubic-inch marking, leaving 31 cubic inches.
 
 ### Removable plywood ceiling
 

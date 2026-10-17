@@ -784,7 +784,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
         )
 
     def test_charger_riser_stays_below_or_behind_front_curtain(self) -> None:
-        branch=build.conduits["power_tb_junction_feed"].resolved(
+        branch=build.conduits["power_pull_box_junction_feed"].resolved(
             build.components.as_dict(),
             build.members.as_dict(),
         )
@@ -976,15 +976,16 @@ class PowerJunctionBuildTests(unittest.TestCase):
         )
         self.assertEqual(build.POWER_JUNCTION_BOX_FILL.required_volume, 18)
         self.assertEqual(build.POWER_JUNCTION_BOX_FILL.remaining_volume, 31)
-        self.assertAlmostEqual(build.POWER_LIGHT_COUPLING_END[0], 18.925)
-        self.assertAlmostEqual(build.POWER_OUTLET_COUPLING_END_X, 18.925)
+        self.assertAlmostEqual(build.POWER_LIGHT_ADAPTER_END[0], 18.25)
+        self.assertAlmostEqual(build.POWER_OUTLET_ADAPTER_END_X, 18.25)
 
     def test_default_charger_riser_fittings_and_route(self) -> None:
         expected_types = {
-            "power_junction_input_adapter": "carlon_e996g_box_adapter",
-            "power_junction_input_coupling": "carlon_e940g_coupling",
-            "power_ev_tb_body": "ipex_scepter_stb40s_type_tb_body",
-            "power_ev_reducer": "carlon_e950gf_reducer_bushing",
+            "power_junction_input_adapter": "pvc_3/4_male_terminal_adapter",
+            "power_ev_pull_box": "carlon_e989nnj_junction_box",
+            "power_ev_top_adapter": "pvc_1_male_terminal_adapter",
+            "power_ev_back_adapter": "pvc_3/4_male_terminal_adapter",
+            "power_ev_bottom_adapter": "pvc_1-1/4_male_terminal_adapter",
         }
         for name, expected_type in expected_types.items():
             with self.subTest(name=name):
@@ -999,7 +1000,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertNotIn("power_junction_ev_coupling", build.components)
 
         riser = self.resolved_conduit("power_ground_riser")
-        branch = self.resolved_conduit("power_tb_junction_feed")
+        branch = self.resolved_conduit("power_pull_box_junction_feed")
         ev = self.resolved_conduit("power_ev_charger_feed")
         self.assertVectorAlmostEqual(
             riser.points[0][:2],
@@ -1009,40 +1010,40 @@ class PowerJunctionBuildTests(unittest.TestCase):
             riser.points[-1][:2],
             (build.POWER_RISER_X, build.POWER_RISER_Y),
         )
-        self.assertEqual(branch.trade_size, "1-1/4")
+        self.assertEqual(branch.trade_size, "3/4")
         self.assertEqual(branch.points[0][0], branch.points[-1][0])
         self.assertAlmostEqual(branch.points[0][0], build.POWER_EV_ENTRY[0])
         self.assertAlmostEqual(branch.points[0][2], branch.points[-1][2])
-        self.assertLess(branch.points[0][1]-branch.points[-1][1], 0.25)
+        self.assertGreater(branch.points[0][1]-branch.points[-1][1], 0)
         self.assertAlmostEqual(
             branch.points[0][2]-branch.od/2,
-            8,
+            8.305,
         )
         self.assertEqual(
-            build.conduits["power_tb_junction_feed"].points,
+            build.conduits["power_pull_box_junction_feed"].points,
             (
-                build.POWER_TB_BRANCH_ANCHOR,
-                build.POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR,
+                build.POWER_PULL_BOX_BRANCH_ANCHOR,
+                build.POWER_JUNCTION_INPUT_END_ANCHOR,
             ),
         )
         box_instance = build.components["power_junction_box"]
         box = box_instance.resolved(build.members[box_instance.member])
         adapter_instance = build.components["power_junction_input_adapter"]
         adapter = adapter_instance.resolved(build.members[adapter_instance.member])
-        coupling_instance = build.components["power_junction_input_coupling"]
-        coupling = coupling_instance.resolved(
-            build.members[coupling_instance.member]
+        self.assertAlmostEqual(
+            adapter.box_min[1], box.box_min[1]+box.box_size[1]-0.5,
         )
         self.assertAlmostEqual(
-            adapter.box_min[1],
-            box.box_min[1]+box.box_size[1],
+            adapter.box_min[0]+adapter.box_size[0]/2, build.POWER_EV_ENTRY[0],
         )
         self.assertAlmostEqual(
-            adapter.box_min[0]+adapter.box_size[0]/2,
-            build.POWER_EV_ENTRY[0],
+            branch.points[-1][1], adapter.box_min[1]+adapter.box_size[1],
         )
-        self.assertLess(adapter.box_min[1], coupling.box_min[1])
-        self.assertLess(coupling.box_min[1], branch.points[-1][1])
+        for obsolete in ("power_ev_tb_body", "power_ev_reducer",
+                         "power_junction_input_coupling",
+                         "power_junction_light_coupling",
+                         "power_junction_outlet_coupling"):
+            self.assertNotIn(obsolete, build.components)
 
         self.assertEqual(ev.trade_size, "1")
         self.assertEqual(len(ev.points), 2)
@@ -1069,10 +1070,47 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertAlmostEqual(charger.box_min[2], 22.35)
         self.assertAlmostEqual(holster.box_min[2], 30.83492125984252)
 
+    def test_pull_box_and_clamping_hardware(self) -> None:
+        for enclosure in (build.default_build, build.build_enclosure(width=36, depth=30)):
+            def resolved(name):
+                item = enclosure.components[name]
+                return item.resolved(enclosure.members[item.member])
+
+            box = resolved("power_ev_pull_box")
+            self.assertVectorAlmostEqual(box.box_size, (4, 2, 4))
+            self.assertAlmostEqual(box.box_min[2], 6.83)
+            branch = self.resolved_conduit("power_pull_box_junction_feed", enclosure)
+            # Socket ends face each other with a positive straight conduit span.
+            self.assertGreater(branch.points[0][1], branch.points[-1][1])
+            riser = self.resolved_conduit("power_ground_riser", enclosure)
+            bottom = resolved("power_ev_bottom_adapter")
+            self.assertVectorAlmostEqual(
+                riser.points[-1],
+                (bottom.box_min[0]+bottom.box_size[0]/2,
+                 bottom.box_min[1]+bottom.box_size[1]/2, bottom.box_min[2]),
+            )
+            for name in ("power_ev_top_adapter", "power_ev_bottom_adapter",
+                         "power_ev_back_adapter", "power_junction_input_adapter",
+                         "power_junction_light_adapter", "power_junction_outlet_adapter",
+                         "low_voltage_input_adapter"):
+                fitting = resolved(name)
+                instance = enclosure.components[name]
+                for suffix in ("sealing_washer", "locknut"):
+                    hardware_instance = enclosure.components[f"{name}_{suffix}"]
+                    self.assertEqual(hardware_instance.absolute_anchor, instance.absolute_anchor)
+                    hardware = resolved(f"{name}_{suffix}")
+                    self.assertVectorAlmostEqual(hardware.along_vec, fitting.along_vec)
+                # The wall lies 0.5 in from the threaded end; clamps straddle it.
+                washer_type = enclosure.components[f"{name}_sealing_washer"].component_type
+                nut_type = enclosure.components[f"{name}_locknut"].component_type
+                self.assertGreaterEqual(washer_type.cylinder_primitives[0][0][0], 0.5)
+                nut_start, _, nut_length, _ = nut_type.cylinder_primitives[0]
+                self.assertLess(nut_start[0]+nut_length, 0.5)
+
     def test_riser_and_equipment_feeds_use_relative_endpoints(self) -> None:
         enclosure = build.default_build
         riser = self.resolved_conduit("power_ground_riser", enclosure)
-        branch = self.resolved_conduit("power_tb_junction_feed", enclosure)
+        branch = self.resolved_conduit("power_pull_box_junction_feed", enclosure)
         ev = self.resolved_conduit("power_ev_charger_feed", enclosure)
         light = self.resolved_conduit("power_street_light_feed", enclosure)
 
@@ -1098,7 +1136,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertTrue(
             all(
                 isinstance(point, ComponentAnchor)
-                for point in enclosure.conduits["power_tb_junction_feed"].points
+                for point in enclosure.conduits["power_pull_box_junction_feed"].points
             )
         )
         self.assertEqual(branch.points[0][0], enclosure.POWER_EV_ENTRY[0])
@@ -1113,7 +1151,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
 
         self.assertEqual(light.trade_size, "1/2")
         self.assertVectorAlmostEqual(
-            light.points[0], enclosure.POWER_LIGHT_COUPLING_END
+            light.points[0], enclosure.POWER_LIGHT_ADAPTER_END
         )
         self.assertVectorAlmostEqual(
             light.points[-1],
@@ -1136,7 +1174,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.components["power_junction_light_adapter"].orientation,
             "left",
         )
-        self.assertAlmostEqual(adapter.box_min[0], build.POWER_JUNCTION_RIGHT_X)
+        self.assertAlmostEqual(adapter.box_min[0], build.POWER_JUNCTION_RIGHT_X-0.5)
         self.assertLess(
             adapter.box_min[1]+adapter.box_size[1]/2,
             outlet.box_min[1]+outlet.box_size[1]/2,
@@ -1147,7 +1185,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         )
         self.assertVectorAlmostEqual(
             light.points[0],
-            build.POWER_LIGHT_COUPLING_END,
+            build.POWER_LIGHT_ADAPTER_END,
         )
         self.assertVectorAlmostEqual(
             light.points[-1], build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
@@ -1218,7 +1256,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
         self.assertVectorAlmostEqual(
             outlet.points[0],
             (
-                build.POWER_OUTLET_COUPLING_END_X,
+                build.POWER_OUTLET_ADAPTER_END_X,
                 build.POWER_JUNCTION_PORT_Y,
                 build.POWER_JUNCTION_OUTLET_PORT_Z,
             ),
@@ -1329,7 +1367,7 @@ class LowVoltageBuildTests(unittest.TestCase):
             )
             self.assertAlmostEqual(
                 fitting.box_min[2]+fitting.box_size[2],
-                build.LOW_VOLTAGE_BOX_BOTTOM_Z,
+                build.LOW_VOLTAGE_BOX_BOTTOM_Z+(0.5 if fitting is fittings[0] else 0),
             )
 
         input_adapter = fittings[0]

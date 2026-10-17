@@ -1286,6 +1286,51 @@ CARLON_E943E_MALE_TERMINAL_ADAPTER = ComponentType(
     ),
 )
 
+
+# Planning envelopes for through-wall male fittings and clamping hardware.
+# Dimensions are illustrative, not catalog dimensions or hole-saw sizes.
+# Local along=0.5 is the exterior box wall; the threaded stem projects inside.
+MALE_FITTING_WALL_OFFSET = 0.5
+MALE_TERMINAL_ADAPTERS = {}
+SEALING_WASHERS = {}
+FITTING_LOCKNUTS = {}
+for _trade, _od, _projection in (
+    ("1/2", 0.840, 1.25),
+    ("3/4", 1.050, 1.470),
+    ("1", 1.315, 1.50),
+    ("1-1/4", 1.660, 1.75),
+):
+    _diameter = _od + 0.30
+    _center = _diameter / 2
+    _length = MALE_FITTING_WALL_OFFSET + _projection
+    MALE_TERMINAL_ADAPTERS[_trade] = ComponentType(
+        name=f"pvc_{_trade}_male_terminal_adapter",
+        size=(_length, _diameter, _diameter),
+        mount_point=(MALE_FITTING_WALL_OFFSET, _center, _center),
+        color=_CARLON_GRAY,
+        shape="primitive_union",
+        cylinder_primitives=(
+            ((0, _center, _center), "along", 0.58, _od),
+            ((0.58, _center, _center), "along", _length-0.58, _diameter),
+        ),
+    )
+    # Cylinders represent the washer and locknut envelopes, without threads.
+    for _collection, _name, _start, _thickness, _color in (
+        (SEALING_WASHERS, "sealing_washer", 0.5, 0.08, (0.12, 0.12, 0.12, 1)),
+        (FITTING_LOCKNUTS, "locknut", 0.125, 0.25, (0.7, 0.7, 0.72, 1)),
+    ):
+        _collection[_trade] = ComponentType(
+            name=f"{_trade}_{_name}",
+            size=(_start+_thickness, _diameter, _diameter),
+            mount_point=(MALE_FITTING_WALL_OFFSET, _center, _center),
+            color=_color,
+            shape="primitive_union",
+            cylinder_primitives=(
+                ((_start, _center, _center), "along", _thickness, _diameter),
+            ),
+        )
+
+
 ONE_INCH_CABLE_GLAND = ComponentType(
     name="one_inch_cable_gland",
     size=(0.75, 1.0, 1.0),

@@ -13,15 +13,10 @@ from typing import Any, Sequence
 from lumber_model import (
     CARLON_E980DFN_HUB_DEPTH,
     CARLON_E980DFN_OUTLET_BOX,
-    IPEX_SCEPTER_STB40S_TYPE_TB_BODY,
-    CARLON_E950GF_REDUCER_BUSHING,
-    CARLON_E940D_COUPLING,
-    CARLON_E940G_COUPLING,
+    CARLON_E989NNJ_JUNCTION_BOX,
     CARLON_E943E_MALE_TERMINAL_ADAPTER,
     CARLON_E987N_JUNCTION_BOX,
     CARLON_UA7AEB_BELL_END_45_ELBOW,
-    CARLON_E996D_BOX_ADAPTER,
-    CARLON_E996G_BOX_ADAPTER,
     COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
     COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING,
     EV_CHARGER_BODY,
@@ -61,6 +56,10 @@ from lumber_model import (
     parse_build_steps,
     rounded_cable_points,
     split_segment_lengths,
+)
+from lumber_model.components import (
+    MALE_TERMINAL_ADAPTERS, SEALING_WASHERS, FITTING_LOCKNUTS,
+    MALE_FITTING_WALL_OFFSET,
 )
 from lumber_model.gusset import (
     GUSSET_FASTENER_COUNT,
@@ -990,7 +989,7 @@ def build_enclosure(
     components.add(
         "low_voltage_input_adapter",
         assembly="low_voltage_fittings",
-        component_type=CARLON_E943E_MALE_TERMINAL_ADAPTER,
+        component_type=MALE_TERMINAL_ADAPTERS["3/4"],
         member="front_center_rail",
         at=0,
         face="wide_neg",
@@ -1164,190 +1163,94 @@ def build_enclosure(
         for index in range(3)
     )
 
-    # Keep the conduit layout at its approved absolute elevation.  It is
-    # intentionally independent of rail_fbu while the box mounting is revised.
-    POWER_TB_AXIS_X=POWER_EV_ENTRY[0]
-    POWER_TB_AXIS_Y=POWER_EV_ENTRY[1]
-    # Keep the riser entry axes at their approved absolute positions. The
-    # low-voltage run offsets left near ground; the power TB body keeps its
-    # current anchor.
+    # Retain the riser entry and charger axes. The shallow pull-box cover
+    # faces positive Y; its back entry faces negative Y toward the power box.
+    POWER_PULL_BOX_AXIS_X=POWER_EV_ENTRY[0]
+    POWER_PULL_BOX_AXIS_Y=POWER_EV_ENTRY[1]
     POWER_RISER_X=15.055
     POWER_RISER_Y=12.5
-    POWER_TB_CENTER_Z=8.83
-    POWER_TB_BODY_DEPTH=2.5
-    POWER_TB_BOTTOM_Z=(
-        POWER_TB_CENTER_Z-IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[0]/2
-    )
-    # The body sits with its removable-cover side toward positive Y. Its rear
-    # hub points toward the junction box along negative Y.
-    POWER_TB_COVER_SIDE_Y=POWER_TB_AXIS_Y+POWER_TB_BODY_DEPTH/2
+    POWER_PULL_BOX_CENTER_Z=8.83
+    POWER_PULL_BOX_BOTTOM_Z=POWER_PULL_BOX_CENTER_Z-2
+    POWER_PULL_BOX_TOP_Z=POWER_PULL_BOX_CENTER_Z+2
     components.add(
-        "power_ev_tb_body",
+        "power_ev_pull_box",
         assembly="electrical_conduit_fittings",
-        component_type=IPEX_SCEPTER_STB40S_TYPE_TB_BODY,
-        member="front_center_rail",
-        at=0,
-        face="wide_neg",
-        absolute_anchor=(
-            POWER_TB_AXIS_X,
-            POWER_TB_COVER_SIDE_Y,
-            POWER_TB_CENTER_Z,
-        ),
+        component_type=CARLON_E989NNJ_JUNCTION_BOX,
+        member="front_center_rail", at=0, face="wide_neg",
+        absolute_anchor=(POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_AXIS_Y+1,
+                         POWER_PULL_BOX_CENTER_Z),
         orientation="down",
     )
-    POWER_TB_VERTICAL_PORT_DEPTH_OFFSET=(
-        POWER_TB_BODY_DEPTH/2-IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[2]/2
-    )
-    POWER_TB_TOP_ANCHOR=ComponentAnchor(
-        "power_ev_tb_body",
-        position=(0, IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[1]/2),
-        depth_offset=POWER_TB_VERTICAL_PORT_DEPTH_OFFSET,
-    )
-    POWER_TB_BOTTOM_ANCHOR=ComponentAnchor(
-        "power_ev_tb_body",
-        position=(
-            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[0],
-            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[1]/2,
-        ),
-        depth_offset=POWER_TB_VERTICAL_PORT_DEPTH_OFFSET,
-    )
-    POWER_TB_BRANCH_ANCHOR=ComponentAnchor(
-        "power_ev_tb_body",
-        position=(
-            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[0]/2,
-            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[1]/2,
-        ),
-        depth_offset=(
-            IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[2]/2
-        ),
-    )
 
-    # The junction input is on its rear face, aligned with the raised branch.
-    POWER_JUNCTION_TB_PORT_X=POWER_TB_AXIS_X
-    POWER_JUNCTION_TB_PORT_Y=(
-        POWER_JUNCTION_CENTER_Y+CARLON_E987N_JUNCTION_BOX.size[1]/2
-    )
-    POWER_JUNCTION_TB_PORT_Z=POWER_TB_CENTER_Z
-    components.add(
-        "power_junction_input_adapter",
-        assembly="electrical_conduit_fittings",
-        component_type=CARLON_E996G_BOX_ADAPTER,
-        member="front_center_rail",
-        at=0,
-        face="wide_neg",
-        absolute_anchor=(
-            POWER_JUNCTION_TB_PORT_X,
-            POWER_JUNCTION_TB_PORT_Y,
-            POWER_JUNCTION_TB_PORT_Z,
-        ),
-        orientation="inward",
-    )
-    components.add(
-        "power_junction_input_coupling",
-        assembly="electrical_conduit_fittings",
-        component_type=CARLON_E940G_COUPLING,
-        member="front_center_rail",
-        at=0,
-        face="wide_neg",
-        absolute_anchor=(
-            POWER_JUNCTION_TB_PORT_X,
-            POWER_JUNCTION_TB_PORT_Y+CARLON_E996G_BOX_ADAPTER.size[0]/2,
-            POWER_JUNCTION_TB_PORT_Z,
-        ),
-        orientation="inward",
-    )
-    POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR=ComponentAnchor(
-        "power_junction_input_coupling",
-        position=(
-            CARLON_E940G_COUPLING.size[0],
-            CARLON_E940G_COUPLING.size[1]/2,
-        ),
-    )
-    POWER_TB_TOP_Z=(
-        POWER_TB_CENTER_Z+IPEX_SCEPTER_STB40S_TYPE_TB_BODY.size[0]/2
-    )
-    components.add(
-        "power_ev_reducer",
-        assembly="electrical_conduit_fittings",
-        component_type=CARLON_E950GF_REDUCER_BUSHING,
-        member="front_center_rail",
-        at=0,
-        face="narrow_pos",
-        absolute_anchor=(
-            POWER_TB_AXIS_X,
-            POWER_TB_AXIS_Y,
-            POWER_TB_TOP_Z,
-        ),
-    )
+    def add_box_fitting(name, trade_size, anchor, orientation, *, basis=None):
+        components.add(
+            name, assembly="electrical_conduit_fittings",
+            component_type=MALE_TERMINAL_ADAPTERS[trade_size],
+            member="front_center_rail", at=0, face="wide_neg",
+            absolute_anchor=anchor, orientation=orientation,
+            component_basis=basis,
+        )
 
-    # Positive-X-facing 1/2-inch street-light penetration.  It shares the
-    # right side with the outlet fitting but sits farther forward (negative Y).
-    components.add(
-        "power_junction_light_adapter",
-        assembly="electrical_conduit_fittings",
-        component_type=CARLON_E996D_BOX_ADAPTER,
-        member="front_center_rail",
-        at=0,
-        face="wide_neg",
-        absolute_anchor=(
-            POWER_JUNCTION_RIGHT_X,
-            POWER_JUNCTION_LIGHT_PORT_Y,
-            POWER_JUNCTION_OUTLET_PORT_Z,
-        ),
-        orientation="left",
-    )
-    components.add(
-        "power_junction_light_coupling",
-        assembly="electrical_conduit_fittings",
-        component_type=CARLON_E940D_COUPLING,
-        member="front_center_rail",
-        at=0,
-        face="wide_neg",
-        absolute_anchor=(
-            POWER_JUNCTION_RIGHT_X
-            + CARLON_E996D_BOX_ADAPTER.size[0]/2,
-            POWER_JUNCTION_LIGHT_PORT_Y,
-            POWER_JUNCTION_OUTLET_PORT_Z,
-        ),
-        orientation="left",
-    )
+    add_box_fitting("power_ev_top_adapter", "1",
+                    (POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_AXIS_Y,
+                     POWER_PULL_BOX_TOP_Z), "up")
+    add_box_fitting("power_ev_bottom_adapter", "1-1/4",
+                    (POWER_RISER_X, POWER_RISER_Y,
+                     POWER_PULL_BOX_BOTTOM_Z), "down")
+    # Explicit basis makes the back fitting project toward negative Y.
+    add_box_fitting("power_ev_back_adapter", "3/4",
+                    (POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_AXIS_Y-1,
+                     POWER_PULL_BOX_CENTER_Z), "up",
+                    basis=((0, -1, 0), (1, 0, 0), (0, 0, 1)))
+    add_box_fitting("power_junction_input_adapter", "3/4",
+                    (POWER_PULL_BOX_AXIS_X,
+                     POWER_JUNCTION_CENTER_Y+2, POWER_PULL_BOX_CENTER_Z),
+                    "inward")
+    add_box_fitting("power_junction_light_adapter", "1/2",
+                    (POWER_JUNCTION_RIGHT_X, POWER_JUNCTION_LIGHT_PORT_Y,
+                     POWER_JUNCTION_OUTLET_PORT_Z), "left")
+    add_box_fitting("power_junction_outlet_adapter", "1/2",
+                    (POWER_JUNCTION_RIGHT_X, POWER_JUNCTION_PORT_Y,
+                     POWER_JUNCTION_OUTLET_PORT_Z), "left")
 
-    # Right-side 1/2-inch outlet penetration.
-    components.add(
-        "power_junction_outlet_adapter",
-        assembly="electrical_conduit_fittings",
-        component_type=CARLON_E996D_BOX_ADAPTER,
-        member="front_center_rail",
-        at=0,
-        face="wide_neg",
-        absolute_anchor=(
-            POWER_JUNCTION_RIGHT_X,
-            POWER_JUNCTION_PORT_Y,
-            POWER_JUNCTION_OUTLET_PORT_Z,
-        ),
-        orientation="left",
-    )
-    components.add(
-        "power_junction_outlet_coupling",
-        assembly="electrical_conduit_fittings",
-        component_type=CARLON_E940D_COUPLING,
-        member="front_center_rail",
-        at=0,
-        face="wide_neg",
-        absolute_anchor=(
-            POWER_JUNCTION_RIGHT_X
-            + CARLON_E996D_BOX_ADAPTER.size[0]/2,
-            POWER_JUNCTION_PORT_Y,
-            POWER_JUNCTION_OUTLET_PORT_Z,
-        ),
-        orientation="left",
+    # Every male fitting is clamped through a cut hole: sealing washer
+    # outside, locknut inside. Copy the fitting placement to keep them coaxial.
+    box_fitting_sizes = {
+        "power_ev_top_adapter": "1", "power_ev_bottom_adapter": "1-1/4",
+        "power_ev_back_adapter": "3/4", "power_junction_input_adapter": "3/4",
+        "power_junction_light_adapter": "1/2",
+        "power_junction_outlet_adapter": "1/2",
+        "low_voltage_input_adapter": "3/4",
+    }
+    for fitting_name, trade_size in box_fitting_sizes.items():
+        fitting = components[fitting_name]
+        for suffix, types in (("sealing_washer", SEALING_WASHERS),
+                              ("locknut", FITTING_LOCKNUTS)):
+            components.add(
+                f"{fitting_name}_{suffix}", assembly=fitting.assembly,
+                component_type=types[trade_size], member=fitting.member,
+                at=fitting.at, face=fitting.face,
+                absolute_anchor=fitting.absolute_anchor,
+                orientation=fitting.orientation, component_basis=fitting.component_basis,
+            )
+
+    def fitting_end(name, trade_size):
+        fitting_type = MALE_TERMINAL_ADAPTERS[trade_size]
+        return ComponentAnchor(name, position=(fitting_type.size[0],
+                                               fitting_type.size[1]/2))
+
+    POWER_PULL_BOX_BRANCH_ANCHOR=fitting_end("power_ev_back_adapter", "3/4")
+    POWER_JUNCTION_INPUT_END_ANCHOR=fitting_end("power_junction_input_adapter", "3/4")
+    POWER_EV_TOP_END_ANCHOR=fitting_end("power_ev_top_adapter", "1")
+    POWER_RISER_END_Z=POWER_PULL_BOX_BOTTOM_Z-(
+        MALE_TERMINAL_ADAPTERS["1-1/4"].size[0]-MALE_FITTING_WALL_OFFSET
     )
 
     conduits = ConduitCollection()
 
-    POWER_TB_GROUND_Z=grounds[0].resolved(members).z_at(
-        POWER_TB_AXIS_X,
-        POWER_TB_AXIS_Y,
+    POWER_PULL_BOX_GROUND_Z=grounds[0].resolved(members).z_at(
+        POWER_PULL_BOX_AXIS_X,
+        POWER_PULL_BOX_AXIS_Y,
     )
     POWER_RISER_GROUND_Z=grounds[0].resolved(members).z_at(
         POWER_RISER_X,
@@ -1367,38 +1270,30 @@ def build_enclosure(
                 "front_center_rail",
                 POWER_RISER_X,
                 POWER_RISER_Y,
-                POWER_TB_BOTTOM_Z,
+                POWER_RISER_END_Z,
             ),
         ),
     )
     conduits.add(
-        "power_tb_junction_feed",
-        trade_size="1-1/4",
+        "power_pull_box_junction_feed",
+        trade_size="3/4",
         points=(
-            POWER_TB_BRANCH_ANCHOR,
-            POWER_JUNCTION_INPUT_COUPLING_END_ANCHOR,
-        ),
-    )
-    POWER_EV_REDUCER_END_ANCHOR=ComponentAnchor(
-        "power_ev_reducer",
-        position=(
-            CARLON_E950GF_REDUCER_BUSHING.size[0],
-            CARLON_E950GF_REDUCER_BUSHING.size[1]/2,
+            POWER_PULL_BOX_BRANCH_ANCHOR,
+            POWER_JUNCTION_INPUT_END_ANCHOR,
         ),
     )
     conduits.add(
         "power_ev_charger_feed",
         trade_size="1",
         points=(
-            POWER_EV_REDUCER_END_ANCHOR,
+            POWER_EV_TOP_END_ANCHOR,
             POWER_EV_ENTRY_ANCHOR,
         ),
     )
 
-    POWER_LIGHT_COUPLING_END=(
+    POWER_LIGHT_ADAPTER_END=(
         POWER_JUNCTION_RIGHT_X
-        + CARLON_E996D_BOX_ADAPTER.size[0]/2
-        + CARLON_E940D_COUPLING.size[0],
+        + MALE_TERMINAL_ADAPTERS["1/2"].size[0]-MALE_FITTING_WALL_OFFSET,
         POWER_JUNCTION_LIGHT_PORT_Y,
         POWER_JUNCTION_OUTLET_PORT_Z,
     )
@@ -1416,10 +1311,10 @@ def build_enclosure(
         trade_size="1/2",
         points=(
             ComponentAnchor(
-                "power_junction_light_coupling",
+                "power_junction_light_adapter",
                 position=(
-                    CARLON_E940D_COUPLING.size[0],
-                    CARLON_E940D_COUPLING.size[1]/2,
+                    MALE_TERMINAL_ADAPTERS["1/2"].size[0],
+                    MALE_TERMINAL_ADAPTERS["1/2"].size[1]/2,
                 ),
             ),
             _member_relative_coord(
@@ -1449,10 +1344,9 @@ def build_enclosure(
         ),
     )
 
-    POWER_OUTLET_COUPLING_END_X=(
+    POWER_OUTLET_ADAPTER_END_X=(
         POWER_JUNCTION_RIGHT_X
-        + CARLON_E996D_BOX_ADAPTER.size[0]/2
-        + CARLON_E940D_COUPLING.size[0]
+        + MALE_TERMINAL_ADAPTERS["1/2"].size[0]-MALE_FITTING_WALL_OFFSET
     )
     conduits.add(
         "power_back_right_outlet_feed",
@@ -1460,7 +1354,7 @@ def build_enclosure(
         points=(
             _member_relative_coord(
                 "front_center_rail",
-                POWER_OUTLET_COUPLING_END_X,
+                POWER_OUTLET_ADAPTER_END_X,
                 POWER_JUNCTION_PORT_Y,
                 POWER_JUNCTION_OUTLET_PORT_Z,
             ),
@@ -2286,25 +2180,25 @@ def build_enclosure(
         )
 
     # The removable plywood panel carries cord contact into two uprights
-    # anchored to the front rails.  Clearances follow the modeled TB envelope.
+    # anchored to the front rails.  Clearances follow the modeled pull-box envelope.
     POWER_GUARD_CLEARANCE=0.25
-    POWER_GUARD_TB_BODY=components["power_ev_tb_body"].resolved(members["front_center_rail"])
-    POWER_GUARD_LEFT_X=POWER_GUARD_TB_BODY.box_min[0]-POWER_GUARD_CLEARANCE-1.5
+    POWER_GUARD_PULL_BOX=components["power_ev_pull_box"].resolved(members["front_center_rail"])
+    POWER_GUARD_LEFT_X=POWER_GUARD_PULL_BOX.box_min[0]-POWER_GUARD_CLEARANCE-1.5
     POWER_GUARD_RIGHT_X=(
-        POWER_GUARD_TB_BODY.box_min[0]
-        +POWER_GUARD_TB_BODY.box_size[0]
+        POWER_GUARD_PULL_BOX.box_min[0]
+        +POWER_GUARD_PULL_BOX.box_size[0]
         +POWER_GUARD_CLEARANCE
     )
     POWER_GUARD_REAR_Y=members["rail_fbl"].max_on("y")
     POWER_GUARD_PANEL_Y=(
-        POWER_GUARD_TB_BODY.box_min[1]+POWER_GUARD_TB_BODY.box_size[1]
+        POWER_GUARD_PULL_BOX.box_min[1]+POWER_GUARD_PULL_BOX.box_size[1]
         +POWER_GUARD_CLEARANCE
     )
     POWER_GUARD_UPRIGHT_DEPTH=POWER_GUARD_PANEL_Y-POWER_GUARD_REAR_Y
     if not 0 < POWER_GUARD_UPRIGHT_DEPTH <= 3.5:
         raise ValueError("power guard upright cannot be ripped from a 2x4")
     POWER_GUARD_BOTTOM_Z=0.75
-    POWER_GUARD_TOP_Z=math.ceil((POWER_TB_TOP_Z+1)*4)/4
+    POWER_GUARD_TOP_Z=math.ceil((POWER_PULL_BOX_TOP_Z+1)*4)/4
     POWER_GUARD_SPAN=(POWER_GUARD_RIGHT_X+1.5)-POWER_GUARD_LEFT_X
     for side,x in (("left",POWER_GUARD_LEFT_X),("right",POWER_GUARD_RIGHT_X)):
         members.add(

@@ -2,22 +2,22 @@
 
 ## Decision
 
-Use one stress-rated nominal 1x6 diagonal across the back-left and front-right
-posts. Rip it from its 5.5-inch stock width to the calculated 4.922-inch
-finished width. The default rectangular blank is 35.766 inches long, runs
-post-center to post-center at 38.91 degrees, retains a 25.928-inch clear span,
-and occupies `z = 46.25` to `47.00`. Jigsaw the two end profiles to the modeled
-six-sided footprint. The finished member fully covers both shortened post tops
-without crossing their exterior XY faces.
+The installed flat nominal 1x6 diagonal is cut to friction fit between the
+back-left and front-right corner posts and secured by the two gussets. The model
+keeps the full 5.5-inch stock width, follows the post-center direction at
+38.91 degrees, and cuts the ends against the posts' opposing front/back faces.
+The profiled piece requires a 31.369-inch minimum rectangular blank. It occupies
+`z = 48.875` to `49.625`, flush with the level post tops, and does not overlap
+the post bodies. Preserve the actual field fit when reproducing the end cuts.
 
-Shorten `post_bl` and `post_fr` by the diagonal depth so their tops are at
-`z = 46.25`. Route 3/4-inch seats only where the diagonal crosses the four side
-braces. Connect each corner with one custom 6-by-6-by-0.074-inch G90
-galvanized-steel gusset and a 4-by-4 grid of #9 pan-head screws. Fastener length
-is deliberately unspecified.
+Keep all four finished post tops and the perimeter bracing at `z = 49.625`.
+The modeled 3/4-inch seats occur only where the diagonal crosses the left and
+right side braces. Both gussets sit directly on the common top plane; each is
+a custom 6-by-6-by-0.074-inch G90 galvanized-steel plate with a 4-by-4 grid of
+#9 pan-head screws. Fastener length is deliberately unspecified.
 
-The two side perimeter members are top-flush 4x4s occupying `z = 43.50` to
-`47.00`; they replace the former upper and tambour side rails.
+The two side perimeter members are top-flush 4x4s occupying `z = 46.125` to
+`49.625`; they replace the former upper and tambour side rails.
 
 The brace is still required because none of the other modeled construction is
 a defined structural diaphragm.  The four perimeter rails have unspecified
@@ -66,7 +66,10 @@ and perimeter members, not the in-plane axial force in this diagonal.  The
 brace also does not improve whole-enclosure overturning or the lateral
 capacity of the gravel footings.
 
-### Ripped 1x6 member screen
+### Reference screen for the earlier ripped 1x6
+
+This retained calculation uses the previous 4.922-inch ripped width and
+25.928-inch effective length, rather than the installed end-fit geometry.
 
 The American Wood Council permits a stress-rated nominal 1-inch board to use
 the corresponding dimension-lumber design values. For Douglas fir-larch No. 2,
@@ -94,8 +97,7 @@ net section requires a new calculation.
 ## Member and connection requirements
 
 Use a stress-rated, exterior-suitable nominal 1x6 with actual dimensions of
-3/4 by 5 1/2 inches and rip it slightly proud of the modeled 4.922-inch minimum
-before final fitting. Specify Douglas fir-larch No. 2 or a species/grade with
+3/4 by 5 1/2 inches; preserve the full width and field-fit the end profiles. Specify Douglas fir-larch No. 2 or a species/grade with
 equal or greater published compression, tension, and minimum-modulus values.
 Reject a board with slope-of-grain defects, checks, splits, or wane in either
 end-connection region.
@@ -110,7 +112,7 @@ both load directions:
 - positive transfer from the diagonal through the perimeter-frame/post joints;
 - corrosion compatibility with treated lumber and the outdoor environment.
 
-The model includes the four side-brace routed cuts, plates, screw-head
+The model includes the two side-brace routed cuts, plates, screw-head
 envelopes, and roof shims. It does not select screw length or establish a
 published capacity for the custom connection. A qualified engineer must check
 plate thickness, hole pattern, screw specification, wood edge distances, and
@@ -131,11 +133,11 @@ modeled connection.
 ## Roof interface
 
 The modeled 0.074-inch plate and pan-head projection is 0.184 inch above the
-47-inch frame plane. The 1/4-inch ripped PT-lumber shims cover the exposed
+49.625-inch frame plane. The 1/4-inch ripped PT-lumber shims cover the exposed
 perimeter framing and both non-gusseted corner posts, but stop at the gusset
-envelopes. They raise the composite roof support plane to `z = 47.25`; the
+envelopes. They raise the composite roof support plane to `z = 49.875`; the
 decking spans the short interruptions above the plates and finishes at
-`z = 48.25`. Preserve drainage around both plates and increase roof-fastener
+`z = 50.875`. Preserve drainage around both plates and increase roof-fastener
 length by the shim thickness so the original substrate penetration is retained.
 
 ## Sources

@@ -130,8 +130,8 @@ class BuildStepModelTests(unittest.TestCase):
             for name in step.object_names
         }
 
-        self.assertEqual(len(model.build_steps), 23)
-        self.assertEqual(len(assigned), 143)
+        self.assertEqual(len(model.build_steps), 24)
+        self.assertEqual(len(assigned), 146)
         self.assertEqual(
             set(assigned) | set(model.deferred_object_names),
             set(model.renderable_object_names()),
@@ -147,7 +147,8 @@ class BuildStepModelTests(unittest.TestCase):
         )
         self.assertEqual(
             model.build_steps[-1].object_names,
-            ("back_right_outlet_cover",),
+            ("power_guard_left_upright", "power_guard_right_upright",
+             "power_guard_removable_panel"),
         )
         self.assertEqual(step_by_object["post_fl"], 2)
         self.assertEqual(step_by_object["footing_fl"], 2)
@@ -189,8 +190,8 @@ class BuildStepModelTests(unittest.TestCase):
     def test_generated_scad_contains_step_controls_and_routing(self) -> None:
         scad = build.model.to_scad()
 
-        self.assertIn("build_step = 24;", scad)
-        self.assertIn("build_step_count = 23;", scad)
+        self.assertIn("build_step = 25;", scad)
+        self.assertIn("build_step_count = 24;", scad)
         self.assertIn('["power_ground_riser", 1]', scad)
         self.assertIn('["low_voltage_ground_riser_inlet", 1]', scad)
         self.assertIn('["post_fl", 2]', scad)

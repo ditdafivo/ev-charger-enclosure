@@ -41,7 +41,7 @@ from lumber_model import (
     ConduitCollection,
     CONDUIT_OD_BY_TRADE_SIZE,
     Footing,
-    GroundPlane,
+    GroundSurface,
     FrontSidingOpening,
     LumberCollection,
     Model,
@@ -74,7 +74,14 @@ from lumber_model.gusset_dxf import generate_gusset_dxf
 
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 19.375
-DEFAULT_HEIGHT = 47
+DEFAULT_HEIGHT = 49.625
+# Vertical ground-to-level-post-top survey at each post's OUTSIDE corner.
+POST_GROUND_TO_TOP = {
+    "post_br": 47.0,
+    "post_bl": 48.5,
+    "post_fl": 49.625,
+    "post_fr": 49.25,
+}
 BUILD_STEPS_PATH = Path(__file__).with_name("BUILD_STEPS.md")
 BUILD_STEPS = parse_build_steps(BUILD_STEPS_PATH)
 DEFERRED_OBJECT_NAMES = (
@@ -113,7 +120,7 @@ class EnclosureBuild:
     components: ComponentCollection
     conduits: ConduitCollection
     cables: CableCollection
-    grounds: list[GroundPlane]
+    grounds: list[GroundSurface]
     footings: list[Footing]
     tambours: TambourCollection
     siding: CompositeSiding
@@ -147,9 +154,10 @@ def build_enclosure(
     width = _finite_positive_dimension(width, "width")
     depth = _finite_positive_dimension(depth, "depth")
     height = _finite_positive_dimension(height, "height")
+    # The installed brace fits between the posts, flush with their level tops.
     FRAME_DIMS=AbsoluteCoord(width, depth, height)
     BURIED_FRAME_Z=32
-    FULL_POST_LEN=BURIED_FRAME_Z+FRAME_DIMS.z
+    FULL_POST_LEN=BURIED_FRAME_Z+height
     SIDING_BOTTOM_Z=2
     SIDING_STOCK_LENGTH_FT=16
     SIDING_BOARD_THICKNESS=1
@@ -175,11 +183,7 @@ def build_enclosure(
             type="4x4",
             axis="z",
             start=AbsoluteCoord(x, y, -BURIED_FRAME_Z),
-            length=(
-                FULL_POST_LEN - HEIGHT_1X_BOARD
-                if name in {"post_bl", "post_fr"}
-                else FULL_POST_LEN
-            ),
+            length=FULL_POST_LEN,
         )
 
     def _member_relative_coord(
@@ -223,7 +227,7 @@ def build_enclosure(
         support_a="post_bl",
         support_b="post_fr",
         position=FRAME_DIMS.z-HALF_HEIGHT_1X_BOARD,
-        cover_supports_xy=True,
+        fit_between_support_faces="y",
     )
 
     diagonal = members["brace_bl_fr"]
@@ -251,9 +255,7 @@ def build_enclosure(
         )
         for member_name in (
             "brace_fl_bl",
-            "brace_bl_br",
             "brace_fr_br",
-            "brace_fl_fr",
         )
     )
 
@@ -657,23 +659,24 @@ def build_enclosure(
     )
 
     grounds = [
-        GroundPlane(
+        GroundSurface(
             "ground",
-            point_a=RelativeCoord("post_fr", 0, 0, BURIED_FRAME_Z+1),
-            point_b=RelativeCoord("post_bl", 0, 0, BURIED_FRAME_Z-0.75),
-            center=RelativeCoord(
-                "post_fl",
-                FRAME_DIMS.x / 2,
-                FRAME_DIMS.y / 2,
-                BURIED_FRAME_Z+0.125,
+            corners=tuple(
+                AbsoluteCoord(x, y, POST_GROUND_TO_TOP["post_fl"]-POST_GROUND_TO_TOP[name])
+                for name, x, y in (
+                    ("post_fl", 0, 0),
+                    ("post_fr", width+WIDTH_4x4, 0),
+                    ("post_br", width+WIDTH_4x4, depth+WIDTH_4x4),
+                    ("post_bl", 0, depth+WIDTH_4x4),
+                )
             ),
+            center=AbsoluteCoord((width+WIDTH_4x4)/2, (depth+WIDTH_4x4)/2, 0),
             radius=48,
         )
     ]
 
     FOOTING_DIAMETER=10
     FOOTING_BOTTOM_Z=-36
-    FOOTING_TOP_Z=0
     footings = [
         Footing(
             f"footing_{post_name.removeprefix('post_')}",
@@ -685,7 +688,10 @@ def build_enclosure(
             ),
             diameter=FOOTING_DIAMETER,
             bottom_z=FOOTING_BOTTOM_Z,
-            top_z=FOOTING_TOP_Z,
+            top_z=grounds[0].resolved(members).z_at(
+                members[post_name].center_on("x"),
+                members[post_name].center_on("y"),
+            ),
         )
         for post_name in ("post_fl", "post_fr", "post_bl", "post_br")
     ]
@@ -911,7 +917,7 @@ def build_enclosure(
             at=members[member_name].length,
             face=face,
             orientation="inward",
-            offset=(0.25, across_offset, diagonal.thickness),
+            offset=(0.25, across_offset, 0),
         )
 
     # Stop each shim at the resolved hardware envelope.  The shim establishes a
@@ -2066,8 +2072,10 @@ def build_enclosure(
 
     LOW_VOLTAGE_WIFI_LANE_OFFSET=-LOW_VOLTAGE_CABLE_DIAMETER/2
     LOW_VOLTAGE_CHARGER_LANE_OFFSET=LOW_VOLTAGE_CABLE_DIAMETER/2
+    # The surveyed grade raises the box and gland exits. Give the return's
+    # X transition another 3/4 inch to retain the minimum cable bend radius.
     LOW_VOLTAGE_WIFI_X_SWEEP_END_Z=(
-        10.25+max(0, width-DEFAULT_WIDTH)/4
+        11.0+max(0, width-DEFAULT_WIDTH)/4
     )
     LOW_VOLTAGE_WIFI_FACE_CENTER_Z=15
 
@@ -2158,8 +2166,8 @@ def build_enclosure(
         rounded_cable_points(
             (
                 path_2_front_rail,
-                (path_2_front_rail[0], path_2_front_rail[1], 40),
-                (path_2_front_rail[0], path_2_top_clear[1], 40),
+                (path_2_front_rail[0], path_2_front_rail[1], FRAME_DIMS.z-7),
+                (path_2_front_rail[0], path_2_top_clear[1], FRAME_DIMS.z-7),
                 path_2_top_clear,
                 (path_2_right_rail[0], path_2_top_clear[1], path_2_top_clear[2]),
                 path_2_right_rail,
@@ -2714,7 +2722,7 @@ def _argument_parser() -> argparse.ArgumentParser:
         "--height",
         type=float,
         default=DEFAULT_HEIGHT,
-        help=f"above-grade frame height (default: {DEFAULT_HEIGHT:g})",
+        help=f"level post-top elevation above the front-left ground datum (default: {DEFAULT_HEIGHT:g})",
     )
     parser.add_argument(
         "--no-deploy",

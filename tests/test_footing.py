@@ -59,7 +59,11 @@ class FootingTests(unittest.TestCase):
                 (post.center_on("x"), post.center_on("y")),
             )
             self.assertEqual(footing.diameter, 10)
-            self.assertEqual((footing.bottom_z, footing.top_z), (-36, 0))
+            self.assertEqual(footing.bottom_z, -36)
+            self.assertAlmostEqual(
+                footing.top_z,
+                enclosure.grounds[0].resolved(enclosure.model).z_at(*footing.center[:2]),
+            )
 
 
 if __name__ == "__main__":

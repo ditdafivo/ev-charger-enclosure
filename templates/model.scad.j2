@@ -607,6 +607,18 @@ module render_cable(c, highlighted = false) {
 }
 
 module render_ground(g) {
+    if (len(g) > 6) {
+        color(g_color(g))
+            intersection() {
+                polyhedron(points = g[6], faces = g[7], convexity = 10);
+                translate([g_center(g)[0], g_center(g)[1],
+                           min([for (p = g[6]) p[2]]) - 1])
+                    cylinder(r = g_radius(g),
+                             h = max([for (p = g[6]) p[2]])
+                                 - min([for (p = g[6]) p[2]]) + 2,
+                             $fn = 96);
+            }
+    } else {
     normal = g_normal(g);
     axis = v_len(v_cross([0, 0, 1], normal)) == 0 ?
         [1, 0, 0] :
@@ -622,6 +634,7 @@ module render_ground(g) {
                     center = true,
                     $fn = 96
                 );
+    }
 }
 
 module render_footing(f, highlighted = false) {

@@ -1,0 +1,67 @@
+{
+  "source_repository": "/home/bbuhlig/sb/ev-charger-enclosure",
+  "source_commit": "f2d7c6e36930bea93ac92b3a3b081d65ab502b61",
+  "source_sha256": {
+    "build.py": "607f0b520b4a39a4db886d298e319e2e4be746b5d4426dfaac2513c58fc73663",
+    "lumber_model/components.py": "f05b2a1a0ce6d8e70e9087e480cd56fb3a24d5fd4097b7448faf37afff7491e9"
+  },
+  "clearance_diametral_mm": 0.4,
+  "round_bore_up_mm": 0.1,
+  "rings": [
+    {
+      "trade_size": "1/2",
+      "carlon_adapter": "E943D",
+      "npt_e0_in": 0.75843,
+      "tpi": 14,
+      "thread_projection_in": 0.545,
+      "catalog_body_od_in": 1.042,
+      "outer_diameter_mm": 28.956,
+      "thickness_mm": 2.032,
+      "locations": [
+        "power_junction_light_adapter_sealing_washer",
+        "power_junction_outlet_adapter_sealing_washer"
+      ]
+    },
+    {
+      "trade_size": "3/4",
+      "carlon_adapter": "E943E",
+      "npt_e0_in": 0.96768,
+      "tpi": 14,
+      "thread_projection_in": 0.553,
+      "catalog_body_od_in": 1.29,
+      "outer_diameter_mm": 34.29,
+      "thickness_mm": 2.032,
+      "locations": [
+        "power_ev_back_adapter_sealing_washer",
+        "power_junction_input_adapter_sealing_washer",
+        "low_voltage_input_adapter_sealing_washer"
+      ]
+    },
+    {
+      "trade_size": "1",
+      "carlon_adapter": "E943F",
+      "npt_e0_in": 1.21363,
+      "tpi": 11.5,
+      "thread_projection_in": 0.812,
+      "catalog_body_od_in": 1.58,
+      "outer_diameter_mm": 41.021,
+      "thickness_mm": 2.032,
+      "locations": [
+        "power_ev_top_adapter_sealing_washer"
+      ]
+    },
+    {
+      "trade_size": "1-1/4",
+      "carlon_adapter": "E943G",
+      "npt_e0_in": 1.55713,
+      "tpi": 11.5,
+      "thread_projection_in": 0.816,
+      "catalog_body_od_in": 1.973,
+      "outer_diameter_mm": 49.784,
+      "thickness_mm": 2.032,
+      "locations": [
+        "power_ev_bottom_adapter_sealing_washer"
+      ]
+    }
+  ]
+}

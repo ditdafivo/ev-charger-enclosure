@@ -1083,9 +1083,22 @@ EV_CHARGER_BODY = ComponentType(
 
 CARLON_E989NNJ_JUNCTION_BOX = ComponentType(
     name="carlon_e989nnj_junction_box",
-    size=(4.0, 4.0, 2.0),
+    # Carlon enclosure catalog: C=2 internal depth, TB=.160, TC=.155.
+    # https://tnb.ca.abb.com/en/pdf-catalogues/boxes-and-covers-meter-sockets/enclosures/carlon-nonmetallic-junction-boxes.pdf
+    # Straight walls approximate the molded taper using the 3-5/8-in.
+    # minimum rear opening. Local out=0 is the removable cover face.
+    size=(4.0, 4.0, 2.315),
     color=(0.55, 0.57, 0.58, 1.0),
     default_face="wide_neg",
+    shape="primitive_union",
+    box_primitives=(
+        ((0.0, 0.0, 0.0), (4.0, 4.0, 0.155)),  # Cover
+        ((0.0, 0.0, 2.155), (4.0, 4.0, 0.160)),  # Back
+        ((0.0, 0.0, 0.155), (0.1875, 4.0, 2.0)),
+        ((3.8125, 0.0, 0.155), (0.1875, 4.0, 2.0)),
+        ((0.1875, 0.0, 0.155), (3.625, 0.1875, 2.0)),
+        ((0.1875, 3.8125, 0.155), (3.625, 0.1875, 2.0)),
+    ),
 )
 
 

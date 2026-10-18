@@ -1077,7 +1077,7 @@ class PowerJunctionBuildTests(unittest.TestCase):
                 return item.resolved(enclosure.members[item.member])
 
             box = resolved("power_ev_pull_box")
-            self.assertVectorAlmostEqual(box.box_size, (4, 2, 4))
+            self.assertVectorAlmostEqual(box.box_size, (4, 2.315, 4))
             self.assertAlmostEqual(box.box_min[2], 6.83)
             branch = self.resolved_conduit("power_pull_box_junction_feed", enclosure)
             # Socket ends face each other with a positive straight conduit span.
@@ -1106,6 +1106,32 @@ class PowerJunctionBuildTests(unittest.TestCase):
                 self.assertGreaterEqual(washer_type.cylinder_primitives[0][0][0], 0.5)
                 nut_start, _, nut_length, _ = nut_type.cylinder_primitives[0]
                 self.assertLess(nut_start[0]+nut_length, 0.5)
+
+    def test_riser_thread_and_locknut_fit_inside_pull_box(self) -> None:
+        for enclosure in (build.default_build, build.build_enclosure(width=36, depth=30)):
+            instance = enclosure.components["power_ev_bottom_adapter"]
+            fitting = instance.resolved(enclosure.members[instance.member])
+            box_instance = enclosure.components["power_ev_pull_box"]
+            box = box_instance.resolved(enclosure.members[box_instance.member])
+            # Cover is at positive Y; two inches of clear depth lie behind it.
+            inner_min_y = box.box_min[1] + 0.160
+            inner_max_y = box.box_min[1] + box.box_size[1] - 0.155
+            self.assertAlmostEqual((inner_min_y + inner_max_y) / 2,
+                                   enclosure.POWER_RISER_Y)
+            stem, socket = instance.component_type.cylinder_primitives
+            self.assertLess(stem[3], socket[3])
+            self.assertLess(stem[0][0], 0.5)
+            self.assertGreater(socket[0][0], 0.5)
+            # Only the narrow stem enters; the socket begins below the wall.
+            socket_top_z = fitting.origin[2] - socket[0][0]
+            self.assertLess(socket_top_z, box.box_min[2])
+            nut = enclosure.components["power_ev_bottom_adapter_locknut"].component_type
+            for diameter in (stem[3], nut.cylinder_primitives[0][3]):
+                self.assertGreater(enclosure.POWER_RISER_Y - diameter / 2, inner_min_y)
+                self.assertLess(enclosure.POWER_RISER_Y + diameter / 2, inner_max_y)
+            # The top fitting remains aligned with the charger's entry.
+            self.assertAlmostEqual(enclosure.components["power_ev_top_adapter"].absolute_anchor[1],
+                                   enclosure.POWER_EV_ENTRY[1])
 
     def test_riser_and_equipment_feeds_use_relative_endpoints(self) -> None:
         enclosure = build.default_build

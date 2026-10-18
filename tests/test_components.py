@@ -618,8 +618,8 @@ class ComponentValidationTests(unittest.TestCase):
 
     def test_carlon_e989nnj_junction_box_geometry(self) -> None:
         self.assertEqual(CARLON_E989NNJ_JUNCTION_BOX.name, "carlon_e989nnj_junction_box")
-        self.assertEqual(CARLON_E989NNJ_JUNCTION_BOX.size, (4.0, 4.0, 2.0))
-        self.assertEqual(CARLON_E989NNJ_JUNCTION_BOX.shape, "box")
+        self.assertEqual(CARLON_E989NNJ_JUNCTION_BOX.size, (4.0, 4.0, 2.315))
+        self.assertEqual(CARLON_E989NNJ_JUNCTION_BOX.shape, "primitive_union")
         self.assertEqual(CARLON_E989NNJ_JUNCTION_BOX.default_face, "wide_neg")
         self.assertEqual(CARLON_E989NNJ_JUNCTION_BOX.mount_point, (2.0, 2.0, 0.0))
 

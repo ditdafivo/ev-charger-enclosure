@@ -1167,8 +1167,13 @@ def build_enclosure(
     # faces positive Y; its back entry faces negative Y toward the power box.
     POWER_PULL_BOX_AXIS_X=POWER_EV_ENTRY[0]
     POWER_PULL_BOX_AXIS_Y=POWER_EV_ENTRY[1]
-    POWER_RISER_X=15.055
-    POWER_RISER_Y=12.5
+    # Preserve the surveyed default riser position while following resized frames.
+    POWER_RISER_X=POWER_PULL_BOX_AXIS_X-0.295
+    POWER_RISER_Y=POWER_PULL_BOX_AXIS_Y+0.2125
+    # Center the two-inch interior on the retained riser, independently of
+    # the charger/top-fitting axis. Include the cover and back-wall thickness.
+    POWER_PULL_BOX_FRONT_Y=POWER_RISER_Y+1+0.155
+    POWER_PULL_BOX_BACK_Y=POWER_PULL_BOX_FRONT_Y-CARLON_E989NNJ_JUNCTION_BOX.size[2]
     POWER_PULL_BOX_CENTER_Z=8.83
     POWER_PULL_BOX_BOTTOM_Z=POWER_PULL_BOX_CENTER_Z-2
     POWER_PULL_BOX_TOP_Z=POWER_PULL_BOX_CENTER_Z+2
@@ -1177,7 +1182,7 @@ def build_enclosure(
         assembly="electrical_conduit_fittings",
         component_type=CARLON_E989NNJ_JUNCTION_BOX,
         member="front_center_rail", at=0, face="wide_neg",
-        absolute_anchor=(POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_AXIS_Y+1,
+        absolute_anchor=(POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_FRONT_Y,
                          POWER_PULL_BOX_CENTER_Z),
         orientation="down",
     )
@@ -1199,7 +1204,7 @@ def build_enclosure(
                      POWER_PULL_BOX_BOTTOM_Z), "down")
     # Explicit basis makes the back fitting project toward negative Y.
     add_box_fitting("power_ev_back_adapter", "3/4",
-                    (POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_AXIS_Y-1,
+                    (POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_BACK_Y,
                      POWER_PULL_BOX_CENTER_Z), "up",
                     basis=((0, -1, 0), (1, 0, 0), (0, 0, 1)))
     add_box_fitting("power_junction_input_adapter", "3/4",

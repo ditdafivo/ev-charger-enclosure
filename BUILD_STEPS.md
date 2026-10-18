@@ -374,12 +374,18 @@ power_junction_outlet_adapter_locknut
 ## 12. Connect the power junction to the EV charger (`ev-charger-power`)
 
 Using the physical charger-input position recorded in Step 10, install the
-4×4×2-inch junction box in place of the IPEX STB40S, with its removable cover
+Carlon E989NNJ nominal 4×4×2-inch junction box in place of the IPEX STB40S, with its removable cover
 facing positive Y. Cut holes for a 1-inch top male fitting, a 3/4-inch back
 male fitting toward the power junction, and the retained 1 1/4-inch bottom riser
 male fitting. Clamp each entry with an exterior sealing washer and an interior
 locknut; the box wall is not tapped. Keep the top fitting on the charger entry
 axis and the bottom fitting on the existing riser axis.
+
+The two-inch internal depth is centered at y = 12.5 inches on the riser.
+The modeled cover and back add 0.155 and 0.160 inch, respectively, for a
+2.315-inch overall depth. The narrower male stem enters the box; the larger
+conduit socket stays below its bottom wall. The molded taper is approximated
+with straight walls at the catalog minimum 3 5/8-inch opening.
 
 The box center is z = 8.83 inches, with bottom and top at 6.83 and 10.83 inches.
 Run the 3/4-inch branch from the back fitting to the 3/4-inch male fitting on

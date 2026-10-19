@@ -1228,7 +1228,11 @@ class PowerJunctionBuildTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             adapter.box_min[2]+adapter.box_size[2]/2,
+            build.POWER_JUNCTION_LIGHT_PORT_Z,
+        )
+        self.assertAlmostEqual(
             outlet.box_min[2]+outlet.box_size[2]/2,
+            build.POWER_OUTLET_HORIZONTAL_RUN_Z,
         )
         self.assertVectorAlmostEqual(
             light.points[0],
@@ -1299,7 +1303,15 @@ class PowerJunctionBuildTests(unittest.TestCase):
         outlet = self.resolved_conduit("power_back_right_outlet_feed")
 
         self.assertEqual(outlet.trade_size, "1/2")
-        self.assertEqual(tuple(radius for _, radius in outlet.bends), (4, 4))
+        self.assertEqual(outlet.bends, ((1, 4), (2, 4)))
+        adapter = build.components["power_junction_outlet_adapter"].resolved(
+            build.members["front_center_rail"]
+        )
+        self.assertAlmostEqual(
+            adapter.box_min[2]+adapter.box_size[2]/2,
+            build.POWER_OUTLET_HORIZONTAL_RUN_Z,
+        )
+        self.assertAlmostEqual(outlet.points[0][2], build.POWER_OUTLET_HORIZONTAL_RUN_Z)
         self.assertVectorAlmostEqual(
             outlet.points[0],
             (

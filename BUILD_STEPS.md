@@ -441,8 +441,9 @@ back_right_outlet
 
 ## 14. Install the outlet conduit run (`outlet-conduit`)
 
-Install the 1/2-inch feed from the junction box to the outlet box. Offset down
-from the junction-box fitting to a centerline elevation of z = 7.17 inches.
+Install the 1/2-inch feed from the junction box to the outlet box. Locate the
+junction-box outlet fitting and horizontal run at the same centerline elevation
+of z = 7.17 inches.
 This puts the conduit underside at z = 6.75 inches, resting on the top face of
 `rail_rbl` during the longer horizontal run. Retain the two modeled
 4-inch-radius sweeps to turn along the rail and rise into the outlet's bottom

@@ -39,9 +39,9 @@ by a qualified installer.
   them in the completed-model view; they do not appear in numbered steps.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
-  - `build_step = 1..23`: show earlier objects normally, highlight objects from
+  - `build_step = 1..25`: show earlier objects normally, highlight objects from
     the selected step, and hide objects from later steps.
-  - `build_step = 24`: show the completed model in its normal colors.
+  - `build_step = 26`: show the completed model in its normal colors.
 - An invalid positive step number should fail clearly during generation rather
   than silently display an incomplete or misleading model.
 
@@ -407,11 +407,19 @@ power_junction_outlet_adapter_sealing_washer
 power_junction_outlet_adapter_locknut
 ```
 
-## 12. Install the right-side framing, backing, and outlet (`outlet-rough-in`)
+## 12. Install the right center rail (`right-center-rail`)
 
 Install `right_center_rail` vertically between `rail_rbu` and `rail_rt`, and
-check that it is plumb. It supports the outlet backers installed in this step,
+check that it is plumb. It supports the outlet backers installed next,
 the Wi-Fi access point, and the low-voltage paths installed later.
+
+New model objects:
+
+```text
+right_center_rail
+```
+
+## 13. Install the outlet box and backing (`outlet-rough-in`)
 
 Install the two 6 11/16-inch 2x4 backers between `right_center_rail` and
 `post_br`. Their modeled lower-face elevations are approximately 13 5/8 and
@@ -419,26 +427,37 @@ Install the two 6 11/16-inch 2x4 backers between `right_center_rail` and
 this plane sets the rear of the 2.30-inch-deep FSE outlet box and its final
 projection through the siding.
 
-Immediately after securing the backing, mount the Carlon E980DFN FSE box and
-install the 1/2-inch feed from the junction box, including both modeled
-4-inch-radius sweeps into the bottom hub.
-
+Immediately after securing the backing, mount the Carlon E980DFN FSE box.
 Check that the box/cover mating plane will finish at x = 28.75 inches, roughly
 1/4 inch beyond the siding, and that the hub center is at x = 27.016 inches.
+
+New model objects:
+
+```text
+back_right_outlet_backer_lower
+back_right_outlet_backer_upper
+back_right_outlet
+```
+
+## 14. Install the outlet conduit run (`outlet-conduit`)
+
+Install the 1/2-inch feed from the junction box to the outlet box. Offset down
+from the junction-box fitting to a centerline elevation of z = 7.17 inches.
+This puts the conduit underside at z = 6.75 inches, resting on the top face of
+`rail_rbl` during the longer horizontal run. Retain the two modeled
+4-inch-radius sweeps to turn along the rail and rise into the outlet's bottom
+hub.
+
 Confirm conduit clearances before covering the framing. Pull and terminate the
 outlet branch's #12 conductors only under the approved wiring design.
 
 New model objects:
 
 ```text
-right_center_rail
-back_right_outlet_backer_lower
-back_right_outlet_backer_upper
-back_right_outlet
 power_back_right_outlet_feed
 ```
 
-## 13. Add the low-voltage termination (`low-voltage-termination`)
+## 15. Add the low-voltage termination (`low-voltage-termination`)
 
 Mount the low-voltage junction box with its bottom adapter centered at the
 upper 45-degree elbow outlet (nominally x = 10.657, y = 6.25, z = 9.912
@@ -475,7 +494,7 @@ low_voltage_cable_gland_2
 low_voltage_cable_gland_3
 ```
 
-## 14. Mount and cable the Wi-Fi access point (`wifi-and-feed`)
+## 16. Mount and cable the Wi-Fi access point (`wifi-and-feed`)
 
 Mount the Wi-Fi access point near the top of `right_center_rail`. Route the
 highest-X low-voltage gland's cable through the modeled droop, then sweep it
@@ -499,7 +518,7 @@ front_wifi_access_point
 low_voltage_wifi_feed
 ```
 
-## 15. Route the charger low-voltage feed (`charger-low-voltage-feed`)
+## 17. Route the charger low-voltage feed (`charger-low-voltage-feed`)
 
 Route the center low-voltage gland's cable down from the gland and up the
 negative-X face of `front_center_rail`. Sweep it in positive X through the
@@ -519,7 +538,7 @@ New model objects:
 low_voltage_ev_charger_feed
 ```
 
-## 16. Install the wood power-cord bumper (`power-cord-guard`)
+## 18. Install the wood power-cord bumper (`power-cord-guard`)
 
 Cut two 11 1/4-inch 2x4 uprights and one 7 1/2-by-11 1/4-inch panel from
 1/4-inch exterior plywood. Rip the upright depth to approximately 2 7/8 inches;
@@ -562,7 +581,7 @@ power_guard_right_upright
 power_guard_removable_panel
 ```
 
-## 17. Add the street-light backing (`street-light-backing`)
+## 19. Add the street-light backing (`street-light-backing`)
 
 Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
 modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
@@ -582,7 +601,7 @@ front_street_light_backer_lower
 front_street_light_backer_upper
 ```
 
-## 18. Route the street-light service cable (`light-service-cable`)
+## 20. Route the street-light service cable (`light-service-cable`)
 
 Route the front low-voltage gland's cable downward before sweeping toward and
 up the positive-X face of `post_fl`. Continue beneath `brace_fl_fr` and
@@ -601,7 +620,7 @@ New model objects:
 low_voltage_street_light_service
 ```
 
-## 19. Rough in the street light (`street-light-rough-in`)
+## 21. Rough in the street light (`street-light-rough-in`)
 
 Mount the Commercial Electric WRB550B base box on the street-light backers.
 Install the 1/2-inch feed from the forward fitting on the positive-X side of
@@ -626,7 +645,7 @@ front_street_light_base_box
 power_street_light_feed
 ```
 
-## 20. Install the composite siding (`composite-siding`)
+## 22. Install the composite siding (`composite-siding`)
 
 Before placing the top boards, install 1/4-inch ripped pressure-treated shims
 on the exposed portions of all four perimeter members and across both
@@ -716,7 +735,7 @@ enclosure_siding_rear_left_9
 enclosure_siding_rear_right_9
 ```
 
-## 21. Install the siding trim (`siding-trim`)
+## 23. Install the siding trim (`siding-trim`)
 
 Install the paired black-aluminum angle legs at all four enclosure corners and
 both sides of the tambour opening, then install the paired header legs. The
@@ -746,7 +765,7 @@ enclosure_siding_angle_tambour_header_face
 enclosure_siding_angle_tambour_header_bottom
 ```
 
-## 22. Finish the street-light assembly (`street-light-finish`)
+## 24. Finish the street-light assembly (`street-light-finish`)
 
 Install the WRE450G extension ring through the siding opening, with its front
 face flush with the siding exterior plane, then attach the downward-facing
@@ -763,7 +782,7 @@ front_street_light_extension_ring
 front_street_light
 ```
 
-## 23. Finish the right-side outlet (`outlet-finish`)
+## 25. Finish the right-side outlet (`outlet-finish`)
 
 Install the Intermatic WP5100BL in-use cover on the FSE box after the siding is
 complete.
@@ -781,20 +800,20 @@ back_right_outlet_cover
 
 ## Model coverage checklist
 
-The 23 steps above assign all active construction objects exactly once.
+The 25 steps above assign all active construction objects exactly once.
 Thirteen deferred tambour objects remain available in the model for future
 reference and are hidden unless `show_deferred` is enabled in the completed
 view.
 
 | Category | Modeled count | Assigned steps |
 | --- | ---: | --- |
-| Lumber members | 25 | 2-9, 12, 16 |
-| Components and fittings | 29 | 3, 10-14, 16-17, 19-20, 22-23 |
+| Lumber members | 25 | 2-8, 12-13, 18-19 |
+| Components and fittings | 29 | 3, 9-11, 13, 15-16, 18, 21-22, 24-25 |
 | Footings | 4 | 2 |
-| Conduit runs | 6 | 1, 12, 17, 19 |
-| Cable paths | 4 | 10, 14-15, 18 |
-| Composite siding render parts | 58 | 20 |
-| Siding trim render parts | 14 | 21 |
+| Conduit runs | 6 | 1, 10, 14, 21 |
+| Cable paths | 4 | 9, 16-17, 20 |
+| Composite siding render parts | 58 | 22 |
+| Siding trim render parts | 14 | 23 |
 | Deferred tambour reference objects | 13 | Completed view with `show_deferred` |
 
 The `ground` object is visualization context rather than an installed enclosure

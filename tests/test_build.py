@@ -1295,11 +1295,11 @@ class PowerJunctionBuildTests(unittest.TestCase):
                 (enclosure.POWER_RISER_X, enclosure.POWER_RISER_Y),
             )
 
-    def test_outlet_feed_has_two_sweeps_at_fixed_elevation(self) -> None:
+    def test_outlet_feed_rests_on_lower_right_rail(self) -> None:
         outlet = self.resolved_conduit("power_back_right_outlet_feed")
 
         self.assertEqual(outlet.trade_size, "1/2")
-        self.assertEqual(outlet.bends, ((1, 4), (2, 4)))
+        self.assertEqual(tuple(radius for _, radius in outlet.bends), (4, 4))
         self.assertVectorAlmostEqual(
             outlet.points[0],
             (
@@ -1312,7 +1312,20 @@ class PowerJunctionBuildTests(unittest.TestCase):
             outlet.points[-1],
             build.BACK_RIGHT_OUTLET_CONDUIT_ENTRY.resolve(build.members),
         )
-        self.assertAlmostEqual(min(point[2] for point in outlet.points), build.POWER_JUNCTION_BOTTOM_Z+2)
+        rail = build.members["rail_rbl"]
+        run_points = [point for point in outlet.points
+                      if abs(point[0]-build.BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0]) < 1e-9
+                      and abs(point[2]-build.POWER_OUTLET_HORIZONTAL_RUN_Z) < 1e-9]
+        self.assertEqual(len(run_points), 2)
+        self.assertGreater(run_points[1][1]-run_points[0][1], 3)
+        for x, y, z in run_points:
+            self.assertAlmostEqual(z-outlet.od/2, rail.max_on("z"))
+            self.assertGreaterEqual(x-outlet.od/2, rail.min_on("x"))
+            self.assertLessEqual(x+outlet.od/2, rail.max_on("x"))
+            self.assertGreaterEqual(y, rail.min_on("y"))
+            self.assertLessEqual(y, rail.max_on("y"))
+        self.assertAlmostEqual(min(point[2] for point in outlet.points),
+                               build.POWER_OUTLET_HORIZONTAL_RUN_Z)
         self.assertLess(
             max(point[0] for point in outlet.points)
             + CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2,

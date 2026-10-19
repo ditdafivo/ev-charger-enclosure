@@ -35,7 +35,7 @@ the roof support plane at `z = 47.25`.
 All four perimeter members and the single diagonal connect only to the four
 posts. They do not depend geometrically on the lower rails, upper rails,
 vertical rails, tambour supports, door, or street-light backing introduced in
-Steps 4 through 12.
+later steps.
 
 The reorder is therefore feasible from the model's dependency standpoint.
 
@@ -107,18 +107,22 @@ The revised sequence is:
 2. Install the four posts with temporary external bracing.
 3. Install the complete top perimeter and diagonal bracing while checking post
    plumb, spacing, plan diagonals, and the approved connection details.
-4. Complete the lower and upper framing through Step 9.
-5. Install the plywood bend backers in Step 10, the fixed tracks in Step 11,
-   and the tambour door in Step 12.
-6. Trial-fit the removable guard in Step 13, then complete the electrical,
-   siding, trim, and finish work through Step 27.
+4. Complete the lower and upper framing through Step 8. The side receiver
+   rails connect directly between the posts and carry the charger header.
+5. Install the equipment, conduit, cables, siding, trim, and cord guard through
+   Step 23.
+6. Defer the tambour uprights, upper blocks, plywood facings and bend backers,
+   tracks, curtain, and removable ceiling until tambour installation resumes.
+   Use the split support detail in `TAMBOUR_DOOR.md`; leave the receiver rails
+   intact and preserve interior access to the future support fasteners.
 
-The complete sequence contains 27 build steps, so `build_step = 28` represents
-the completed model.
+The complete sequence contains 23 build steps, so `build_step = 24` represents
+the completed model. Deferred supports and tambour parts are shown only with
+`show_deferred = true` in that completed view.
 
 ## Implemented project updates
 
 The model, tambour prototype guide, build sequence, and build-step assertions
-use the resolved geometry and early-bracing sequence. The tambour trial fit is
+use the resolved geometry and early-bracing sequence. Any future tambour trial fit will be
 performed against the installed bracing, and temporary external bracing remains
 required until the permanent frame and connections are approved and stable.

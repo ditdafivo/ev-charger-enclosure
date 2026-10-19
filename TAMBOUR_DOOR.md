@@ -63,6 +63,30 @@ projection. The resulting 1 3/16-inch stack remains within the fixed
 or track fixing may extend beyond its applicable side of this approved
 envelope.
 
+## Deferred front guide supports
+
+The permanent `rail_lt` and `rail_rt` connect directly between the front and
+back posts and support the charger header independently of the tambour.
+Install `rail_ltam` and `rail_rtam` only when installing the tambour. Each lower
+upright runs from the upper lower-side rail at `z = 13.75` to the receiver
+underside at `z = 43.5`. Separate `rail_ltam_upper` and `rail_rtam_upper` blocks
+fill `z = 45` to `46.125` between the receivers and top side braces.
+
+Keep the receiver rails intact. The future guide support consists of the lower
+upright, the receiver's inside face, and the upper block, all aligned to the
+same inside-face datum. Recess the plywood facings into the lower uprights and
+upper blocks so their faces finish flush with the receivers. The lower and
+upper facings stop at the receivers; no continuous plywood strip crosses or
+requires a recess in the structural receiver rails. Provide at least
+1 3/4-inch-wide backing and preserve the front guide centerline at `y = 5`.
+The receivers already provide 3 1/2 inches of backing depth through the crossing.
+
+Fit and fasten the uprights, upper blocks, and bend backers from the interior;
+keep their attachment locations accessible after siding and equipment are
+installed. Field-fit to the completed frame, seal cut edges, and confirm track
+alignment across both support joints before installing the curtain. All these
+supports and facings remain deferred reference objects in the model.
+
 ## Opening variation and field-fitted slats
 
 The deeper tracks accommodate 1 inch of total opening-width variation,

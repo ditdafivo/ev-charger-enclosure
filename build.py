@@ -84,6 +84,12 @@ POST_GROUND_TO_TOP = {
 BUILD_STEPS_PATH = Path(__file__).with_name("BUILD_STEPS.md")
 BUILD_STEPS = parse_build_steps(BUILD_STEPS_PATH)
 DEFERRED_OBJECT_NAMES = (
+    "rail_ltam",
+    "rail_rtam",
+    "rail_ltam_upper",
+    "rail_rtam_upper",
+    "left_tambour_upper_backing",
+    "right_tambour_upper_backing",
     "left_tambour_vertical_backing",
     "right_tambour_vertical_backing",
     "left_tambour_bend_backer",
@@ -421,6 +427,33 @@ def build_enclosure(
         rotated=True,
     )
 
+    for name,support_a,support_b,position,position_axis in [
+        (
+            "rail_lt",
+            "post_fl",
+            "post_bl",
+            TAMBOUR_FRONT_HEADER_CENTER_Z,
+            None,
+        ),
+        (
+            "rail_rt",
+            "post_fr",
+            "post_br",
+            TAMBOUR_FRONT_HEADER_CENTER_Z,
+            None,
+        ),
+    ]:
+        members.between(
+            name,
+            assembly="frame",
+            type="2x4",
+            support_a=support_a,
+            support_b=support_b,
+            position=position,
+            position_axis=position_axis,
+            rotated=True,
+        )
+
     tambour_support_overlap_center_y=(
         max(
             members["brace_fl_bl"].min_on("y"),
@@ -437,20 +470,20 @@ def build_enclosure(
     for name,support_a,support_b,position in (
         (
             "rail_ltam",
-            "brace_fl_bl",
+            "rail_lt",
             "rail_lbu",
             members["post_fl"].center_on("x"),
         ),
         (
             "rail_rtam",
-            "brace_fr_br",
+            "rail_rt",
             "rail_rbu",
             members["post_fr"].center_on("x"),
         ),
     ):
         members.between(
             name,
-            assembly="frame",
+            assembly="tambour_supports",
             type="2x4",
             support_a=support_a,
             support_b=support_b,
@@ -459,30 +492,20 @@ def build_enclosure(
             rotated=True,
         )
 
-    for name,support_a,support_b,position,position_axis in [
-        (
-            "rail_lt",
-            "rail_ltam",
-            "post_bl",
-            TAMBOUR_FRONT_HEADER_CENTER_Z,
-            None,
-        ),
-        (
-            "rail_rt",
-            "rail_rtam",
-            "post_br",
-            TAMBOUR_FRONT_HEADER_CENTER_Z,
-            None,
-        ),
-    ]:
+    # Future guide supports stop at the permanent side rails. Keep those
+    # load-carrying rails intact and use separate blocks above them.
+    for name, lower, upper, post in (
+        ("rail_ltam_upper", "rail_lt", "brace_fl_bl", "post_fl"),
+        ("rail_rtam_upper", "rail_rt", "brace_fr_br", "post_fr"),
+    ):
         members.between(
             name,
-            assembly="frame",
+            assembly="tambour_supports",
             type="2x4",
-            support_a=support_a,
-            support_b=support_b,
-            position=position,
-            position_axis=position_axis,
+            support_a=lower,
+            support_b=upper,
+            position=members[post].center_on("x"),
+            cross_offset=tambour_support_cross_offset,
             rotated=True,
         )
 
@@ -841,14 +864,14 @@ def build_enclosure(
     for name,rail_name,minimum_x in (
         (
             "left_tambour_bend_backer",
-            "rail_ltam",
-            members["rail_ltam"].max_on("x")
+            "rail_ltam_upper",
+            members["rail_ltam_upper"].max_on("x")
             -TAMBOUR_FRONT_BEND_BACKER_THICKNESS,
         ),
         (
             "right_tambour_bend_backer",
-            "rail_rtam",
-            members["rail_rtam"].min_on("x"),
+            "rail_rtam_upper",
+            members["rail_rtam_upper"].min_on("x"),
         ),
     ):
         rail=members[rail_name]
@@ -864,7 +887,12 @@ def build_enclosure(
 
     # Recess the 3/4-inch plywood facing into each front rail so its inside
     # face retains the track datum. The facing extends 1/8 inch on both edges.
-    for side, rail_name in (("left", "rail_ltam"), ("right", "rail_rtam")):
+    for side, rail_name, backing_name in (
+        ("left", "rail_ltam", "left_tambour_vertical_backing"),
+        ("right", "rail_rtam", "right_tambour_vertical_backing"),
+        ("left", "rail_ltam_upper", "left_tambour_upper_backing"),
+        ("right", "rail_rtam_upper", "right_tambour_upper_backing"),
+    ):
         rail = members[rail_name]
         thickness = 0.75
         backing_type = ComponentType(
@@ -876,7 +904,7 @@ def build_enclosure(
         )
         minimum_x = rail.max_on("x") - thickness if side == "left" else rail.min_on("x")
         components.add(
-            f"{side}_tambour_vertical_backing",
+            backing_name,
             assembly="tambour_supports",
             component_type=backing_type,
             member=rail_name,

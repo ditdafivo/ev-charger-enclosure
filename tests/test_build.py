@@ -262,7 +262,7 @@ class TopBracingBuildTests(unittest.TestCase):
             support = enclosure.members[name]
             self.assertAlmostEqual(support.center_on("y"), build.TAMBOUR_TRACK_FRONT_Y)
             self.assertAlmostEqual(support.min_on("z"), 13.75)
-            self.assertAlmostEqual(support.max_on("z"), 46.125)
+            self.assertAlmostEqual(support.max_on("z"), 43.5)
         self.assertAlmostEqual(
             enclosure.members["rail_lbu"].center_on("z"),
             enclosure.members["rail_rbu"].center_on("z"),
@@ -313,9 +313,26 @@ class TopBracingBuildTests(unittest.TestCase):
             )
         for name in ("rail_lt", "rail_rt"):
             support = enclosure.members[name]
-            self.assertAlmostEqual(support.min_on("y"), 5.75)
+            self.assertAlmostEqual(support.min_on("y"), 3.5)
             self.assertAlmostEqual(support.min_on("z"), 43.5)
             self.assertAlmostEqual(support.max_on("z"), 45.0)
+
+    def test_post_supported_receivers_and_split_future_guides(self) -> None:
+        for side, front, back, top in (
+            ("l", "post_fl", "post_bl", "brace_fl_bl"),
+            ("r", "post_fr", "post_br", "brace_fr_br"),
+        ):
+            receiver = build.members[f"rail_{side}t"]
+            lower = build.members[f"rail_{side}tam"]
+            upper = build.members[f"rail_{side}tam_upper"]
+            self.assertAlmostEqual(receiver.min_on("y"), build.members[front].max_on("y"))
+            self.assertAlmostEqual(receiver.max_on("y"), build.members[back].min_on("y"))
+            self.assertAlmostEqual(receiver.length, 15.875)
+            self.assertAlmostEqual(lower.max_on("z"), receiver.min_on("z"))
+            self.assertAlmostEqual(upper.min_on("z"), receiver.max_on("z"))
+            self.assertAlmostEqual(upper.max_on("z"), build.members[top].min_on("z"))
+            self.assertIn(lower.name, build.model.deferred_object_names)
+            self.assertIn(upper.name, build.model.deferred_object_names)
 
     def test_lowered_front_header_bears_on_side_rails(self) -> None:
         header = build.members["rail_ft"]
@@ -671,6 +688,8 @@ class TambourClearanceBuildTests(unittest.TestCase):
                     "post_bl",
                     "brace_fl_bl",
                     "rail_ltam",
+                    "rail_ltam_upper",
+                    "left_tambour_upper_backing",
                     "rail_lt",
                     "left_tambour_bend_backer",
                     "left_tambour_vertical_backing",
@@ -683,6 +702,8 @@ class TambourClearanceBuildTests(unittest.TestCase):
                     "post_br",
                     "brace_fr_br",
                     "rail_rtam",
+                    "rail_rtam_upper",
+                    "right_tambour_upper_backing",
                     "rail_rt",
                     "right_tambour_bend_backer",
                     "right_tambour_vertical_backing",
@@ -1903,7 +1924,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertNotIn("rail_r_tambour", taller.members)
         self.assertAlmostEqual(taller.members["rail_rt"].min_on("z"), 48.875)
         self.assertAlmostEqual(taller.members["rail_rt"].max_on("z"), 50.375)
-        self.assertAlmostEqual(taller.members["rail_rtam"].max_on("z"), 51.5)
+        self.assertAlmostEqual(taller.members["rail_rtam"].max_on("z"), 48.875)
         self.assertAlmostEqual(taller.siding.frame_top_z, 55)
         self.assertAlmostEqual(taller.siding.roof_support_z, 55.25)
         self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.375)

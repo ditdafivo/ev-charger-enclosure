@@ -16,7 +16,7 @@ siding = true;
 ground = false;
 footings = true;
 center_gland_cat6 = true;
-build_step = 25; // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+build_step = 26; // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
 
 labels = false;
@@ -39,6 +39,7 @@ electrical_backing = true;
 frame = true;
 posts = true;
 power_cord_guard = true;
+tambour_supports = true;
 component_electrical = true;
 component_electrical_conduit_fittings = true;
 component_low_voltage_fittings = true;
@@ -84,14 +85,18 @@ show_lumber_rail_lbl = true;
 show_lumber_rail_fbu = true;
 // rail fbl
 show_lumber_rail_fbl = true;
-// rail ltam
-show_lumber_rail_ltam = true;
-// rail rtam
-show_lumber_rail_rtam = true;
 // rail lt
 show_lumber_rail_lt = true;
 // rail rt
 show_lumber_rail_rt = true;
+// rail ltam
+show_lumber_rail_ltam = true;
+// rail rtam
+show_lumber_rail_rtam = true;
+// rail ltam upper
+show_lumber_rail_ltam_upper = true;
+// rail rtam upper
+show_lumber_rail_rtam_upper = true;
 // rail ft
 show_lumber_rail_ft = true;
 // front center rail
@@ -121,6 +126,10 @@ show_component_right_tambour_bend_backer = true;
 show_component_left_tambour_vertical_backing = true;
 // right tambour vertical backing
 show_component_right_tambour_vertical_backing = true;
+// left tambour upper backing
+show_component_left_tambour_upper_backing = true;
+// right tambour upper backing
+show_component_right_tambour_upper_backing = true;
 // gusset back left
 show_component_gusset_back_left = true;
 // gusset front right
@@ -215,10 +224,10 @@ show_component_power_guard_removable_panel = true;
 /* [Hidden] */
 
 lumber_object_toggles = [
-    ["post_fl", show_lumber_post_fl],    ["post_fr", show_lumber_post_fr],    ["post_bl", show_lumber_post_bl],    ["post_br", show_lumber_post_br],    ["brace_fl_fr", show_lumber_brace_fl_fr],    ["brace_fl_bl", show_lumber_brace_fl_bl],    ["brace_bl_br", show_lumber_brace_bl_br],    ["brace_fr_br", show_lumber_brace_fr_br],    ["brace_bl_fr", show_lumber_brace_bl_fr],    ["rail_rbl", show_lumber_rail_rbl],    ["rail_lbu", show_lumber_rail_lbu],    ["rail_rbu", show_lumber_rail_rbu],    ["rail_lbl", show_lumber_rail_lbl],    ["rail_fbu", show_lumber_rail_fbu],    ["rail_fbl", show_lumber_rail_fbl],    ["rail_ltam", show_lumber_rail_ltam],    ["rail_rtam", show_lumber_rail_rtam],    ["rail_lt", show_lumber_rail_lt],    ["rail_rt", show_lumber_rail_rt],    ["rail_ft", show_lumber_rail_ft],    ["front_center_rail", show_lumber_front_center_rail],    ["right_center_rail", show_lumber_right_center_rail],    ["back_right_outlet_backer_lower", show_lumber_back_right_outlet_backer_lower],    ["back_right_outlet_backer_upper", show_lumber_back_right_outlet_backer_upper],    ["front_street_light_backer_bottom", show_lumber_front_street_light_backer_bottom],    ["front_street_light_backer_lower", show_lumber_front_street_light_backer_lower],    ["front_street_light_backer_upper", show_lumber_front_street_light_backer_upper],    ["power_guard_left_upright", show_lumber_power_guard_left_upright],    ["power_guard_right_upright", show_lumber_power_guard_right_upright]];
+    ["post_fl", show_lumber_post_fl],    ["post_fr", show_lumber_post_fr],    ["post_bl", show_lumber_post_bl],    ["post_br", show_lumber_post_br],    ["brace_fl_fr", show_lumber_brace_fl_fr],    ["brace_fl_bl", show_lumber_brace_fl_bl],    ["brace_bl_br", show_lumber_brace_bl_br],    ["brace_fr_br", show_lumber_brace_fr_br],    ["brace_bl_fr", show_lumber_brace_bl_fr],    ["rail_rbl", show_lumber_rail_rbl],    ["rail_lbu", show_lumber_rail_lbu],    ["rail_rbu", show_lumber_rail_rbu],    ["rail_lbl", show_lumber_rail_lbl],    ["rail_fbu", show_lumber_rail_fbu],    ["rail_fbl", show_lumber_rail_fbl],    ["rail_lt", show_lumber_rail_lt],    ["rail_rt", show_lumber_rail_rt],    ["rail_ltam", show_lumber_rail_ltam],    ["rail_rtam", show_lumber_rail_rtam],    ["rail_ltam_upper", show_lumber_rail_ltam_upper],    ["rail_rtam_upper", show_lumber_rail_rtam_upper],    ["rail_ft", show_lumber_rail_ft],    ["front_center_rail", show_lumber_front_center_rail],    ["right_center_rail", show_lumber_right_center_rail],    ["back_right_outlet_backer_lower", show_lumber_back_right_outlet_backer_lower],    ["back_right_outlet_backer_upper", show_lumber_back_right_outlet_backer_upper],    ["front_street_light_backer_bottom", show_lumber_front_street_light_backer_bottom],    ["front_street_light_backer_lower", show_lumber_front_street_light_backer_lower],    ["front_street_light_backer_upper", show_lumber_front_street_light_backer_upper],    ["power_guard_left_upright", show_lumber_power_guard_left_upright],    ["power_guard_right_upright", show_lumber_power_guard_right_upright]];
 
 component_object_toggles = [
-    ["left_tambour_bend_backer", show_component_left_tambour_bend_backer],    ["right_tambour_bend_backer", show_component_right_tambour_bend_backer],    ["left_tambour_vertical_backing", show_component_left_tambour_vertical_backing],    ["right_tambour_vertical_backing", show_component_right_tambour_vertical_backing],    ["gusset_back_left", show_component_gusset_back_left],    ["gusset_front_right", show_component_gusset_front_right],    ["roof_shim_brace_fl_fr", show_component_roof_shim_brace_fl_fr],    ["roof_shim_brace_fl_bl", show_component_roof_shim_brace_fl_bl],    ["roof_shim_brace_bl_br", show_component_roof_shim_brace_bl_br],    ["roof_shim_brace_fr_br", show_component_roof_shim_brace_fr_br],    ["low_voltage_termination_box", show_component_low_voltage_termination_box],    ["low_voltage_input_adapter", show_component_low_voltage_input_adapter],    ["low_voltage_cable_gland_1", show_component_low_voltage_cable_gland_1],    ["low_voltage_cable_gland_2", show_component_low_voltage_cable_gland_2],    ["low_voltage_cable_gland_3", show_component_low_voltage_cable_gland_3],    ["front_street_light_base_box", show_component_front_street_light_base_box],    ["front_street_light_extension_ring", show_component_front_street_light_extension_ring],    ["front_street_light", show_component_front_street_light],    ["front_ev_charger_plug", show_component_front_ev_charger_plug],    ["front_ev_charger_body", show_component_front_ev_charger_body],    ["front_wifi_access_point", show_component_front_wifi_access_point],    ["back_right_outlet", show_component_back_right_outlet],    ["back_right_outlet_cover", show_component_back_right_outlet_cover],    ["power_junction_box", show_component_power_junction_box],    ["power_ev_pull_box", show_component_power_ev_pull_box],    ["power_ev_top_adapter", show_component_power_ev_top_adapter],    ["power_ev_bottom_adapter", show_component_power_ev_bottom_adapter],    ["power_ev_back_adapter", show_component_power_ev_back_adapter],    ["power_junction_input_adapter", show_component_power_junction_input_adapter],    ["power_junction_light_adapter", show_component_power_junction_light_adapter],    ["power_junction_outlet_adapter", show_component_power_junction_outlet_adapter],    ["power_ev_top_adapter_sealing_washer", show_component_power_ev_top_adapter_sealing_washer],    ["power_ev_top_adapter_locknut", show_component_power_ev_top_adapter_locknut],    ["power_ev_bottom_adapter_sealing_washer", show_component_power_ev_bottom_adapter_sealing_washer],    ["power_ev_bottom_adapter_locknut", show_component_power_ev_bottom_adapter_locknut],    ["power_ev_back_adapter_sealing_washer", show_component_power_ev_back_adapter_sealing_washer],    ["power_ev_back_adapter_locknut", show_component_power_ev_back_adapter_locknut],    ["power_junction_input_adapter_sealing_washer", show_component_power_junction_input_adapter_sealing_washer],    ["power_junction_input_adapter_locknut", show_component_power_junction_input_adapter_locknut],    ["power_junction_light_adapter_sealing_washer", show_component_power_junction_light_adapter_sealing_washer],    ["power_junction_light_adapter_locknut", show_component_power_junction_light_adapter_locknut],    ["power_junction_outlet_adapter_sealing_washer", show_component_power_junction_outlet_adapter_sealing_washer],    ["power_junction_outlet_adapter_locknut", show_component_power_junction_outlet_adapter_locknut],    ["low_voltage_input_adapter_sealing_washer", show_component_low_voltage_input_adapter_sealing_washer],    ["low_voltage_input_adapter_locknut", show_component_low_voltage_input_adapter_locknut],    ["low_voltage_ground_sweep_elbow_1", show_component_low_voltage_ground_sweep_elbow_1],    ["low_voltage_ground_sweep_elbow_2", show_component_low_voltage_ground_sweep_elbow_2],    ["tambour_ceiling_panel", show_component_tambour_ceiling_panel],    ["power_guard_removable_panel", show_component_power_guard_removable_panel]];
+    ["left_tambour_bend_backer", show_component_left_tambour_bend_backer],    ["right_tambour_bend_backer", show_component_right_tambour_bend_backer],    ["left_tambour_vertical_backing", show_component_left_tambour_vertical_backing],    ["right_tambour_vertical_backing", show_component_right_tambour_vertical_backing],    ["left_tambour_upper_backing", show_component_left_tambour_upper_backing],    ["right_tambour_upper_backing", show_component_right_tambour_upper_backing],    ["gusset_back_left", show_component_gusset_back_left],    ["gusset_front_right", show_component_gusset_front_right],    ["roof_shim_brace_fl_fr", show_component_roof_shim_brace_fl_fr],    ["roof_shim_brace_fl_bl", show_component_roof_shim_brace_fl_bl],    ["roof_shim_brace_bl_br", show_component_roof_shim_brace_bl_br],    ["roof_shim_brace_fr_br", show_component_roof_shim_brace_fr_br],    ["low_voltage_termination_box", show_component_low_voltage_termination_box],    ["low_voltage_input_adapter", show_component_low_voltage_input_adapter],    ["low_voltage_cable_gland_1", show_component_low_voltage_cable_gland_1],    ["low_voltage_cable_gland_2", show_component_low_voltage_cable_gland_2],    ["low_voltage_cable_gland_3", show_component_low_voltage_cable_gland_3],    ["front_street_light_base_box", show_component_front_street_light_base_box],    ["front_street_light_extension_ring", show_component_front_street_light_extension_ring],    ["front_street_light", show_component_front_street_light],    ["front_ev_charger_plug", show_component_front_ev_charger_plug],    ["front_ev_charger_body", show_component_front_ev_charger_body],    ["front_wifi_access_point", show_component_front_wifi_access_point],    ["back_right_outlet", show_component_back_right_outlet],    ["back_right_outlet_cover", show_component_back_right_outlet_cover],    ["power_junction_box", show_component_power_junction_box],    ["power_ev_pull_box", show_component_power_ev_pull_box],    ["power_ev_top_adapter", show_component_power_ev_top_adapter],    ["power_ev_bottom_adapter", show_component_power_ev_bottom_adapter],    ["power_ev_back_adapter", show_component_power_ev_back_adapter],    ["power_junction_input_adapter", show_component_power_junction_input_adapter],    ["power_junction_light_adapter", show_component_power_junction_light_adapter],    ["power_junction_outlet_adapter", show_component_power_junction_outlet_adapter],    ["power_ev_top_adapter_sealing_washer", show_component_power_ev_top_adapter_sealing_washer],    ["power_ev_top_adapter_locknut", show_component_power_ev_top_adapter_locknut],    ["power_ev_bottom_adapter_sealing_washer", show_component_power_ev_bottom_adapter_sealing_washer],    ["power_ev_bottom_adapter_locknut", show_component_power_ev_bottom_adapter_locknut],    ["power_ev_back_adapter_sealing_washer", show_component_power_ev_back_adapter_sealing_washer],    ["power_ev_back_adapter_locknut", show_component_power_ev_back_adapter_locknut],    ["power_junction_input_adapter_sealing_washer", show_component_power_junction_input_adapter_sealing_washer],    ["power_junction_input_adapter_locknut", show_component_power_junction_input_adapter_locknut],    ["power_junction_light_adapter_sealing_washer", show_component_power_junction_light_adapter_sealing_washer],    ["power_junction_light_adapter_locknut", show_component_power_junction_light_adapter_locknut],    ["power_junction_outlet_adapter_sealing_washer", show_component_power_junction_outlet_adapter_sealing_washer],    ["power_junction_outlet_adapter_locknut", show_component_power_junction_outlet_adapter_locknut],    ["low_voltage_input_adapter_sealing_washer", show_component_low_voltage_input_adapter_sealing_washer],    ["low_voltage_input_adapter_locknut", show_component_low_voltage_input_adapter_locknut],    ["low_voltage_ground_sweep_elbow_1", show_component_low_voltage_ground_sweep_elbow_1],    ["low_voltage_ground_sweep_elbow_2", show_component_low_voltage_ground_sweep_elbow_2],    ["tambour_ceiling_panel", show_component_tambour_ceiling_panel],    ["power_guard_removable_panel", show_component_power_guard_removable_panel]];
 
 pieces = [
     ["post_fl", "posts", "4x4", "z", [0, 0, -32], 81.625, true],
@@ -236,10 +245,12 @@ pieces = [
     ["rail_lbl", "frame", "2x4", "y", [0, 3.5, 5.25], 15.875, true],
     ["rail_fbu", "frame", "2x4", "x", [3.5, 7.1875, 12.25], 20.5, true],
     ["rail_fbl", "frame", "2x4", "x", [3.5, 7.1875, 5.25], 20.5, true],
-    ["rail_ltam", "frame", "2x4", "z", [0, 4.25, 13.75], 32.375, true],
-    ["rail_rtam", "frame", "2x4", "z", [24, 4.25, 13.75], 32.375, true],
-    ["rail_lt", "frame", "2x4", "y", [0, 5.75, 43.5], 13.625, true],
-    ["rail_rt", "frame", "2x4", "y", [24, 5.75, 43.5], 13.625, true],
+    ["rail_lt", "frame", "2x4", "y", [0, 3.5, 43.5], 15.875, true],
+    ["rail_rt", "frame", "2x4", "y", [24, 3.5, 43.5], 15.875, true],
+    ["rail_ltam", "tambour_supports", "2x4", "z", [0, 4.25, 13.75], 29.75, true],
+    ["rail_rtam", "tambour_supports", "2x4", "z", [24, 4.25, 13.75], 29.75, true],
+    ["rail_ltam_upper", "tambour_supports", "2x4", "z", [0, 4.25, 45], 1.125, true],
+    ["rail_rtam_upper", "tambour_supports", "2x4", "z", [24, 4.25, 45], 1.125, true],
     ["rail_ft", "frame", "2x4", "x", [3.5, 7.1875, 43.5], 20.5, true],
     ["front_center_rail", "frame", "2x4", "z", [13, 7.1875, 13.75], 29.75, false],
     ["right_center_rail", "frame", "2x4", "z", [24, 11.1875, 13.75], 29.75, true],
@@ -258,10 +269,12 @@ routed_seats = [
 ];
 
 components = [
-    ["left_tambour_bend_backer", "tambour_supports", "three_quarter_inch_plywood_tambour_bend_backer", "rail_ltam", "narrow_pos", 31.25, [2.75, 5.625, 45], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [2.75, 5.625, 45], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
-    ["right_tambour_bend_backer", "tambour_supports", "three_quarter_inch_plywood_tambour_bend_backer", "rail_rtam", "narrow_pos", 31.25, [24, 5.625, 45], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [24, 5.625, 45], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
-    ["left_tambour_vertical_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_ltam", "narrow_pos", 0, [2.75, 4.125, 13.75], [0.75, 1.75, 32.375], [0.72, 0.58, 0.38, 1], "box", [2.75, 4.125, 13.75], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
-    ["right_tambour_vertical_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_rtam", "narrow_pos", 0, [24, 4.125, 13.75], [0.75, 1.75, 32.375], [0.72, 0.58, 0.38, 1], "box", [24, 4.125, 13.75], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["left_tambour_bend_backer", "tambour_supports", "three_quarter_inch_plywood_tambour_bend_backer", "rail_ltam_upper", "narrow_pos", 0, [2.75, 5.625, 45], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [2.75, 5.625, 45], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["right_tambour_bend_backer", "tambour_supports", "three_quarter_inch_plywood_tambour_bend_backer", "rail_rtam_upper", "narrow_pos", 0, [24, 5.625, 45], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [24, 5.625, 45], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["left_tambour_vertical_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_ltam", "narrow_pos", 0, [2.75, 4.125, 13.75], [0.75, 1.75, 29.75], [0.72, 0.58, 0.38, 1], "box", [2.75, 4.125, 13.75], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["right_tambour_vertical_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_rtam", "narrow_pos", 0, [24, 4.125, 13.75], [0.75, 1.75, 29.75], [0.72, 0.58, 0.38, 1], "box", [24, 4.125, 13.75], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["left_tambour_upper_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_ltam_upper", "narrow_pos", 0, [2.75, 4.125, 45], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [2.75, 4.125, 45], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
+    ["right_tambour_upper_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_rtam_upper", "narrow_pos", 0, [24, 4.125, 45], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [24, 4.125, 45], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
     ["gusset_back_left", "top_bracing_hardware", "custom_6x6_g90_gusset_with_number_9_pan_head_screws", "post_bl", "wide_neg", 81.625, [0.25, 16.625, 49.625], [6, 6, 0.184], [0.62, 0.66, 0.68, 1], "primitive_union", [0.25, 16.625, 49.625], [1, -0, -0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6, 6, 0.074]]], [[[0.75, 0.75, 0.074], "out", 0.045, 0.35], [[0.75, 0.75, 0.119], "out", 0.035, 0.315], [[0.75, 0.75, 0.154], "out", 0.025, 0.252], [[0.75, 0.75, 0.179], "out", 0.005, 0.147], [[0.75, 2.25, 0.074], "out", 0.045, 0.35], [[0.75, 2.25, 0.119], "out", 0.035, 0.315], [[0.75, 2.25, 0.154], "out", 0.025, 0.252], [[0.75, 2.25, 0.179], "out", 0.005, 0.147], [[0.75, 3.75, 0.074], "out", 0.045, 0.35], [[0.75, 3.75, 0.119], "out", 0.035, 0.315], [[0.75, 3.75, 0.154], "out", 0.025, 0.252], [[0.75, 3.75, 0.179], "out", 0.005, 0.147], [[0.75, 5.25, 0.074], "out", 0.045, 0.35], [[0.75, 5.25, 0.119], "out", 0.035, 0.315], [[0.75, 5.25, 0.154], "out", 0.025, 0.252], [[0.75, 5.25, 0.179], "out", 0.005, 0.147], [[2.25, 0.75, 0.074], "out", 0.045, 0.35], [[2.25, 0.75, 0.119], "out", 0.035, 0.315], [[2.25, 0.75, 0.154], "out", 0.025, 0.252], [[2.25, 0.75, 0.179], "out", 0.005, 0.147], [[2.25, 2.25, 0.074], "out", 0.045, 0.35], [[2.25, 2.25, 0.119], "out", 0.035, 0.315], [[2.25, 2.25, 0.154], "out", 0.025, 0.252], [[2.25, 2.25, 0.179], "out", 0.005, 0.147], [[2.25, 3.75, 0.074], "out", 0.045, 0.35], [[2.25, 3.75, 0.119], "out", 0.035, 0.315], [[2.25, 3.75, 0.154], "out", 0.025, 0.252], [[2.25, 3.75, 0.179], "out", 0.005, 0.147], [[2.25, 5.25, 0.074], "out", 0.045, 0.35], [[2.25, 5.25, 0.119], "out", 0.035, 0.315], [[2.25, 5.25, 0.154], "out", 0.025, 0.252], [[2.25, 5.25, 0.179], "out", 0.005, 0.147], [[3.75, 0.75, 0.074], "out", 0.045, 0.35], [[3.75, 0.75, 0.119], "out", 0.035, 0.315], [[3.75, 0.75, 0.154], "out", 0.025, 0.252], [[3.75, 0.75, 0.179], "out", 0.005, 0.147], [[3.75, 2.25, 0.074], "out", 0.045, 0.35], [[3.75, 2.25, 0.119], "out", 0.035, 0.315], [[3.75, 2.25, 0.154], "out", 0.025, 0.252], [[3.75, 2.25, 0.179], "out", 0.005, 0.147], [[3.75, 3.75, 0.074], "out", 0.045, 0.35], [[3.75, 3.75, 0.119], "out", 0.035, 0.315], [[3.75, 3.75, 0.154], "out", 0.025, 0.252], [[3.75, 3.75, 0.179], "out", 0.005, 0.147], [[3.75, 5.25, 0.074], "out", 0.045, 0.35], [[3.75, 5.25, 0.119], "out", 0.035, 0.315], [[3.75, 5.25, 0.154], "out", 0.025, 0.252], [[3.75, 5.25, 0.179], "out", 0.005, 0.147], [[5.25, 0.75, 0.074], "out", 0.045, 0.35], [[5.25, 0.75, 0.119], "out", 0.035, 0.315], [[5.25, 0.75, 0.154], "out", 0.025, 0.252], [[5.25, 0.75, 0.179], "out", 0.005, 0.147], [[5.25, 2.25, 0.074], "out", 0.045, 0.35], [[5.25, 2.25, 0.119], "out", 0.035, 0.315], [[5.25, 2.25, 0.154], "out", 0.025, 0.252], [[5.25, 2.25, 0.179], "out", 0.005, 0.147], [[5.25, 3.75, 0.074], "out", 0.045, 0.35], [[5.25, 3.75, 0.119], "out", 0.035, 0.315], [[5.25, 3.75, 0.154], "out", 0.025, 0.252], [[5.25, 3.75, 0.179], "out", 0.005, 0.147], [[5.25, 5.25, 0.074], "out", 0.045, 0.35], [[5.25, 5.25, 0.119], "out", 0.035, 0.315], [[5.25, 5.25, 0.154], "out", 0.025, 0.252], [[5.25, 5.25, 0.179], "out", 0.005, 0.147]], false],
     ["gusset_front_right", "top_bracing_hardware", "custom_6x6_g90_gusset_with_number_9_pan_head_screws", "post_fr", "wide_pos", 81.625, [21.25, 0.25, 49.625], [6, 6, 0.184], [0.62, 0.66, 0.68, 1], "primitive_union", [27.25, 0.25, 49.625], [-1, -0, -0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6, 6, 0.074]]], [[[0.75, 0.75, 0.074], "out", 0.045, 0.35], [[0.75, 0.75, 0.119], "out", 0.035, 0.315], [[0.75, 0.75, 0.154], "out", 0.025, 0.252], [[0.75, 0.75, 0.179], "out", 0.005, 0.147], [[0.75, 2.25, 0.074], "out", 0.045, 0.35], [[0.75, 2.25, 0.119], "out", 0.035, 0.315], [[0.75, 2.25, 0.154], "out", 0.025, 0.252], [[0.75, 2.25, 0.179], "out", 0.005, 0.147], [[0.75, 3.75, 0.074], "out", 0.045, 0.35], [[0.75, 3.75, 0.119], "out", 0.035, 0.315], [[0.75, 3.75, 0.154], "out", 0.025, 0.252], [[0.75, 3.75, 0.179], "out", 0.005, 0.147], [[0.75, 5.25, 0.074], "out", 0.045, 0.35], [[0.75, 5.25, 0.119], "out", 0.035, 0.315], [[0.75, 5.25, 0.154], "out", 0.025, 0.252], [[0.75, 5.25, 0.179], "out", 0.005, 0.147], [[2.25, 0.75, 0.074], "out", 0.045, 0.35], [[2.25, 0.75, 0.119], "out", 0.035, 0.315], [[2.25, 0.75, 0.154], "out", 0.025, 0.252], [[2.25, 0.75, 0.179], "out", 0.005, 0.147], [[2.25, 2.25, 0.074], "out", 0.045, 0.35], [[2.25, 2.25, 0.119], "out", 0.035, 0.315], [[2.25, 2.25, 0.154], "out", 0.025, 0.252], [[2.25, 2.25, 0.179], "out", 0.005, 0.147], [[2.25, 3.75, 0.074], "out", 0.045, 0.35], [[2.25, 3.75, 0.119], "out", 0.035, 0.315], [[2.25, 3.75, 0.154], "out", 0.025, 0.252], [[2.25, 3.75, 0.179], "out", 0.005, 0.147], [[2.25, 5.25, 0.074], "out", 0.045, 0.35], [[2.25, 5.25, 0.119], "out", 0.035, 0.315], [[2.25, 5.25, 0.154], "out", 0.025, 0.252], [[2.25, 5.25, 0.179], "out", 0.005, 0.147], [[3.75, 0.75, 0.074], "out", 0.045, 0.35], [[3.75, 0.75, 0.119], "out", 0.035, 0.315], [[3.75, 0.75, 0.154], "out", 0.025, 0.252], [[3.75, 0.75, 0.179], "out", 0.005, 0.147], [[3.75, 2.25, 0.074], "out", 0.045, 0.35], [[3.75, 2.25, 0.119], "out", 0.035, 0.315], [[3.75, 2.25, 0.154], "out", 0.025, 0.252], [[3.75, 2.25, 0.179], "out", 0.005, 0.147], [[3.75, 3.75, 0.074], "out", 0.045, 0.35], [[3.75, 3.75, 0.119], "out", 0.035, 0.315], [[3.75, 3.75, 0.154], "out", 0.025, 0.252], [[3.75, 3.75, 0.179], "out", 0.005, 0.147], [[3.75, 5.25, 0.074], "out", 0.045, 0.35], [[3.75, 5.25, 0.119], "out", 0.035, 0.315], [[3.75, 5.25, 0.154], "out", 0.025, 0.252], [[3.75, 5.25, 0.179], "out", 0.005, 0.147], [[5.25, 0.75, 0.074], "out", 0.045, 0.35], [[5.25, 0.75, 0.119], "out", 0.035, 0.315], [[5.25, 0.75, 0.154], "out", 0.025, 0.252], [[5.25, 0.75, 0.179], "out", 0.005, 0.147], [[5.25, 2.25, 0.074], "out", 0.045, 0.35], [[5.25, 2.25, 0.119], "out", 0.035, 0.315], [[5.25, 2.25, 0.154], "out", 0.025, 0.252], [[5.25, 2.25, 0.179], "out", 0.005, 0.147], [[5.25, 3.75, 0.074], "out", 0.045, 0.35], [[5.25, 3.75, 0.119], "out", 0.035, 0.315], [[5.25, 3.75, 0.154], "out", 0.025, 0.252], [[5.25, 3.75, 0.179], "out", 0.005, 0.147], [[5.25, 5.25, 0.074], "out", 0.045, 0.35], [[5.25, 5.25, 0.119], "out", 0.035, 0.315], [[5.25, 5.25, 0.154], "out", 0.025, 0.252], [[5.25, 5.25, 0.179], "out", 0.005, 0.147]], false],
     ["roof_shim_brace_fl_fr", "roof_shims", "continuous_pt_roof_shim_brace_fl_fr", "brace_fl_fr", "narrow_pos", 0, [0, 0, 49.625], [21.25, 3.5, 0.25], [0.44, 0.26, 0.11, 1], "box", [0, 0, 49.625], [1, 0, 0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false],
@@ -314,7 +327,7 @@ conduits = [
     ["power_pull_box_junction_feed", "electrical_conduit", "3/4", 1.05, [0.78, 0.8, 0.78, 1], [[15.35, 9.87, 8.83], [15.35, 8.6575, 8.83]], []],
     ["power_ev_charger_feed", "electrical_conduit", "1", 1.315, [0.78, 0.8, 0.78, 1], [[15.35, 12.2875, 12.33], [15.35, 12.2875, 22.35]], []],
     ["power_street_light_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[18.25, 4.1875, 8.7489], [21.08, 4.1875, 8.7489], [21.4063, 4.1854, 8.7702], [21.727, 4.1793, 8.8337], [22.0367, 4.1692, 8.9384], [22.33, 4.1554, 9.0823], [22.6019, 4.1379, 9.2632], [22.8478, 4.1172, 9.4778], [23.0634, 4.0936, 9.7225], [23.2451, 4.0675, 9.9932], [23.3897, 4.0394, 10.2851], [23.4948, 4.0097, 10.5933], [23.5586, 3.9789, 10.9126], [23.58, 3.9476, 11.2374], [23.58, 1.7879, 33.6388], [23.5543, 1.7503, 34.0286], [23.4778, 1.7134, 34.4117], [23.3516, 1.6777, 34.7816], [23.1781, 1.6439, 35.1319], [22.9601, 1.6126, 35.4567], [22.7013, 1.5843, 35.7504], [22.4063, 1.5595, 36.0079], [22.08, 1.5386, 36.2249], [21.7281, 1.5219, 36.3977], [21.3565, 1.5098, 36.5232], [20.9716, 1.5025, 36.5995], [20.58, 1.5, 36.625], [16.75, 1.5, 36.625], [16.3584, 1.5, 36.6507], [15.9735, 1.5, 36.7272], [15.6019, 1.5, 36.8534], [15.25, 1.5, 37.0269], [14.9237, 1.5, 37.2449], [14.6287, 1.5, 37.5037], [14.3699, 1.5, 37.7987], [14.1519, 1.5, 38.125], [13.9784, 1.5, 38.4769], [13.8522, 1.5, 38.8485], [13.7757, 1.5, 39.2334], [13.75, 1.5, 39.625], [13.75, 1.5, 39.925]], [[1, 2.5], [2, 3], [3, 3]]],
-    ["power_back_right_outlet_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[18.25, 6.1875, 8.7489], [23.016, 6.1875, 8.7489], [23.5381, 6.2217, 8.7489], [24.0513, 6.3238, 8.7489], [24.5467, 6.492, 8.7489], [25.016, 6.7234, 8.7489], [25.451, 7.0141, 8.7489], [25.8444, 7.3591, 8.7489], [26.1894, 7.7525, 8.7489], [26.4801, 8.1875, 8.7489], [26.7115, 8.6568, 8.7489], [26.8797, 9.1522, 8.7489], [26.9818, 9.6654, 8.7489], [27.016, 10.1875, 8.7489], [27.016, 13.875, 8.7489], [27.016, 14.3971, 8.7832], [27.016, 14.9103, 8.8852], [27.016, 15.4057, 9.0534], [27.016, 15.875, 9.2848], [27.016, 16.31, 9.5755], [27.016, 16.7034, 9.9205], [27.016, 17.0484, 10.3139], [27.016, 17.3391, 10.7489], [27.016, 17.5705, 11.2182], [27.016, 17.7387, 11.7137], [27.016, 17.8408, 12.2268], [27.016, 17.875, 12.7489], [27.016, 17.875, 15.15]], [[1, 4], [2, 4]]],
+    ["power_back_right_outlet_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[18.25, 6.1875, 8.7489], [18.4382, 6.1875, 8.7409], [18.6263, 6.1875, 8.7179], [18.8145, 6.1875, 8.6811], [19.0027, 6.1875, 8.632], [19.1908, 6.1875, 8.5719], [19.379, 6.1875, 8.5022], [19.5672, 6.1875, 8.4243], [19.7553, 6.1875, 8.3396], [19.9435, 6.1875, 8.2494], [20.1317, 6.1875, 8.155], [20.3198, 6.1875, 8.0579], [20.508, 6.1875, 7.9595], [20.6962, 6.1875, 7.861], [20.8843, 6.1875, 7.7639], [21.0725, 6.1875, 7.6696], [21.2607, 6.1875, 7.5794], [21.4488, 6.1875, 7.4946], [21.637, 6.1875, 7.4167], [21.8252, 6.1875, 7.347], [22.0133, 6.1875, 7.287], [22.2015, 6.1875, 7.2378], [22.3897, 6.1875, 7.2011], [22.5778, 6.1875, 7.178], [22.766, 6.1875, 7.17], [23.016, 6.1875, 7.17], [23.5381, 6.2217, 7.17], [24.0513, 6.3238, 7.17], [24.5467, 6.492, 7.17], [25.016, 6.7234, 7.17], [25.451, 7.0141, 7.17], [25.8444, 7.3591, 7.17], [26.1894, 7.7525, 7.17], [26.4801, 8.1875, 7.17], [26.7115, 8.6568, 7.17], [26.8797, 9.1522, 7.17], [26.9818, 9.6654, 7.17], [27.016, 10.1875, 7.17], [27.016, 13.875, 7.17], [27.016, 14.3971, 7.2042], [27.016, 14.9103, 7.3063], [27.016, 15.4057, 7.4745], [27.016, 15.875, 7.7059], [27.016, 16.31, 7.9966], [27.016, 16.7034, 8.3416], [27.016, 17.0484, 8.735], [27.016, 17.3391, 9.17], [27.016, 17.5705, 9.6393], [27.016, 17.7387, 10.1347], [27.016, 17.8408, 10.6479], [27.016, 17.875, 11.17], [27.016, 17.875, 15.15]], [[25, 4], [26, 4]]],
     ["low_voltage_ground_riser_inlet", "low_voltage_conduit", "3/4", 1.05, [0.78, 0.8, 0.78, 1], [[14, 6.25, 0.6548], [14, 6.25, 2.1548]], []]
 ];
 
@@ -445,6 +458,12 @@ assert(
 );
 
 deferred_objects = [
+    "rail_ltam",
+    "rail_rtam",
+    "rail_ltam_upper",
+    "rail_rtam_upper",
+    "left_tambour_upper_backing",
+    "right_tambour_upper_backing",
     "left_tambour_vertical_backing",
     "right_tambour_vertical_backing",
     "left_tambour_bend_backer",
@@ -459,7 +478,7 @@ function object_is_deferred(name) =
             if (deferred_name == name) deferred_name
     ]) > 0;
 
-build_step_count = 24;
+build_step_count = 25;
 build_step_objects = [
     ["power_ground_riser", 1],
     ["low_voltage_ground_riser_inlet", 1],
@@ -486,15 +505,25 @@ build_step_objects = [
     ["rail_rbl", 4],
     ["rail_fbu", 5],
     ["rail_fbl", 5],
-    ["rail_ltam", 6],
-    ["rail_rtam", 6],
-    ["rail_lt", 7],
-    ["rail_rt", 7],
-    ["rail_ft", 8],
-    ["front_center_rail", 9],
-    ["front_ev_charger_body", 10],
-    ["front_ev_charger_plug", 10],
-    ["front_ev_charger_cable", 10],
+    ["rail_lt", 6],
+    ["rail_rt", 6],
+    ["rail_ft", 7],
+    ["front_center_rail", 8],
+    ["front_ev_charger_body", 9],
+    ["front_ev_charger_plug", 9],
+    ["front_ev_charger_cable", 9],
+    ["power_ev_charger_feed", 10],
+    ["power_ev_top_adapter", 10],
+    ["power_ev_top_adapter_sealing_washer", 10],
+    ["power_ev_top_adapter_locknut", 10],
+    ["power_ev_pull_box", 10],
+    ["power_ev_bottom_adapter", 10],
+    ["power_ev_bottom_adapter_sealing_washer", 10],
+    ["power_ev_bottom_adapter_locknut", 10],
+    ["power_ev_back_adapter", 10],
+    ["power_ev_back_adapter_sealing_washer", 10],
+    ["power_ev_back_adapter_locknut", 10],
+    ["power_pull_box_junction_feed", 10],
     ["power_junction_box", 11],
     ["power_junction_input_adapter", 11],
     ["power_junction_input_adapter_sealing_washer", 11],
@@ -505,121 +534,109 @@ build_step_objects = [
     ["power_junction_outlet_adapter", 11],
     ["power_junction_outlet_adapter_sealing_washer", 11],
     ["power_junction_outlet_adapter_locknut", 11],
-    ["power_ev_charger_feed", 12],
-    ["power_ev_top_adapter", 12],
-    ["power_ev_top_adapter_sealing_washer", 12],
-    ["power_ev_top_adapter_locknut", 12],
-    ["power_ev_pull_box", 12],
-    ["power_ev_bottom_adapter", 12],
-    ["power_ev_bottom_adapter_sealing_washer", 12],
-    ["power_ev_bottom_adapter_locknut", 12],
-    ["power_ev_back_adapter", 12],
-    ["power_ev_back_adapter_sealing_washer", 12],
-    ["power_ev_back_adapter_locknut", 12],
-    ["power_pull_box_junction_feed", 12],
-    ["front_street_light_backer_bottom", 13],
-    ["front_street_light_backer_lower", 13],
-    ["front_street_light_backer_upper", 13],
-    ["front_street_light_base_box", 14],
-    ["power_street_light_feed", 14],
-    ["right_center_rail", 15],
-    ["back_right_outlet_backer_lower", 15],
-    ["back_right_outlet_backer_upper", 15],
-    ["back_right_outlet", 15],
-    ["power_back_right_outlet_feed", 15],
-    ["low_voltage_termination_box", 16],
-    ["low_voltage_input_adapter", 16],
-    ["low_voltage_input_adapter_sealing_washer", 16],
-    ["low_voltage_input_adapter_locknut", 16],
-    ["low_voltage_cable_gland_1", 16],
-    ["low_voltage_cable_gland_2", 16],
-    ["low_voltage_cable_gland_3", 16],
-    ["front_wifi_access_point", 17],
-    ["low_voltage_wifi_feed", 17],
-    ["low_voltage_street_light_service", 18],
-    ["low_voltage_ev_charger_feed", 19],
-    ["roof_shim_brace_fl_fr", 20],
-    ["roof_shim_brace_fl_bl", 20],
-    ["roof_shim_brace_bl_br", 20],
-    ["roof_shim_brace_fr_br", 20],
-    ["enclosure_siding_top_1", 20],
-    ["enclosure_siding_top_2", 20],
-    ["enclosure_siding_top_3", 20],
-    ["enclosure_siding_top_4", 20],
-    ["enclosure_siding_top_5", 20],
-    ["enclosure_siding_front_1", 20],
-    ["enclosure_siding_left_1", 20],
-    ["enclosure_siding_right_1", 20],
-    ["enclosure_siding_rear_top_left", 20],
-    ["enclosure_siding_rear_top_header", 20],
-    ["enclosure_siding_rear_top_right", 20],
-    ["enclosure_siding_front_2_1", 20],
-    ["enclosure_siding_front_2_2", 20],
-    ["enclosure_siding_front_2_3", 20],
-    ["enclosure_siding_front_2_4", 20],
-    ["enclosure_siding_left_2", 20],
-    ["enclosure_siding_right_2", 20],
-    ["enclosure_siding_rear_left_2", 20],
-    ["enclosure_siding_rear_right_2", 20],
-    ["enclosure_siding_front_3", 20],
-    ["enclosure_siding_left_3", 20],
-    ["enclosure_siding_right_3", 20],
-    ["enclosure_siding_rear_left_3", 20],
-    ["enclosure_siding_rear_right_3", 20],
-    ["enclosure_siding_front_4", 20],
-    ["enclosure_siding_left_4", 20],
-    ["enclosure_siding_right_4", 20],
-    ["enclosure_siding_rear_left_4", 20],
-    ["enclosure_siding_rear_right_4", 20],
-    ["enclosure_siding_front_5", 20],
-    ["enclosure_siding_left_5", 20],
-    ["enclosure_siding_right_5", 20],
-    ["enclosure_siding_rear_left_5", 20],
-    ["enclosure_siding_rear_right_5", 20],
-    ["enclosure_siding_front_6", 20],
-    ["enclosure_siding_left_6", 20],
-    ["enclosure_siding_right_6_1", 20],
-    ["enclosure_siding_right_6_2", 20],
-    ["enclosure_siding_right_6_3", 20],
-    ["enclosure_siding_rear_left_6", 20],
-    ["enclosure_siding_rear_right_6", 20],
-    ["enclosure_siding_front_7", 20],
-    ["enclosure_siding_left_7", 20],
-    ["enclosure_siding_right_7_1", 20],
-    ["enclosure_siding_right_7_2", 20],
-    ["enclosure_siding_right_7_3", 20],
-    ["enclosure_siding_rear_left_7", 20],
-    ["enclosure_siding_rear_right_7", 20],
-    ["enclosure_siding_front_8", 20],
-    ["enclosure_siding_left_8", 20],
-    ["enclosure_siding_right_8", 20],
-    ["enclosure_siding_rear_left_8", 20],
-    ["enclosure_siding_rear_right_8", 20],
-    ["enclosure_siding_front_9", 20],
-    ["enclosure_siding_left_9", 20],
-    ["enclosure_siding_right_9", 20],
-    ["enclosure_siding_rear_left_9", 20],
-    ["enclosure_siding_rear_right_9", 20],
-    ["enclosure_siding_angle_front_left_a", 21],
-    ["enclosure_siding_angle_front_left_b", 21],
-    ["enclosure_siding_angle_front_right_a", 21],
-    ["enclosure_siding_angle_front_right_b", 21],
-    ["enclosure_siding_angle_rear_left_a", 21],
-    ["enclosure_siding_angle_rear_left_b", 21],
-    ["enclosure_siding_angle_rear_right_a", 21],
-    ["enclosure_siding_angle_rear_right_b", 21],
-    ["enclosure_siding_angle_tambour_left_a", 21],
-    ["enclosure_siding_angle_tambour_left_b", 21],
-    ["enclosure_siding_angle_tambour_right_a", 21],
-    ["enclosure_siding_angle_tambour_right_b", 21],
-    ["enclosure_siding_angle_tambour_header_face", 21],
-    ["enclosure_siding_angle_tambour_header_bottom", 21],
-    ["front_street_light_extension_ring", 22],
-    ["front_street_light", 22],
-    ["back_right_outlet_cover", 23],
-    ["power_guard_left_upright", 24],
-    ["power_guard_right_upright", 24],
-    ["power_guard_removable_panel", 24]
+    ["right_center_rail", 12],
+    ["back_right_outlet_backer_lower", 13],
+    ["back_right_outlet_backer_upper", 13],
+    ["back_right_outlet", 13],
+    ["power_back_right_outlet_feed", 14],
+    ["low_voltage_termination_box", 15],
+    ["low_voltage_input_adapter", 15],
+    ["low_voltage_input_adapter_sealing_washer", 15],
+    ["low_voltage_input_adapter_locknut", 15],
+    ["low_voltage_cable_gland_1", 15],
+    ["low_voltage_cable_gland_2", 15],
+    ["low_voltage_cable_gland_3", 15],
+    ["front_wifi_access_point", 16],
+    ["low_voltage_wifi_feed", 16],
+    ["low_voltage_ev_charger_feed", 17],
+    ["power_guard_left_upright", 18],
+    ["power_guard_right_upright", 18],
+    ["power_guard_removable_panel", 18],
+    ["front_street_light_backer_bottom", 19],
+    ["front_street_light_backer_lower", 19],
+    ["front_street_light_backer_upper", 19],
+    ["low_voltage_street_light_service", 20],
+    ["front_street_light_base_box", 21],
+    ["power_street_light_feed", 21],
+    ["roof_shim_brace_fl_fr", 22],
+    ["roof_shim_brace_fl_bl", 22],
+    ["roof_shim_brace_bl_br", 22],
+    ["roof_shim_brace_fr_br", 22],
+    ["enclosure_siding_top_1", 22],
+    ["enclosure_siding_top_2", 22],
+    ["enclosure_siding_top_3", 22],
+    ["enclosure_siding_top_4", 22],
+    ["enclosure_siding_top_5", 22],
+    ["enclosure_siding_front_1", 22],
+    ["enclosure_siding_left_1", 22],
+    ["enclosure_siding_right_1", 22],
+    ["enclosure_siding_rear_top_left", 22],
+    ["enclosure_siding_rear_top_header", 22],
+    ["enclosure_siding_rear_top_right", 22],
+    ["enclosure_siding_front_2_1", 22],
+    ["enclosure_siding_front_2_2", 22],
+    ["enclosure_siding_front_2_3", 22],
+    ["enclosure_siding_front_2_4", 22],
+    ["enclosure_siding_left_2", 22],
+    ["enclosure_siding_right_2", 22],
+    ["enclosure_siding_rear_left_2", 22],
+    ["enclosure_siding_rear_right_2", 22],
+    ["enclosure_siding_front_3", 22],
+    ["enclosure_siding_left_3", 22],
+    ["enclosure_siding_right_3", 22],
+    ["enclosure_siding_rear_left_3", 22],
+    ["enclosure_siding_rear_right_3", 22],
+    ["enclosure_siding_front_4", 22],
+    ["enclosure_siding_left_4", 22],
+    ["enclosure_siding_right_4", 22],
+    ["enclosure_siding_rear_left_4", 22],
+    ["enclosure_siding_rear_right_4", 22],
+    ["enclosure_siding_front_5", 22],
+    ["enclosure_siding_left_5", 22],
+    ["enclosure_siding_right_5", 22],
+    ["enclosure_siding_rear_left_5", 22],
+    ["enclosure_siding_rear_right_5", 22],
+    ["enclosure_siding_front_6", 22],
+    ["enclosure_siding_left_6", 22],
+    ["enclosure_siding_right_6_1", 22],
+    ["enclosure_siding_right_6_2", 22],
+    ["enclosure_siding_right_6_3", 22],
+    ["enclosure_siding_rear_left_6", 22],
+    ["enclosure_siding_rear_right_6", 22],
+    ["enclosure_siding_front_7", 22],
+    ["enclosure_siding_left_7", 22],
+    ["enclosure_siding_right_7_1", 22],
+    ["enclosure_siding_right_7_2", 22],
+    ["enclosure_siding_right_7_3", 22],
+    ["enclosure_siding_rear_left_7", 22],
+    ["enclosure_siding_rear_right_7", 22],
+    ["enclosure_siding_front_8", 22],
+    ["enclosure_siding_left_8", 22],
+    ["enclosure_siding_right_8", 22],
+    ["enclosure_siding_rear_left_8", 22],
+    ["enclosure_siding_rear_right_8", 22],
+    ["enclosure_siding_front_9", 22],
+    ["enclosure_siding_left_9", 22],
+    ["enclosure_siding_right_9", 22],
+    ["enclosure_siding_rear_left_9", 22],
+    ["enclosure_siding_rear_right_9", 22],
+    ["enclosure_siding_angle_front_left_a", 23],
+    ["enclosure_siding_angle_front_left_b", 23],
+    ["enclosure_siding_angle_front_right_a", 23],
+    ["enclosure_siding_angle_front_right_b", 23],
+    ["enclosure_siding_angle_rear_left_a", 23],
+    ["enclosure_siding_angle_rear_left_b", 23],
+    ["enclosure_siding_angle_rear_right_a", 23],
+    ["enclosure_siding_angle_rear_right_b", 23],
+    ["enclosure_siding_angle_tambour_left_a", 23],
+    ["enclosure_siding_angle_tambour_left_b", 23],
+    ["enclosure_siding_angle_tambour_right_a", 23],
+    ["enclosure_siding_angle_tambour_right_b", 23],
+    ["enclosure_siding_angle_tambour_header_face", 23],
+    ["enclosure_siding_angle_tambour_header_bottom", 23],
+    ["front_street_light_extension_ring", 24],
+    ["front_street_light", 24],
+    ["back_right_outlet_cover", 25]
 ];
 
 assert(
@@ -1511,6 +1528,9 @@ if (posts) {
 }
 if (power_cord_guard) {
     render_assembly("power_cord_guard", power_cord_guard);
+}
+if (tambour_supports) {
+    render_assembly("tambour_supports", tambour_supports);
 }
 if (component_electrical) {
     render_component_assembly("electrical", component_electrical);

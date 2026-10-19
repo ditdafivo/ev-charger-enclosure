@@ -11,7 +11,8 @@ Dimensions and cut lengths below apply to this design only.
 The generated BOM and cut list remain the authoritative material references
 for generated modeled materials. Tambour installation is deferred indefinitely;
 its prototype and fabrication notes remain in [`TAMBOUR_DOOR.md`](TAMBOUR_DOOR.md)
-for future reference.
+for future reference. The front guide uprights and their upper blocks are also
+deferred; the permanent side receiver rails connect directly to the posts.
 
 The top-plane bracing decision, site load screen, and required connection
 capacity are documented in [`TOP_BRACING.md`](TOP_BRACING.md).
@@ -38,9 +39,9 @@ by a qualified installer.
   them in the completed-model view; they do not appear in numbered steps.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
-  - `build_step = 1..24`: show earlier objects normally, highlight objects from
+  - `build_step = 1..25`: show earlier objects normally, highlight objects from
     the selected step, and hide objects from later steps.
-  - `build_step = 25`: show the completed model in its normal colors.
+  - `build_step = 26`: show the completed model in its normal colors.
 - An invalid positive step number should fail clearly during generation rather
   than silently display an incomplete or misleading model.
 
@@ -239,7 +240,7 @@ absolute modeled coordinates while their eventual mounting arrangement is
 deferred.
 
 Check both rails for level, square, and correct orientation before adding the
-vertical member in Step 9.
+vertical member in Step 8.
 
 New model objects:
 
@@ -248,30 +249,16 @@ rail_fbu
 rail_fbl
 ```
 
-## 6. Add the front support rails (`front-support-rails`)
+## 6. Add the side receiver rails (`upper-side-rails`)
 
-Install `rail_ltam` and `rail_rtam` vertically between `rail_lbu`/`rail_rbu` and
-the undersides of the top side 4x4s. Their modeled Y range is 4 1/4 to
-5 3/4 inches. Keep them plumb, parallel, and directly opposite one another.
-Leave their inner faces accessible for possible future tambour fittings.
+Install the 15 7/8-inch `rail_lt` and `rail_rt` directly between the front and
+back posts on their respective sides. Their lower and upper faces remain at
+`z = 43 1/2` and `45` inches. Keep both wide faces horizontal.
 
-New model objects:
-
-```text
-rail_ltam
-rail_rtam
-```
-
-## 7. Add the side receiver rails (`upper-side-rails`)
-
-Install `rail_lt` and `rail_rt` from the corresponding front support rail to
-the back post; their modeled lower and upper faces are at `z = 43 1/2` and
-`45` inches. Keep both wide faces horizontal.
-
-Check the receiver rails for level and confirm that the two upper rails remain
-opposite one another. Their front ends depend on the plumb support rails
-installed in Step 6, and their aligned inside faces receive `rail_ft` in
-Step 8.
+Check both rails for level and aligned inside faces before installing `rail_ft`.
+Their front post connections carry the header and charger loads; select the
+connections for those loads and repeated cord-handling forces. Preserve the
+full side-rail sections for the future tambour installation.
 
 New model objects:
 
@@ -280,7 +267,7 @@ rail_lt
 rail_rt
 ```
 
-## 8. Add the upper front cross rail (`upper-front-rail`)
+## 7. Add the upper front cross rail (`upper-front-rail`)
 
 Install the 20 1/2-inch 2x4 `rail_ft` between `rail_lt` and `rail_rt`, with its
 lower and upper faces at `z = 43 1/2` and `45` inches. Its modeled Y range
@@ -297,7 +284,7 @@ New model objects:
 rail_ft
 ```
 
-## 9. Add the front center rail (`front-center-rail`)
+## 8. Add the front center rail (`front-center-rail`)
 
 Install `front_center_rail` between `rail_fbu` and `rail_ft`.
 
@@ -310,19 +297,19 @@ New model objects:
 front_center_rail
 ```
 
-## 10. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
+## 9. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
 
 Mount the EV charger body and its inseparable flexible cord and plug on
 `front_center_rail`, with the charger body shifted 2 inches downward from its
 former modeled position while the cord holster remains fixed. Confirm and
 record the physical location of its conduit
 input; this installed position controls the field-fit conduit connection in
-Step 12. Route the cord between the charger body, storage position, and
+Step 10. Route the cord between the charger body, storage position, and
 ground-level reach shown by the model.
 
 Check the flexible cord for strain relief, minimum bend radius, storage
 clearance, and absence of abrasion or pinch points. Repeat these checks after
-making the power connection in Step 12.
+making the power connection in Step 10.
 
 New model objects:
 
@@ -332,48 +319,9 @@ front_ev_charger_plug
 front_ev_charger_cable
 ```
 
-## 11. Preassemble and mount the power junction (`power-junction-assembly`)
+## 10. Connect the power junction to the EV charger (`ev-charger-power`)
 
-Before mounting the Carlon E987N power junction box, fit its rear-facing
-3/4-inch male input fitting for the shallow pull box and
-the two right-side 1/2-inch light and receptacle outlets.
-Cut the entry holes to suit the actual male threads. Insert each fitting from
-outside with a sealing washer against the exterior wall and tighten a locknut
-inside. The light outlet is forward of the receptacle outlet. Then mount the connected
-box on `front_center_rail`, spanning x = 13 to 17 inches in the default model,
-and y = 3.1875 to 7.1875 inches. Its bottom face remains at the modeled
-elevation of approximately z = 6.51 inches, supported along its lower edge by
-`rail_fbl`. Keep every fitting axis aligned with its conduit path.
-
-Check that the fittings and internal locknuts are clear of `front_center_rail`.
-Keep the rear fitting aligned with the raised 3/4-inch feed from the shallow pull box.
-
-The #6 charger group continues vertically through the 4×4×2-inch pull box and bypasses
-the junction box. The #12 supply group branches through the 4×4×2-inch pull box's rear
-port into the box, where
-its hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs
-and the #12 equipment grounds are spliced. The modeled junction-box calculation
-is 18.00 in³ against an assumed 49.00 in³ marked capacity. Verify the marking
-on the installed box and the locally required calculation before construction.
-
-New model objects:
-
-```text
-power_junction_box
-power_junction_input_adapter
-power_junction_input_adapter_sealing_washer
-power_junction_input_adapter_locknut
-power_junction_light_adapter
-power_junction_light_adapter_sealing_washer
-power_junction_light_adapter_locknut
-power_junction_outlet_adapter
-power_junction_outlet_adapter_sealing_washer
-power_junction_outlet_adapter_locknut
-```
-
-## 12. Connect the power junction to the EV charger (`ev-charger-power`)
-
-Using the physical charger-input position recorded in Step 10, install the
+Using the physical charger-input position recorded in Step 9, install the
 Carlon E989NNJ nominal 4×4×2-inch junction box in place of the IPEX STB40S, with its removable cover
 facing positive Y. Cut holes for a 1-inch top male fitting, a 3/4-inch back
 male fitting toward the power junction, and the retained 1 1/4-inch bottom riser
@@ -388,9 +336,10 @@ conduit socket stays below its bottom wall. The molded taper is approximated
 with straight walls at the catalog minimum 3 5/8-inch opening.
 
 The box center is z = 8.83 inches, with bottom and top at 6.83 and 10.83 inches.
-Run the 3/4-inch branch from the back fitting to the 3/4-inch male fitting on
-the rear of the 4×4×4-inch power junction box. Run straight 1-inch conduit from
-the top fitting to the charger; the old top reducer and box-adapter/coupling
+Run the 3/4-inch branch from the back fitting to the planned rear-input position
+of the 4×4×4-inch power junction box, leaving its end accessible for the final
+connection after that box is mounted in Step 11. Run straight 1-inch conduit
+from the top fitting to the charger; the old top reducer and box-adapter/coupling
 pairs are removed. Fitting and clamp geometry is a planning envelope; lay out
 hole sizes and seating depths from the selected hardware.
 
@@ -419,56 +368,58 @@ power_ev_back_adapter_locknut
 power_pull_box_junction_feed
 ```
 
-## 13. Add the street-light backing (`street-light-backing`)
+## 11. Preassemble and mount the power junction (`power-junction-assembly`)
 
-Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
-modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
-upper backer at 40 inches. Their rearward face position locates the outlet-box
-stack relative to the siding, and the bottom backer supports the horizontal
-street-light conduit run.
+Before mounting the Carlon E987N power junction box, fit its rear-facing
+3/4-inch male input fitting for the shallow pull box and the two right-side
+1/2-inch light and receptacle outlets. Cut the entry holes to suit the actual
+male threads. Insert each fitting from outside with a sealing washer against
+the exterior wall and tighten a locknut inside. The light outlet is forward of
+the receptacle outlet. Then mount the connected box on `front_center_rail`,
+spanning x = 13 to 17 inches in the default model, and y = 3.1875 to 7.1875
+inches. Its bottom face remains at the modeled elevation of approximately
+z = 6.51 inches, supported along its lower edge by `rail_fbl`. Keep every
+fitting axis aligned with its conduit path and connect the rear fitting to the
+3/4-inch branch left accessible in Step 10.
 
-Check that the backers are level, form a continuous field from z = 33 through
-43 1/2 inches, and share the modeled street-light centerline at
-x = 13 3/4 inches. The outlet box remains centered at z = 40 inches.
+Check that the fittings and internal locknuts are clear of `front_center_rail`.
+Keep the rear fitting aligned with the raised 3/4-inch feed from the shallow pull box.
 
-New model objects:
-
-```text
-front_street_light_backer_bottom
-front_street_light_backer_lower
-front_street_light_backer_upper
-```
-
-## 14. Rough in the street light (`street-light-rough-in`)
-
-Mount the Commercial Electric WRB550B base box on the street-light backers.
-Install the 1/2-inch feed from the forward fitting on the positive-X side of
-the power junction box. Run toward positive X and make the first modeled
-2 1/2-inch-radius sweep upward against the negative-X face of `post_fr`. Make the
-required Y transition gradually on this long rising leg. At z = 34 inches,
-make the second 3-inch-radius sweep toward negative X, support the horizontal
-run on the bottom backer, and make the third 3-inch-radius sweep toward
-positive Z into the bottom port of the WRB550B base box at x = 13.75,
-y = 1.5, and z = 37.3 inches. The junction-box fitting center is at
-y = 4.1875 inches.
-
-Check that the box is centered at x = 13 3/4 inches and z = 40 inches, the
-unused side and top ports are plugged, the horizontal run is securely strapped
-to its backing and clear of adjacent framing and equipment. Pull and terminate
-the light branch's #12 conductors only under the approved wiring design.
+The #6 charger group continues vertically through the 4×4×2-inch pull box and bypasses
+the junction box. The #12 supply group branches through the 4×4×2-inch pull box's rear
+port into the box, where its hot/hot/neutral conductors feed separate light and outlet
+hot/neutral pairs and the #12 equipment grounds are spliced. The modeled junction-box
+calculation is 18.00 in³ against an assumed 49.00 in³ marked capacity. Verify the
+marking on the installed box and the locally required calculation before construction.
 
 New model objects:
 
 ```text
-front_street_light_base_box
-power_street_light_feed
+power_junction_box
+power_junction_input_adapter
+power_junction_input_adapter_sealing_washer
+power_junction_input_adapter_locknut
+power_junction_light_adapter
+power_junction_light_adapter_sealing_washer
+power_junction_light_adapter_locknut
+power_junction_outlet_adapter
+power_junction_outlet_adapter_sealing_washer
+power_junction_outlet_adapter_locknut
 ```
 
-## 15. Install the right-side framing, backing, and outlet (`outlet-rough-in`)
+## 12. Install the right center rail (`right-center-rail`)
 
 Install `right_center_rail` vertically between `rail_rbu` and `rail_rt`, and
-check that it is plumb. It supports the outlet backers installed in this step,
+check that it is plumb. It supports the outlet backers installed next,
 the Wi-Fi access point, and the low-voltage paths installed later.
+
+New model objects:
+
+```text
+right_center_rail
+```
+
+## 13. Install the outlet box and backing (`outlet-rough-in`)
 
 Install the two 6 11/16-inch 2x4 backers between `right_center_rail` and
 `post_br`. Their modeled lower-face elevations are approximately 13 5/8 and
@@ -476,26 +427,37 @@ Install the two 6 11/16-inch 2x4 backers between `right_center_rail` and
 this plane sets the rear of the 2.30-inch-deep FSE outlet box and its final
 projection through the siding.
 
-Immediately after securing the backing, mount the Carlon E980DFN FSE box and
-install the 1/2-inch feed from the junction box, including both modeled
-4-inch-radius sweeps into the bottom hub.
-
+Immediately after securing the backing, mount the Carlon E980DFN FSE box.
 Check that the box/cover mating plane will finish at x = 28.75 inches, roughly
 1/4 inch beyond the siding, and that the hub center is at x = 27.016 inches.
+
+New model objects:
+
+```text
+back_right_outlet_backer_lower
+back_right_outlet_backer_upper
+back_right_outlet
+```
+
+## 14. Install the outlet conduit run (`outlet-conduit`)
+
+Install the 1/2-inch feed from the junction box to the outlet box. Offset down
+from the junction-box fitting to a centerline elevation of z = 7.17 inches.
+This puts the conduit underside at z = 6.75 inches, resting on the top face of
+`rail_rbl` during the longer horizontal run. Retain the two modeled
+4-inch-radius sweeps to turn along the rail and rise into the outlet's bottom
+hub.
+
 Confirm conduit clearances before covering the framing. Pull and terminate the
 outlet branch's #12 conductors only under the approved wiring design.
 
 New model objects:
 
 ```text
-right_center_rail
-back_right_outlet_backer_lower
-back_right_outlet_backer_upper
-back_right_outlet
 power_back_right_outlet_feed
 ```
 
-## 16. Add the low-voltage termination (`low-voltage-termination`)
+## 15. Add the low-voltage termination (`low-voltage-termination`)
 
 Mount the low-voltage junction box with its bottom adapter centered at the
 upper 45-degree elbow outlet (nominally x = 10.657, y = 6.25, z = 9.912
@@ -532,7 +494,7 @@ low_voltage_cable_gland_2
 low_voltage_cable_gland_3
 ```
 
-## 17. Mount and cable the Wi-Fi access point (`wifi-and-feed`)
+## 16. Mount and cable the Wi-Fi access point (`wifi-and-feed`)
 
 Mount the Wi-Fi access point near the top of `right_center_rail`. Route the
 highest-X low-voltage gland's cable through the modeled droop, then sweep it
@@ -556,26 +518,7 @@ front_wifi_access_point
 low_voltage_wifi_feed
 ```
 
-## 18. Route the street-light service cable (`light-service-cable`)
-
-Route the front low-voltage gland's cable downward before sweeping toward and
-up the positive-X face of `post_fl`. Continue beneath `brace_fl_fr` and
-approach the mirrored service loop above the street-light box stack from the
-negative-X direction. The loop returns in that direction before terminating
-at the existing conduit entry.
-The model renders this low-voltage cable dark brown.
-
-Check attachment clearances, the 1 1/4-inch service-loop radius, the overall
-0.625-inch minimum bend radius, clearance from the street-light backing, and
-separation required by the approved wiring design.
-
-New model objects:
-
-```text
-low_voltage_street_light_service
-```
-
-## 19. Route the charger low-voltage feed (`charger-low-voltage-feed`)
+## 17. Route the charger low-voltage feed (`charger-low-voltage-feed`)
 
 Route the center low-voltage gland's cable down from the gland and up the
 negative-X face of `front_center_rail`. Sweep it in positive X through the
@@ -595,7 +538,114 @@ New model objects:
 low_voltage_ev_charger_feed
 ```
 
-## 20. Install the composite siding (`composite-siding`)
+## 18. Install the wood power-cord bumper (`power-cord-guard`)
+
+Cut two 11 1/4-inch 2x4 uprights and one 7 1/2-by-11 1/4-inch panel from
+1/4-inch exterior plywood. Rip the upright depth to approximately 2 7/8 inches;
+the exact modeled depth places the panel's rear face 1/4 inch beyond the
+pull box's positive-Y cover face. Install the uprights on edge with their rear faces
+against the positive-Y faces of both `rail_fbl` and `rail_fbu`. In the default
+model, the left upright occupies x = 11.6 to 13.1 inches and the right
+upright x = 17.6 to 19.1 inches. Both start at z = 3/4 inch and end at
+z = 12 inches, about 1 inch above the 4×4×2-inch pull box. Their inner edges have a
+nominal 1/4-inch clearance from the 4×4×2-inch pull box.
+
+Fasten each upright into each rail with one 4-inch exterior structural wood
+screw, using pilot holes and the screw maker's installation guidance. Recess
+the heads below the upright front faces so the plywood seats flat. Check
+the screw locations against all installed electrical runs before drilling; the
+screws must stop inside the wood rails. No guard fastener enters a conduit,
+fitting, junction box, or the soil.
+
+Fasten the plywood to the positive-Y ends of the uprights with four removable
+1 1/2-inch #10 exterior truss-head screws per side, spaced along the height
+and clear of the rail fasteners. The panel's modeled rear face is at
+y = 13.5375 inches. Seal its faces and edges and smooth every cord-contact
+edge; keep screw heads low and smooth.
+
+Before fastening, trial-fit the wood and panel around the actual pull box,
+threaded fittings, branch, riser, and charger feed. Remove the panel and confirm
+the pull-box cover can
+be opened and removed between the uprights. Place and remove the actual
+charging cord repeatedly. Its loops should rest outside the bumper, and cord
+contact must not flex the plywood or uprights into any conduit or fitting. If
+the actual clearance or stiffness is inadequate, adjust the cut and fit before
+installation. The modeled flexible-cord path remains schematic and is not a
+placement template for the real cord.
+
+New model objects:
+
+```text
+power_guard_left_upright
+power_guard_right_upright
+power_guard_removable_panel
+```
+
+## 19. Add the street-light backing (`street-light-backing`)
+
+Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
+modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
+upper backer at 40 inches. Their rearward face position locates the outlet-box
+stack relative to the siding, and the bottom backer supports the horizontal
+street-light conduit run.
+
+Check that the backers are level, form a continuous field from z = 33 through
+43 1/2 inches, and share the modeled street-light centerline at
+x = 13 3/4 inches. The outlet box remains centered at z = 40 inches.
+
+New model objects:
+
+```text
+front_street_light_backer_bottom
+front_street_light_backer_lower
+front_street_light_backer_upper
+```
+
+## 20. Route the street-light service cable (`light-service-cable`)
+
+Route the front low-voltage gland's cable downward before sweeping toward and
+up the positive-X face of `post_fl`. Continue beneath `brace_fl_fr` and
+approach the mirrored service loop above the street-light box stack from the
+negative-X direction. The loop returns in that direction before terminating
+at the existing conduit entry.
+The model renders this low-voltage cable dark brown.
+
+Check attachment clearances, the 1 1/4-inch service-loop radius, the overall
+0.625-inch minimum bend radius, clearance from the street-light backing, and
+separation required by the approved wiring design.
+
+New model objects:
+
+```text
+low_voltage_street_light_service
+```
+
+## 21. Rough in the street light (`street-light-rough-in`)
+
+Mount the Commercial Electric WRB550B base box on the street-light backers.
+Install the 1/2-inch feed from the forward fitting on the positive-X side of
+the power junction box. Run toward positive X and make the first modeled
+2 1/2-inch-radius sweep upward against the negative-X face of `post_fr`. Make the
+required Y transition gradually on this long rising leg. At z = 34 inches,
+make the second 3-inch-radius sweep toward negative X, support the horizontal
+run on the bottom backer, and make the third 3-inch-radius sweep toward
+positive Z into the bottom port of the WRB550B base box at x = 13.75,
+y = 1.5, and z = 37.3 inches. The junction-box fitting center is at
+y = 4.1875 inches.
+
+Check that the box is centered at x = 13 3/4 inches and z = 40 inches, the
+unused side and top ports are plugged, the horizontal run is securely strapped
+to its backing and clear of adjacent framing and equipment. Pull and terminate
+the light branch's #12 conductors only under the approved wiring design.
+
+New model objects:
+
+```text
+front_street_light_base_box
+power_street_light_feed
+```
+
+## 22. Install the composite siding (`composite-siding`)
 
 Before placing the top boards, install 1/4-inch ripped pressure-treated shims
 on the exposed portions of all four perimeter members and across both
@@ -685,7 +735,7 @@ enclosure_siding_rear_left_9
 enclosure_siding_rear_right_9
 ```
 
-## 21. Install the siding trim (`siding-trim`)
+## 23. Install the siding trim (`siding-trim`)
 
 Install the paired black-aluminum angle legs at all four enclosure corners and
 both sides of the tambour opening, then install the paired header legs. The
@@ -715,7 +765,7 @@ enclosure_siding_angle_tambour_header_face
 enclosure_siding_angle_tambour_header_bottom
 ```
 
-## 22. Finish the street-light assembly (`street-light-finish`)
+## 24. Finish the street-light assembly (`street-light-finish`)
 
 Install the WRE450G extension ring through the siding opening, with its front
 face flush with the siding exterior plane, then attach the downward-facing
@@ -732,7 +782,7 @@ front_street_light_extension_ring
 front_street_light
 ```
 
-## 23. Finish the right-side outlet (`outlet-finish`)
+## 25. Finish the right-side outlet (`outlet-finish`)
 
 Install the Intermatic WP5100BL in-use cover on the FSE box after the siding is
 complete.
@@ -748,66 +798,23 @@ New model objects:
 back_right_outlet_cover
 ```
 
-## 24. Install the wood power-cord bumper (`power-cord-guard`)
-
-Cut two 11 1/4-inch 2x4 uprights and one 7 1/2-by-11 1/4-inch panel from
-1/4-inch exterior plywood. Rip the upright depth to approximately 2 7/8 inches;
-the exact modeled depth places the panel's rear face 1/4 inch beyond the
-pull box's positive-Y cover face. Install the uprights on edge with their rear faces
-against the positive-Y faces of both `rail_fbl` and `rail_fbu`. In the default
-model, the left upright occupies x = 11.6 to 13.1 inches and the right
-upright x = 17.6 to 19.1 inches. Both start at z = 3/4 inch and end at
-z = 12 inches, about 1 inch above the 4×4×2-inch pull box. Their inner edges have a
-nominal 1/4-inch clearance from the 4×4×2-inch pull box.
-
-Fasten each upright into each rail with one 4-inch exterior structural wood
-screw, using pilot holes and the screw maker's installation guidance. Recess
-the heads below the upright front faces so the plywood seats flat. Check
-the screw locations against all installed electrical runs before drilling; the
-screws must stop inside the wood rails. No guard fastener enters a conduit,
-fitting, junction box, or the soil.
-
-Fasten the plywood to the positive-Y ends of the uprights with four removable
-1 1/2-inch #10 exterior truss-head screws per side, spaced along the height
-and clear of the rail fasteners. The panel's modeled rear face is at
-y = 13.5375 inches. Seal its faces and edges and smooth every cord-contact
-edge; keep screw heads low and smooth.
-
-Before fastening, trial-fit the wood and panel around the actual pull box,
-threaded fittings, branch, riser, and charger feed. Remove the panel and confirm
-the pull-box cover can
-be opened and removed between the uprights. Place and remove the actual
-charging cord repeatedly. Its loops should rest outside the bumper, and cord
-contact must not flex the plywood or uprights into any conduit or fitting. If
-the actual clearance or stiffness is inadequate, adjust the cut and fit before
-installation. The modeled flexible-cord path remains schematic and is not a
-placement template for the real cord.
-
-New model objects:
-
-```text
-power_guard_left_upright
-power_guard_right_upright
-power_guard_removable_panel
-```
-
 ## Model coverage checklist
 
-The 24 steps above assign all active construction objects exactly once.
-Seven deferred tambour objects remain available in the model for future
+The 25 steps above assign all active construction objects exactly once.
+Thirteen deferred tambour objects remain available in the model for future
 reference and are hidden unless `show_deferred` is enabled in the completed
 view.
 
 | Category | Modeled count | Assigned steps |
 | --- | ---: | --- |
-| Lumber members | 27 | 2-9, 10, 15, 24 |
-| Components and fittings | 29 | 3, 11-17, 20, 22-24 |
+| Lumber members | 25 | 2-8, 12-13, 18-19 |
+| Components and fittings | 29 | 3, 9-11, 13, 15-16, 18, 21-22, 24-25 |
 | Footings | 4 | 2 |
-| Conduit runs | 6 | 1, 13-15 |
-| Cable paths | 4 | 11, 17-19 |
-| Composite siding render parts | 58 | 20 |
-| Siding trim render parts | 14 | 21 |
-| Deferred tambour reference objects | 7 | Completed view with `show_deferred` |
+| Conduit runs | 6 | 1, 10, 14, 21 |
+| Cable paths | 4 | 9, 16-17, 20 |
+| Composite siding render parts | 58 | 22 |
+| Siding trim render parts | 14 | 23 |
+| Deferred tambour reference objects | 13 | Completed view with `show_deferred` |
 
 The `ground` object is visualization context rather than an installed enclosure
 component, so it intentionally remains outside the numbered sequence.

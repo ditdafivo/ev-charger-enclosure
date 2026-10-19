@@ -66,7 +66,9 @@ fabrication copy directly, run:
 uv run python tools/generate_gusset_dxf.py
 ```
 
-Tambour installation is deferred indefinitely. Printable ASA tracks, removable
+Tambour installation, including the front guide uprights and upper blocks, is
+deferred indefinitely. The permanent side receiver rails attach directly to the
+front and back posts and support the charger header independently. Printable ASA tracks, removable
 keyed joint collars, clearance coupons,
 end stops, loading sections, and the pull handle are generated as STEP and STL
 files beneath `output/tambour/`. Generate the complete set, or one named part,

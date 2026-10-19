@@ -235,7 +235,7 @@ Install the 20 1/2-inch upper `rail_fbu` between `rail_lbu` and `rail_rbu`, and
 the matching lower `rail_fbl` between `rail_lbl` and `rail_rbl`. Their modeled
 Y center coordinates are the same, and their front faces are offset toward the
 enclosure interior. `rail_fbl` provides a lower support edge for the power
-junction box installed in Step 10. The conduit boxes and fittings retain their
+junction box installed in Step 11. The conduit boxes and fittings retain their
 absolute modeled coordinates while their eventual mounting arrangement is
 deferred.
 
@@ -304,12 +304,12 @@ Mount the EV charger body and its inseparable flexible cord and plug on
 former modeled position while the cord holster remains fixed. Confirm and
 record the physical location of its conduit
 input; this installed position controls the field-fit conduit connection in
-Step 11. Route the cord between the charger body, storage position, and
+Step 10. Route the cord between the charger body, storage position, and
 ground-level reach shown by the model.
 
 Check the flexible cord for strain relief, minimum bend radius, storage
 clearance, and absence of abrasion or pinch points. Repeat these checks after
-making the power connection in Step 11.
+making the power connection in Step 10.
 
 New model objects:
 
@@ -319,46 +319,7 @@ front_ev_charger_plug
 front_ev_charger_cable
 ```
 
-## 10. Preassemble and mount the power junction (`power-junction-assembly`)
-
-Before mounting the Carlon E987N power junction box, fit its rear-facing
-3/4-inch male input fitting for the shallow pull box and
-the two right-side 1/2-inch light and receptacle outlets.
-Cut the entry holes to suit the actual male threads. Insert each fitting from
-outside with a sealing washer against the exterior wall and tighten a locknut
-inside. The light outlet is forward of the receptacle outlet. Then mount the connected
-box on `front_center_rail`, spanning x = 13 to 17 inches in the default model,
-and y = 3.1875 to 7.1875 inches. Its bottom face remains at the modeled
-elevation of approximately z = 6.51 inches, supported along its lower edge by
-`rail_fbl`. Keep every fitting axis aligned with its conduit path.
-
-Check that the fittings and internal locknuts are clear of `front_center_rail`.
-Keep the rear fitting aligned with the raised 3/4-inch feed from the shallow pull box.
-
-The #6 charger group continues vertically through the 4×4×2-inch pull box and bypasses
-the junction box. The #12 supply group branches through the 4×4×2-inch pull box's rear
-port into the box, where
-its hot/hot/neutral conductors feed separate light and outlet hot/neutral pairs
-and the #12 equipment grounds are spliced. The modeled junction-box calculation
-is 18.00 in³ against an assumed 49.00 in³ marked capacity. Verify the marking
-on the installed box and the locally required calculation before construction.
-
-New model objects:
-
-```text
-power_junction_box
-power_junction_input_adapter
-power_junction_input_adapter_sealing_washer
-power_junction_input_adapter_locknut
-power_junction_light_adapter
-power_junction_light_adapter_sealing_washer
-power_junction_light_adapter_locknut
-power_junction_outlet_adapter
-power_junction_outlet_adapter_sealing_washer
-power_junction_outlet_adapter_locknut
-```
-
-## 11. Connect the power junction to the EV charger (`ev-charger-power`)
+## 10. Connect the power junction to the EV charger (`ev-charger-power`)
 
 Using the physical charger-input position recorded in Step 9, install the
 Carlon E989NNJ nominal 4×4×2-inch junction box in place of the IPEX STB40S, with its removable cover
@@ -375,9 +336,10 @@ conduit socket stays below its bottom wall. The molded taper is approximated
 with straight walls at the catalog minimum 3 5/8-inch opening.
 
 The box center is z = 8.83 inches, with bottom and top at 6.83 and 10.83 inches.
-Run the 3/4-inch branch from the back fitting to the 3/4-inch male fitting on
-the rear of the 4×4×4-inch power junction box. Run straight 1-inch conduit from
-the top fitting to the charger; the old top reducer and box-adapter/coupling
+Run the 3/4-inch branch from the back fitting to the planned rear-input position
+of the 4×4×4-inch power junction box, leaving its end accessible for the final
+connection after that box is mounted in Step 11. Run straight 1-inch conduit
+from the top fitting to the charger; the old top reducer and box-adapter/coupling
 pairs are removed. Fitting and clamp geometry is a planning envelope; lay out
 hole sizes and seating depths from the selected hardware.
 
@@ -404,6 +366,45 @@ power_ev_back_adapter
 power_ev_back_adapter_sealing_washer
 power_ev_back_adapter_locknut
 power_pull_box_junction_feed
+```
+
+## 11. Preassemble and mount the power junction (`power-junction-assembly`)
+
+Before mounting the Carlon E987N power junction box, fit its rear-facing
+3/4-inch male input fitting for the shallow pull box and the two right-side
+1/2-inch light and receptacle outlets. Cut the entry holes to suit the actual
+male threads. Insert each fitting from outside with a sealing washer against
+the exterior wall and tighten a locknut inside. The light outlet is forward of
+the receptacle outlet. Then mount the connected box on `front_center_rail`,
+spanning x = 13 to 17 inches in the default model, and y = 3.1875 to 7.1875
+inches. Its bottom face remains at the modeled elevation of approximately
+z = 6.51 inches, supported along its lower edge by `rail_fbl`. Keep every
+fitting axis aligned with its conduit path and connect the rear fitting to the
+3/4-inch branch left accessible in Step 10.
+
+Check that the fittings and internal locknuts are clear of `front_center_rail`.
+Keep the rear fitting aligned with the raised 3/4-inch feed from the shallow pull box.
+
+The #6 charger group continues vertically through the 4×4×2-inch pull box and bypasses
+the junction box. The #12 supply group branches through the 4×4×2-inch pull box's rear
+port into the box, where its hot/hot/neutral conductors feed separate light and outlet
+hot/neutral pairs and the #12 equipment grounds are spliced. The modeled junction-box
+calculation is 18.00 in³ against an assumed 49.00 in³ marked capacity. Verify the
+marking on the installed box and the locally required calculation before construction.
+
+New model objects:
+
+```text
+power_junction_box
+power_junction_input_adapter
+power_junction_input_adapter_sealing_washer
+power_junction_input_adapter_locknut
+power_junction_light_adapter
+power_junction_light_adapter_sealing_washer
+power_junction_light_adapter_locknut
+power_junction_outlet_adapter
+power_junction_outlet_adapter_sealing_washer
+power_junction_outlet_adapter_locknut
 ```
 
 ## 12. Install the right-side framing, backing, and outlet (`outlet-rough-in`)

@@ -757,7 +757,13 @@ def build_enclosure(
         POWER_JUNCTION_X + CARLON_E987N_JUNCTION_BOX.size[1]/2
     )
     POWER_JUNCTION_LIGHT_PORT_Y=(POWER_JUNCTION_PORT_Y-2)
-    POWER_JUNCTION_OUTLET_PORT_Z=POWER_JUNCTION_CENTER_Z
+    POWER_JUNCTION_LIGHT_PORT_Z=POWER_JUNCTION_CENTER_Z
+    # Align the outlet fitting with the conduit seated on the lower right rail.
+    POWER_OUTLET_HORIZONTAL_RUN_Z=(
+        members["rail_rbl"].max_on("z")
+        + CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2
+    )
+    POWER_JUNCTION_OUTLET_PORT_Z=POWER_OUTLET_HORIZONTAL_RUN_Z
 
     POWER_JUNCTION_BOX_FILL=BoxFillCalculation(
         marked_volume=49,
@@ -1241,7 +1247,7 @@ def build_enclosure(
                     "inward")
     add_box_fitting("power_junction_light_adapter", "1/2",
                     (POWER_JUNCTION_RIGHT_X, POWER_JUNCTION_LIGHT_PORT_Y,
-                     POWER_JUNCTION_OUTLET_PORT_Z), "left")
+                     POWER_JUNCTION_LIGHT_PORT_Z), "left")
     add_box_fitting("power_junction_outlet_adapter", "1/2",
                     (POWER_JUNCTION_RIGHT_X, POWER_JUNCTION_PORT_Y,
                      POWER_JUNCTION_OUTLET_PORT_Z), "left")
@@ -1328,7 +1334,7 @@ def build_enclosure(
         POWER_JUNCTION_RIGHT_X
         + MALE_TERMINAL_ADAPTERS["1/2"].size[0]-MALE_FITTING_WALL_OFFSET,
         POWER_JUNCTION_LIGHT_PORT_Y,
-        POWER_JUNCTION_OUTLET_PORT_Z,
+        POWER_JUNCTION_LIGHT_PORT_Z,
     )
     power_light_entry=FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
     POWER_LIGHT_POST_X=(
@@ -1354,7 +1360,7 @@ def build_enclosure(
                 "post_fr",
                 POWER_LIGHT_POST_X,
                 POWER_JUNCTION_LIGHT_PORT_Y,
-                POWER_JUNCTION_OUTLET_PORT_Z,
+                POWER_JUNCTION_LIGHT_PORT_Z,
             ),
             _member_relative_coord(
                 "post_fr",
@@ -1381,32 +1387,16 @@ def build_enclosure(
         POWER_JUNCTION_RIGHT_X
         + MALE_TERMINAL_ADAPTERS["1/2"].size[0]-MALE_FITTING_WALL_OFFSET
     )
-    # Seat the longer run on the lower right rail while retaining the
-    # junction fitting elevation and the outlet's bottom-hub anchor.
-    POWER_OUTLET_HORIZONTAL_RUN_Z=(
-        members["rail_rbl"].max_on("z")
-        + CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2
-    )
-    POWER_OUTLET_SWEEP_RADIUS=4
-    POWER_OUTLET_OFFSET_END_X=(
-        BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0]-POWER_OUTLET_SWEEP_RADIUS-0.25
-    )
-    POWER_OUTLET_OFFSET_LENGTH=POWER_OUTLET_OFFSET_END_X-POWER_OUTLET_ADAPTER_END_X
-    outlet_offset_points=cubic_bezier_conduit_points(
-        (POWER_OUTLET_ADAPTER_END_X, POWER_JUNCTION_PORT_Y,
-         POWER_JUNCTION_OUTLET_PORT_Z),
-        (POWER_OUTLET_ADAPTER_END_X+POWER_OUTLET_OFFSET_LENGTH/3,
-         POWER_JUNCTION_PORT_Y, POWER_JUNCTION_OUTLET_PORT_Z),
-        (POWER_OUTLET_OFFSET_END_X-POWER_OUTLET_OFFSET_LENGTH/3,
-         POWER_JUNCTION_PORT_Y, POWER_OUTLET_HORIZONTAL_RUN_Z),
-        (POWER_OUTLET_OFFSET_END_X, POWER_JUNCTION_PORT_Y,
-         POWER_OUTLET_HORIZONTAL_RUN_Z),
-    )
     conduits.add(
         "power_back_right_outlet_feed",
         trade_size="1/2",
         points=(
-            *outlet_offset_points,
+            _member_relative_coord(
+                "front_center_rail",
+                POWER_OUTLET_ADAPTER_END_X,
+                POWER_JUNCTION_PORT_Y,
+                POWER_JUNCTION_OUTLET_PORT_Z,
+            ),
             _member_relative_coord(
                 "post_br",
                 BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0],
@@ -1422,10 +1412,8 @@ def build_enclosure(
             BACK_RIGHT_OUTLET_CONDUIT_ENTRY,
         ),
         bends=(
-            ConduitBend(point_index=len(outlet_offset_points),
-                        radius=POWER_OUTLET_SWEEP_RADIUS),
-            ConduitBend(point_index=len(outlet_offset_points)+1,
-                        radius=POWER_OUTLET_SWEEP_RADIUS),
+            ConduitBend(point_index=1, radius=4),
+            ConduitBend(point_index=2, radius=4),
         ),
     )
 

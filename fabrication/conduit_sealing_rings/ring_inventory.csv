@@ -1,0 +1,8 @@
+location,adapter,trade_size,outer_diameter_mm,bore_mm,thickness_mm,plate_x_mm,plate_y_mm
+power_junction_light_adapter_sealing_washer,E943D,1/2,28.956,22.0,2.032,30,35
+power_junction_outlet_adapter_sealing_washer,E943D,1/2,28.956,22.0,2.032,75,35
+power_ev_back_adapter_sealing_washer,E943E,3/4,34.29,27.4,2.032,125,35
+power_junction_input_adapter_sealing_washer,E943E,3/4,34.29,27.4,2.032,180,35
+low_voltage_input_adapter_sealing_washer,E943E,3/4,34.29,27.4,2.032,30,95
+power_ev_top_adapter_sealing_washer,E943F,1,41.021,34.3,2.032,85,95
+power_ev_bottom_adapter_sealing_washer,E943G,1-1/4,49.784,43.1,2.032,145,95

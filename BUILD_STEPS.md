@@ -235,7 +235,7 @@ Install the 20 1/2-inch upper `rail_fbu` between `rail_lbu` and `rail_rbu`, and
 the matching lower `rail_fbl` between `rail_lbl` and `rail_rbl`. Their modeled
 Y center coordinates are the same, and their front faces are offset toward the
 enclosure interior. `rail_fbl` provides a lower support edge for the power
-junction box installed in Step 11. The conduit boxes and fittings retain their
+junction box installed in Step 12. The conduit boxes and fittings retain their
 absolute modeled coordinates while their eventual mounting arrangement is
 deferred.
 
@@ -297,19 +297,31 @@ New model objects:
 front_center_rail
 ```
 
-## 9. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
+## 9. Install the right center rail (`right-center-rail`)
+
+Install `right_center_rail` vertically between `rail_rbu` and `rail_rt`, and
+check that it is plumb. It supports the outlet backers installed next,
+the Wi-Fi access point, and the low-voltage paths installed later.
+
+New model objects:
+
+```text
+right_center_rail
+```
+
+## 10. Mount the EV charger with its cord and plug (`ev-charger-mounting`)
 
 Mount the EV charger body and its inseparable flexible cord and plug on
 `front_center_rail`, with the charger body shifted 2 inches downward from its
 former modeled position while the cord holster remains fixed. Confirm and
 record the physical location of its conduit
 input; this installed position controls the field-fit conduit connection in
-Step 10. Route the cord between the charger body, storage position, and
+Step 11. Route the cord between the charger body, storage position, and
 ground-level reach shown by the model.
 
 Check the flexible cord for strain relief, minimum bend radius, storage
 clearance, and absence of abrasion or pinch points. Repeat these checks after
-making the power connection in Step 10.
+making the power connection in Step 11.
 
 New model objects:
 
@@ -319,9 +331,9 @@ front_ev_charger_plug
 front_ev_charger_cable
 ```
 
-## 10. Connect the power junction to the EV charger (`ev-charger-power`)
+## 11. Connect the power junction to the EV charger (`ev-charger-power`)
 
-Using the physical charger-input position recorded in Step 9, install the
+Using the physical charger-input position recorded in Step 10, install the
 Carlon E989NNJ nominal 4×4×2-inch junction box in place of the IPEX STB40S, with its removable cover
 facing positive Y. Cut holes for a 1-inch top male fitting, a 3/4-inch back
 male fitting toward the power junction, and the retained 1 1/4-inch bottom riser
@@ -338,7 +350,7 @@ with straight walls at the catalog minimum 3 5/8-inch opening.
 The box center is z = 8.83 inches, with bottom and top at 6.83 and 10.83 inches.
 Run the 3/4-inch branch from the back fitting to the planned rear-input position
 of the 4×4×4-inch power junction box, leaving its end accessible for the final
-connection after that box is mounted in Step 11. Run straight 1-inch conduit
+connection after that box is mounted in Step 12. Run straight 1-inch conduit
 from the top fitting to the charger; the old top reducer and box-adapter/coupling
 pairs are removed. Fitting and clamp geometry is a planning envelope; lay out
 hole sizes and seating depths from the selected hardware.
@@ -368,7 +380,7 @@ power_ev_back_adapter_locknut
 power_pull_box_junction_feed
 ```
 
-## 11. Preassemble and mount the power junction (`power-junction-assembly`)
+## 12. Preassemble and mount the power junction (`power-junction-assembly`)
 
 Before mounting the Carlon E987N power junction box, fit its rear-facing
 3/4-inch male input fitting for the shallow pull box and the two right-side
@@ -380,7 +392,7 @@ spanning x = 13 to 17 inches in the default model, and y = 3.1875 to 7.1875
 inches. Its bottom face remains at the modeled elevation of approximately
 z = 6.51 inches, supported along its lower edge by `rail_fbl`. Keep every
 fitting axis aligned with its conduit path and connect the rear fitting to the
-3/4-inch branch left accessible in Step 10.
+3/4-inch branch left accessible in Step 11.
 
 Check that the fittings and internal locknuts are clear of `front_center_rail`.
 Keep the rear fitting aligned with the raised 3/4-inch feed from the shallow pull box.
@@ -405,18 +417,6 @@ power_junction_light_adapter_locknut
 power_junction_outlet_adapter
 power_junction_outlet_adapter_sealing_washer
 power_junction_outlet_adapter_locknut
-```
-
-## 12. Install the right center rail (`right-center-rail`)
-
-Install `right_center_rail` vertically between `rail_rbu` and `rail_rt`, and
-check that it is plumb. It supports the outlet backers installed next,
-the Wi-Fi access point, and the low-voltage paths installed later.
-
-New model objects:
-
-```text
-right_center_rail
 ```
 
 ## 13. Install the outlet box and backing (`outlet-rough-in`)

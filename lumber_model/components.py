@@ -1053,11 +1053,19 @@ COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING = ComponentType(
     ),
 )
 
-GENERIC_DOWNWARD_STREET_LIGHT = ComponentType(
-    name="generic_downward_street_light",
-    size=(18.0, 4.0, 4.0),
+MOD_LIGHTING_BROOK_16 = ComponentType(
+    # MOD119, variant 45573961023747: black, 16-inch, 3000K.
+    # Published overall inches govern. Bar/backplate subdivisions are visual
+    # approximations; the manufacturer does not dimension the mounting bracket.
+    name="mod_lighting_brook_16_black_3000k",
+    size=(16.0, 2.4, 3.9),
     color=(0.08, 0.09, 0.10, 1.0),
     default_face="narrow_neg",
+    shape="primitive_union",
+    box_primitives=(
+        ((5.0, 0.0, 0.0), (6.0, 2.4, 1.5)),
+        ((0.0, 0.7, 1.5), (16.0, 1.0, 2.4)),
+    ),
 )
 
 WIFI_ACCESS_POINT = ComponentType(

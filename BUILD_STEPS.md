@@ -584,15 +584,16 @@ power_guard_removable_panel
 
 ## 19. Add the street-light backing (`street-light-backing`)
 
-Install the three 20 1/2-inch front backing 2x4s. The bottom backer starts at a
-modeled elevation of 33 inches, the middle backer at 36 1/2 inches, and the
-upper backer at 40 inches. Their rearward face position locates the outlet-box
-stack relative to the siding, and the bottom backer supports the horizontal
-street-light conduit run.
+Install the three 20 1/2-inch front backing 2x4s. Their bottom elevations are
+35.625, 39.125, and 42.625 inches, forming a continuous backing field through
+z = 46.125 inches. Keep their front face at y = 2.3 inches and their rear face
+at y = 3.8 inches. These backing positions and the tambour clearance remain
+unchanged by the recessed Brook mount. The bottom backer supports the
+horizontal street-light conduit run.
 
-Check that the backers are level, form a continuous field from z = 33 through
-43 1/2 inches, and share the modeled street-light centerline at
-x = 13 3/4 inches. The outlet box remains centered at z = 40 inches.
+Check that the backers are level and share the modeled street-light centerline
+at x = 13.75 inches. The Brook and recessed box remain centered at z = 42.625
+inches, 7 inches below the post tops in the default enclosure.
 
 New model objects:
 
@@ -606,7 +607,7 @@ front_street_light_backer_upper
 
 Route the front low-voltage gland's cable downward before sweeping toward and
 up the positive-X face of `post_fl`. Continue beneath `brace_fl_fr` and
-approach the mirrored service loop above the street-light box stack from the
+approach the mirrored service loop above the recessed Brook box from the
 negative-X direction. The loop returns in that direction before terminating
 at the existing conduit entry.
 The model renders this low-voltage cable dark brown.
@@ -623,21 +624,25 @@ low_voltage_street_light_service
 
 ## 21. Rough in the street light (`street-light-rough-in`)
 
-Mount the Commercial Electric WRB550B base box on the street-light backers.
-Install the 1/2-inch feed from the forward fitting on the positive-X side of
-the power junction box. Run toward positive X and make the first modeled
-2 1/2-inch-radius sweep upward against the negative-X face of `post_fr`. Make the
-required Y transition gradually on this long rising leg. At z = 34 inches,
-make the second 3-inch-radius sweep toward negative X, support the horizontal
-run on the bottom backer, and make the third 3-inch-radius sweep toward
-positive Z into the bottom port of the WRB550B base box at x = 13.75,
-y = 1.5, and z = 37.3 inches. The junction-box fitting center is at
-y = 4.1875 inches.
+The Brook mounting arrangement is conceptual. Replace the former round box
+stack with the provisional recessed junction-box envelope: 4 inches wide,
+2 inches high, and 3.3 inches deep. Its front face is flush with the siding
+exterior at y = -1 inch; its rear meets the unchanged backing at y = 2.3 inches.
+The box center is x = 13.75 and z = 42.625 inches in the default enclosure.
+Select an actual compatible box, accessible wiring arrangement, and bracket
+fasteners from measured Brook hardware before fabrication. The model does
+not specify a purchasable box or a drilling pattern.
 
-Check that the box is centered at x = 13 3/4 inches and z = 40 inches, the
-unused side and top ports are plugged, the horizontal run is securely strapped
-to its backing and clear of adjacent framing and equipment. Pull and terminate
-the light branch's #12 conductors only under the approved wiring design.
+Install the 1/2-inch feed from the forward fitting on the positive-X side of
+the power junction box. Retain the first 2 1/2-inch-radius rising sweep against
+`post_fr` and the 3-inch-radius sweeps into the horizontal run and up to the box.
+The horizontal run remains supported by the bottom backer at z = 36.625 inches;
+the bottom-center box entry is now x = 13.75, y = 0.65, z = 41.625 inches.
+The rising leg transitions to this new Y position. The separate service-cable
+loop follows the revised box depth while remaining above the backing.
+
+Confirm routing and clearances against the selected box and bracket. Pull and
+terminate the light branch's #12 conductors under the approved wiring design.
 
 New model objects:
 
@@ -768,18 +773,33 @@ enclosure_siding_angle_tambour_header_bottom
 
 ## 24. Finish the street-light assembly (`street-light-finish`)
 
-Install the WRE450G extension ring through the siding opening, with its front
-face flush with the siding exterior plane, then attach the downward-facing
-street-light fixture.
+Fit the MOD Lighting Brook MOD119, 16-inch black, warm-white/3000K variant
+45573961023747. The published overall dimensions are 16 inches long,
+2.4 inches high, and 3.9 inches projecting from the wall. Its modeled central
+backplate covers the 4 x 2-inch siding opening and meets the siding exterior.
+There is no round extension ring or exterior adapter plate.
 
-Check the gasketed/weatherproof assembly, unused-port plugs, fixture alignment,
-and siding clearance. Complete conductor termination and testing under the
-approved electrical design.
+The recognizable model uses approximate subdivisions: a 6 x 2.4 x 1.5-inch
+central backplate and a 16 x 1 x 2.4-inch horizontal bar attached to its front.
+These are visual approximations, not measured bracket or backplate dimensions.
+Verify the real backplate covers the opening and the selected recessed box
+provides the required mounting and connection access before cutting siding.
+
+Following the manufacturer instructions, remove the supplied mounting bracket,
+secure it at the mounting surface, connect L/N/G with power off, and fasten the
+fixture to the bracket using its retaining screws. Apply exterior-grade caulk
+to the backplate-to-wall gap, leaving the bottom open for moisture drainage.
+Complete conductor termination and testing under the approved electrical design.
+
+References:
+
+- [Brook product and selected variant](https://www.mod-lighting.com/products/brook?variant=45573961023747)
+- [Brook specification sheet](https://cdn.sanity.io/files/lrx9w99n/production/9d39bfc360a3fc010ca203d22dd87101716f5845.pdf)
+- [Brook installation instructions](https://www.mod-lighting.com/installation/brook)
 
 New model objects:
 
 ```text
-front_street_light_extension_ring
 front_street_light
 ```
 

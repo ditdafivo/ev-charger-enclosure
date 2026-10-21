@@ -919,41 +919,31 @@ class FrontStreetLightBuildTests(unittest.TestCase):
         self.assertAlmostEqual(lower.max_on("z"), upper.min_on("z"))
         self.assertAlmostEqual(upper.max_on("z"), 46.125)
 
-    def test_box_stack_and_light_have_finished_position(self) -> None:
+    def test_recessed_box_and_brook_have_finished_position(self) -> None:
         lower_backer = build.members["front_street_light_backer_lower"]
         box = build.components["front_street_light_base_box"].resolved(lower_backer)
-        ring = build.components["front_street_light_extension_ring"].resolved(
-            lower_backer
-        )
         light = build.components["front_street_light"].resolved(lower_backer)
 
-        self.assertVectorAlmostEqual(box.box_min, (11.65, 0.70, 39.925))
-        self.assertVectorAlmostEqual(box.box_size, (4.2, 1.6, 5.4))
-        self.assertVectorAlmostEqual(ring.box_min, (11.55, -1.0, 40.425))
-        self.assertVectorAlmostEqual(ring.box_size, (4.4, 1.7, 4.4))
-        self.assertVectorAlmostEqual(light.box_min, (4.75, -5.0, 40.625))
-        self.assertVectorAlmostEqual(light.box_size, (18.0, 4.0, 4.0))
-        self.assertAlmostEqual(
-            ring.box_min[1] + ring.box_size[1],
-            box.box_min[1],
-        )
-        self.assertAlmostEqual(light.box_min[1] + light.box_size[1], ring.box_min[1])
-        self.assertAlmostEqual(
-            light.box_min[1] + light.box_size[1],
-            build.siding.min_y - build.siding.board_thickness,
-        )
+        self.assertVectorAlmostEqual(box.box_min, (11.75, -1.0, 41.625))
+        self.assertVectorAlmostEqual(box.box_size, (4.0, 3.3, 2.0))
+        self.assertVectorAlmostEqual(light.box_min, (5.75, -4.9, 41.425))
+        self.assertVectorAlmostEqual(light.box_size, (16.0, 3.9, 2.4))
+        self.assertAlmostEqual(box.box_min[1]+box.box_size[1], lower_backer.min_on("y"))
+        self.assertAlmostEqual(light.box_min[1]+light.box_size[1], box.box_min[1])
+        self.assertAlmostEqual(box.box_min[1], build.siding.min_y-build.siding.board_thickness)
+        self.assertNotIn("front_street_light_extension_ring", build.components)
 
     def test_bottom_port_receives_conduit(self) -> None:
         self.assertVectorAlmostEqual(
             build.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(build.members),
-            (13.75, 1.5, 39.925),
+            (13.75, 0.65, 41.625),
         )
         self.assertIsInstance(
             build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
             ComponentAnchor,
         )
 
-    def test_siding_is_cut_out_around_extension_ring(self) -> None:
+    def test_siding_is_cut_out_around_recessed_box(self) -> None:
         opening = build.FRONT_STREET_LIGHT_SIDING_OPENING
 
         for part in build.siding.board_parts:
@@ -968,6 +958,49 @@ class FrontStreetLightBuildTests(unittest.TestCase):
                 opening.top_z,
             )
             self.assertFalse(overlaps_x and overlaps_z, part.name)
+
+    def test_brook_mount_and_clearances_follow_enclosure_dimensions(self) -> None:
+        for dimensions in ((24, 19.375, 49.625), (36, 24, 55)):
+            with self.subTest(dimensions=dimensions):
+                enclosure = build.build_enclosure(*dimensions)
+                backer = enclosure.members["front_street_light_backer_lower"]
+                light = enclosure.components["front_street_light"].resolved(backer)
+                box = enclosure.components["front_street_light_base_box"].resolved(backer)
+                opening = enclosure.FRONT_STREET_LIGHT_SIDING_OPENING
+                # Test the actual central primitive, rather than the full bar's
+                # envelope, so a visible hole cannot hide behind an empty region.
+                plate_min, plate_size = light.box_primitives[0]
+                plate_x = light.origin[0]+plate_min[0]
+                plate_z = light.origin[2]+plate_min[1]
+                self.assertLess(plate_x, opening.min_x)
+                self.assertGreater(plate_x+plate_size[0], opening.max_x)
+                self.assertLess(plate_z, opening.bottom_z)
+                self.assertGreater(plate_z+plate_size[1], opening.top_z)
+                self.assertAlmostEqual(light.origin[1], box.box_min[1])
+                self.assertAlmostEqual(backer.min_on("y"), 2.3)
+                self.assertAlmostEqual(enclosure.TAMBOUR_TRACK_FRONT_Y, 5.0)
+                self.assertAlmostEqual(light.origin[0]+8, (dimensions[0]+3.5)/2)
+                self.assertAlmostEqual(light.origin[2]+1.2, dimensions[2]-7)
+                conduit = enclosure.conduits["power_street_light_feed"].resolved(
+                    enclosure.components, enclosure.members
+                )
+                self.assertVectorAlmostEqual(conduit.points[-1], (
+                    box.box_min[0]+box.box_size[0]/2,
+                    box.box_min[1]+box.box_size[1]/2,
+                    box.box_min[2],
+                ))
+                service = enclosure.cables["low_voltage_street_light_service"]
+                self.assertAlmostEqual(service.points[-1][1], conduit.points[-1][1])
+                self.assertGreater(service.points[-1][2], box.box_min[2]+box.box_size[2])
+
+    def test_inventory_identifies_brook_and_provisional_box(self) -> None:
+        rows = {row["name"]: row for row in build.model.bom_rows()}
+        light = rows["mod_lighting_brook_16_black_3000k"]
+        box = rows["provisional_brook_recessed_junction_box"]
+        self.assertEqual(light["qty"], 1)
+        self.assertIn("45573961023747", light["type"])
+        self.assertEqual(box["qty"], 1)
+        self.assertIn("PROVISIONAL", box["type"])
 
 
 class PowerJunctionBuildTests(unittest.TestCase):

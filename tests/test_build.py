@@ -889,6 +889,44 @@ class BackRightOutletBuildTests(unittest.TestCase):
 
 
 class FrontStreetLightBuildTests(unittest.TestCase):
+    def test_address_plaque_position_tracks_light_and_siding(self) -> None:
+        for dimensions in ((24, 19.375, 49.625), (36, 24, 55)):
+            with self.subTest(dimensions=dimensions):
+                enclosure = build.build_enclosure(*dimensions)
+                instance = enclosure.components["front_address_plaque"]
+                plaque = instance.resolved(enclosure.members[instance.member])
+                light_instance = enclosure.components["front_street_light"]
+                light = light_instance.resolved(enclosure.members[light_instance.member])
+                self.assertVectorAlmostEqual(plaque.box_size, (16, 0.5, 3))
+                self.assertAlmostEqual(plaque.box_min[0], light.box_min[0])
+                self.assertAlmostEqual(
+                    plaque.box_min[1] + plaque.box_size[1],
+                    enclosure.siding.min_y - enclosure.siding.board_thickness,
+                )
+                self.assertAlmostEqual(
+                    light.box_min[2] - (plaque.box_min[2] + plaque.box_size[2]), 3,
+                )
+                # Outside view reads left-to-right and upright toward negative Y.
+                self.assertEqual(plaque.along_vec, (1, 0, 0))
+                self.assertEqual(plaque.across_vec, (0, 0, 1))
+                self.assertEqual(plaque.out_vec, (0, -1, 0))
+                self.assertEqual(plaque.text, "4754")
+                self.assertIn('"address_plaque"', plaque.scad_record())
+                self.assertIn('"4754", [16, 3, 0.5]', plaque.scad_record())
+
+        self.assertVectorAlmostEqual(plaque.box_min, (11.75, -1.5, 40.8))
+        instance = build.components["front_address_plaque"]
+        self.assertVectorAlmostEqual(
+            instance.resolved(build.members[instance.member]).box_min,
+            (5.75, -1.5, 35.425),
+        )
+
+    def test_address_plaque_inventory_has_one_finished_sign(self) -> None:
+        for rows in (build.model.bom_rows(), build.model.shopping_list_rows()):
+            plaque = next(row for row in rows if "address plaque 4754" in row["type"])
+            self.assertEqual(plaque["qty"], 1)
+            self.assertIn("16 x 3 x 0.5", plaque["type"])
+
     def assertVectorAlmostEqual(
         self,
         actual: tuple[float, float, float],

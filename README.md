@@ -97,6 +97,11 @@ committed WASM output is required.
 
 ## Brook street light
 
+A copper-finish **4754** address plaque mounts flush to the front siding,
+centered beneath the light with a 3-inch vertical gap. Its overall dimensions
+are 16 x 3 x 0.5 inches, with slim black recessed numerals and concealed
+mounting. Placement follows changes to enclosure width and height.
+
 The front fixture is the MOD Lighting Brook MOD119, [16-inch black, 3000K
 variant](https://www.mod-lighting.com/products/brook?variant=45573961023747).
 The model uses its published 16 x 2.4 x 3.9-inch overall dimensions and

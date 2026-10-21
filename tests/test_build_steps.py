@@ -131,7 +131,7 @@ class BuildStepModelTests(unittest.TestCase):
         }
 
         self.assertEqual(len(model.build_steps), 25)
-        self.assertEqual(len(assigned), 156)
+        self.assertEqual(len(assigned), 157)
         self.assertEqual(
             set(assigned) | set(model.deferred_object_names),
             set(model.renderable_object_names()),
@@ -159,6 +159,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertEqual(step_by_object["front_street_light_backer_bottom"], 19)
         self.assertEqual(step_by_object["front_street_light_base_box"], 21)
         self.assertEqual(step_by_object["front_street_light"], 24)
+        self.assertEqual(step_by_object["front_address_plaque"], 24)
         self.assertNotIn("front_street_light_extension_ring", step_by_object)
         self.assertEqual(step_by_object["brace_fl_fr"], 3)
         self.assertEqual(step_by_object["brace_bl_fr"], 3)

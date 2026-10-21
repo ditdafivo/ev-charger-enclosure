@@ -1081,6 +1081,29 @@ def build_enclosure(
         ),
     )
 
+    address_plaque = ComponentType(
+        name="copper_address_plaque_4754",
+        size=(16.0, 3.0, 0.5),
+        color=(0.72, 0.45, 0.28, 1.0),
+        default_face="narrow_neg",
+        shape="address_plaque",
+        text="4754",
+    )
+    components.add(
+        "front_address_plaque",
+        assembly="exterior_fixtures",
+        component_type=address_plaque,
+        member="front_street_light_backer_bottom",
+        at=0,
+        absolute_anchor=(
+            FRONT_STREET_LIGHT_CENTER_X,
+            FRONT_STREET_LIGHT_BOX_FACE_Y,
+            FRONT_STREET_LIGHT_CENTER_Z - MOD_LIGHTING_BROOK_16.size[1] / 2
+            - 3.0 - address_plaque.size[1] / 2,
+        ),
+        component_basis=((1, 0, 0), (0, 0, 1), (0, -1, 0)),
+    )
+
     components.add(
         "front_ev_charger_plug",
         assembly="electrical",
@@ -2262,6 +2285,14 @@ def build_enclosure(
         sidings=[siding],
         routed_seats=routed_seats,
         purchased_items=(
+            PurchasedItem(
+                "copper_address_plaque_4754",
+                "exterior_fixtures",
+                "Copper-finish address plaque 4754, 16 x 3 x 0.5 in; "
+                "black recessed numerals, concealed mounting",
+                1,
+                include_in_shopping_list=True,
+            ),
             PurchasedItem(
                 "mod_lighting_brook_16_black_3000k",
                 "electrical",

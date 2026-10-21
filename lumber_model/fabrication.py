@@ -71,6 +71,7 @@ class PurchasedItem:
     qty: int
     category: str = "hardware"
     cut_size: tuple[float, float, float] | None = None
+    include_in_shopping_list: bool = False
 
     def __post_init__(self) -> None:
         if self.qty <= 0:

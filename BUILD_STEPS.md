@@ -773,6 +773,14 @@ enclosure_siding_angle_tambour_header_bottom
 
 ## 24. Finish the street-light assembly (`street-light-finish`)
 
+Mount the copper-finish **4754** address plaque flush against the front siding
+using concealed mounting. The plaque is 16 inches wide, 3 inches high, and
+1/2 inch thick, with slim black recessed numerals. Center it horizontally under
+the Brook fixture, leaving 3 inches from the fixture's lowest edge to the
+plaque's top edge. Default plaque bounds are x = 5.75–21.75,
+y = -1.5–-1, and z = 35.425–38.425 inches. Mounting hardware is schematic;
+the plaque uses the existing backing field behind the siding.
+
 Fit the MOD Lighting Brook MOD119, 16-inch black, warm-white/3000K variant
 45573961023747. The published overall dimensions are 16 inches long,
 2.4 inches high, and 3.9 inches projecting from the wall. Its modeled central
@@ -801,6 +809,7 @@ New model objects:
 
 ```text
 front_street_light
+front_address_plaque
 ```
 
 ## 25. Finish the right-side outlet (`outlet-finish`)

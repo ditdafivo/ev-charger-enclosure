@@ -705,6 +705,16 @@ class Model:
                 }
             )
 
+        rows.extend(
+            {
+                "type": item.description,
+                "stock_length_in": "",
+                "stock_length_display": "",
+                "qty": item.qty,
+            }
+            for item in self.purchased_items
+            if item.include_in_shopping_list
+        )
         return rows
 
     def write_bom_csv(self, path: str | Path) -> None:

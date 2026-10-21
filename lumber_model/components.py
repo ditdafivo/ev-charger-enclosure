@@ -14,7 +14,7 @@ from lumber_model.lumber import AngledLumber, Lumber, LumberPiece
 
 
 FaceName = Literal["wide_pos", "wide_neg", "narrow_pos", "narrow_neg"]
-ComponentShape = Literal["box", "mesh", "primitive_union"]
+ComponentShape = Literal["box", "mesh", "primitive_union", "address_plaque"]
 ComponentOrientation = Literal["up", "right", "down", "left", "inward"]
 Color = tuple[float, float, float, float]
 BoxPrimitive = tuple[Vector3, Vector3]
@@ -298,6 +298,7 @@ class ComponentType:
     cylinder_primitives: tuple[CylinderPrimitive, ...] = ()
     include_primitive_envelope: bool = False
     round_cylinder_joints: bool = False
+    text: str = ""
 
     def __post_init__(self) -> None:
         _validate_vector3(f"{self.name}: size", self.size)
@@ -317,11 +318,14 @@ class ComponentType:
                 f"expected one of {FACE_NAMES}"
             )
 
-        if self.shape not in ("box", "mesh", "primitive_union"):
+        if self.shape not in ("box", "mesh", "primitive_union", "address_plaque"):
             raise ValueError(
                 f"{self.name}: invalid shape {self.shape!r}; expected 'box' or "
-                "'mesh' or 'primitive_union'"
+                "'mesh', 'primitive_union', or 'address_plaque'"
             )
+
+        if self.shape == "address_plaque" and not self.text.strip():
+            raise ValueError(f"{self.name}: address_plaque requires non-empty text")
 
         if self.shape == "mesh" and not self.mesh_path:
             raise ValueError(f"{self.name}: mesh_path is required for mesh components")
@@ -559,6 +563,8 @@ class ComponentInstance:
             box_primitives=self.component_type.box_primitives,
             cylinder_primitives=self.component_type.cylinder_primitives,
             round_cylinder_joints=self.component_type.round_cylinder_joints,
+            text=self.component_type.text,
+            local_size=self.component_type.size,
         )
 
 
@@ -583,6 +589,8 @@ class ResolvedComponent:
     box_primitives: tuple[BoxPrimitive, ...]
     cylinder_primitives: tuple[CylinderPrimitive, ...]
     round_cylinder_joints: bool
+    local_size: Vector3
+    text: str = ""
 
     def scad_record(self, scad_dir: str | Path | None = None) -> str:
         mesh_path = (
@@ -612,7 +620,9 @@ class ResolvedComponent:
             f"{_format_matrix(mesh_matrix)}, "
             f"{_format_box_primitives(self.box_primitives)}, "
             f"{_format_cylinder_primitives(self.cylinder_primitives)}, "
-            f"{str(self.round_cylinder_joints).lower()}"
+            f"{str(self.round_cylinder_joints).lower()}, "
+            f"{scad_string(self.text)}, "
+            f"{_format_vector(self.local_size)}"
             "]"
         )
 
@@ -1053,11 +1063,19 @@ COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING = ComponentType(
     ),
 )
 
-GENERIC_DOWNWARD_STREET_LIGHT = ComponentType(
-    name="generic_downward_street_light",
-    size=(18.0, 4.0, 4.0),
+MOD_LIGHTING_BROOK_16 = ComponentType(
+    # MOD119, variant 45573961023747: black, 16-inch, 3000K.
+    # Published overall inches govern. Bar/backplate subdivisions are visual
+    # approximations; the manufacturer does not dimension the mounting bracket.
+    name="mod_lighting_brook_16_black_3000k",
+    size=(16.0, 2.4, 3.9),
     color=(0.08, 0.09, 0.10, 1.0),
     default_face="narrow_neg",
+    shape="primitive_union",
+    box_primitives=(
+        ((5.0, 0.0, 0.0), (6.0, 2.4, 1.5)),
+        ((0.0, 0.7, 1.5), (16.0, 1.0, 2.4)),
+    ),
 )
 
 WIFI_ACCESS_POINT = ComponentType(

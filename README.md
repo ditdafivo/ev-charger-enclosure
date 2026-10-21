@@ -95,6 +95,28 @@ The workflow builds directly from the pinned public OpenSCAD Playground
 submodule. No NAS, container runtime, deployment key, personal access token, or
 committed WASM output is required.
 
+## Brook street light
+
+A copper-finish **4754** address plaque mounts flush to the front siding,
+centered beneath the light with a 3-inch vertical gap. Its overall dimensions
+are 16 x 3 x 0.5 inches, with slim black recessed numerals and concealed
+mounting. Placement follows changes to enclosure width and height.
+
+The front fixture is the MOD Lighting Brook MOD119, [16-inch black, 3000K
+variant](https://www.mod-lighting.com/products/brook?variant=45573961023747).
+The model uses its published 16 x 2.4 x 3.9-inch overall dimensions and
+approximate bar/backplate geometry. A provisional 4 x 2 x 3.3-inch recessed
+junction-box envelope replaces the round box and extension ring, keeping the
+existing backing and tambour positions. The supplied bracket attaches at the
+siding exterior; no exterior adapter plate is modeled.
+
+This mount is conceptual: the manufacturer does not publish bracket dimensions.
+Measure the actual bracket/backplate and select a compatible, accessible
+junction box before fabrication or cutting the siding opening. The placeholder
+box is labeled as provisional in the model and inventories. See
+[steps 19–24](BUILD_STEPS.md#19-add-the-street-light-backing-street-light-backing)
+for geometry assumptions and the manufacturer references.
+
 ## Licensing
 
 The original enclosure code, documentation, and owner-created 3D assets are

@@ -17,11 +17,9 @@ from lumber_model import (
     CARLON_E943E_MALE_TERMINAL_ADAPTER,
     CARLON_E987N_JUNCTION_BOX,
     CARLON_UA7AEB_BELL_END_45_ELBOW,
-    COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
-    COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING,
     EV_CHARGER_BODY,
     EV_CHARGER_PLUG,
-    GENERIC_DOWNWARD_STREET_LIGHT,
+    MOD_LIGHTING_BROOK_16,
     INTERMATIC_WP5100BL_IN_USE_COVER,
     ONE_INCH_CABLE_GLAND,
     WIFI_ACCESS_POINT,
@@ -316,14 +314,16 @@ def build_enclosure(
     # The front electrical assembly remains fixed.  Put the curtain as far
     # forward as its outward envelope and required clearance allow, rounded
     # rearward to construction-friendly 1/8-inch resolution.
-    FRONT_STREET_LIGHT_FACE_PROJECTION=0
-    FRONT_STREET_LIGHT_BOX_FACE_Y=(
-        -SIDING_BOARD_THICKNESS-FRONT_STREET_LIGHT_FACE_PROJECTION
-    )
-    FRONT_STREET_LIGHT_BOX_BACK_Y=(
-        FRONT_STREET_LIGHT_BOX_FACE_Y
-        +COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]
-        +COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING.size[2]
+    # Preserve the established backing and tambour clearance. The provisional
+    # recessed box fills the 3.3-inch setback from the siding to that backing.
+    FRONT_STREET_LIGHT_BOX_FACE_Y=-SIDING_BOARD_THICKNESS
+    FRONT_STREET_LIGHT_BOX_BACK_Y=FRONT_STREET_LIGHT_BOX_FACE_Y+3.3
+    FRONT_STREET_LIGHT_RECESSED_BOX=ComponentType(
+        name="provisional_brook_recessed_junction_box",
+        size=(4.0, 2.0,
+              FRONT_STREET_LIGHT_BOX_BACK_Y-FRONT_STREET_LIGHT_BOX_FACE_Y),
+        color=(0.40, 0.42, 0.44, 1.0),
+        default_face="narrow_neg",
     )
     FRONT_STREET_LIGHT_BACKER_REAR_Y=(
         FRONT_STREET_LIGHT_BOX_BACK_Y+HEIGHT_2x4
@@ -644,16 +644,16 @@ def build_enclosure(
     FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR=ComponentAnchor(
         "front_street_light_base_box",
         position=(
-            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2,
+            FRONT_STREET_LIGHT_RECESSED_BOX.size[0]/2,
             0,
         ),
     )
     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT=(
         FRONT_STREET_LIGHT_CENTER_X,
         FRONT_STREET_LIGHT_BOX_BACK_Y
-        - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]/2,
+        - FRONT_STREET_LIGHT_RECESSED_BOX.size[2]/2,
         FRONT_STREET_LIGHT_CENTER_Z
-        - COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1]/2,
+        - FRONT_STREET_LIGHT_RECESSED_BOX.size[1]/2,
     )
     FRONT_STREET_LIGHT_CONDUIT_ENTRY=_member_relative_coord(
         "post_fl",
@@ -664,19 +664,19 @@ def build_enclosure(
         "front_street_light",
         min_x=(
             FRONT_STREET_LIGHT_CENTER_X
-            - COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING.size[0] / 2
+            - FRONT_STREET_LIGHT_RECESSED_BOX.size[0] / 2
         ),
         max_x=(
             FRONT_STREET_LIGHT_CENTER_X
-            + COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING.size[0] / 2
+            + FRONT_STREET_LIGHT_RECESSED_BOX.size[0] / 2
         ),
         bottom_z=(
             FRONT_STREET_LIGHT_CENTER_Z
-            - COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING.size[1] / 2
+            - FRONT_STREET_LIGHT_RECESSED_BOX.size[1] / 2
         ),
         top_z=(
             FRONT_STREET_LIGHT_CENTER_Z
-            + COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING.size[1] / 2
+            + FRONT_STREET_LIGHT_RECESSED_BOX.size[1] / 2
         ),
     )
 
@@ -1054,7 +1054,7 @@ def build_enclosure(
     components.add(
         "front_street_light_base_box",
         assembly="electrical",
-        component_type=COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
+        component_type=FRONT_STREET_LIGHT_RECESSED_BOX,
         member="front_street_light_backer_lower",
         at=(
             FRONT_STREET_LIGHT_CENTER_X
@@ -1065,9 +1065,9 @@ def build_enclosure(
     )
 
     components.add(
-        "front_street_light_extension_ring",
+        "front_street_light",
         assembly="electrical",
-        component_type=COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING,
+        component_type=MOD_LIGHTING_BROOK_16,
         member="front_street_light_backer_lower",
         at=(
             FRONT_STREET_LIGHT_CENTER_X
@@ -1077,26 +1077,31 @@ def build_enclosure(
         offset=(
             0,
             FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
-            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2],
+            FRONT_STREET_LIGHT_RECESSED_BOX.size[2],
         ),
     )
 
+    address_plaque = ComponentType(
+        name="copper_address_plaque_4754",
+        size=(16.0, 3.0, 0.5),
+        color=(0.72, 0.45, 0.28, 1.0),
+        default_face="narrow_neg",
+        shape="address_plaque",
+        text="4754",
+    )
     components.add(
-        "front_street_light",
-        assembly="electrical",
-        component_type=GENERIC_DOWNWARD_STREET_LIGHT,
-        member="front_street_light_backer_lower",
-        at=(
-            FRONT_STREET_LIGHT_CENTER_X
-            - members["front_street_light_backer_lower"].min_on("x")
+        "front_address_plaque",
+        assembly="exterior_fixtures",
+        component_type=address_plaque,
+        member="front_street_light_backer_bottom",
+        at=0,
+        absolute_anchor=(
+            FRONT_STREET_LIGHT_CENTER_X,
+            FRONT_STREET_LIGHT_BOX_FACE_Y,
+            FRONT_STREET_LIGHT_CENTER_Z - MOD_LIGHTING_BROOK_16.size[1] / 2
+            - 3.0 - address_plaque.size[1] / 2,
         ),
-        face="narrow_neg",
-        offset=(
-            0,
-            FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
-            COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]
-            + COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING.size[2],
-        ),
+        component_basis=((1, 0, 0), (0, 0, 1), (0, -1, 0)),
     )
 
     components.add(
@@ -2280,6 +2285,28 @@ def build_enclosure(
         sidings=[siding],
         routed_seats=routed_seats,
         purchased_items=(
+            PurchasedItem(
+                "copper_address_plaque_4754",
+                "exterior_fixtures",
+                "Copper-finish address plaque 4754, 16 x 3 x 0.5 in; "
+                "black recessed numerals, concealed mounting",
+                1,
+                include_in_shopping_list=True,
+            ),
+            PurchasedItem(
+                "mod_lighting_brook_16_black_3000k",
+                "electrical",
+                "MOD Lighting Brook MOD119, 16 in, black, 3000K; "
+                "variant 45573961023747, supplied bracket included",
+                1,
+            ),
+            PurchasedItem(
+                "provisional_brook_recessed_junction_box",
+                "electrical",
+                "PROVISIONAL recessed box envelope 4 x 2 x 3.3 in; "
+                "select compatible box and bracket fasteners before fabrication",
+                1,
+            ),
             PurchasedItem(
                 "custom_6x6_g90_gusset_plate",
                 "top_bracing_hardware",

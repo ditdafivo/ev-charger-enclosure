@@ -352,6 +352,8 @@ function c_mesh_matrix(c) = c[15];
 function c_box_primitives(c) = c[16];
 function c_cylinder_primitives(c) = c[17];
 function c_round_cylinder_joints(c) = c[18];
+function c_text(c) = c[19];
+function c_local_size(c) = c[20];
 function c_max(c) = v_add(c_min(c), c_size(c));
 function c_center(c) = v_mid(c_min(c), c_max(c));
 
@@ -538,9 +540,33 @@ module render_component_cylinder_joints(c) {
     }
 }
 
+module address_plaque_letters(c, depth) {
+    size = c_local_size(c);
+    translate([size[0] / 2, size[1] / 2, size[2] - 0.04])
+        linear_extrude(height = depth)
+            resize([0, size[1] - 0.7, 0], auto = true)
+                text(c_text(c), font = "Liberation Sans:style=Regular",
+                     spacing = 1.35, halign = "center", valign = "center");
+}
+
+module render_address_plaque(c, highlighted) {
+    multmatrix(c_component_matrix(c)) {
+        color(highlighted ? build_step_highlight_color() : c_color(c))
+            difference() {
+                cube(c_local_size(c));
+                address_plaque_letters(c, 0.05);
+            }
+        // Black infill sits below the copper face, within the overall envelope.
+        color(highlighted ? build_step_highlight_color() : [0.025, 0.025, 0.025, 1])
+            address_plaque_letters(c, 0.02);
+    }
+}
+
 module render_component(c, highlighted = false) {
     color(highlighted ? build_step_highlight_color() : c_color(c)) {
-        if (c_shape(c) == "mesh") {
+        if (c_shape(c) == "address_plaque") {
+            render_address_plaque(c, highlighted);
+        } else if (c_shape(c) == "mesh") {
             multmatrix(c_component_matrix(c))
                 multmatrix(c_mesh_matrix(c))
                     import(file = c_mesh_path(c), convexity = 10);

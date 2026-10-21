@@ -23,7 +23,7 @@ from lumber_model import (
     COMMERCIAL_ELECTRIC_WRE450G_EXTENSION_RING,
     EV_CHARGER_BODY,
     EV_CHARGER_PLUG,
-    GENERIC_DOWNWARD_STREET_LIGHT,
+    MOD_LIGHTING_BROOK_16,
     INTERMATIC_WP5100BL_IN_USE_COVER,
     ONE_INCH_CABLE_GLAND,
     WEATHERPROOF_120V_OUTLET_BOX,
@@ -743,14 +743,20 @@ class ComponentValidationTests(unittest.TestCase):
         for cap in ring.cylinder_primitives[5:]:
             self.assertEqual(cap[2:], (0.1, 1.3))
 
-    def test_generic_downward_street_light_geometry(self) -> None:
-        self.assertEqual(
-            GENERIC_DOWNWARD_STREET_LIGHT.name,
-            "generic_downward_street_light",
-        )
-        self.assertEqual(GENERIC_DOWNWARD_STREET_LIGHT.size, (18.0, 4.0, 4.0))
-        self.assertEqual(GENERIC_DOWNWARD_STREET_LIGHT.shape, "box")
-        self.assertEqual(GENERIC_DOWNWARD_STREET_LIGHT.default_face, "narrow_neg")
+    def test_brook_geometry_has_published_envelope(self) -> None:
+        light = MOD_LIGHTING_BROOK_16
+        self.assertEqual(light.name, "mod_lighting_brook_16_black_3000k")
+        self.assertEqual(light.size, (16.0, 2.4, 3.9))
+        self.assertEqual(light.shape, "primitive_union")
+        self.assertEqual(light.default_face, "narrow_neg")
+        for axis in range(3):
+            self.assertAlmostEqual(
+                min(origin[axis] for origin, _ in light.box_primitives), 0,
+            )
+            self.assertAlmostEqual(
+                max(origin[axis]+size[axis]
+                    for origin, size in light.box_primitives), light.size[axis],
+            )
 
     def test_ev_charger_plug_geometry(self) -> None:
         expected_size = (10.16507874015748, 4.0, 8.6)

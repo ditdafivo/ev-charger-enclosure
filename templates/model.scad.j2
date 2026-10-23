@@ -564,7 +564,12 @@ module render_address_plaque(c, highlighted) {
 
 module render_component(c, highlighted = false) {
     color(highlighted ? build_step_highlight_color() : c_color(c)) {
-        if (c_shape(c) == "address_plaque") {
+        if (c_shape(c) == "raised_numeral") {
+            multmatrix(c_component_matrix(c))
+                linear_extrude(height = c_local_size(c)[2])
+                    resize([c_local_size(c)[0], c_local_size(c)[1]])
+                        text(c_text(c), font = "Liberation Sans:style=Regular");
+        } else if (c_shape(c) == "address_plaque") {
             render_address_plaque(c, highlighted);
         } else if (c_shape(c) == "mesh") {
             multmatrix(c_component_matrix(c))
@@ -884,8 +889,12 @@ module render_tambour_door_component(t, is_open, highlighted = false) {
 
 module render_siding_part(s, highlighted = false) {
     color(highlighted ? build_step_highlight_color() : s_color(s))
-        translate(s_start(s))
-            cube(s_size(s));
+        difference() {
+            translate(s_start(s)) cube(s_size(s));
+            for (b = s[5])
+                translate([b[0], s_start(s)[1] - 0.01, b[1]])
+                    rotate([-90, 0, 0]) cylinder(d = b[2], h = s_size(s)[1] + 0.02, $fn = 48);
+        }
 }
 
 module render_xygrid(bounds, origin, zloc) {

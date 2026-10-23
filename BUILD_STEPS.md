@@ -469,8 +469,8 @@ z = 13.382 inches. Its back is flush with the front face of `rail_fbu`; the
 bottom entry is offset toward the back at y = 6.25 inches to meet the elbow.
 The power junction spans x = 13 to 17 inches. Future backing lumber may be
 added but is not included. Field-locate the bottom opening from the as-built
-elbow position. Then add the three cable glands in
-the remaining bottom-panel area; reposition their nominal front-row layout as necessary to
+elbow position. Then add the two cable glands and a weatherproof closure for the unused
+street-light gland opening in the remaining bottom-panel area; reposition their nominal front-row layout as necessary to
 preserve fitting clearances.
 
 Keep each fitting center at least 3/4 inch from the panel sides. Confirm that
@@ -479,9 +479,7 @@ cables have room to leave the forward glands in negative Z before sweeping
 toward the center framing. Route the blue Cat 6 feeds beside the 3/4-inch
 riser, retaining the modeled clearance. Use
 the modeled 0.625-inch upward turn beneath the glands, remain on the negative-Y
-side of `rail_fbu` until above it. Use the gentle departure spline modeled for
-the dark-brown street-light cable; it bottoms at z = 8.63 inches without a flat
-horizontal run.
+side of `rail_fbu` until above it. The former dark-brown street-light service cable is omitted.
 
 New model objects:
 
@@ -490,7 +488,7 @@ low_voltage_termination_box
 low_voltage_input_adapter
 low_voltage_input_adapter_sealing_washer
 low_voltage_input_adapter_locknut
-low_voltage_cable_gland_1
+low_voltage_unused_port_closure
 low_voltage_cable_gland_2
 low_voltage_cable_gland_3
 ```
@@ -582,73 +580,85 @@ power_guard_right_upright
 power_guard_removable_panel
 ```
 
-## 19. Add the street-light backing (`street-light-backing`)
+## 19. Add the address-number support (`address-number-support`)
 
-Install the three 20 1/2-inch front backing 2x4s. Their bottom elevations are
-35.625, 39.125, and 42.625 inches, forming a continuous backing field through
-z = 46.125 inches. Keep their front face at y = 2.3 inches and their rear face
-at y = 3.8 inches. These backing positions and the tambour clearance remain
-unchanged by the recessed Brook mount. The bottom backer supports the
-horizontal street-light conduit run.
+Install one actual 1 x 5 1/2-inch support board between `post_fl` and `post_fr`,
+with its front face against the back of the siding at y = 0. Use 5/4x6 stock
+with a verified finished thickness of 1 inch, not nominal 1x lumber. Fasten its
+ends to the posts with exterior-rated support hardware. The default board is
+20 1/2 inches long and spans z = 39.175 to 44.675 inches. It receives the
+address-number standoff fasteners through the siding. Verify end attachments
+and actual numeral mounting locations before drilling.
 
-Check that the backers are level and share the modeled street-light centerline
-at x = 13.75 inches. The Brook and recessed box remain centered at z = 42.625
-inches, 7 inches below the post tops in the default enclosure.
-
-New model objects:
-
-```text
-front_street_light_backer_bottom
-front_street_light_backer_lower
-front_street_light_backer_upper
-```
-
-## 20. Route the street-light service cable (`light-service-cable`)
-
-Route the front low-voltage gland's cable downward before sweeping toward and
-up the positive-X face of `post_fl`. Continue beneath `brace_fl_fr` and
-approach the mirrored service loop above the recessed Brook box from the
-negative-X direction. The loop returns in that direction before terminating
-at the existing conduit entry.
-The model renders this low-voltage cable dark brown.
-
-Check attachment clearances, the 1 1/4-inch service-loop radius, the overall
-0.625-inch minimum bend radius, clearance from the street-light backing, and
-separation required by the approved wiring design.
+The former three street-light backing 2x4s are removed. The light mounts to
+`brace_fl_fr`; the established tambour track position remains y = 5 inches.
 
 New model objects:
 
 ```text
-low_voltage_street_light_service
+front_address_number_support
 ```
 
-## 21. Rough in the street light (`street-light-rough-in`)
+## 20. Mount the light transition box (`light-transition-box`)
 
-The Brook mounting arrangement is conceptual. Replace the former round box
-stack with the provisional recessed junction-box envelope: 4 inches wide,
-2 inches high, and 3.3 inches deep. Its front face is flush with the siding
-exterior at y = -1 inch; its rear meets the unchanged backing at y = 2.3 inches.
-The box center is x = 13.75 and z = 42.625 inches in the default enclosure.
-Select an actual compatible box, accessible wiring arrangement, and bracket
-fasteners from measured Brook hardware before fabrication. The model does
-not specify a purchasable box or a drilling pattern.
+Secure the Commercial Electric WRB550B round weatherproof box to the inward,
+negative-X face of `post_fr`. The cover faces negative X for access from inside
+the enclosure. Set the complete box envelope 4 inches below the underside of
+`brace_fl_fr`, and its minimum Y at 1/4 inch. This is 1 inch lower than the
+initial placement sketch to accommodate the connector and 2-inch UF-B bends.
+In the default enclosure the box envelope spans x = 22.4 to 24, y = 0.25 to
+4.45, and z = 38.725 to 44.125 inches. Keep its cover accessible and clear of
+the tambour. No extension ring is used.
 
-Install the 1/2-inch feed from the forward fitting on the positive-X side of
-the power junction box. Retain the first 2 1/2-inch-radius rising sweep against
-`post_fr` and the 3-inch-radius sweeps into the horizontal run and up to the box.
-The horizontal run remains supported by the bottom backer at z = 36.625 inches;
-the bottom-center box entry is now x = 13.75, y = 0.65, z = 41.625 inches.
-The rising leg transitions to this new Y position. The separate service-cable
-loop follows the revised box depth while remaining above the backing.
+Reroute the 1/2-inch lighting conduit from the existing power junction fitting
+up `post_fr` into the round box's bottom hub. The route uses a 2 1/2-inch
+rising sweep and a gentle offset that finishes vertically on the box entry line; omit the old
+horizontal run to the centered light. The bottom entry center is x = 23.2,
+y = 2.35, z = 38.725 inches. Support the conduit on the post.
 
-Confirm routing and clearances against the selected box and bracket. Pull and
-terminate the light branch's #12 conductors under the approved wiring design.
+Fit the Commercial Electric FSW50Z-12.2-1 watertight UF connector in the top
+hub. Install a WBC300G blank cover with its gasket and close unused hubs.
+Box, fitting, and cover envelopes are schematic; confirm mating hardware
+against the actual parts. Bond the metal box and cover as required.
 
 New model objects:
 
 ```text
 front_street_light_base_box
+front_street_light_box_cover
+front_street_light_uf_connector
 power_street_light_feed
+```
+
+## 21. Route the UF-B lighting cable (`light-uf-b-cable`)
+
+Use 14/2 copper UF-B with equipment ground and **15 A maximum branch
+protection**. Splice the conduit-fed #12 conductors to the UF-B inside the
+accessible round box. Keep the UF jacket intact through the connector and
+leave the required jacket and conductor lengths inside the box. Tighten the
+connector to its instructions; it seals and restrains the jacket, not stripped
+individual conductors. Confirm wet-location markings on the conduit-fed wire
+(for example THWN-2); THHN alone does not establish a wet-location rating.
+
+Run UF-B upward from the box connector, sweep toward negative X, and support
+it beneath `brace_fl_fr`. At the light centerline, turn toward negative Y to
+pass through the siding and enter the lower portion of the fixture base,
+beneath the bracket. The nominal bore is 1/2 inch diameter at x = 13.75 and
+z = 47.75 inches in the default enclosure, wholly below the brace. Protect
+the penetration from abrasion and seal around the jacket independently of
+the fixture perimeter. Secure the cable using supports suitable for UF-B,
+including the required support near the box; keep loads off the connections.
+
+The model uses a conservative 0.45-inch circular cable envelope and 2-inch
+bend radii. Actual UF-B is flat: confirm jacket dimensions, bend requirements,
+protective sleeve/bushing clearance, and connector fit before drilling.
+The gray route represents line-voltage UF-B. The former low-voltage
+street-light service run is removed and its gland opening is closed.
+
+New model objects:
+
+```text
+power_street_light_uf_b
 ```
 
 ## 22. Install the composite siding (`composite-siding`)
@@ -665,14 +675,14 @@ Install the composite boards after the framing, interior equipment, conduit,
 and cable routes are installed and inspected. Only siding trim and the fixtures
 or covers that mount outside the siding follow this step.
 
-The generated siding cut list accounts for boards interrupted by the
-street-light and outlet openings and the top rear board surrounding the tambour
-opening. Those boards are split into multiple rendered solids.
+The generated siding cut list accounts for the outlet opening and the top rear
+board surrounding the tambour opening. Those boards are split into rendered
+solids. The light uses a circular 1/2-inch bore, which does not split a board
+or change its stock cut length.
 
-Maintain the modeled bottom elevation of 2 inches and the front-light,
-right-outlet, and rear-tambour openings. Dry-fit opening courses before cutting
-and confirm the electrical boxes' finish projections. The current BOM totals
-870 3/4 inches of composite decking and allocates five 16-foot stock boards.
+Maintain the modeled bottom elevation of 2 inches, the small front-light bore,
+and the right-outlet and rear-tambour openings. Dry-fit opening courses before cutting
+and confirm the electrical boxes' finish projections. Use the generated cut and shopping lists for current decking quantities.
 
 New model objects:
 
@@ -692,10 +702,7 @@ enclosure_siding_right_1
 enclosure_siding_rear_top_left
 enclosure_siding_rear_top_header
 enclosure_siding_rear_top_right
-enclosure_siding_front_2_1
-enclosure_siding_front_2_2
-enclosure_siding_front_2_3
-enclosure_siding_front_2_4
+enclosure_siding_front_2
 enclosure_siding_left_2
 enclosure_siding_right_2
 enclosure_siding_rear_left_2
@@ -771,45 +778,60 @@ enclosure_siding_angle_tambour_header_face
 enclosure_siding_angle_tambour_header_bottom
 ```
 
-## 24. Finish the street-light assembly (`street-light-finish`)
+## 24. Finish the Brook and address numbers (`street-light-finish`)
 
-Mount the copper-finish **4754** address plaque flush against the front siding
-using concealed mounting. The plaque is 16 inches wide, 3 inches high, and
-1/2 inch thick, with slim black recessed numerals. Center it horizontally under
-the Brook fixture, leaving 3 inches from the fixture's lowest edge to the
-plaque's top edge. Default plaque bounds are x = 5.75–21.75,
-y = -1.5–-1, and z = 35.425–38.425 inches. Mounting hardware is schematic;
-the plaque uses the existing backing field behind the siding.
+Install the MOD Lighting Brook MOD119, 16-inch black, 3000K variant
+45573961023747. Published dimensions are 16 inches long, 2.4 inches high,
+and 3.9 inches projecting from the wall. Center the supplied bracket at
+x = 13.75 and z = 48.625 inches in the default enclosure: 1/2 inch above the
+underside of `brace_fl_fr`. Set the bracket against the siding exterior at
+y = -1 inch and fasten through the siding into the low part of the brace.
+The cable enters the lower base below the bracket, through the small bore
+specified in step 21. There is no large box opening in the siding.
 
-Fit the MOD Lighting Brook MOD119, 16-inch black, warm-white/3000K variant
-45573961023747. The published overall dimensions are 16 inches long,
-2.4 inches high, and 3.9 inches projecting from the wall. Its modeled central
-backplate covers the 4 x 2-inch siding opening and meets the siding exterior.
-There is no round extension ring or exterior adapter plate.
+Bracket dimensions and fixture subdivisions are visual approximations.
+Field-locate screws and the penetration from the actual bracket and fixture;
+confirm screw penetration, edge distances, cable clearance, and fixture removal
+access. Connect with power off, bond the fixture using its ground provision,
+and secure it using its retaining screws. Follow the guide's caulking detail:
+seal the top and sides against the siding and leave the bottom open to drain.
+The open-backed termination arrangement is the selected physical installation
+concept; compliance with the fixture's certification has not been established.
 
-The recognizable model uses approximate subdivisions: a 6 x 2.4 x 1.5-inch
-central backplate and a 16 x 1 x 2.4-inch horizontal bar attached to its front.
-These are visual approximations, not measured bracket or backplate dimensions.
-Verify the real backplate covers the opening and the selected recessed box
-provides the required mounting and connection access before cutting siding.
-
-Following the manufacturer instructions, remove the supplied mounting bracket,
-secure it at the mounting surface, connect L/N/G with power off, and fasten the
-fixture to the bracket using its retaining screws. Apply exterior-grade caulk
-to the backplate-to-wall gap, leaving the bottom open for moisture drainage.
-Complete conductor termination and testing under the approved electrical design.
+Replace the plaque with four separate silver numerals **4754**, each 5 inches
+high and 1 inch deep, modeled in Liberation Sans Regular. The centered
+arrangement is 12 inches wide: four 2 1/4-inch digit envelopes with 1-inch
+spacing. Keep a 3-inch vertical gap below the Brook. Default numeral bounds
+span x = 7.75 to 19.75, z = 39.425 to 44.425 inches. Each digit has two
+1-inch standoffs, leaving 1 inch from siding to its back; its front is at
+y = -3 inches. Fasten the standoffs through the siding into the actual
+1-inch-thick support installed in step 19. Standoff diameter and mounting
+positions are schematic and must follow the selected numeral hardware.
 
 References:
 
-- [Brook product and selected variant](https://www.mod-lighting.com/products/brook?variant=45573961023747)
 - [Brook specification sheet](https://cdn.sanity.io/files/lrx9w99n/production/9d39bfc360a3fc010ca203d22dd87101716f5845.pdf)
-- [Brook installation instructions](https://www.mod-lighting.com/installation/brook)
+- [Brook installation guide](https://www.mod-lighting.com/installation/brook)
+- [Selected UF connector](https://www.homedepot.com/p/316096859)
+- [Round blank cover](https://www.homedepot.com/p/300848519)
 
 New model objects:
 
 ```text
 front_street_light
-front_address_plaque
+front_street_light_bracket
+front_address_number_1
+front_address_number_1_standoff_1
+front_address_number_1_standoff_2
+front_address_number_2
+front_address_number_2_standoff_1
+front_address_number_2_standoff_2
+front_address_number_3
+front_address_number_3_standoff_1
+front_address_number_3_standoff_2
+front_address_number_4
+front_address_number_4_standoff_1
+front_address_number_4_standoff_2
 ```
 
 ## 25. Finish the right-side outlet (`outlet-finish`)

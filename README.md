@@ -97,25 +97,29 @@ committed WASM output is required.
 
 ## Brook street light
 
-A copper-finish **4754** address plaque mounts flush to the front siding,
-centered beneath the light with a 3-inch vertical gap. Its overall dimensions
-are 16 x 3 x 0.5 inches, with slim black recessed numerals and concealed
-mounting. Placement follows changes to enclosure width and height.
+The front fixture is the MOD Lighting Brook MOD119, 16-inch black, 3000K
+variant 45573961023747. Its published overall dimensions are 16 x 2.4 x
+3.9 inches. The supplied bracket sits on the front siding, fastened through
+it into the low part of `brace_fl_fr`; default bracket center is z = 48.625
+inches. Bracket geometry and fixture subdivisions are schematic.
 
-The front fixture is the MOD Lighting Brook MOD119, [16-inch black, 3000K
-variant](https://www.mod-lighting.com/products/brook?variant=45573961023747).
-The model uses its published 16 x 2.4 x 3.9-inch overall dimensions and
-approximate bar/backplate geometry. A provisional 4 x 2 x 3.3-inch recessed
-junction-box envelope replaces the round box and extension ring, keeping the
-existing backing and tambour positions. The supplied bracket attaches at the
-siding exterior; no exterior adapter plate is modeled.
+A Commercial Electric WRB550B round box on the inside face of `post_fr`
+transitions the conduit-fed conductors to 14/2 UF-B, with 15 A maximum branch
+protection. A FSW50Z-12.2-1 watertight connector feeds the cable beneath the
+brace and through a nominal 1/2-inch siding bore into the fixture's lower
+base. The box has a gasketed WBC300G blank cover; no extension ring or
+provisional recessed box is used. The former low-voltage light cable is removed.
 
-This mount is conceptual: the manufacturer does not publish bracket dimensions.
-Measure the actual bracket/backplate and select a compatible, accessible
-junction box before fabrication or cutting the siding opening. The placeholder
-box is labeled as provisional in the model and inventories. See
-[steps 19–24](BUILD_STEPS.md#19-add-the-street-light-backing-street-light-backing)
-for geometry assumptions and the manufacturer references.
+Four separate silver numerals **4754**, each 5 inches high and 1 inch deep,
+form a 12-inch-wide arrangement 3 inches below the light. One-inch standoffs
+attach through the siding into a spanning support board with an actual
+1-inch thickness. The numeral font is Liberation Sans Regular.
+
+This is a physical installation concept; the open-backed fixture connection
+has not been verified against its certification. Measure the actual bracket,
+cable, connector, and numeral hardware before drilling. See
+[steps 19–24](BUILD_STEPS.md#19-add-the-address-number-support-address-number-support)
+for routing, sealing, grounding, access, and fabrication assumptions.
 
 ## Licensing
 

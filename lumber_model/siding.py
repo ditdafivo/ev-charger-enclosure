@@ -90,6 +90,24 @@ def minimum_stock_board_count(
 
 
 @dataclass(frozen=True)
+class FrontSidingBore:
+    name: str
+    center_x: float
+    center_z: float
+    diameter: float
+
+    def __post_init__(self) -> None:
+        values = (self.center_x, self.center_z, self.diameter)
+        if not all(math.isfinite(v) for v in values) or self.diameter <= 0:
+            raise ValueError(
+                f"{self.name}: bore coordinates must be finite and diameter positive"
+            )
+
+    def scad_record(self) -> str:
+        return _format_vector((self.center_x, self.center_z, self.diameter))
+
+
+@dataclass(frozen=True)
 class SidingPart:
     name: str
     material: str
@@ -97,6 +115,7 @@ class SidingPart:
     size: Vector3
     color: SidingColor
     cut_length: float | None = None
+    front_bores: tuple[FrontSidingBore, ...] = ()
 
     def scad_record(self) -> str:
         return (
@@ -105,7 +124,8 @@ class SidingPart:
             f"{scad_string(self.material)}, "
             f"{_format_vector(self.start)}, "
             f"{_format_vector(self.size)}, "
-            f"{_format_vector(self.color)}"
+            f"{_format_vector(self.color)}, "
+            f"[{', '.join(b.scad_record() for b in self.front_bores)}]"
             "]"
         )
 
@@ -220,6 +240,7 @@ class CompositeSiding:
     assembly: str = "siding"
     front_openings: tuple[FrontSidingOpening, ...] = ()
     right_openings: tuple[RightSidingOpening, ...] = ()
+    front_bores: tuple[FrontSidingBore, ...] = ()
 
     def __post_init__(self) -> None:
         if self.max_x <= self.min_x or self.max_y <= self.min_y:
@@ -252,6 +273,17 @@ class CompositeSiding:
             raise ValueError(
                 f"{self.name}: rear opening must lie strictly inside the envelope"
             )
+        for bore in self.front_bores:
+            if not isinstance(bore, FrontSidingBore):
+                raise TypeError(f"{self.name}: front_bores must contain FrontSidingBore")
+            r = bore.diameter / 2
+            if not (
+                self.min_x <= bore.center_x-r < bore.center_x+r <= self.max_x
+                and self.bottom_z <= bore.center_z-r < bore.center_z+r <= self.finished_top_z
+            ):
+                raise ValueError(
+                    f"{self.name}: front bore {bore.name!r} must lie within the front wall"
+                )
         for opening in self.front_openings:
             if not isinstance(opening, FrontSidingOpening):
                 raise TypeError(
@@ -402,6 +434,13 @@ class CompositeSiding:
                         ),
                         color=self.decking_color,
                         cut_length=frame_width if piece_index == 1 else None,
+                        front_bores=tuple(
+                            b for b in self.front_bores
+                            if b.center_x+b.diameter/2 > min_x
+                            and b.center_x-b.diameter/2 < max_x
+                            and b.center_z+b.diameter/2 > bottom_z
+                            and b.center_z-b.diameter/2 < top_z
+                        ),
                     )
                 )
 

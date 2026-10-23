@@ -51,6 +51,7 @@ component_tambour_supports = true;
 component_top_bracing_hardware = true;
 conduit_electrical_conduit = true;
 conduit_low_voltage_conduit = true;
+cable_electrical = true;
 cable_ev_charger_cable = true;
 cable_low_voltage_cabling = true;
 tambour_tambour_door = true;
@@ -108,12 +109,8 @@ show_lumber_right_center_rail = true;
 show_lumber_back_right_outlet_backer_lower = true;
 // back right outlet backer upper
 show_lumber_back_right_outlet_backer_upper = true;
-// front street light backer bottom
-show_lumber_front_street_light_backer_bottom = true;
-// front street light backer lower
-show_lumber_front_street_light_backer_lower = true;
-// front street light backer upper
-show_lumber_front_street_light_backer_upper = true;
+// front address number support
+show_lumber_front_address_number_support = true;
 // power guard left upright
 show_lumber_power_guard_left_upright = true;
 // power guard right upright
@@ -147,18 +144,46 @@ show_component_roof_shim_brace_fr_br = true;
 show_component_low_voltage_termination_box = true;
 // low voltage input adapter
 show_component_low_voltage_input_adapter = true;
-// low voltage cable gland 1
-show_component_low_voltage_cable_gland_1 = true;
 // low voltage cable gland 2
 show_component_low_voltage_cable_gland_2 = true;
 // low voltage cable gland 3
 show_component_low_voltage_cable_gland_3 = true;
+// low voltage unused port closure
+show_component_low_voltage_unused_port_closure = true;
 // front street light base box
 show_component_front_street_light_base_box = true;
+// front street light box cover
+show_component_front_street_light_box_cover = true;
+// front street light uf connector
+show_component_front_street_light_uf_connector = true;
 // front street light
 show_component_front_street_light = true;
-// front address plaque
-show_component_front_address_plaque = true;
+// front street light bracket
+show_component_front_street_light_bracket = true;
+// front address number 1
+show_component_front_address_number_1 = true;
+// front address number 1 standoff 1
+show_component_front_address_number_1_standoff_1 = true;
+// front address number 1 standoff 2
+show_component_front_address_number_1_standoff_2 = true;
+// front address number 2
+show_component_front_address_number_2 = true;
+// front address number 2 standoff 1
+show_component_front_address_number_2_standoff_1 = true;
+// front address number 2 standoff 2
+show_component_front_address_number_2_standoff_2 = true;
+// front address number 3
+show_component_front_address_number_3 = true;
+// front address number 3 standoff 1
+show_component_front_address_number_3_standoff_1 = true;
+// front address number 3 standoff 2
+show_component_front_address_number_3_standoff_2 = true;
+// front address number 4
+show_component_front_address_number_4 = true;
+// front address number 4 standoff 1
+show_component_front_address_number_4_standoff_1 = true;
+// front address number 4 standoff 2
+show_component_front_address_number_4_standoff_2 = true;
 // front ev charger plug
 show_component_front_ev_charger_plug = true;
 // front ev charger body
@@ -225,10 +250,10 @@ show_component_power_guard_removable_panel = true;
 /* [Hidden] */
 
 lumber_object_toggles = [
-    ["post_fl", show_lumber_post_fl],    ["post_fr", show_lumber_post_fr],    ["post_bl", show_lumber_post_bl],    ["post_br", show_lumber_post_br],    ["brace_fl_fr", show_lumber_brace_fl_fr],    ["brace_fl_bl", show_lumber_brace_fl_bl],    ["brace_bl_br", show_lumber_brace_bl_br],    ["brace_fr_br", show_lumber_brace_fr_br],    ["brace_bl_fr", show_lumber_brace_bl_fr],    ["rail_rbl", show_lumber_rail_rbl],    ["rail_lbu", show_lumber_rail_lbu],    ["rail_rbu", show_lumber_rail_rbu],    ["rail_lbl", show_lumber_rail_lbl],    ["rail_fbu", show_lumber_rail_fbu],    ["rail_fbl", show_lumber_rail_fbl],    ["rail_lt", show_lumber_rail_lt],    ["rail_rt", show_lumber_rail_rt],    ["rail_ltam", show_lumber_rail_ltam],    ["rail_rtam", show_lumber_rail_rtam],    ["rail_ltam_upper", show_lumber_rail_ltam_upper],    ["rail_rtam_upper", show_lumber_rail_rtam_upper],    ["rail_ft", show_lumber_rail_ft],    ["front_center_rail", show_lumber_front_center_rail],    ["right_center_rail", show_lumber_right_center_rail],    ["back_right_outlet_backer_lower", show_lumber_back_right_outlet_backer_lower],    ["back_right_outlet_backer_upper", show_lumber_back_right_outlet_backer_upper],    ["front_street_light_backer_bottom", show_lumber_front_street_light_backer_bottom],    ["front_street_light_backer_lower", show_lumber_front_street_light_backer_lower],    ["front_street_light_backer_upper", show_lumber_front_street_light_backer_upper],    ["power_guard_left_upright", show_lumber_power_guard_left_upright],    ["power_guard_right_upright", show_lumber_power_guard_right_upright]];
+    ["post_fl", show_lumber_post_fl],    ["post_fr", show_lumber_post_fr],    ["post_bl", show_lumber_post_bl],    ["post_br", show_lumber_post_br],    ["brace_fl_fr", show_lumber_brace_fl_fr],    ["brace_fl_bl", show_lumber_brace_fl_bl],    ["brace_bl_br", show_lumber_brace_bl_br],    ["brace_fr_br", show_lumber_brace_fr_br],    ["brace_bl_fr", show_lumber_brace_bl_fr],    ["rail_rbl", show_lumber_rail_rbl],    ["rail_lbu", show_lumber_rail_lbu],    ["rail_rbu", show_lumber_rail_rbu],    ["rail_lbl", show_lumber_rail_lbl],    ["rail_fbu", show_lumber_rail_fbu],    ["rail_fbl", show_lumber_rail_fbl],    ["rail_lt", show_lumber_rail_lt],    ["rail_rt", show_lumber_rail_rt],    ["rail_ltam", show_lumber_rail_ltam],    ["rail_rtam", show_lumber_rail_rtam],    ["rail_ltam_upper", show_lumber_rail_ltam_upper],    ["rail_rtam_upper", show_lumber_rail_rtam_upper],    ["rail_ft", show_lumber_rail_ft],    ["front_center_rail", show_lumber_front_center_rail],    ["right_center_rail", show_lumber_right_center_rail],    ["back_right_outlet_backer_lower", show_lumber_back_right_outlet_backer_lower],    ["back_right_outlet_backer_upper", show_lumber_back_right_outlet_backer_upper],    ["front_address_number_support", show_lumber_front_address_number_support],    ["power_guard_left_upright", show_lumber_power_guard_left_upright],    ["power_guard_right_upright", show_lumber_power_guard_right_upright]];
 
 component_object_toggles = [
-    ["left_tambour_bend_backer", show_component_left_tambour_bend_backer],    ["right_tambour_bend_backer", show_component_right_tambour_bend_backer],    ["left_tambour_vertical_backing", show_component_left_tambour_vertical_backing],    ["right_tambour_vertical_backing", show_component_right_tambour_vertical_backing],    ["left_tambour_upper_backing", show_component_left_tambour_upper_backing],    ["right_tambour_upper_backing", show_component_right_tambour_upper_backing],    ["gusset_back_left", show_component_gusset_back_left],    ["gusset_front_right", show_component_gusset_front_right],    ["roof_shim_brace_fl_fr", show_component_roof_shim_brace_fl_fr],    ["roof_shim_brace_fl_bl", show_component_roof_shim_brace_fl_bl],    ["roof_shim_brace_bl_br", show_component_roof_shim_brace_bl_br],    ["roof_shim_brace_fr_br", show_component_roof_shim_brace_fr_br],    ["low_voltage_termination_box", show_component_low_voltage_termination_box],    ["low_voltage_input_adapter", show_component_low_voltage_input_adapter],    ["low_voltage_cable_gland_1", show_component_low_voltage_cable_gland_1],    ["low_voltage_cable_gland_2", show_component_low_voltage_cable_gland_2],    ["low_voltage_cable_gland_3", show_component_low_voltage_cable_gland_3],    ["front_street_light_base_box", show_component_front_street_light_base_box],    ["front_street_light", show_component_front_street_light],    ["front_address_plaque", show_component_front_address_plaque],    ["front_ev_charger_plug", show_component_front_ev_charger_plug],    ["front_ev_charger_body", show_component_front_ev_charger_body],    ["front_wifi_access_point", show_component_front_wifi_access_point],    ["back_right_outlet", show_component_back_right_outlet],    ["back_right_outlet_cover", show_component_back_right_outlet_cover],    ["power_junction_box", show_component_power_junction_box],    ["power_ev_pull_box", show_component_power_ev_pull_box],    ["power_ev_top_adapter", show_component_power_ev_top_adapter],    ["power_ev_bottom_adapter", show_component_power_ev_bottom_adapter],    ["power_ev_back_adapter", show_component_power_ev_back_adapter],    ["power_junction_input_adapter", show_component_power_junction_input_adapter],    ["power_junction_light_adapter", show_component_power_junction_light_adapter],    ["power_junction_outlet_adapter", show_component_power_junction_outlet_adapter],    ["power_ev_top_adapter_sealing_washer", show_component_power_ev_top_adapter_sealing_washer],    ["power_ev_top_adapter_locknut", show_component_power_ev_top_adapter_locknut],    ["power_ev_bottom_adapter_sealing_washer", show_component_power_ev_bottom_adapter_sealing_washer],    ["power_ev_bottom_adapter_locknut", show_component_power_ev_bottom_adapter_locknut],    ["power_ev_back_adapter_sealing_washer", show_component_power_ev_back_adapter_sealing_washer],    ["power_ev_back_adapter_locknut", show_component_power_ev_back_adapter_locknut],    ["power_junction_input_adapter_sealing_washer", show_component_power_junction_input_adapter_sealing_washer],    ["power_junction_input_adapter_locknut", show_component_power_junction_input_adapter_locknut],    ["power_junction_light_adapter_sealing_washer", show_component_power_junction_light_adapter_sealing_washer],    ["power_junction_light_adapter_locknut", show_component_power_junction_light_adapter_locknut],    ["power_junction_outlet_adapter_sealing_washer", show_component_power_junction_outlet_adapter_sealing_washer],    ["power_junction_outlet_adapter_locknut", show_component_power_junction_outlet_adapter_locknut],    ["low_voltage_input_adapter_sealing_washer", show_component_low_voltage_input_adapter_sealing_washer],    ["low_voltage_input_adapter_locknut", show_component_low_voltage_input_adapter_locknut],    ["low_voltage_ground_sweep_elbow_1", show_component_low_voltage_ground_sweep_elbow_1],    ["low_voltage_ground_sweep_elbow_2", show_component_low_voltage_ground_sweep_elbow_2],    ["tambour_ceiling_panel", show_component_tambour_ceiling_panel],    ["power_guard_removable_panel", show_component_power_guard_removable_panel]];
+    ["left_tambour_bend_backer", show_component_left_tambour_bend_backer],    ["right_tambour_bend_backer", show_component_right_tambour_bend_backer],    ["left_tambour_vertical_backing", show_component_left_tambour_vertical_backing],    ["right_tambour_vertical_backing", show_component_right_tambour_vertical_backing],    ["left_tambour_upper_backing", show_component_left_tambour_upper_backing],    ["right_tambour_upper_backing", show_component_right_tambour_upper_backing],    ["gusset_back_left", show_component_gusset_back_left],    ["gusset_front_right", show_component_gusset_front_right],    ["roof_shim_brace_fl_fr", show_component_roof_shim_brace_fl_fr],    ["roof_shim_brace_fl_bl", show_component_roof_shim_brace_fl_bl],    ["roof_shim_brace_bl_br", show_component_roof_shim_brace_bl_br],    ["roof_shim_brace_fr_br", show_component_roof_shim_brace_fr_br],    ["low_voltage_termination_box", show_component_low_voltage_termination_box],    ["low_voltage_input_adapter", show_component_low_voltage_input_adapter],    ["low_voltage_cable_gland_2", show_component_low_voltage_cable_gland_2],    ["low_voltage_cable_gland_3", show_component_low_voltage_cable_gland_3],    ["low_voltage_unused_port_closure", show_component_low_voltage_unused_port_closure],    ["front_street_light_base_box", show_component_front_street_light_base_box],    ["front_street_light_box_cover", show_component_front_street_light_box_cover],    ["front_street_light_uf_connector", show_component_front_street_light_uf_connector],    ["front_street_light", show_component_front_street_light],    ["front_street_light_bracket", show_component_front_street_light_bracket],    ["front_address_number_1", show_component_front_address_number_1],    ["front_address_number_1_standoff_1", show_component_front_address_number_1_standoff_1],    ["front_address_number_1_standoff_2", show_component_front_address_number_1_standoff_2],    ["front_address_number_2", show_component_front_address_number_2],    ["front_address_number_2_standoff_1", show_component_front_address_number_2_standoff_1],    ["front_address_number_2_standoff_2", show_component_front_address_number_2_standoff_2],    ["front_address_number_3", show_component_front_address_number_3],    ["front_address_number_3_standoff_1", show_component_front_address_number_3_standoff_1],    ["front_address_number_3_standoff_2", show_component_front_address_number_3_standoff_2],    ["front_address_number_4", show_component_front_address_number_4],    ["front_address_number_4_standoff_1", show_component_front_address_number_4_standoff_1],    ["front_address_number_4_standoff_2", show_component_front_address_number_4_standoff_2],    ["front_ev_charger_plug", show_component_front_ev_charger_plug],    ["front_ev_charger_body", show_component_front_ev_charger_body],    ["front_wifi_access_point", show_component_front_wifi_access_point],    ["back_right_outlet", show_component_back_right_outlet],    ["back_right_outlet_cover", show_component_back_right_outlet_cover],    ["power_junction_box", show_component_power_junction_box],    ["power_ev_pull_box", show_component_power_ev_pull_box],    ["power_ev_top_adapter", show_component_power_ev_top_adapter],    ["power_ev_bottom_adapter", show_component_power_ev_bottom_adapter],    ["power_ev_back_adapter", show_component_power_ev_back_adapter],    ["power_junction_input_adapter", show_component_power_junction_input_adapter],    ["power_junction_light_adapter", show_component_power_junction_light_adapter],    ["power_junction_outlet_adapter", show_component_power_junction_outlet_adapter],    ["power_ev_top_adapter_sealing_washer", show_component_power_ev_top_adapter_sealing_washer],    ["power_ev_top_adapter_locknut", show_component_power_ev_top_adapter_locknut],    ["power_ev_bottom_adapter_sealing_washer", show_component_power_ev_bottom_adapter_sealing_washer],    ["power_ev_bottom_adapter_locknut", show_component_power_ev_bottom_adapter_locknut],    ["power_ev_back_adapter_sealing_washer", show_component_power_ev_back_adapter_sealing_washer],    ["power_ev_back_adapter_locknut", show_component_power_ev_back_adapter_locknut],    ["power_junction_input_adapter_sealing_washer", show_component_power_junction_input_adapter_sealing_washer],    ["power_junction_input_adapter_locknut", show_component_power_junction_input_adapter_locknut],    ["power_junction_light_adapter_sealing_washer", show_component_power_junction_light_adapter_sealing_washer],    ["power_junction_light_adapter_locknut", show_component_power_junction_light_adapter_locknut],    ["power_junction_outlet_adapter_sealing_washer", show_component_power_junction_outlet_adapter_sealing_washer],    ["power_junction_outlet_adapter_locknut", show_component_power_junction_outlet_adapter_locknut],    ["low_voltage_input_adapter_sealing_washer", show_component_low_voltage_input_adapter_sealing_washer],    ["low_voltage_input_adapter_locknut", show_component_low_voltage_input_adapter_locknut],    ["low_voltage_ground_sweep_elbow_1", show_component_low_voltage_ground_sweep_elbow_1],    ["low_voltage_ground_sweep_elbow_2", show_component_low_voltage_ground_sweep_elbow_2],    ["tambour_ceiling_panel", show_component_tambour_ceiling_panel],    ["power_guard_removable_panel", show_component_power_guard_removable_panel]];
 
 pieces = [
     ["post_fl", "posts", "4x4", "z", [0, 0, -32], 81.625, true],
@@ -257,9 +282,7 @@ pieces = [
     ["right_center_rail", "frame", "2x4", "z", [24, 11.1875, 13.75], 29.75, true],
     ["back_right_outlet_backer_lower", "electrical_backing", "2x4", "y", [24.95, 12.6875, 13.63], 6.6875, false],
     ["back_right_outlet_backer_upper", "electrical_backing", "2x4", "y", [24.95, 12.6875, 18.87], 6.6875, false],
-    ["front_street_light_backer_bottom", "electrical_backing", "2x4", "x", [3.5, 2.3, 35.625], 20.5, false],
-    ["front_street_light_backer_lower", "electrical_backing", "2x4", "x", [3.5, 2.3, 39.125], 20.5, false],
-    ["front_street_light_backer_upper", "electrical_backing", "2x4", "x", [3.5, 2.3, 42.625], 20.5, false],
+    ["front_address_number_support", "electrical_backing", "5/4x6", "x", [3.5, 0, 39.175], 20.5, false],
     ["power_guard_left_upright", "power_cord_guard", "2x4", "z", [11.6, 10.6875, 0.75], 11.25, false, 3.2175],
     ["power_guard_right_upright", "power_cord_guard", "2x4", "z", [17.6, 10.6875, 0.75], 11.25, false, 3.2175]
 ];
@@ -284,12 +307,26 @@ components = [
     ["roof_shim_brace_fr_br", "roof_shims", "continuous_pt_roof_shim_brace_fr_br", "brace_fr_br", "narrow_pos", 2.75, [24, 6.25, 49.625], [3.5, 13.125, 0.25], [0.44, 0.26, 0.11, 1], "box", [24, 6.25, 49.625], [0, 1, 0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [13.125, 3.5, 0.25]],
     ["low_voltage_termination_box", "low_voltage_fittings", "carlon_e987n_junction_box", "front_center_rail", "wide_neg", 0, [8.6569, 3.1875, 11.6958], [4, 4, 4], [0.55, 0.57, 0.58, 1], "primitive_union", [8.6569, 7.1875, 11.6958], [0, 0, 1], [1, 0, 0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [4, 4, 3.875]], [[0, 0, 3.875], [4, 4, 0.125]]], [], false, "", [4, 4, 4]],
     ["low_voltage_input_adapter", "low_voltage_fittings", "pvc_3/4_male_terminal_adapter", "front_center_rail", "wide_neg", 0, [9.9819, 5.575, 10.2258], [1.35, 1.35, 1.97], [0.55, 0.57, 0.58, 1], "primitive_union", [11.3319, 6.925, 12.1958], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.675, 0.675], "along", 0.58, 1.05], [[0.58, 0.675, 0.675], "along", 1.39, 1.35]], false, "", [1.97, 1.35, 1.35]],
-    ["low_voltage_cable_gland_1", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [8.9569, 3.4375, 10.9458], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [9.9569, 4.4375, 11.6958], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]], false, "", [0.75, 1, 1]],
     ["low_voltage_cable_gland_2", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [10.1569, 3.4375, 10.9458], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [11.1569, 4.4375, 11.6958], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]], false, "", [0.75, 1, 1]],
     ["low_voltage_cable_gland_3", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [11.3569, 3.4375, 10.9458], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [12.3569, 4.4375, 11.6958], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]], false, "", [0.75, 1, 1]],
-    ["front_street_light_base_box", "electrical", "provisional_brook_recessed_junction_box", "front_street_light_backer_lower", "narrow_neg", 10.25, [11.75, -1, 41.625], [4, 3.3, 2], [0.4, 0.42, 0.44, 1], "box", [11.75, 2.3, 41.625], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [4, 2, 3.3]],
-    ["front_street_light", "electrical", "mod_lighting_brook_16_black_3000k", "front_street_light_backer_lower", "narrow_neg", 10.25, [5.75, -4.9, 41.425], [16, 3.9, 2.4], [0.08, 0.09, 0.1, 1], "primitive_union", [5.75, -1, 41.425], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[5, 0, 0], [6, 2.4, 1.5]], [[0, 0.7, 1.5], [16, 1, 2.4]]], [], false, "", [16, 2.4, 3.9]],
-    ["front_address_plaque", "exterior_fixtures", "copper_address_plaque_4754", "front_street_light_backer_bottom", "narrow_neg", 0, [5.75, -1.5, 35.425], [16, 0.5, 3], [0.72, 0.45, 0.28, 1], "address_plaque", [5.75, -1, 35.425], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "4754", [16, 3, 0.5]],
+    ["low_voltage_unused_port_closure", "low_voltage_fittings", "half_inch_panel_hole_weatherproof_closure", "front_center_rail", "wide_neg", 0, [9.1319, 3.7875, 11.3708], [0.65, 0.15, 0.65], [0.74, 0.78, 0.8, 1], "primitive_union", [9.7819, 3.9375, 12.0208], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.325, 0.325, 0], "out", 0.15, 0.65]], false, "", [0.65, 0.65, 0.15]],
+    ["front_street_light_base_box", "electrical", "commercial_electric_wrb550b_outlet_box", "post_fr", "wide_neg", 0, [22.4, 0.25, 38.725], [1.6, 4.2, 5.4], [0.3, 0.16, 0.07, 1], "primitive_union", [24, 4.45, 38.725], [0, -1, 0], [0, 0, 1], [-1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[2.1, 2.7, 0], "out", 1.6, 4], [[2.1, 0, 0.8], "across", 0.7, 1.15], [[2.1, 4.7, 0.8], "across", 0.7, 1.15], [[0, 2.7, 0.8], "along", 0.7, 1.15], [[3.5, 2.7, 0.8], "along", 0.7, 1.15], [[2.1, 5.3, 0.8], "across", 0.1, 1.3], [[0, 2.7, 0.8], "along", 0.1, 1.3], [[4.1, 2.7, 0.8], "along", 0.1, 1.3], [[2.1, 2.7, 0], "out", 0.1, 1.3]], false, "", [4.2, 5.4, 1.6]],
+    ["front_street_light_box_cover", "electrical", "commercial_electric_wbc300g_cover", "post_fr", "wide_neg", 0, [22.25, 0.25, 39.325], [0.15, 4.2, 4.2], [0.4, 0.42, 0.44, 1], "primitive_union", [22.4, 4.45, 39.325], [0, -1, 0], [0, 0, 1], [-1, 0, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[2.1, 2.1, 0], "out", 0.15, 4.2]], false, "", [4.2, 4.2, 0.15]],
+    ["front_street_light_uf_connector", "electrical", "commercial_electric_fsw50z_12_2_1", "post_fr", "wide_neg", 0, [22.64, 1.79, 44.125], [1.12, 1.12, 1.25], [0.5, 0.52, 0.54, 1], "primitive_union", [22.64, 1.79, 44.125], [1, 0, 0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.56, 0.56, 0], "out", 1.25, 1.12]], false, "", [1.12, 1.12, 1.25]],
+    ["front_street_light", "electrical", "mod_lighting_brook_16_black_3000k", "brace_fl_fr", "wide_neg", 0, [5.75, -4.9, 47.425], [16, 3.9, 2.4], [0.08, 0.09, 0.1, 1], "primitive_union", [5.75, -1, 47.425], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[5, 0, 0], [6, 2.4, 1.5]], [[0, 0.7, 1.5], [16, 1, 2.4]]], [], false, "", [16, 2.4, 3.9]],
+    ["front_street_light_bracket", "electrical", "brook_supplied_bracket_schematic", "brace_fl_fr", "wide_neg", 0, [11, -1.08, 48.375], [5.5, 0.08, 0.5], [0.55, 0.57, 0.59, 1], "box", [11, -1, 48.375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [5.5, 0.5, 0.08]],
+    ["front_address_number_1", "exterior_fixtures", "silver_address_digit_4", "front_address_number_support", "wide_neg", 0, [7.75, -3, 39.425], [2.25, 1, 5], [0.75, 0.77, 0.8, 1], "raised_numeral", [7.75, -2, 39.425], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "4", [2.25, 5, 1]],
+    ["front_address_number_1_standoff_1", "exterior_fixtures", "silver_address_number_standoff", "front_address_number_support", "wide_neg", 0, [8.6875, -2, 40.2375], [0.375, 1, 0.375], [0.75, 0.77, 0.8, 1], "primitive_union", [8.6875, -1, 40.2375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.1875, 0.1875, 0], "out", 1, 0.375]], false, "", [0.375, 0.375, 1]],
+    ["front_address_number_1_standoff_2", "exterior_fixtures", "silver_address_number_standoff", "front_address_number_support", "wide_neg", 0, [8.6875, -2, 43.2375], [0.375, 1, 0.375], [0.75, 0.77, 0.8, 1], "primitive_union", [8.6875, -1, 43.2375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.1875, 0.1875, 0], "out", 1, 0.375]], false, "", [0.375, 0.375, 1]],
+    ["front_address_number_2", "exterior_fixtures", "silver_address_digit_7", "front_address_number_support", "wide_neg", 0, [11, -3, 39.425], [2.25, 1, 5], [0.75, 0.77, 0.8, 1], "raised_numeral", [11, -2, 39.425], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "7", [2.25, 5, 1]],
+    ["front_address_number_2_standoff_1", "exterior_fixtures", "silver_address_number_standoff", "front_address_number_support", "wide_neg", 0, [11.9375, -2, 40.2375], [0.375, 1, 0.375], [0.75, 0.77, 0.8, 1], "primitive_union", [11.9375, -1, 40.2375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.1875, 0.1875, 0], "out", 1, 0.375]], false, "", [0.375, 0.375, 1]],
+    ["front_address_number_2_standoff_2", "exterior_fixtures", "silver_address_number_standoff", "front_address_number_support", "wide_neg", 0, [11.9375, -2, 43.2375], [0.375, 1, 0.375], [0.75, 0.77, 0.8, 1], "primitive_union", [11.9375, -1, 43.2375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.1875, 0.1875, 0], "out", 1, 0.375]], false, "", [0.375, 0.375, 1]],
+    ["front_address_number_3", "exterior_fixtures", "silver_address_digit_5", "front_address_number_support", "wide_neg", 0, [14.25, -3, 39.425], [2.25, 1, 5], [0.75, 0.77, 0.8, 1], "raised_numeral", [14.25, -2, 39.425], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "5", [2.25, 5, 1]],
+    ["front_address_number_3_standoff_1", "exterior_fixtures", "silver_address_number_standoff", "front_address_number_support", "wide_neg", 0, [15.1875, -2, 40.2375], [0.375, 1, 0.375], [0.75, 0.77, 0.8, 1], "primitive_union", [15.1875, -1, 40.2375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.1875, 0.1875, 0], "out", 1, 0.375]], false, "", [0.375, 0.375, 1]],
+    ["front_address_number_3_standoff_2", "exterior_fixtures", "silver_address_number_standoff", "front_address_number_support", "wide_neg", 0, [15.1875, -2, 43.2375], [0.375, 1, 0.375], [0.75, 0.77, 0.8, 1], "primitive_union", [15.1875, -1, 43.2375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.1875, 0.1875, 0], "out", 1, 0.375]], false, "", [0.375, 0.375, 1]],
+    ["front_address_number_4", "exterior_fixtures", "silver_address_digit_4", "front_address_number_support", "wide_neg", 0, [17.5, -3, 39.425], [2.25, 1, 5], [0.75, 0.77, 0.8, 1], "raised_numeral", [17.5, -2, 39.425], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "4", [2.25, 5, 1]],
+    ["front_address_number_4_standoff_1", "exterior_fixtures", "silver_address_number_standoff", "front_address_number_support", "wide_neg", 0, [18.4375, -2, 40.2375], [0.375, 1, 0.375], [0.75, 0.77, 0.8, 1], "primitive_union", [18.4375, -1, 40.2375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.1875, 0.1875, 0], "out", 1, 0.375]], false, "", [0.375, 0.375, 1]],
+    ["front_address_number_4_standoff_2", "exterior_fixtures", "silver_address_number_standoff", "front_address_number_support", "wide_neg", 0, [18.4375, -2, 43.2375], [0.375, 1, 0.375], [0.75, 0.77, 0.8, 1], "primitive_union", [18.4375, -1, 43.2375], [1, 0, 0], [0, 0, 1], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.1875, 0.1875, 0], "out", 1, 0.375]], false, "", [0.375, 0.375, 1]],
     ["front_ev_charger_plug", "electrical", "ev_charger_plug", "front_center_rail", "wide_pos", 27.25, [11.75, 10.6875, 30.8349], [4, 8.6, 10.1651], [0.9137, 0.1137, 0.1765, 1], "mesh", [11.75, 10.6875, 30.8349], [0, 0, 1], [1, 0, 0], [0, 1, 0], "ev_charger_plug.stl", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [10.1651, 4, 8.6]],
     ["front_ev_charger_body", "electrical", "ev_charger_body", "front_center_rail", "wide_pos", 0, [9.85, 10.6875, 22.35], [7.8, 3.9, 7.9], [0.055, 0.055, 0.06, 1], "mesh", [9.85, 10.6875, 22.35], [0, 0, 1], [1, 0, 0], [0, 1, 0], "wallbox_pulsar_plus_body.stl", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [7.9, 7.8, 3.9]],
     ["front_wifi_access_point", "electrical", "wifi_access_point", "right_center_rail", "narrow_pos", 26.75, [24.1, 12.6875, 35.1], [3.3, 1.34, 5.4], [0.74, 0.78, 0.8, 1], "box", [24.1, 12.6875, 35.1], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [5.4, 3.3, 1.34]],
@@ -327,14 +364,14 @@ conduits = [
     ["power_ground_riser", "electrical_conduit", "1-1/4", 1.66, [0.78, 0.8, 0.78, 1], [[15.055, 12.5, 1.1566], [15.055, 12.5, 5.08]], []],
     ["power_pull_box_junction_feed", "electrical_conduit", "3/4", 1.05, [0.78, 0.8, 0.78, 1], [[15.35, 9.87, 8.83], [15.35, 8.6575, 8.83]], []],
     ["power_ev_charger_feed", "electrical_conduit", "1", 1.315, [0.78, 0.8, 0.78, 1], [[15.35, 12.2875, 12.33], [15.35, 12.2875, 22.35]], []],
-    ["power_street_light_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[18.25, 4.1875, 8.7489], [21.08, 4.1875, 8.7489], [21.4063, 4.1848, 8.7702], [21.727, 4.1768, 8.8334], [22.0367, 4.1635, 8.9377], [22.33, 4.1453, 9.0812], [22.6019, 4.1225, 9.2614], [22.8478, 4.0953, 9.4753], [23.0634, 4.0644, 9.7193], [23.2451, 4.0301, 9.989], [23.3897, 3.9932, 10.28], [23.4948, 3.9542, 10.5871], [23.5586, 3.9139, 10.9053], [23.58, 3.8728, 11.229], [23.58, 1.0277, 33.6489], [23.5543, 0.9784, 34.0373], [23.4778, 0.9299, 34.4191], [23.3516, 0.8831, 34.7878], [23.1781, 0.8388, 35.1369], [22.9601, 0.7978, 35.4606], [22.7013, 0.7606, 35.7533], [22.4063, 0.728, 36.01], [22.08, 0.7006, 36.2263], [21.7281, 0.6787, 36.3985], [21.3565, 0.6629, 36.5236], [20.9716, 0.6532, 36.5995], [20.58, 0.65, 36.625], [16.75, 0.65, 36.625], [16.3584, 0.65, 36.6507], [15.9735, 0.65, 36.7272], [15.6019, 0.65, 36.8534], [15.25, 0.65, 37.0269], [14.9237, 0.65, 37.2449], [14.6287, 0.65, 37.5037], [14.3699, 0.65, 37.7987], [14.1519, 0.65, 38.125], [13.9784, 0.65, 38.4769], [13.8522, 0.65, 38.8485], [13.7757, 0.65, 39.2334], [13.75, 0.65, 39.625], [13.75, 0.65, 41.625]], [[1, 2.5], [2, 3], [3, 3]]],
+    ["power_street_light_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[18.25, 4.1875, 8.7489], [20.7, 4.1875, 8.7489], [21.0263, 4.1845, 8.7701], [21.347, 4.1754, 8.8333], [21.6567, 4.1604, 8.9373], [21.95, 4.1398, 9.0805], [22.2219, 4.114, 9.2603], [22.4678, 4.0833, 9.4737], [22.6834, 4.0483, 9.7171], [22.8651, 4.0096, 9.9862], [23.0097, 3.9679, 10.2765], [23.1148, 3.9238, 10.583], [23.1786, 3.8782, 10.9005], [23.2, 3.8318, 11.2235], [23.2, 2.75, 18.7489], [23.2, 2.715, 18.9989], [23.2, 2.6817, 19.2489], [23.2, 2.6503, 19.4989], [23.2, 2.6205, 19.7489], [23.2, 2.5925, 19.9989], [23.2, 2.5662, 20.2489], [23.2, 2.5415, 20.4989], [23.2, 2.5185, 20.7489], [23.2, 2.4971, 20.9989], [23.2, 2.4772, 21.2489], [23.2, 2.459, 21.4989], [23.2, 2.4422, 21.7489], [23.2, 2.4269, 21.9989], [23.2, 2.4131, 22.2489], [23.2, 2.4008, 22.4989], [23.2, 2.3898, 22.7489], [23.2, 2.3803, 22.9989], [23.2, 2.3721, 23.2489], [23.2, 2.3652, 23.4989], [23.2, 2.3597, 23.7489], [23.2, 2.3554, 23.9989], [23.2, 2.3524, 24.2489], [23.2, 2.3506, 24.4989], [23.2, 2.35, 24.7489], [23.2, 2.35, 38.725]], [[1, 2.5]]],
     ["power_back_right_outlet_feed", "electrical_conduit", "1/2", 0.84, [0.78, 0.8, 0.78, 1], [[18.25, 6.1875, 7.17], [23.016, 6.1875, 7.17], [23.5381, 6.2217, 7.17], [24.0513, 6.3238, 7.17], [24.5467, 6.492, 7.17], [25.016, 6.7234, 7.17], [25.451, 7.0141, 7.17], [25.8444, 7.3591, 7.17], [26.1894, 7.7525, 7.17], [26.4801, 8.1875, 7.17], [26.7115, 8.6568, 7.17], [26.8797, 9.1522, 7.17], [26.9818, 9.6654, 7.17], [27.016, 10.1875, 7.17], [27.016, 13.875, 7.17], [27.016, 14.3971, 7.2042], [27.016, 14.9103, 7.3063], [27.016, 15.4057, 7.4745], [27.016, 15.875, 7.7059], [27.016, 16.31, 7.9966], [27.016, 16.7034, 8.3416], [27.016, 17.0484, 8.735], [27.016, 17.3391, 9.17], [27.016, 17.5705, 9.6393], [27.016, 17.7387, 10.1347], [27.016, 17.8408, 10.6479], [27.016, 17.875, 11.17], [27.016, 17.875, 15.15]], [[1, 4], [2, 4]]],
     ["low_voltage_ground_riser_inlet", "low_voltage_conduit", "3/4", 1.05, [0.78, 0.8, 0.78, 1], [[14, 6.25, 0.6548], [14, 6.25, 2.1548]], []]
 ];
 
 cables = [
     ["front_ev_charger_cable", "ev_charger_cable", 1, [0.055, 0.055, 0.06, 1], [[12.11, 12.2875, 22.35], [12.11, 12.2875, 8.578], [12.1442, 12.2875, 8.0559], [12.2463, 12.2875, 7.5427], [12.4145, 12.2875, 7.0473], [12.6459, 12.2875, 6.578], [12.9366, 12.2875, 6.143], [13.2816, 12.2875, 5.7496], [13.675, 12.2875, 5.4046], [14.11, 12.2875, 5.1139], [14.5793, 12.2875, 4.8825], [15.0747, 12.2875, 4.7143], [15.5879, 12.2875, 4.6122], [16.11, 12.2875, 4.578], [16.6321, 12.2875, 4.6122], [17.1453, 12.2875, 4.7143], [17.6407, 12.2875, 4.8825], [18.11, 12.2875, 5.1139], [18.545, 12.2875, 5.4046], [18.9384, 12.2875, 5.7496], [19.2834, 12.2875, 6.143], [19.5741, 12.2875, 6.578], [19.8055, 12.2875, 7.0473], [19.9737, 12.2875, 7.5427], [20.0758, 12.2875, 8.0559], [20.11, 12.2875, 8.578], [20.11, 12.2875, 9.9149], [20.11, 12.2875, 37.002], [20.0643, 12.2875, 37.6986], [19.9282, 12.2875, 38.3833], [19.7038, 12.2875, 39.0443], [19.395, 12.2875, 39.6704], [19.0072, 12.2875, 40.2508], [18.5469, 12.2875, 40.7757], [18.022, 12.2875, 41.236], [17.4416, 12.2875, 41.6238], [16.8155, 12.2875, 41.9326], [16.1544, 12.2875, 42.157], [15.4697, 12.2875, 42.2932], [14.7731, 12.2875, 42.3388], [14.0765, 12.2875, 42.2932], [13.3919, 12.2875, 42.157], [12.7308, 12.2875, 41.9326], [12.1047, 12.2875, 41.6238], [11.5243, 12.2875, 41.236], [10.9994, 12.2875, 40.7757], [10.5391, 12.2875, 40.2508], [10.1513, 12.2875, 39.6704], [9.8425, 12.2875, 39.0443], [9.6181, 12.2875, 38.3833], [9.4819, 12.2875, 37.6986], [9.4363, 12.2875, 37.002], [9.4363, 12.2875, 9.9149], [9.4779, 12.2916, 9.2177], [9.6029, 12.3032, 8.5295], [9.8108, 12.3219, 7.8594], [10.1, 12.3468, 7.2168], [10.468, 12.3772, 6.6114], [10.911, 12.4125, 6.0527], [11.4242, 12.452, 5.5504], [12.001, 12.4949, 5.1134], [12.634, 12.5406, 4.7504], [13.314, 12.5884, 4.4692], [14.0308, 12.6376, 4.2765], [14.7731, 12.6875, 4.178], [15.5285, 12.7374, 4.1776], [16.2836, 12.7866, 4.2778], [17.0248, 12.8344, 4.479], [17.7379, 12.8801, 4.7798], [18.4089, 12.923, 5.1766], [19.0242, 12.9625, 5.6638], [19.5707, 12.9978, 6.2336], [20.0365, 13.0282, 6.8761], [20.4111, 13.0531, 7.5795], [20.6857, 13.0718, 8.3306], [20.8535, 13.0834, 9.1144], [20.91, 13.0875, 9.9149], [20.91, 13.0875, 37.002], [20.8575, 13.0875, 37.803], [20.7009, 13.0875, 38.5903], [20.4429, 13.0875, 39.3504], [20.0878, 13.0875, 40.0704], [19.6418, 13.0875, 40.7379], [19.1126, 13.0875, 41.3414], [18.509, 13.0875, 41.8707], [17.8416, 13.0875, 42.3166], [17.1216, 13.0875, 42.6717], [16.3615, 13.0875, 42.9297], [15.5742, 13.0875, 43.0863], [14.7731, 13.0875, 43.1388], [13.9721, 13.0875, 43.0863], [13.1848, 13.0875, 42.9297], [12.4247, 13.0875, 42.6717], [11.7047, 13.0875, 42.3166], [11.0373, 13.0875, 41.8707], [10.4337, 13.0875, 41.3414], [9.9045, 13.0875, 40.7379], [9.4585, 13.0875, 40.0704], [9.1034, 13.0875, 39.3504], [8.8454, 13.0875, 38.5903], [8.6888, 13.0875, 37.803], [8.6363, 13.0875, 37.002], [8.6363, 13.0875, 9.9149], [8.6848, 13.0916, 9.1133], [8.8302, 13.1032, 8.3224], [9.0717, 13.1219, 7.5532], [9.4072, 13.1468, 6.8168], [9.8333, 13.1772, 6.1244], [10.3453, 13.2125, 5.4871], [10.9371, 13.252, 4.9157], [11.601, 13.2949, 4.4206], [12.3278, 13.3406, 4.0113], [13.1069, 13.3884, 3.6964], [13.9264, 13.4376, 3.4834], [14.7731, 13.4875, 3.378], [15.6329, 13.5374, 3.3845], [16.4907, 13.5866, 3.505], [17.3309, 13.6344, 3.7399], [18.1379, 13.6801, 4.087], [18.8959, 13.723, 4.542], [19.5899, 13.7625, 5.0981], [20.2054, 13.7978, 5.7466], [20.7293, 13.8282, 6.4761], [21.1502, 13.8531, 7.2734], [21.4584, 13.8718, 8.1235], [21.6466, 13.8834, 9.0099], [21.71, 13.8875, 9.9149], [21.71, 13.8875, 37.002], [21.6507, 13.8875, 37.9074], [21.4736, 13.8875, 38.7974], [21.182, 13.8875, 39.6566], [20.7806, 13.8875, 40.4704], [20.2765, 13.8875, 41.2249], [19.6782, 13.8875, 41.9071], [18.996, 13.8875, 42.5054], [18.2416, 13.8875, 43.0095], [17.4278, 13.8875, 43.4108], [16.5685, 13.8875, 43.7025], [15.6786, 13.8875, 43.8795], [14.7731, 13.8875, 43.9388], [13.8677, 13.8875, 43.8795], [12.9778, 13.8875, 43.7025], [12.1185, 13.8875, 43.4108], [11.3047, 13.8875, 43.0095], [10.5503, 13.8875, 42.5054], [9.868, 13.8875, 41.9071], [9.2698, 13.8875, 41.2249], [8.7657, 13.8875, 40.4704], [8.3643, 13.8875, 39.6566], [8.0727, 13.8875, 38.7974], [7.8956, 13.8875, 37.9074], [7.8363, 13.8875, 37.002], [7.8363, 13.8875, 19.9588], [7.8616, 13.9106, 19.4361], [7.937, 13.9795, 18.9224], [8.0614, 14.093, 18.4265], [8.2324, 14.2492, 17.9567], [8.4473, 14.4454, 17.5212], [8.7023, 14.6783, 17.1274], [8.9931, 14.9438, 16.7821], [9.3147, 15.2375, 16.4911], [9.6616, 15.5543, 16.2594], [10.0279, 15.8887, 16.0911], [10.4072, 16.2351, 15.9889], [10.7931, 16.5875, 15.9547], [11.1791, 16.9399, 15.9889], [11.5584, 17.2863, 16.0911], [11.9247, 17.6207, 16.2594], [12.2716, 17.9375, 16.4911], [12.5932, 18.2312, 16.7821], [12.884, 18.4967, 17.1274], [13.139, 18.7296, 17.5212], [13.3539, 18.9258, 17.9567], [13.5249, 19.082, 18.4265], [13.6492, 19.1955, 18.9224], [13.7247, 19.2644, 19.4361], [13.75, 19.2875, 19.9588], [13.75, 19.2875, 30.8349]], 300],
-    ["low_voltage_street_light_service", "low_voltage_cabling", 0.125, [0.18, 0.07, 0.025, 1], [[9.4569, 3.9375, 10.9458], [9.4489, 3.9346, 10.7061], [9.4257, 3.9259, 10.4863], [9.3879, 3.9119, 10.2857], [9.3362, 3.8927, 10.1032], [9.2714, 3.8687, 9.9382], [9.1941, 3.84, 9.7896], [9.1052, 3.807, 9.6566], [9.0053, 3.7699, 9.5384], [8.8951, 3.729, 9.4341], [8.7755, 3.6846, 9.3428], [8.6471, 3.637, 9.2637], [8.5106, 3.5863, 9.1958], [8.3668, 3.533, 9.1384], [8.2164, 3.4772, 9.0905], [8.0602, 3.4192, 9.0513], [7.8988, 3.3593, 9.0199], [7.733, 3.2977, 8.9955], [7.5634, 3.2348, 8.9771], [7.391, 3.1708, 8.9639], [7.2163, 3.106, 8.9551], [7.0401, 3.0406, 8.9497], [6.8631, 2.9749, 8.947], [6.686, 2.9092, 8.946], [6.5097, 2.8438, 8.9458], [6.3333, 2.7783, 8.9666], [6.1563, 2.7126, 9.0273], [5.9793, 2.6469, 9.1259], [5.8031, 2.5815, 9.26], [5.6284, 2.5167, 9.4275], [5.4559, 2.4527, 9.6262], [5.2864, 2.3898, 9.8537], [5.1206, 2.3282, 10.108], [4.9592, 2.2683, 10.3868], [4.8029, 2.2103, 10.6879], [4.6525, 2.1545, 11.009], [4.5087, 2.1012, 11.3479], [4.3723, 2.0505, 11.7025], [4.2438, 2.0029, 12.0705], [4.1242, 1.9585, 12.4497], [4.0141, 1.9176, 12.8378], [3.9142, 1.8805, 13.2327], [3.8252, 1.8475, 13.6322], [3.748, 1.8188, 14.0339], [3.6832, 1.7948, 14.4358], [3.6315, 1.7756, 14.8356], [3.5936, 1.7616, 15.231], [3.5704, 1.7529, 15.6199], [3.5625, 1.75, 16], [3.5625, 1.75, 46.0625], [3.5796, 1.75, 46.3236], [3.6306, 1.75, 46.5801], [3.7147, 1.75, 46.8279], [3.8304, 1.75, 47.0625], [3.9758, 1.75, 47.28], [4.1483, 1.75, 47.4767], [4.345, 1.75, 47.6492], [4.5625, 1.75, 47.7946], [4.7971, 1.75, 47.9103], [5.0449, 1.75, 47.9944], [5.3014, 1.75, 48.0454], [5.5625, 1.75, 48.0625], [7.5, 1.75, 48.0625], [7.625, 1.7444, 48.0625], [7.75, 1.7284, 48.0625], [7.875, 1.7027, 48.0625], [8, 1.6685, 48.0625], [8.125, 1.6267, 48.0625], [8.25, 1.5781, 48.0625], [8.375, 1.5239, 48.0625], [8.5, 1.4648, 48.0625], [8.625, 1.402, 48.0625], [8.75, 1.3362, 48.0625], [8.875, 1.2686, 48.0625], [9, 1.2, 48.0625], [9.125, 1.1314, 48.0625], [9.25, 1.0638, 48.0625], [9.375, 0.998, 48.0625], [9.5, 0.9352, 48.0625], [9.625, 0.8761, 48.0625], [9.75, 0.8219, 48.0625], [9.875, 0.7733, 48.0625], [10, 0.7315, 48.0625], [10.125, 0.6973, 48.0625], [10.25, 0.6716, 48.0625], [10.375, 0.6556, 48.0625], [10.5, 0.65, 48.0625], [10.75, 0.65, 48.0625], [10.9132, 0.65, 48.0518], [11.0735, 0.65, 48.0199], [11.2284, 0.65, 47.9673], [11.375, 0.65, 47.895], [11.511, 0.65, 47.8042], [11.6339, 0.65, 47.6964], [11.7417, 0.65, 47.5735], [11.8325, 0.65, 47.4375], [11.9048, 0.65, 47.2909], [11.9574, 0.65, 47.136], [11.9893, 0.65, 46.9757], [12, 0.65, 46.8125], [12.0107, 0.65, 46.6493], [12.0426, 0.65, 46.489], [12.0952, 0.65, 46.3341], [12.1675, 0.65, 46.1875], [12.2583, 0.65, 46.0515], [12.3661, 0.65, 45.9286], [12.489, 0.65, 45.8208], [12.625, 0.65, 45.73], [12.7716, 0.65, 45.6577], [12.9265, 0.65, 45.6051], [13.0868, 0.65, 45.5732], [13.25, 0.65, 45.5625], [14.25, 0.65, 45.5625], [14.4132, 0.65, 45.5732], [14.5735, 0.65, 45.6051], [14.7284, 0.65, 45.6577], [14.875, 0.65, 45.73], [15.011, 0.65, 45.8208], [15.1339, 0.65, 45.9286], [15.2417, 0.65, 46.0515], [15.3325, 0.65, 46.1875], [15.4048, 0.65, 46.3341], [15.4574, 0.65, 46.489], [15.4893, 0.65, 46.6493], [15.5, 0.65, 46.8125], [15.4893, 0.65, 46.9757], [15.4574, 0.65, 47.136], [15.4048, 0.65, 47.2909], [15.3325, 0.65, 47.4375], [15.2417, 0.65, 47.5735], [15.1339, 0.65, 47.6964], [15.011, 0.65, 47.8042], [14.875, 0.65, 47.895], [14.7284, 0.65, 47.9673], [14.5735, 0.65, 48.0199], [14.4132, 0.65, 48.0518], [14.25, 0.65, 48.0625], [13.75, 0.65, 48.0625]], 60.4358],
+    ["power_street_light_uf_b", "electrical", 0.45, [0.48, 0.49, 0.5, 1], [[23.2, 2.35, 45.375], [23.2, 2.35, 45.75], [23.1829, 2.35, 46.0111], [23.1319, 2.35, 46.2676], [23.0478, 2.35, 46.5154], [22.9321, 2.35, 46.75], [22.7867, 2.35, 46.9675], [22.6142, 2.35, 47.1642], [22.4175, 2.35, 47.3367], [22.2, 2.35, 47.4821], [21.9654, 2.35, 47.5978], [21.7176, 2.35, 47.6819], [21.4611, 2.35, 47.7329], [21.2, 2.35, 47.75], [15.75, 2.35, 47.75], [15.4889, 2.3329, 47.75], [15.2324, 2.2819, 47.75], [14.9846, 2.1978, 47.75], [14.75, 2.0821, 47.75], [14.5325, 1.9367, 47.75], [14.3358, 1.7642, 47.75], [14.1633, 1.5675, 47.75], [14.0179, 1.35, 47.75], [13.9022, 1.1154, 47.75], [13.8181, 0.8676, 47.75], [13.7671, 0.6111, 47.75], [13.75, 0.35, 47.75], [13.75, 0, 47.75], [13.75, -1.125, 47.75]], 13.5787],
     ["low_voltage_wifi_feed", "low_voltage_cabling", 0.125, [0.05, 0.2, 0.8, 1], [[11.8569, 3.9375, 10.9458], [11.8569, 3.9379, 10.8108], [11.8569, 3.9396, 10.6571], [11.8569, 3.9431, 10.4869], [11.8569, 3.9491, 10.3023], [11.8569, 3.9581, 10.1056], [11.8569, 3.9707, 9.899], [11.8569, 3.9876, 9.6845], [11.8569, 4.0093, 9.4644], [11.8569, 4.0364, 9.2408], [11.8569, 4.0695, 9.0159], [11.8569, 4.1093, 8.7918], [11.8569, 4.1562, 8.5708], [11.8569, 4.211, 8.3551], [11.8569, 4.2742, 8.1466], [11.8569, 4.3464, 7.9478], [11.8569, 4.4282, 7.7607], [11.8569, 4.5202, 7.5874], [11.8569, 4.623, 7.4302], [11.8569, 4.7372, 7.2913], [11.8569, 4.8634, 7.1727], [11.8569, 5.0022, 7.0767], [11.8569, 5.1542, 7.0054], [11.8569, 5.3199, 6.9611], [11.8569, 5.5, 6.9458], [11.8569, 5.624, 6.9458], [11.8569, 5.7057, 6.9512], [11.8569, 5.786, 6.9672], [11.8569, 5.8636, 6.9935], [11.8569, 5.937, 7.0297], [11.8569, 6.0051, 7.0752], [11.8569, 6.0666, 7.1292], [11.857, 6.1206, 7.1908], [11.8572, 6.1661, 7.2588], [11.8574, 6.2023, 7.3323], [11.8578, 6.2287, 7.4098], [11.8584, 6.2446, 7.4901], [11.8592, 6.25, 7.5718], [11.9223, 6.25, 8.4375], [11.9801, 6.2636, 8.6804], [12.0663, 6.3029, 8.9104], [12.1872, 6.3655, 9.1296], [12.3494, 6.4491, 9.3403], [12.5586, 6.5513, 9.5444], [12.8179, 6.6699, 9.7441], [13.1245, 6.8025, 9.9416], [13.4665, 6.9468, 10.1389], [13.8197, 7.1003, 10.3381], [14.146, 7.2609, 10.5414], [14.3979, 7.4262, 10.7509], [14.535, 7.5938, 10.9688], [14.5625, 7.7613, 11.197], [14.5625, 7.9266, 11.4377], [14.5625, 8.0872, 11.6931], [14.5625, 8.2407, 11.9653], [14.5625, 8.385, 12.2563], [14.5625, 8.5176, 12.5684], [14.5625, 8.6362, 12.9035], [14.5625, 8.7384, 13.2639], [14.5625, 8.822, 13.6516], [14.5625, 8.8846, 14.0688], [14.5625, 8.9239, 14.5176], [14.5625, 8.9375, 15], [14.5625, 8.9375, 41.375], [14.5625, 8.9482, 41.5382], [14.5625, 8.9801, 41.6985], [14.5625, 9.0327, 41.8534], [14.5625, 9.105, 42], [14.5625, 9.1958, 42.136], [14.5625, 9.3036, 42.2589], [14.5625, 9.4265, 42.3667], [14.5625, 9.5625, 42.4575], [14.5625, 9.7091, 42.5298], [14.5625, 9.864, 42.5824], [14.5625, 10.0243, 42.6143], [14.5625, 10.1875, 42.625], [14.5625, 9.5, 42.625], [14.5625, 9.6632, 42.6357], [14.5625, 9.8235, 42.6676], [14.5625, 9.9784, 42.7202], [14.5625, 10.125, 42.7925], [14.5625, 10.261, 42.8833], [14.5625, 10.3839, 42.9911], [14.5625, 10.4917, 43.114], [14.5625, 10.5825, 43.25], [14.5625, 10.6548, 43.3966], [14.5625, 10.7074, 43.5515], [14.5625, 10.7393, 43.7118], [14.5625, 10.75, 43.875], [14.5625, 10.75, 42.9375], [14.5732, 10.75, 43.1007], [14.6051, 10.75, 43.261], [14.6577, 10.75, 43.4159], [14.73, 10.75, 43.5625], [14.8208, 10.75, 43.6985], [14.9286, 10.75, 43.8214], [15.0515, 10.75, 43.9292], [15.1875, 10.75, 44.02], [15.3341, 10.75, 44.0923], [15.489, 10.75, 44.1449], [15.6493, 10.75, 44.1768], [15.8125, 10.75, 44.1875], [23.1875, 10.75, 44.1875], [23.2854, 10.7564, 44.1875], [23.3816, 10.7756, 44.1875], [23.4745, 10.8071, 44.1875], [23.5625, 10.8505, 44.1875], [23.6441, 10.905, 44.1875], [23.7178, 10.9697, 44.1875], [23.7825, 11.0434, 44.1875], [23.837, 11.125, 44.1875], [23.8804, 11.213, 44.1875], [23.9119, 11.3059, 44.1875], [23.9311, 11.4021, 44.1875], [23.9375, 11.5, 44.1875], [23.9375, 11.125, 44.1875], [23.9375, 11.2229, 44.1811], [23.9375, 11.3191, 44.1619], [23.9375, 11.412, 44.1304], [23.9375, 11.5, 44.087], [23.9375, 11.5816, 44.0325], [23.9375, 11.6553, 43.9678], [23.9375, 11.72, 43.8941], [23.9375, 11.7745, 43.8125], [23.9375, 11.8179, 43.7245], [23.9375, 11.8494, 43.6316], [23.9375, 11.8686, 43.5354], [23.9375, 11.875, 43.4375], [23.9375, 11.875, 33.8], [23.9375, 11.881, 33.7086], [23.9375, 11.8989, 33.6188], [23.9375, 11.9283, 33.5321], [23.9375, 11.9688, 33.45], [23.9375, 12.0197, 33.3739], [23.9375, 12.08, 33.305], [23.9375, 12.1489, 33.2447], [23.9375, 12.225, 33.1938], [23.9375, 12.3071, 33.1533], [23.9375, 12.3938, 33.1239], [23.9375, 12.4836, 33.106], [23.9375, 12.575, 33.1], [23.9375, 12.6575, 33.1], [23.9435, 12.7489, 33.1], [23.9614, 12.8387, 33.1], [23.9908, 12.9254, 33.1], [24.0313, 13.0075, 33.1], [24.0822, 13.0836, 33.1], [24.1425, 13.1525, 33.1], [24.2114, 13.2128, 33.1], [24.2875, 13.2637, 33.1], [24.3696, 13.3042, 33.1], [24.4563, 13.3336, 33.1], [24.5461, 13.3515, 33.1], [24.6375, 13.3575, 33.1], [24.95, 13.3575, 33.1], [25.0544, 13.3575, 33.1068], [25.1571, 13.3575, 33.1273], [25.2561, 13.3575, 33.1609], [25.35, 13.3575, 33.2072], [25.437, 13.3575, 33.2653], [25.5157, 13.3575, 33.3343], [25.5847, 13.3575, 33.413], [25.6428, 13.3575, 33.5], [25.6891, 13.3575, 33.5939], [25.7227, 13.3575, 33.6929], [25.7432, 13.3575, 33.7956], [25.75, 13.3575, 33.9], [25.75, 13.3575, 35.1]], 73.6855],
     ["low_voltage_ev_charger_feed", "low_voltage_cabling", 0.125, [0.05, 0.2, 0.8, 1], [[10.6569, 3.9375, 10.9458], [10.6605, 3.9379, 10.8108], [10.6709, 3.9396, 10.6571], [10.6875, 3.9431, 10.4869], [10.7096, 3.9491, 10.3023], [10.7367, 3.9581, 10.1056], [10.7682, 3.9707, 9.899], [10.8033, 3.9876, 9.6845], [10.8416, 4.0093, 9.4644], [10.8823, 4.0364, 9.2408], [10.9249, 4.0695, 9.0159], [10.9687, 4.1093, 8.7918], [11.0131, 4.1562, 8.5708], [11.0575, 4.211, 8.3551], [11.1013, 4.2742, 8.1466], [11.1439, 4.3464, 7.9478], [11.1846, 4.4282, 7.7607], [11.2229, 4.5202, 7.5874], [11.258, 4.623, 7.4302], [11.2895, 4.7372, 7.2913], [11.3166, 4.8634, 7.1727], [11.3387, 5.0022, 7.0767], [11.3553, 5.1542, 7.0054], [11.3657, 5.3199, 6.9611], [11.3694, 5.5, 6.9458], [11.3694, 5.625, 6.9458], [11.3694, 5.7066, 6.9512], [11.3694, 5.7868, 6.9671], [11.3694, 5.8642, 6.9934], [11.3694, 5.9375, 7.0296], [11.3694, 6.0055, 7.075], [11.3694, 6.0669, 7.1289], [11.3694, 6.1208, 7.1904], [11.3694, 6.1663, 7.2583], [11.3694, 6.2024, 7.3317], [11.3694, 6.2287, 7.4091], [11.3694, 6.2447, 7.4893], [11.3694, 6.25, 7.5708], [11.3694, 6.25, 8.4375], [11.3773, 6.2639, 8.6625], [11.4002, 6.3041, 8.888], [11.4367, 6.3682, 9.1152], [11.4855, 6.4537, 9.3449], [11.5452, 6.5583, 9.5782], [11.6144, 6.6797, 9.816], [11.6917, 6.8154, 10.0594], [11.7759, 6.963, 10.3093], [11.8655, 7.1201, 10.5667], [11.9592, 7.2844, 10.8325], [12.0556, 7.4535, 11.1079], [12.1534, 7.625, 11.3938], [12.2512, 7.7965, 11.691], [12.3476, 7.9656, 12.0008], [12.4413, 8.1299, 12.324], [12.5309, 8.287, 12.6616], [12.6151, 8.4346, 13.0146], [12.6925, 8.5703, 13.384], [12.7617, 8.6917, 13.7708], [12.8213, 8.7963, 14.1759], [12.8701, 8.8818, 14.6004], [12.9066, 8.9459, 15.0453], [12.9296, 8.9861, 15.5115], [12.9375, 9, 16], [12.9375, 9, 19.9], [12.9375, 9.0068, 20.0044], [12.9375, 9.0273, 20.1071], [12.9375, 9.0609, 20.2061], [12.9375, 9.1072, 20.3], [12.9375, 9.1653, 20.387], [12.9375, 9.2343, 20.4657], [12.9375, 9.313, 20.5347], [12.9375, 9.4, 20.5928], [12.9375, 9.4939, 20.6391], [12.9375, 9.5929, 20.6727], [12.9375, 9.6956, 20.6932], [12.9375, 9.8, 20.7], [12.9375, 10.75, 20.7], [12.9391, 10.8432, 20.7059], [12.9439, 10.9351, 20.7229], [12.9519, 11.0259, 20.7504], [12.963, 11.1155, 20.7875], [12.9771, 11.2039, 20.8335], [12.9941, 11.291, 20.8875], [13.0142, 11.3769, 20.9488], [13.037, 11.4616, 21.0167], [13.0627, 11.545, 21.0902], [13.0912, 11.6271, 21.1687], [13.1224, 11.7079, 21.2514], [13.1562, 11.7875, 21.3375], [13.1927, 11.8658, 21.4262], [13.2317, 11.9427, 21.5167], [13.2732, 12.0183, 21.6082], [13.3171, 12.0926, 21.7], [13.3635, 12.1655, 21.7913], [13.4121, 12.2371, 21.8813], [13.463, 12.3073, 21.9691], [13.5162, 12.3762, 22.0542], [13.5715, 12.4436, 22.1355], [13.629, 12.5096, 22.2125], [13.6885, 12.5743, 22.2842], [13.75, 12.6375, 22.35]], 23.8928]
 ];
@@ -355,78 +392,75 @@ tambours = [
 ];
 
 siding_parts = [
-    ["enclosure_siding_top_1", "composite_decking", [0, 0, 49.875], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_top_2", "composite_decking", [0, 5.6875, 49.875], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_top_3", "composite_decking", [0, 11.375, 49.875], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_top_4", "composite_decking", [0, 17.0625, 49.875], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_top_5", "composite_decking", [0, 22.75, 49.875], [27.5, 0.125, 1], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_1", "composite_decking", [0, -1, 45.125], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_1", "composite_decking", [-1, -1, 45.125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_1", "composite_decking", [27.5, -1, 45.125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_top_left", "composite_decking", [0, 22.875, 45.125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_top_header", "composite_decking", [3.5, 22.875, 47], [20.5, 1, 3.625], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_top_right", "composite_decking", [24, 22.875, 45.125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_2_1", "composite_decking", [0, -1, 39.4375], [11.75, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_2_2", "composite_decking", [15.75, -1, 39.4375], [11.75, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_2_3", "composite_decking", [11.75, -1, 39.4375], [4, 1, 2.1875], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_2_4", "composite_decking", [11.75, -1, 43.625], [4, 1, 1.3125], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_2", "composite_decking", [-1, -1, 39.4375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_2", "composite_decking", [27.5, -1, 39.4375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_2", "composite_decking", [0, 22.875, 39.4375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_2", "composite_decking", [24, 22.875, 39.4375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_3", "composite_decking", [0, -1, 33.75], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_3", "composite_decking", [-1, -1, 33.75], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_3", "composite_decking", [27.5, -1, 33.75], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_3", "composite_decking", [0, 22.875, 33.75], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_3", "composite_decking", [24, 22.875, 33.75], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_4", "composite_decking", [0, -1, 28.0625], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_4", "composite_decking", [-1, -1, 28.0625], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_4", "composite_decking", [27.5, -1, 28.0625], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_4", "composite_decking", [0, 22.875, 28.0625], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_4", "composite_decking", [24, 22.875, 28.0625], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_5", "composite_decking", [0, -1, 22.375], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_5", "composite_decking", [-1, -1, 22.375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_5", "composite_decking", [27.5, -1, 22.375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_5", "composite_decking", [0, 22.875, 22.375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_5", "composite_decking", [24, 22.875, 22.375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_6", "composite_decking", [0, -1, 16.6875], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_6", "composite_decking", [-1, -1, 16.6875], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_6_1", "composite_decking", [27.5, -1, 16.6875], [1, 17.475, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_6_2", "composite_decking", [27.5, 19.275, 16.6875], [1, 4.6, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_6_3", "composite_decking", [27.5, 16.475, 20.85], [1, 2.8, 1.3375], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_6", "composite_decking", [0, 22.875, 16.6875], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_6", "composite_decking", [24, 22.875, 16.6875], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_7", "composite_decking", [0, -1, 11], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_7", "composite_decking", [-1, -1, 11], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_7_1", "composite_decking", [27.5, -1, 11], [1, 17.475, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_7_2", "composite_decking", [27.5, 19.275, 11], [1, 4.6, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_7_3", "composite_decking", [27.5, 16.475, 11], [1, 2.8, 4.15], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_7", "composite_decking", [0, 22.875, 11], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_7", "composite_decking", [24, 22.875, 11], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_8", "composite_decking", [0, -1, 5.3125], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_8", "composite_decking", [-1, -1, 5.3125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_8", "composite_decking", [27.5, -1, 5.3125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_8", "composite_decking", [0, 22.875, 5.3125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_8", "composite_decking", [24, 22.875, 5.3125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_front_9", "composite_decking", [0, -1, 2], [27.5, 1, 3.125], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_left_9", "composite_decking", [-1, -1, 2], [1, 24.875, 3.125], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_right_9", "composite_decking", [27.5, -1, 2], [1, 24.875, 3.125], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_left_9", "composite_decking", [0, 22.875, 2], [3.5, 1, 3.125], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_rear_right_9", "composite_decking", [24, 22.875, 2], [3.5, 1, 3.125], [0.17, 0.18, 0.19, 1]],
-    ["enclosure_siding_angle_front_left_a", "black_aluminum_angle", [-1, -1.125, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_front_left_b", "black_aluminum_angle", [-1.125, -1, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_front_right_a", "black_aluminum_angle", [27.25, -1.125, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_front_right_b", "black_aluminum_angle", [28.5, -1, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_rear_left_a", "black_aluminum_angle", [-1, 23.875, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_rear_left_b", "black_aluminum_angle", [-1.125, 22.625, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_rear_right_a", "black_aluminum_angle", [27.25, 23.875, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_rear_right_b", "black_aluminum_angle", [28.5, 22.625, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_left_a", "black_aluminum_angle", [2.25, 23.875, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_left_b", "black_aluminum_angle", [3.5, 22.625, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_right_a", "black_aluminum_angle", [24, 23.875, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_right_b", "black_aluminum_angle", [23.875, 22.625, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_header_face", "black_aluminum_angle", [3.5, 23.875, 47], [20.5, 0.125, 1.25], [0.03, 0.03, 0.03, 1]],
-    ["enclosure_siding_angle_tambour_header_bottom", "black_aluminum_angle", [3.5, 22.625, 46.875], [20.5, 1.25, 0.125], [0.03, 0.03, 0.03, 1]]
+    ["enclosure_siding_top_1", "composite_decking", [0, 0, 49.875], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_top_2", "composite_decking", [0, 5.6875, 49.875], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_top_3", "composite_decking", [0, 11.375, 49.875], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_top_4", "composite_decking", [0, 17.0625, 49.875], [27.5, 5.5, 1], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_top_5", "composite_decking", [0, 22.75, 49.875], [27.5, 0.125, 1], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_1", "composite_decking", [0, -1, 45.125], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1], [[13.75, 47.75, 0.5]]],
+    ["enclosure_siding_left_1", "composite_decking", [-1, -1, 45.125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_1", "composite_decking", [27.5, -1, 45.125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_top_left", "composite_decking", [0, 22.875, 45.125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_top_header", "composite_decking", [3.5, 22.875, 47], [20.5, 1, 3.625], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_top_right", "composite_decking", [24, 22.875, 45.125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_2", "composite_decking", [0, -1, 39.4375], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_left_2", "composite_decking", [-1, -1, 39.4375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_2", "composite_decking", [27.5, -1, 39.4375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_left_2", "composite_decking", [0, 22.875, 39.4375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_right_2", "composite_decking", [24, 22.875, 39.4375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_3", "composite_decking", [0, -1, 33.75], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_left_3", "composite_decking", [-1, -1, 33.75], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_3", "composite_decking", [27.5, -1, 33.75], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_left_3", "composite_decking", [0, 22.875, 33.75], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_right_3", "composite_decking", [24, 22.875, 33.75], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_4", "composite_decking", [0, -1, 28.0625], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_left_4", "composite_decking", [-1, -1, 28.0625], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_4", "composite_decking", [27.5, -1, 28.0625], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_left_4", "composite_decking", [0, 22.875, 28.0625], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_right_4", "composite_decking", [24, 22.875, 28.0625], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_5", "composite_decking", [0, -1, 22.375], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_left_5", "composite_decking", [-1, -1, 22.375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_5", "composite_decking", [27.5, -1, 22.375], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_left_5", "composite_decking", [0, 22.875, 22.375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_right_5", "composite_decking", [24, 22.875, 22.375], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_6", "composite_decking", [0, -1, 16.6875], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_left_6", "composite_decking", [-1, -1, 16.6875], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_6_1", "composite_decking", [27.5, -1, 16.6875], [1, 17.475, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_6_2", "composite_decking", [27.5, 19.275, 16.6875], [1, 4.6, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_6_3", "composite_decking", [27.5, 16.475, 20.85], [1, 2.8, 1.3375], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_left_6", "composite_decking", [0, 22.875, 16.6875], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_right_6", "composite_decking", [24, 22.875, 16.6875], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_7", "composite_decking", [0, -1, 11], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_left_7", "composite_decking", [-1, -1, 11], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_7_1", "composite_decking", [27.5, -1, 11], [1, 17.475, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_7_2", "composite_decking", [27.5, 19.275, 11], [1, 4.6, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_7_3", "composite_decking", [27.5, 16.475, 11], [1, 2.8, 4.15], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_left_7", "composite_decking", [0, 22.875, 11], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_right_7", "composite_decking", [24, 22.875, 11], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_8", "composite_decking", [0, -1, 5.3125], [27.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_left_8", "composite_decking", [-1, -1, 5.3125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_8", "composite_decking", [27.5, -1, 5.3125], [1, 24.875, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_left_8", "composite_decking", [0, 22.875, 5.3125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_right_8", "composite_decking", [24, 22.875, 5.3125], [3.5, 1, 5.5], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_front_9", "composite_decking", [0, -1, 2], [27.5, 1, 3.125], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_left_9", "composite_decking", [-1, -1, 2], [1, 24.875, 3.125], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_right_9", "composite_decking", [27.5, -1, 2], [1, 24.875, 3.125], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_left_9", "composite_decking", [0, 22.875, 2], [3.5, 1, 3.125], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_rear_right_9", "composite_decking", [24, 22.875, 2], [3.5, 1, 3.125], [0.17, 0.18, 0.19, 1], []],
+    ["enclosure_siding_angle_front_left_a", "black_aluminum_angle", [-1, -1.125, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_front_left_b", "black_aluminum_angle", [-1.125, -1, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_front_right_a", "black_aluminum_angle", [27.25, -1.125, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_front_right_b", "black_aluminum_angle", [28.5, -1, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_rear_left_a", "black_aluminum_angle", [-1, 23.875, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_rear_left_b", "black_aluminum_angle", [-1.125, 22.625, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_rear_right_a", "black_aluminum_angle", [27.25, 23.875, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_rear_right_b", "black_aluminum_angle", [28.5, 22.625, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_tambour_left_a", "black_aluminum_angle", [2.25, 23.875, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_tambour_left_b", "black_aluminum_angle", [3.5, 22.625, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_tambour_right_a", "black_aluminum_angle", [24, 23.875, 2], [1.25, 0.125, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_tambour_right_b", "black_aluminum_angle", [23.875, 22.625, 2], [0.125, 1.25, 48.625], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_tambour_header_face", "black_aluminum_angle", [3.5, 23.875, 47], [20.5, 0.125, 1.25], [0.03, 0.03, 0.03, 1], []],
+    ["enclosure_siding_angle_tambour_header_bottom", "black_aluminum_angle", [3.5, 22.625, 46.875], [20.5, 1.25, 0.125], [0.03, 0.03, 0.03, 1], []]
 ];
 
 xygrid_bounds = [-35.25, 62.75, -37.5625, 60.4375];
@@ -544,7 +578,7 @@ build_step_objects = [
     ["low_voltage_input_adapter", 15],
     ["low_voltage_input_adapter_sealing_washer", 15],
     ["low_voltage_input_adapter_locknut", 15],
-    ["low_voltage_cable_gland_1", 15],
+    ["low_voltage_unused_port_closure", 15],
     ["low_voltage_cable_gland_2", 15],
     ["low_voltage_cable_gland_3", 15],
     ["front_wifi_access_point", 16],
@@ -553,12 +587,12 @@ build_step_objects = [
     ["power_guard_left_upright", 18],
     ["power_guard_right_upright", 18],
     ["power_guard_removable_panel", 18],
-    ["front_street_light_backer_bottom", 19],
-    ["front_street_light_backer_lower", 19],
-    ["front_street_light_backer_upper", 19],
-    ["low_voltage_street_light_service", 20],
-    ["front_street_light_base_box", 21],
-    ["power_street_light_feed", 21],
+    ["front_address_number_support", 19],
+    ["front_street_light_base_box", 20],
+    ["front_street_light_box_cover", 20],
+    ["front_street_light_uf_connector", 20],
+    ["power_street_light_feed", 20],
+    ["power_street_light_uf_b", 21],
     ["roof_shim_brace_fl_fr", 22],
     ["roof_shim_brace_fl_bl", 22],
     ["roof_shim_brace_bl_br", 22],
@@ -574,10 +608,7 @@ build_step_objects = [
     ["enclosure_siding_rear_top_left", 22],
     ["enclosure_siding_rear_top_header", 22],
     ["enclosure_siding_rear_top_right", 22],
-    ["enclosure_siding_front_2_1", 22],
-    ["enclosure_siding_front_2_2", 22],
-    ["enclosure_siding_front_2_3", 22],
-    ["enclosure_siding_front_2_4", 22],
+    ["enclosure_siding_front_2", 22],
     ["enclosure_siding_left_2", 22],
     ["enclosure_siding_right_2", 22],
     ["enclosure_siding_rear_left_2", 22],
@@ -636,7 +667,19 @@ build_step_objects = [
     ["enclosure_siding_angle_tambour_header_face", 23],
     ["enclosure_siding_angle_tambour_header_bottom", 23],
     ["front_street_light", 24],
-    ["front_address_plaque", 24],
+    ["front_street_light_bracket", 24],
+    ["front_address_number_1", 24],
+    ["front_address_number_1_standoff_1", 24],
+    ["front_address_number_1_standoff_2", 24],
+    ["front_address_number_2", 24],
+    ["front_address_number_2_standoff_1", 24],
+    ["front_address_number_2_standoff_2", 24],
+    ["front_address_number_3", 24],
+    ["front_address_number_3_standoff_1", 24],
+    ["front_address_number_3_standoff_2", 24],
+    ["front_address_number_4", 24],
+    ["front_address_number_4_standoff_1", 24],
+    ["front_address_number_4_standoff_2", 24],
     ["back_right_outlet_cover", 25]
 ];
 
@@ -1043,7 +1086,12 @@ module render_address_plaque(c, highlighted) {
 
 module render_component(c, highlighted = false) {
     color(highlighted ? build_step_highlight_color() : c_color(c)) {
-        if (c_shape(c) == "address_plaque") {
+        if (c_shape(c) == "raised_numeral") {
+            multmatrix(c_component_matrix(c))
+                linear_extrude(height = c_local_size(c)[2])
+                    resize([c_local_size(c)[0], c_local_size(c)[1]])
+                        text(c_text(c), font = "Liberation Sans:style=Regular");
+        } else if (c_shape(c) == "address_plaque") {
             render_address_plaque(c, highlighted);
         } else if (c_shape(c) == "mesh") {
             multmatrix(c_component_matrix(c))
@@ -1363,8 +1411,12 @@ module render_tambour_door_component(t, is_open, highlighted = false) {
 
 module render_siding_part(s, highlighted = false) {
     color(highlighted ? build_step_highlight_color() : s_color(s))
-        translate(s_start(s))
-            cube(s_size(s));
+        difference() {
+            translate(s_start(s)) cube(s_size(s));
+            for (b = s[5])
+                translate([b[0], s_start(s)[1] - 0.01, b[1]])
+                    rotate([-90, 0, 0]) cylinder(d = b[2], h = s_size(s)[1] + 0.02, $fn = 48);
+        }
 }
 
 module render_xygrid(bounds, origin, zloc) {
@@ -1591,6 +1643,9 @@ if (conduit_electrical_conduit) {
 }
 if (conduit_low_voltage_conduit) {
     render_conduit_assembly("low_voltage_conduit", conduit_low_voltage_conduit);
+}
+if (cable_electrical) {
+    render_cable_assembly("electrical", cable_electrical);
 }
 if (cable_ev_charger_cable) {
     render_cable_assembly("ev_charger_cable", cable_ev_charger_cable);

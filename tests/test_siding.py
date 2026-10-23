@@ -10,6 +10,7 @@ from lumber_model import (
     AbsoluteCoord,
     CompositeSiding,
     FrontSidingOpening,
+    FrontSidingBore,
     LumberCollection,
     Model,
     RightSidingOpening,
@@ -54,6 +55,33 @@ def sample_model(*sidings: CompositeSiding) -> Model:
 
 
 class CompositeSidingTests(unittest.TestCase):
+    def test_round_bore_preserves_stock_lengths_and_cuts_both_courses(self):
+        from dataclasses import replace
+        plain = sample_siding()
+        # Crossing a course edge must drill each intersected board without
+        # replacing either board with a rectangular cutout.
+        bore = FrontSidingBore("cable", 13.75, 42.4, 0.5)
+        drilled = replace(plain, front_bores=(bore,))
+        self.assertEqual([p.cut_length for p in drilled.board_parts],
+                         [p.cut_length for p in plain.board_parts])
+        self.assertEqual([p.size for p in drilled.board_parts],
+                         [p.size for p in plain.board_parts])
+        parts = [p for p in drilled.board_parts if p.front_bores]
+        self.assertEqual(len(parts), 2)
+        self.assertTrue(all(p.front_bores == (bore,) for p in parts))
+        scad = sample_model(drilled).to_scad()
+        self.assertIn("[13.75, 42.4, 0.5]", scad)
+        self.assertIn("difference()", scad)
+
+    def test_round_bore_rejects_invalid_geometry(self):
+        from dataclasses import replace
+        for diameter in (0, -1, float("nan"), float("inf")):
+            with self.subTest(diameter=diameter), self.assertRaises(ValueError):
+                FrontSidingBore("bad", 10, 20, diameter)
+        for x,z in ((0,20),(27.5,20),(10,2),(10,48)):
+            with self.subTest(x=x,z=z), self.assertRaisesRegex(ValueError,"front wall"):
+                replace(sample_siding(), front_bores=(FrontSidingBore("outside",x,z,0.5),))
+
     def test_top_boards_fill_depth_with_ripped_final_board(self) -> None:
         siding = sample_siding()
         top = [

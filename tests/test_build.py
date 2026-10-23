@@ -509,14 +509,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
                 build.TAMBOUR_TRACK_FRONT_Y,
             )
 
-        backer_rear=max(
-            build.members[name].max_on("y")
-            for name in (
-                "front_street_light_backer_bottom",
-                "front_street_light_backer_lower",
-                "front_street_light_backer_upper",
-            )
-        )
+        backer_rear=build.FRONT_ELECTRICAL_CLEARANCE_REAR_Y
         self.assertGreaterEqual(
             build.TAMBOUR_TRACK_FRONT_Y
             -tambour.slat_envelope_depth/2
@@ -889,156 +882,97 @@ class BackRightOutletBuildTests(unittest.TestCase):
 
 
 class FrontStreetLightBuildTests(unittest.TestCase):
-    def test_address_plaque_position_tracks_light_and_siding(self) -> None:
-        for dimensions in ((24, 19.375, 49.625), (36, 24, 55)):
-            with self.subTest(dimensions=dimensions):
-                enclosure = build.build_enclosure(*dimensions)
-                instance = enclosure.components["front_address_plaque"]
-                plaque = instance.resolved(enclosure.members[instance.member])
-                light_instance = enclosure.components["front_street_light"]
-                light = light_instance.resolved(enclosure.members[light_instance.member])
-                self.assertVectorAlmostEqual(plaque.box_size, (16, 0.5, 3))
-                self.assertAlmostEqual(plaque.box_min[0], light.box_min[0])
-                self.assertAlmostEqual(
-                    plaque.box_min[1] + plaque.box_size[1],
-                    enclosure.siding.min_y - enclosure.siding.board_thickness,
-                )
-                self.assertAlmostEqual(
-                    light.box_min[2] - (plaque.box_min[2] + plaque.box_size[2]), 3,
-                )
-                # Outside view reads left-to-right and upright toward negative Y.
-                self.assertEqual(plaque.along_vec, (1, 0, 0))
-                self.assertEqual(plaque.across_vec, (0, 0, 1))
-                self.assertEqual(plaque.out_vec, (0, -1, 0))
-                self.assertEqual(plaque.text, "4754")
-                self.assertIn('"address_plaque"', plaque.scad_record())
-                self.assertIn('"4754", [16, 3, 0.5]', plaque.scad_record())
+    def resolved(self, enclosure, name):
+        c = enclosure.components[name]
+        return c.resolved(enclosure.members[c.member])
 
-        self.assertVectorAlmostEqual(plaque.box_min, (11.75, -1.5, 40.8))
-        instance = build.components["front_address_plaque"]
-        self.assertVectorAlmostEqual(
-            instance.resolved(build.members[instance.member]).box_min,
-            (5.75, -1.5, 35.425),
-        )
-
-    def test_address_plaque_inventory_has_one_finished_sign(self) -> None:
-        for rows in (build.model.bom_rows(), build.model.shopping_list_rows()):
-            plaque = next(row for row in rows if "address plaque 4754" in row["type"])
-            self.assertEqual(plaque["qty"], 1)
-            self.assertIn("16 x 3 x 0.5", plaque["type"])
-
-    def assertVectorAlmostEqual(
-        self,
-        actual: tuple[float, float, float],
-        expected: tuple[float, float, float],
-    ) -> None:
+    def assertVectorAlmostEqual(self, actual, expected):
         for a, e in zip(actual, expected, strict=True):
             self.assertAlmostEqual(a, e)
 
-    def test_backers_span_front_posts_and_form_contiguous_backing_field(self) -> None:
-        for name, expected_z in (
-            ("front_street_light_backer_bottom", 37.375),
-            ("front_street_light_backer_lower", 40.875),
-            ("front_street_light_backer_upper", 44.375),
-        ):
-            with self.subTest(name=name):
-                backer = build.members[name]
-                self.assertEqual(backer.axis, "x")
-                self.assertEqual(backer.length, 20.5)
-                self.assertFalse(backer.rotated)
-                self.assertAlmostEqual(backer.min_on("y"), 2.30)
-                self.assertAlmostEqual(backer.center_on("z"), expected_z)
-
-        bottom = build.members["front_street_light_backer_bottom"]
-        lower = build.members["front_street_light_backer_lower"]
-        upper = build.members["front_street_light_backer_upper"]
-        self.assertAlmostEqual(bottom.min_on("z"), 35.625)
-        self.assertAlmostEqual(bottom.max_on("z"), lower.min_on("z"))
-        self.assertAlmostEqual(lower.max_on("z"), upper.min_on("z"))
-        self.assertAlmostEqual(upper.max_on("z"), 46.125)
-
-    def test_recessed_box_and_brook_have_finished_position(self) -> None:
-        lower_backer = build.members["front_street_light_backer_lower"]
-        box = build.components["front_street_light_base_box"].resolved(lower_backer)
-        light = build.components["front_street_light"].resolved(lower_backer)
-
-        self.assertVectorAlmostEqual(box.box_min, (11.75, -1.0, 41.625))
-        self.assertVectorAlmostEqual(box.box_size, (4.0, 3.3, 2.0))
-        self.assertVectorAlmostEqual(light.box_min, (5.75, -4.9, 41.425))
-        self.assertVectorAlmostEqual(light.box_size, (16.0, 3.9, 2.4))
-        self.assertAlmostEqual(box.box_min[1]+box.box_size[1], lower_backer.min_on("y"))
-        self.assertAlmostEqual(light.box_min[1]+light.box_size[1], box.box_min[1])
-        self.assertAlmostEqual(box.box_min[1], build.siding.min_y-build.siding.board_thickness)
-        self.assertNotIn("front_street_light_extension_ring", build.components)
-
-    def test_bottom_port_receives_conduit(self) -> None:
-        self.assertVectorAlmostEqual(
-            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(build.members),
-            (13.75, 0.65, 41.625),
-        )
-        self.assertIsInstance(
-            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
-            ComponentAnchor,
-        )
-
-    def test_siding_is_cut_out_around_recessed_box(self) -> None:
-        opening = build.FRONT_STREET_LIGHT_SIDING_OPENING
-
-        for part in build.siding.board_parts:
-            if "_front_" not in part.name:
-                continue
-            overlaps_x = max(part.start[0], opening.min_x) < min(
-                part.start[0] + part.size[0],
-                opening.max_x,
-            )
-            overlaps_z = max(part.start[2], opening.bottom_z) < min(
-                part.start[2] + part.size[2],
-                opening.top_z,
-            )
-            self.assertFalse(overlaps_x and overlaps_z, part.name)
-
-    def test_brook_mount_and_clearances_follow_enclosure_dimensions(self) -> None:
+    def test_mount_bore_and_numbers_follow_frame_dimensions(self):
         for dimensions in ((24, 19.375, 49.625), (36, 24, 55)):
             with self.subTest(dimensions=dimensions):
-                enclosure = build.build_enclosure(*dimensions)
-                backer = enclosure.members["front_street_light_backer_lower"]
-                light = enclosure.components["front_street_light"].resolved(backer)
-                box = enclosure.components["front_street_light_base_box"].resolved(backer)
-                opening = enclosure.FRONT_STREET_LIGHT_SIDING_OPENING
-                # Test the actual central primitive, rather than the full bar's
-                # envelope, so a visible hole cannot hide behind an empty region.
-                plate_min, plate_size = light.box_primitives[0]
-                plate_x = light.origin[0]+plate_min[0]
-                plate_z = light.origin[2]+plate_min[1]
-                self.assertLess(plate_x, opening.min_x)
-                self.assertGreater(plate_x+plate_size[0], opening.max_x)
-                self.assertLess(plate_z, opening.bottom_z)
-                self.assertGreater(plate_z+plate_size[1], opening.top_z)
-                self.assertAlmostEqual(light.origin[1], box.box_min[1])
-                self.assertAlmostEqual(backer.min_on("y"), 2.3)
-                self.assertAlmostEqual(enclosure.TAMBOUR_TRACK_FRONT_Y, 5.0)
-                self.assertAlmostEqual(light.origin[0]+8, (dimensions[0]+3.5)/2)
-                self.assertAlmostEqual(light.origin[2]+1.2, dimensions[2]-7)
-                conduit = enclosure.conduits["power_street_light_feed"].resolved(
-                    enclosure.components, enclosure.members
-                )
-                self.assertVectorAlmostEqual(conduit.points[-1], (
-                    box.box_min[0]+box.box_size[0]/2,
-                    box.box_min[1]+box.box_size[1]/2,
-                    box.box_min[2],
-                ))
-                service = enclosure.cables["low_voltage_street_light_service"]
-                self.assertAlmostEqual(service.points[-1][1], conduit.points[-1][1])
-                self.assertGreater(service.points[-1][2], box.box_min[2]+box.box_size[2])
+                e = build.build_enclosure(*dimensions)
+                brace = e.members["brace_fl_fr"]
+                light = self.resolved(e, "front_street_light")
+                bracket = self.resolved(e, "front_street_light_bracket")
+                self.assertVectorAlmostEqual(light.box_size, (16, 3.9, 2.4))
+                self.assertAlmostEqual(light.box_min[2]+1.2, brace.min_on("z")+0.5)
+                self.assertGreaterEqual(bracket.box_min[2], brace.min_on("z"))
+                self.assertLessEqual(bracket.box_min[2]+bracket.box_size[2], brace.max_on("z"))
+                self.assertAlmostEqual(light.box_min[1]+3.9, -e.siding.board_thickness)
+                bore = e.FRONT_STREET_LIGHT_SIDING_BORE
+                self.assertEqual(e.siding.front_openings, ())
+                self.assertEqual(bore.diameter, 0.5)
+                self.assertLess(bore.center_z+bore.diameter/2, brace.min_on("z"))
+                self.assertGreater(bore.center_z-bore.diameter/2, light.box_min[2])
+                self.assertAlmostEqual(bore.center_x, light.box_min[0]+8)
+                parts = [p for p in e.siding.board_parts if p.front_bores]
+                self.assertEqual(len(parts), 1)
+                self.assertEqual(parts[0].front_bores, (bore,))
+                support = e.members["front_address_number_support"]
+                self.assertVectorAlmostEqual(support.size, (dimensions[0]-3.5, 1, 5.5))
+                self.assertEqual(support.min_on("y"), 0)
+                self.assertEqual(support.min_on("x"), e.members["post_fl"].max_on("x"))
+                self.assertEqual(support.max_on("x"), e.members["post_fr"].min_on("x"))
+                digits = [self.resolved(e, f"front_address_number_{i}") for i in range(1,5)]
+                self.assertEqual("".join(d.text for d in digits), "4754")
+                self.assertAlmostEqual(digits[-1].box_min[0]+2.25-digits[0].box_min[0], 12)
+                self.assertAlmostEqual((digits[0].box_min[0]+digits[-1].box_min[0]+2.25)/2, bore.center_x)
+                for i, digit in enumerate(digits, 1):
+                    self.assertVectorAlmostEqual(digit.box_size, (2.25, 1, 5))
+                    self.assertAlmostEqual(light.box_min[2]-digit.box_min[2]-5, 3)
+                    self.assertAlmostEqual(digit.box_min[1], -3)
+                    for pin in (1,2):
+                        standoff = self.resolved(e, f"front_address_number_{i}_standoff_{pin}")
+                        self.assertAlmostEqual(standoff.box_min[1], -2)
+                        self.assertAlmostEqual(standoff.box_size[1], 1)
+                        self.assertGreater(standoff.box_min[2], support.min_on("z"))
+                        self.assertLess(standoff.box_min[2]+standoff.box_size[2], support.max_on("z"))
 
-    def test_inventory_identifies_brook_and_provisional_box(self) -> None:
-        rows = {row["name"]: row for row in build.model.bom_rows()}
-        light = rows["mod_lighting_brook_16_black_3000k"]
-        box = rows["provisional_brook_recessed_junction_box"]
-        self.assertEqual(light["qty"], 1)
-        self.assertIn("45573961023747", light["type"])
-        self.assertEqual(box["qty"], 1)
-        self.assertIn("PROVISIONAL", box["type"])
+    def test_transition_box_and_conduit_use_real_round_box(self):
+        for e in (build.default_build, build.build_enclosure(36,24,55)):
+            box = self.resolved(e, "front_street_light_base_box")
+            self.assertEqual(box.type_name, "commercial_electric_wrb550b_outlet_box")
+            self.assertAlmostEqual(box.box_min[0]+box.box_size[0], e.members["post_fr"].min_on("x"))
+            self.assertAlmostEqual(box.box_min[2]+box.box_size[2], e.members["brace_fl_fr"].min_on("z")-4)
+            conduit = e.conduits["power_street_light_feed"].resolved(e.components,e.members)
+            self.assertVectorAlmostEqual(conduit.points[-1], e.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT)
+            self.assertVectorAlmostEqual(conduit.points[-1], (
+                box.box_min[0]+box.box_size[0]/2,
+                box.box_min[1]+box.box_size[1]/2, box.box_min[2]))
+            self.assertAlmostEqual(conduit.points[-2][0], conduit.points[-1][0])
+            self.assertAlmostEqual(conduit.points[-2][1], conduit.points[-1][1])
+            cover = self.resolved(e, "front_street_light_box_cover")
+            self.assertAlmostEqual(cover.box_min[0]+cover.box_size[0], box.box_min[0])
+            self.assertEqual(cover.out_vec, (-1,0,0))
+
+    def test_uf_b_is_continuous_and_bends_below_brace(self):
+        for e in (build.default_build, build.build_enclosure(36,24,55)):
+            cable = e.cables["power_street_light_uf_b"]
+            connector = self.resolved(e, "front_street_light_uf_connector")
+            self.assertAlmostEqual(cable.points[0][2], connector.box_min[2]+connector.box_size[2])
+            self.assertGreaterEqual(minimum_cable_bend_radius(cable.points), 2-1e-6)
+            self.assertLess(max(p[2] for p in cable.points)+cable.diameter/2, e.members["brace_fl_fr"].min_on("z"))
+            self.assertVectorAlmostEqual(cable.points[-1], (
+                e.FRONT_STREET_LIGHT_CENTER_X,-1.125,e.FRONT_STREET_LIGHT_SIDING_BORE.center_z))
+            self.assertTrue(all(p[0] < e.members["post_fr"].min_on("x") for p in cable.points))
+
+    def test_inventory_and_removed_hardware(self):
+        e = build.default_build
+        self.assertFalse(any(n.startswith("front_street_light_backer") for n in e.members))
+        for name in ("front_address_plaque", "front_street_light_extension_ring", "low_voltage_cable_gland_1"):
+            self.assertNotIn(name, e.components)
+        self.assertNotIn("low_voltage_street_light_service", e.cables)
+        rows = {r["name"]:r for r in e.model.bom_rows()}
+        self.assertNotIn("provisional_brook_recessed_junction_box",rows)
+        self.assertEqual(rows["silver_address_number_standoff"]["qty"],8)
+        self.assertIn("commercial_electric_fsw50z_12_2_1",rows)
+        self.assertIn("commercial_electric_wrb550b_outlet_box",rows)
+        scad = e.model.to_scad()
+        self.assertIn('c_shape(c) == "raised_numeral"', scad)
+        self.assertIn('for (b = s[5])', scad)
 
 
 class PowerJunctionBuildTests(unittest.TestCase):
@@ -1276,85 +1210,17 @@ class PowerJunctionBuildTests(unittest.TestCase):
             enclosure.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(enclosure.members),
         )
         self.assertEqual(len(ev.points), 2)
-        self.assertEqual(light.bends, ((1, 2.5), (2, 3), (3, 3)))
+        self.assertEqual(light.bends, ((1, 2.5),))
         self.assertGreater(len(light.points), 20)
 
-    def test_street_light_feed_sweeps_left_into_bottom_port(self) -> None:
+    def test_street_light_feed_rises_into_transition_box(self):
         light = self.resolved_conduit("power_street_light_feed")
-        adapter = build.components["power_junction_light_adapter"].resolved(
-            build.members["front_center_rail"]
-        )
-        outlet = build.components["power_junction_outlet_adapter"].resolved(
-            build.members["front_center_rail"]
-        )
-
-        self.assertEqual(
-            build.components["power_junction_light_adapter"].orientation,
-            "left",
-        )
-        self.assertAlmostEqual(adapter.box_min[0], build.POWER_JUNCTION_RIGHT_X-0.5)
-        self.assertLess(
-            adapter.box_min[1]+adapter.box_size[1]/2,
-            outlet.box_min[1]+outlet.box_size[1]/2,
-        )
-        self.assertAlmostEqual(
-            adapter.box_min[2]+adapter.box_size[2]/2,
-            build.POWER_JUNCTION_LIGHT_PORT_Z,
-        )
-        self.assertAlmostEqual(
-            outlet.box_min[2]+outlet.box_size[2]/2,
-            build.POWER_OUTLET_HORIZONTAL_RUN_Z,
-        )
-        self.assertVectorAlmostEqual(
-            light.points[0],
-            build.POWER_LIGHT_ADAPTER_END,
-        )
-        self.assertVectorAlmostEqual(
-            light.points[-1], build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
-        )
-        self.assertAlmostEqual(
-            max(point[0] for point in light.points),
-            build.POWER_LIGHT_POST_X,
-        )
-        self.assertGreaterEqual(
-            build.TAMBOUR_FRONT_Y
-            - max(point[1] for point in light.points)
-            - CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2,
-            build.TAMBOUR_BRACE_CLEARANCE,
-        )
-        self.assertGreater(light.points[-1][2], light.points[0][2])
-        self.assertAlmostEqual(
-            light.points[-1][0],
-            build.FRONT_STREET_LIGHT_CENTER_X,
-        )
-
-        raw_points = build.conduits["power_street_light_feed"].points
-        lower_post_point = raw_points[1].resolve(build.members)
-        upper_post_point = raw_points[2].resolve(build.members)
-        horizontal_end = raw_points[3].resolve(build.members)
-        self.assertAlmostEqual(lower_post_point[0], build.POWER_LIGHT_POST_X)
-        self.assertAlmostEqual(upper_post_point[0], build.POWER_LIGHT_POST_X)
-        self.assertAlmostEqual(
-            lower_post_point[1],
-            build.POWER_JUNCTION_LIGHT_PORT_Y,
-        )
-        self.assertAlmostEqual(
-            upper_post_point[1],
-            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-        )
-        self.assertAlmostEqual(
-            upper_post_point[2],
-            build.POWER_LIGHT_HORIZONTAL_RUN_Z,
-        )
-        self.assertAlmostEqual(
-            horizontal_end[2],
-            build.POWER_LIGHT_HORIZONTAL_RUN_Z,
-        )
-        self.assertGreater(upper_post_point[0], horizontal_end[0])
-        self.assertAlmostEqual(
-            horizontal_end[0],
-            build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[0],
-        )
+        self.assertVectorAlmostEqual(light.points[0], build.POWER_LIGHT_ADAPTER_END)
+        self.assertVectorAlmostEqual(light.points[-1], build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT)
+        self.assertGreater(light.points[-1][2],light.points[0][2])
+        self.assertEqual(light.bends, ((1,2.5),))
+        self.assertAlmostEqual(max(p[0] for p in light.points), build.POWER_LIGHT_POST_X)
+        self.assertAlmostEqual(light.points[-2][1],light.points[-1][1])
 
     def test_layout_tracks_resized_enclosures(self) -> None:
         for enclosure in (
@@ -1493,7 +1359,7 @@ class LowVoltageBuildTests(unittest.TestCase):
             self.resolved_component("low_voltage_input_adapter"),
             *(
                 self.resolved_component(f"low_voltage_cable_gland_{index}")
-                for index in range(1, 4)
+                for index in range(2, 4)
             ),
         ]
 
@@ -1607,21 +1473,14 @@ class LowVoltageBuildTests(unittest.TestCase):
 
     def test_low_voltage_cables_follow_routes_and_bend_limits(self) -> None:
         expected_endpoints = {
-            "low_voltage_street_light_service": (
-                build.FRONT_STREET_LIGHT_CENTER_X,
-                build.FRONT_STREET_LIGHT_CONDUIT_ENTRY.y,
-                build.LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-            ),
             "low_voltage_wifi_feed": build.path_2_entry,
             "low_voltage_ev_charger_feed": build.path_3_entry,
         }
         expected_colors = {
-            "low_voltage_street_light_service": build.LOW_VOLTAGE_STREET_LIGHT_COLOR,
             "low_voltage_wifi_feed": build.LOW_VOLTAGE_CAT6_COLOR,
             "low_voltage_ev_charger_feed": build.LOW_VOLTAGE_CAT6_COLOR,
         }
         expected_gland_indices = {
-            "low_voltage_street_light_service": 0,
             "low_voltage_wifi_feed": 2,
             "low_voltage_ev_charger_feed": 1,
         }
@@ -1644,29 +1503,6 @@ class LowVoltageBuildTests(unittest.TestCase):
                 minimum_cable_bend_radius(cable.points),
                 build.LOW_VOLTAGE_MINIMUM_BEND_RADIUS-1e-6,
             )
-
-        service = build.cables["low_voltage_street_light_service"]
-        self.assertAlmostEqual(min(point[2] for point in service.points[-50:]), 45.5625)
-        self.assertIn(build.path_1_post, service.points)
-        self.assertGreater(
-            build.path_1_post[0],
-            build.members["post_fl"].max_on("x"),
-        )
-        self.assertGreater(service.points[-2][0], service.points[-1][0])
-        light_backers = (
-            build.members["front_street_light_backer_lower"],
-            build.members["front_street_light_backer_upper"],
-        )
-        for point in service.points:
-            for backer in light_backers:
-                clearance = build.LOW_VOLTAGE_CABLE_DIAMETER/2
-                inside_backer = all(
-                    backer.min_on(axis)-clearance
-                    <= point[index]
-                    <= backer.max_on(axis)+clearance
-                    for index,axis in enumerate("xyz")
-                )
-                self.assertFalse(inside_backer)
 
         wifi_feed = build.cables["low_voltage_wifi_feed"]
         self.assertEqual(
@@ -1783,14 +1619,9 @@ class LowVoltageBuildTests(unittest.TestCase):
         self.assertGreater(build.path_3_entry[2], build.path_3_rail_clear[2])
         self.assertTrue(all(point[1] < build.path_3_entry[1] for point in ev_feed.points[:-1]))
 
-        for cable in (service, wifi_feed, ev_feed):
+        for cable in (wifi_feed, ev_feed):
             self.assertLess(cable.points[1][2], cable.points[0][2])
 
-        self.assertIn(build.path_1_spline_bottom, service.points)
-        self.assertAlmostEqual(
-            min(point[2] for point in service.points),
-            build.LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z,
-        )
         self.assertGreaterEqual(
             minimum_cable_bend_radius(wifi_feed.points),
             build.LOW_VOLTAGE_GLAND_EXIT_TURN_RADIUS,
@@ -1979,7 +1810,6 @@ class ParameterizedBuildTests(unittest.TestCase):
             enclosure.BACK_RIGHT_OUTLET_CONDUIT_ENTRY.resolve(enclosure.members),
         )
         for name in (
-            "low_voltage_street_light_service",
             "low_voltage_wifi_feed",
             "low_voltage_ev_charger_feed",
         ):
@@ -2027,7 +1857,6 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertAlmostEqual(taller.TAMBOUR_REAR_VERTICAL_LENGTH, 46.75)
         self.assertAlmostEqual(taller.TAMBOUR_TOP_TANGENT_LENGTH, 11.75)
         self.assertAlmostEqual(taller.TAMBOUR_FRONT_VERTICAL_LENGTH, 33.75)
-        self.assertAlmostEqual(taller.LOW_VOLTAGE_SERVICE_LOOP_TOP_Z, 50.9375)
 
         for name in (
             "front_street_light",
@@ -2081,7 +1910,6 @@ class ParameterizedBuildTests(unittest.TestCase):
         )
 
         for name in (
-            "low_voltage_street_light_service",
             "low_voltage_wifi_feed",
             "low_voltage_ev_charger_feed",
         ):

@@ -35,7 +35,8 @@ from lumber_model import (
     CONDUIT_OD_BY_TRADE_SIZE,
     Footing,
     GroundSurface,
-    FrontSidingOpening,
+    FrontSidingBore,
+    COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
     LumberCollection,
     Model,
     PurchasedItem,
@@ -311,26 +312,13 @@ def build_enclosure(
     TAMBOUR_FRONT_BOTTOM_Z=16
     TAMBOUR_BEND_RADIUS=TAMBOUR_FABRICATION.bend_radius/MM_PER_INCH
 
-    # The front electrical assembly remains fixed.  Put the curtain as far
-    # forward as its outward envelope and required clearance allow, rounded
-    # rearward to construction-friendly 1/8-inch resolution.
-    # Preserve the established backing and tambour clearance. The provisional
-    # recessed box fills the 3.3-inch setback from the siding to that backing.
+    # Retain the established tambour clearance datum after removing the old
+    # light backers. New hardware must fit forward of this reserved plane.
     FRONT_STREET_LIGHT_BOX_FACE_Y=-SIDING_BOARD_THICKNESS
-    FRONT_STREET_LIGHT_BOX_BACK_Y=FRONT_STREET_LIGHT_BOX_FACE_Y+3.3
-    FRONT_STREET_LIGHT_RECESSED_BOX=ComponentType(
-        name="provisional_brook_recessed_junction_box",
-        size=(4.0, 2.0,
-              FRONT_STREET_LIGHT_BOX_BACK_Y-FRONT_STREET_LIGHT_BOX_FACE_Y),
-        color=(0.40, 0.42, 0.44, 1.0),
-        default_face="narrow_neg",
-    )
-    FRONT_STREET_LIGHT_BACKER_REAR_Y=(
-        FRONT_STREET_LIGHT_BOX_BACK_Y+HEIGHT_2x4
-    )
+    FRONT_ELECTRICAL_CLEARANCE_REAR_Y=3.8
     TAMBOUR_PLACEMENT_INCREMENT=1/8
     TAMBOUR_MINIMUM_TRACK_FRONT_Y=(
-        FRONT_STREET_LIGHT_BACKER_REAR_Y
+        FRONT_ELECTRICAL_CLEARANCE_REAR_Y
         +TAMBOUR_OUTWARD_ENVELOPE_DEPTH
         +TAMBOUR_BRACE_CLEARANCE
     )
@@ -606,78 +594,36 @@ def build_enclosure(
     )
 
     FRONT_STREET_LIGHT_CENTER_X=(FRAME_DIMS.x + WIDTH_4x4) / 2
-    FRONT_STREET_LIGHT_TOP_OFFSET=7
-    FRONT_STREET_LIGHT_CENTER_Z=FRAME_DIMS.z-FRONT_STREET_LIGHT_TOP_OFFSET
-    FRONT_STREET_LIGHT_BACKER_CROSS_OFFSET=(
-        FRONT_STREET_LIGHT_BOX_BACK_Y
-        + HEIGHT_2x4 / 2
-        - WIDTH_4x4 / 2
+    FRONT_STREET_LIGHT_CENTER_Z=members["brace_fl_fr"].min_on("z")+0.5
+    FRONT_STREET_LIGHT_CABLE_Z=members["brace_fl_fr"].min_on("z")-0.375
+    FRONT_STREET_LIGHT_SIDING_BORE=FrontSidingBore(
+        "front_street_light", FRONT_STREET_LIGHT_CENTER_X,
+        FRONT_STREET_LIGHT_CABLE_Z, 0.5,
     )
-    FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET=3.5 / 2
-
-    for name,position in [
-        (
-            "front_street_light_backer_bottom",
-            FRONT_STREET_LIGHT_CENTER_Z
-            - 3 * FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
-        ),
-        (
-            "front_street_light_backer_lower",
-            FRONT_STREET_LIGHT_CENTER_Z - FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
-        ),
-        (
-            "front_street_light_backer_upper",
-            FRONT_STREET_LIGHT_CENTER_Z + FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
-        ),
-    ]:
-        members.between(
-            name,
-            assembly="electrical_backing",
-            type="2x4",
-            support_a="post_fl",
-            support_b="post_fr",
-            position=position,
-            cross_offset=FRONT_STREET_LIGHT_BACKER_CROSS_OFFSET,
-            rotated=False,
-        )
-
-    FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR=ComponentAnchor(
-        "front_street_light_base_box",
-        position=(
-            FRONT_STREET_LIGHT_RECESSED_BOX.size[0]/2,
-            0,
-        ),
+    FRONT_STREET_LIGHT_BOX_TOP_Z=members["brace_fl_fr"].min_on("z")-4
+    FRONT_STREET_LIGHT_BOX_CENTER_Z=(
+        FRONT_STREET_LIGHT_BOX_TOP_Z-COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1]/2
     )
+    FRONT_STREET_LIGHT_BOX_CENTER_Y=0.25+COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2
+    FRONT_STREET_LIGHT_BOX_BASIS=((0,-1,0),(0,0,1),(-1,0,0))
     FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT=(
-        FRONT_STREET_LIGHT_CENTER_X,
-        FRONT_STREET_LIGHT_BOX_BACK_Y
-        - FRONT_STREET_LIGHT_RECESSED_BOX.size[2]/2,
-        FRONT_STREET_LIGHT_CENTER_Z
-        - FRONT_STREET_LIGHT_RECESSED_BOX.size[1]/2,
+        members["post_fr"].min_on("x")-COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]/2,
+        FRONT_STREET_LIGHT_BOX_CENTER_Y,
+        FRONT_STREET_LIGHT_BOX_TOP_Z-COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1],
     )
     FRONT_STREET_LIGHT_CONDUIT_ENTRY=_member_relative_coord(
-        "post_fl",
-        *FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT,
+        "post_fr", *FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT,
     )
-
-    FRONT_STREET_LIGHT_SIDING_OPENING=FrontSidingOpening(
-        "front_street_light",
-        min_x=(
-            FRONT_STREET_LIGHT_CENTER_X
-            - FRONT_STREET_LIGHT_RECESSED_BOX.size[0] / 2
-        ),
-        max_x=(
-            FRONT_STREET_LIGHT_CENTER_X
-            + FRONT_STREET_LIGHT_RECESSED_BOX.size[0] / 2
-        ),
-        bottom_z=(
-            FRONT_STREET_LIGHT_CENTER_Z
-            - FRONT_STREET_LIGHT_RECESSED_BOX.size[1] / 2
-        ),
-        top_z=(
-            FRONT_STREET_LIGHT_CENTER_Z
-            + FRONT_STREET_LIGHT_RECESSED_BOX.size[1] / 2
-        ),
+    FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR=ComponentAnchor(
+        "front_street_light_base_box",
+        position=(COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2, 0),
+    )
+    FRONT_ADDRESS_CENTER_Z=FRONT_STREET_LIGHT_CENTER_Z-1.2-3-2.5
+    members.add(
+        "front_address_number_support", assembly="electrical_backing",
+        type="5/4x6", axis="x", rotated=False,
+        start=AbsoluteCoord(members["post_fl"].max_on("x"), 0, FRONT_ADDRESS_CENTER_Z-2.75),
+        length=members["post_fr"].min_on("x")-members["post_fl"].max_on("x"),
     )
 
     grounds = [
@@ -836,7 +782,6 @@ def build_enclosure(
     LOW_VOLTAGE_CABLE_DIAMETER=1/8
     LOW_VOLTAGE_MINIMUM_BEND_RADIUS=5*LOW_VOLTAGE_CABLE_DIAMETER
     LOW_VOLTAGE_CAT6_COLOR=(0.05, 0.2, 0.8, 1.0)
-    LOW_VOLTAGE_STREET_LIGHT_COLOR=(0.18, 0.07, 0.025, 1.0)
 
     components = ComponentCollection()
 
@@ -1036,6 +981,8 @@ def build_enclosure(
     )
 
     for index,gland_x in enumerate(LOW_VOLTAGE_GLAND_XS, start=1):
+        if index == 1:
+            continue
         components.add(
             f"low_voltage_cable_gland_{index}",
             assembly="low_voltage_fittings",
@@ -1052,57 +999,85 @@ def build_enclosure(
         )
 
     components.add(
-        "front_street_light_base_box",
-        assembly="electrical",
-        component_type=FRONT_STREET_LIGHT_RECESSED_BOX,
-        member="front_street_light_backer_lower",
-        at=(
-            FRONT_STREET_LIGHT_CENTER_X
-            - members["front_street_light_backer_lower"].min_on("x")
-        ),
-        face="narrow_neg",
-        offset=(0, FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET, 0),
+        "low_voltage_unused_port_closure", assembly="low_voltage_fittings",
+        component_type=ComponentType(
+            name="half_inch_panel_hole_weatherproof_closure", size=(0.65,0.65,0.15),
+            shape="primitive_union", cylinder_primitives=(((0.325,0.325,0),"out",0.15,0.65),),
+        ), member="front_center_rail", at=0, face="wide_neg", orientation="down",
+        absolute_anchor=(LOW_VOLTAGE_GLAND_XS[0], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_BOX_BOTTOM_Z),
     )
 
     components.add(
-        "front_street_light",
-        assembly="electrical",
-        component_type=MOD_LIGHTING_BROOK_16,
-        member="front_street_light_backer_lower",
-        at=(
-            FRONT_STREET_LIGHT_CENTER_X
-            - members["front_street_light_backer_lower"].min_on("x")
-        ),
-        face="narrow_neg",
-        offset=(
-            0,
-            FRONT_STREET_LIGHT_BACKER_CENTER_OFFSET,
-            FRONT_STREET_LIGHT_RECESSED_BOX.size[2],
-        ),
-    )
-
-    address_plaque = ComponentType(
-        name="copper_address_plaque_4754",
-        size=(16.0, 3.0, 0.5),
-        color=(0.72, 0.45, 0.28, 1.0),
-        default_face="narrow_neg",
-        shape="address_plaque",
-        text="4754",
+        "front_street_light_base_box", assembly="electrical",
+        component_type=COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
+        member="post_fr", at=0, face="wide_neg",
+        absolute_anchor=(members["post_fr"].min_on("x"), FRONT_STREET_LIGHT_BOX_CENTER_Y,
+                         FRONT_STREET_LIGHT_BOX_CENTER_Z),
+        component_basis=FRONT_STREET_LIGHT_BOX_BASIS,
     )
     components.add(
-        "front_address_plaque",
-        assembly="exterior_fixtures",
-        component_type=address_plaque,
-        member="front_street_light_backer_bottom",
-        at=0,
-        absolute_anchor=(
-            FRONT_STREET_LIGHT_CENTER_X,
-            FRONT_STREET_LIGHT_BOX_FACE_Y,
-            FRONT_STREET_LIGHT_CENTER_Z - MOD_LIGHTING_BROOK_16.size[1] / 2
-            - 3.0 - address_plaque.size[1] / 2,
-        ),
-        component_basis=((1, 0, 0), (0, 0, 1), (0, -1, 0)),
+        "front_street_light_box_cover", assembly="electrical",
+        component_type=ComponentType(
+            name="commercial_electric_wbc300g_cover", size=(4.2,4.2,0.15),
+            color=(0.4,0.42,0.44,1), shape="primitive_union",
+            cylinder_primitives=(((2.1,2.1,0),"out",0.15,4.2),),
+        ), member="post_fr", at=0, face="wide_neg",
+        absolute_anchor=(members["post_fr"].min_on("x")-1.6,
+                         FRONT_STREET_LIGHT_BOX_CENTER_Y, FRONT_STREET_LIGHT_BOX_CENTER_Z),
+        component_basis=FRONT_STREET_LIGHT_BOX_BASIS,
     )
+    FRONT_UF_CONNECTOR_LENGTH=1.25  # Schematic envelope, not a machining dimension.
+    FRONT_UF_CONNECTOR_ORIGIN=(FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[0],
+                               FRONT_STREET_LIGHT_BOX_CENTER_Y, FRONT_STREET_LIGHT_BOX_TOP_Z)
+    components.add(
+        "front_street_light_uf_connector", assembly="electrical",
+        component_type=ComponentType(
+            name="commercial_electric_fsw50z_12_2_1", size=(1.12,1.12,FRONT_UF_CONNECTOR_LENGTH),
+            shape="primitive_union", color=(0.5,0.52,0.54,1),
+            cylinder_primitives=(((0.56,0.56,0),"out",FRONT_UF_CONNECTOR_LENGTH,1.12),),
+        ), member="post_fr", at=0, face="wide_neg",
+        absolute_anchor=FRONT_UF_CONNECTOR_ORIGIN,
+        component_basis=((1,0,0),(0,1,0),(0,0,1)),
+    )
+    components.add(
+        "front_street_light", assembly="electrical", component_type=MOD_LIGHTING_BROOK_16,
+        member="brace_fl_fr", at=0, face="wide_neg",
+        absolute_anchor=(FRONT_STREET_LIGHT_CENTER_X, FRONT_STREET_LIGHT_BOX_FACE_Y,
+                         FRONT_STREET_LIGHT_CENTER_Z),
+        component_basis=((1,0,0),(0,0,1),(0,-1,0)),
+    )
+    components.add(
+        "front_street_light_bracket", assembly="electrical",
+        component_type=ComponentType(
+            name="brook_supplied_bracket_schematic", size=(5.5,0.5,0.08),
+            color=(0.55,0.57,0.59,1),
+        ), member="brace_fl_fr", at=0, face="wide_neg",
+        absolute_anchor=(FRONT_STREET_LIGHT_CENTER_X, FRONT_STREET_LIGHT_BOX_FACE_Y,
+                         FRONT_STREET_LIGHT_CENTER_Z),
+        component_basis=((1,0,0),(0,0,1),(0,-1,0)),
+    )
+    for index,digit in enumerate("4754", start=1):
+        number_x=FRONT_STREET_LIGHT_CENTER_X-6+(index-1)*3.25+1.125
+        components.add(
+            f"front_address_number_{index}", assembly="exterior_fixtures",
+            component_type=ComponentType(
+                name=f"silver_address_digit_{digit}", size=(2.25,5,1),
+                color=(0.75,0.77,0.8,1), shape="raised_numeral", text=digit,
+            ), member="front_address_number_support", at=0, face="wide_neg",
+            absolute_anchor=(number_x, FRONT_STREET_LIGHT_BOX_FACE_Y-1, FRONT_ADDRESS_CENTER_Z),
+            component_basis=((1,0,0),(0,0,1),(0,-1,0)),
+        )
+        for pin,z_offset in enumerate((-1.5,1.5),start=1):
+            components.add(
+                f"front_address_number_{index}_standoff_{pin}", assembly="exterior_fixtures",
+                component_type=ComponentType(
+                    name="silver_address_number_standoff", size=(0.375,0.375,1),
+                    color=(0.75,0.77,0.8,1), shape="primitive_union",
+                    cylinder_primitives=(((0.1875,0.1875,0),"out",1,0.375),),
+                ), member="front_address_number_support", at=0, face="wide_neg",
+                absolute_anchor=(number_x,FRONT_STREET_LIGHT_BOX_FACE_Y, FRONT_ADDRESS_CENTER_Z+z_offset),
+                component_basis=((1,0,0),(0,0,1),(0,-1,0)),
+            )
 
     components.add(
         "front_ev_charger_plug",
@@ -1342,50 +1317,30 @@ def build_enclosure(
         POWER_JUNCTION_LIGHT_PORT_Z,
     )
     power_light_entry=FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
-    POWER_LIGHT_POST_X=(
-        members["post_fr"].min_on("x")
-        - CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2
-    )
-    POWER_LIGHT_HORIZONTAL_RUN_Z=(
-        members["front_street_light_backer_bottom"].center_on("z")
-        - HEIGHT_2x4/2
+    POWER_LIGHT_POST_X=power_light_entry[0]
+    POWER_LIGHT_OFFSET_START=(POWER_LIGHT_POST_X, power_light_entry[1]+0.4,
+                              POWER_JUNCTION_LIGHT_PORT_Z+10)
+    POWER_LIGHT_OFFSET_END=(POWER_LIGHT_POST_X,power_light_entry[1],
+                            POWER_JUNCTION_LIGHT_PORT_Z+16)
+    POWER_LIGHT_OFFSET_POINTS=cubic_bezier_conduit_points(
+        POWER_LIGHT_OFFSET_START,
+        (POWER_LIGHT_POST_X, POWER_LIGHT_OFFSET_START[1]
+         +(POWER_LIGHT_OFFSET_START[1]-POWER_JUNCTION_LIGHT_PORT_Y)/5,
+         POWER_LIGHT_OFFSET_START[2]+2),
+        (POWER_LIGHT_POST_X,power_light_entry[1],POWER_LIGHT_OFFSET_END[2]-2),
+        POWER_LIGHT_OFFSET_END,
     )
     conduits.add(
-        "power_street_light_feed",
-        trade_size="1/2",
+        "power_street_light_feed", trade_size="1/2",
         points=(
-            ComponentAnchor(
-                "power_junction_light_adapter",
-                position=(
-                    MALE_TERMINAL_ADAPTERS["1/2"].size[0],
-                    MALE_TERMINAL_ADAPTERS["1/2"].size[1]/2,
-                ),
-            ),
-            _member_relative_coord(
-                "post_fr",
-                POWER_LIGHT_POST_X,
-                POWER_JUNCTION_LIGHT_PORT_Y,
-                POWER_JUNCTION_LIGHT_PORT_Z,
-            ),
-            _member_relative_coord(
-                "post_fr",
-                POWER_LIGHT_POST_X,
-                power_light_entry[1],
-                POWER_LIGHT_HORIZONTAL_RUN_Z,
-            ),
-            _member_relative_coord(
-                "front_street_light_backer_bottom",
-                power_light_entry[0],
-                power_light_entry[1],
-                POWER_LIGHT_HORIZONTAL_RUN_Z,
-            ),
+            ComponentAnchor("power_junction_light_adapter", position=(
+                MALE_TERMINAL_ADAPTERS["1/2"].size[0], MALE_TERMINAL_ADAPTERS["1/2"].size[1]/2)),
+            _member_relative_coord("post_fr", POWER_LIGHT_POST_X,
+                                   POWER_JUNCTION_LIGHT_PORT_Y, POWER_JUNCTION_LIGHT_PORT_Z),
+            *POWER_LIGHT_OFFSET_POINTS,
             FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
         ),
-        bends=(
-            ConduitBend(point_index=1, radius=2.5),
-            ConduitBend(point_index=2, radius=3),
-            ConduitBend(point_index=3, radius=3),
-        ),
+        bends=(ConduitBend(point_index=1,radius=2.5),),
     )
 
     POWER_OUTLET_ADAPTER_END_X=(
@@ -1792,7 +1747,7 @@ def build_enclosure(
         rear_opening_min_x=TAMBOUR_LEFT_X,
         rear_opening_max_x=TAMBOUR_RIGHT_X,
         rear_opening_top_z=TAMBOUR_TOP_Z,
-        front_openings=(FRONT_STREET_LIGHT_SIDING_OPENING,),
+        front_bores=(FRONT_STREET_LIGHT_SIDING_BORE,),
         right_openings=(BACK_RIGHT_OUTLET_SIDING_OPENING,),
         stock_length=SIDING_STOCK_LENGTH_FT * 12,
         board_thickness=SIDING_BOARD_THICKNESS,
@@ -1864,9 +1819,6 @@ def build_enclosure(
     # Preserve the approved cable route while rail_fbu and the box mounting are
     # revised.  This is an absolute world-space elevation, not rail clearance.
     LOW_VOLTAGE_RAIL_FBU_CLEAR_Z=8.4375
-    LOW_VOLTAGE_POST_FL_POS_X=(
-        members["post_fl"].max_on("x")+LOW_VOLTAGE_CABLE_DIAMETER/2
-    )
     LOW_VOLTAGE_RIGHT_RAIL_NEG_X=(
         members["right_center_rail"].min_on("x")-LOW_VOLTAGE_CABLE_DIAMETER/2
     )
@@ -1882,131 +1834,21 @@ def build_enclosure(
     LOW_VOLTAGE_RAIL_FT_POS_Y=(
         members["rail_ft"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
-    LOW_VOLTAGE_BRACE_UNDERSIDE_Z=(
-        members["brace_fl_fr"].min_on("z")-LOW_VOLTAGE_CABLE_DIAMETER/2
-    )
-    LOW_VOLTAGE_SERVICE_LOOP_TOP_Z=LOW_VOLTAGE_BRACE_UNDERSIDE_Z-2.5
-
-    path_1_start=(LOW_VOLTAGE_GLAND_XS[0], LOW_VOLTAGE_GLAND_Y, LOW_VOLTAGE_GLAND_END_Z)
-    path_1_post=(
-        LOW_VOLTAGE_POST_FL_POS_X,
-        members["post_fl"].center_on("y"),
-        16,
-    )
-    PATH_1_EXIT_SPLINE_HANDLE=1.5
-    path_1_exit_direction=(
-        path_1_post[0]-path_1_start[0],
-        path_1_post[1]-path_1_start[1],
-    )
-    path_1_exit_direction_length=math.hypot(*path_1_exit_direction)
-    path_1_exit_unit=(
-        path_1_exit_direction[0]/path_1_exit_direction_length,
-        path_1_exit_direction[1]/path_1_exit_direction_length,
-    )
-    path_1_spline_bottom=(
-        (path_1_start[0]+path_1_post[0])/2,
-        (path_1_start[1]+path_1_post[1])/2,
-        LOW_VOLTAGE_GLAND_EXIT_BOTTOM_Z,
-    )
-    PATH_1_BRIDGE_LEFT_X=LOW_VOLTAGE_POST_FL_POS_X+3.9375
-    PATH_1_LOOP_LEFT_X=FRONT_STREET_LIGHT_CENTER_X-3.25
-    PATH_1_LOOP_INNER_X=FRONT_STREET_LIGHT_CENTER_X-1.75
-    PATH_1_LOOP_RIGHT_X=FRONT_STREET_LIGHT_CENTER_X+1.75
-    path_1_points=_join_centerline_sections(
-        cubic_bezier_points(
-            path_1_start,
-            (path_1_start[0], path_1_start[1], path_1_start[2]-2),
-            (
-                path_1_spline_bottom[0]
-                - path_1_exit_unit[0]*PATH_1_EXIT_SPLINE_HANDLE,
-                path_1_spline_bottom[1]
-                - path_1_exit_unit[1]*PATH_1_EXIT_SPLINE_HANDLE,
-                path_1_spline_bottom[2],
-            ),
-            path_1_spline_bottom,
-        ),
-        cubic_bezier_points(
-            path_1_spline_bottom,
-            (
-                path_1_spline_bottom[0]
-                + path_1_exit_unit[0]*PATH_1_EXIT_SPLINE_HANDLE,
-                path_1_spline_bottom[1]
-                + path_1_exit_unit[1]*PATH_1_EXIT_SPLINE_HANDLE,
-                path_1_spline_bottom[2],
-            ),
-            (path_1_post[0], path_1_post[1], path_1_post[2]-3),
-            path_1_post,
-        ),
-        rounded_cable_points(
-            (
-                path_1_post,
-                (path_1_post[0], path_1_post[1], LOW_VOLTAGE_BRACE_UNDERSIDE_Z),
-                (
-                    PATH_1_BRIDGE_LEFT_X,
-                    path_1_post[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-            ),
-            {1: 2},
-        ),
-        cubic_bezier_points(
-            (
-                PATH_1_BRIDGE_LEFT_X,
-                path_1_post[1],
-                LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-            ),
-            (
-                PATH_1_BRIDGE_LEFT_X+1,
-                path_1_post[1],
-                LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-            ),
-            (
-                PATH_1_LOOP_LEFT_X-1,
-                FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-            ),
-            (
-                PATH_1_LOOP_LEFT_X,
-                FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-            ),
-        ),
-        rounded_cable_points(
-            (
-                (
-                    PATH_1_LOOP_LEFT_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-                (
-                    PATH_1_LOOP_INNER_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-                (
-                    PATH_1_LOOP_INNER_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_SERVICE_LOOP_TOP_Z,
-                ),
-                (
-                    PATH_1_LOOP_RIGHT_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_SERVICE_LOOP_TOP_Z,
-                ),
-                (
-                    PATH_1_LOOP_RIGHT_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-                (
-                    FRONT_STREET_LIGHT_CENTER_X,
-                    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[1],
-                    LOW_VOLTAGE_BRACE_UNDERSIDE_Z,
-                ),
-            ),
-            {1: 1.25, 2: 1.25, 3: 1.25, 4: 1.25},
-        ),
-    )
+    FRONT_UF_CABLE_DIAMETER=0.45
+    FRONT_UF_MINIMUM_BEND_RADIUS=2.0
+    FRONT_UF_RUN_Z=FRONT_STREET_LIGHT_CABLE_Z
+    FRONT_UF_EXIT=(FRONT_UF_CONNECTOR_ORIGIN[0],FRONT_UF_CONNECTOR_ORIGIN[1],
+                   FRONT_UF_CONNECTOR_ORIGIN[2]+FRONT_UF_CONNECTOR_LENGTH)
+    FRONT_UF_WALL_POINT=(FRONT_STREET_LIGHT_CENTER_X,0,FRONT_STREET_LIGHT_CABLE_Z)
+    front_uf_points=rounded_cable_points((
+        FRONT_UF_EXIT,
+        (FRONT_UF_EXIT[0],FRONT_UF_EXIT[1],FRONT_UF_RUN_Z),
+        (FRONT_STREET_LIGHT_CENTER_X,FRONT_UF_EXIT[1],FRONT_UF_RUN_Z),
+        FRONT_UF_WALL_POINT,
+        (FRONT_STREET_LIGHT_CENTER_X,FRONT_STREET_LIGHT_BOX_FACE_Y-0.125,FRONT_STREET_LIGHT_CABLE_Z)),
+        {1:FRONT_UF_MINIMUM_BEND_RADIUS,2:FRONT_UF_MINIMUM_BEND_RADIUS})
+    cables.add("power_street_light_uf_b", assembly="electrical", diameter=FRONT_UF_CABLE_DIAMETER,
+               points=front_uf_points, color=(0.48,0.49,0.50,1))
 
     LOW_VOLTAGE_WIFI_LANE_OFFSET=-LOW_VOLTAGE_CABLE_DIAMETER/2
     LOW_VOLTAGE_CHARGER_LANE_OFFSET=LOW_VOLTAGE_CABLE_DIAMETER/2
@@ -2207,11 +2049,6 @@ def build_enclosure(
     )
 
     for name,points,color in (
-        (
-            "low_voltage_street_light_service",
-            path_1_points,
-            LOW_VOLTAGE_STREET_LIGHT_COLOR,
-        ),
         ("low_voltage_wifi_feed", path_2_points, LOW_VOLTAGE_CAT6_COLOR),
         ("low_voltage_ev_charger_feed", path_3_points, LOW_VOLTAGE_CAT6_COLOR),
     ):
@@ -2285,26 +2122,29 @@ def build_enclosure(
         sidings=[siding],
         routed_seats=routed_seats,
         purchased_items=(
-            PurchasedItem(
-                "copper_address_plaque_4754",
-                "exterior_fixtures",
-                "Copper-finish address plaque 4754, 16 x 3 x 0.5 in; "
-                "black recessed numerals, concealed mounting",
-                1,
-                include_in_shopping_list=True,
-            ),
+            PurchasedItem("street_light_14_2_uf_b", "electrical",
+                f"14/2 copper UF-B with ground, {math.ceil((cables['power_street_light_uf_b'].centerline_length+18)/12)} ft cut "
+                f"(route {cables['power_street_light_uf_b'].centerline_length:.1f} in plus 18 in termination/service allowance); 15 A maximum", 1,
+                category="cable", include_in_shopping_list=True),
+            PurchasedItem("silver_address_numerals_4754", "exterior_fixtures",
+                "Separate silver numerals 4754; each 5 in high x 1 in deep; 12 in total width", 1,
+                include_in_shopping_list=True),
+            PurchasedItem("silver_address_number_standoff", "exterior_fixtures",
+                "Silver numeral standoff, 1 in long; schematic 3/8 in diameter", 8,
+                include_in_shopping_list=True),
+            PurchasedItem("commercial_electric_wrb550b_outlet_box", "electrical",
+                "Commercial Electric WRB550B round weatherproof transition box; no extension ring", 1),
+            PurchasedItem("commercial_electric_wbc300g_cover", "electrical",
+                "Commercial Electric WBC300G round blank cover with gasket", 1),
+            PurchasedItem("commercial_electric_fsw50z_12_2_1", "electrical",
+                "Commercial Electric FSW50Z-12.2-1 watertight 1/2 in connector for 14/2 UF-B", 1),
+            PurchasedItem("half_inch_panel_hole_weatherproof_closure", "low_voltage_fittings",
+                "Weatherproof closure for unused 0.500 in low-voltage gland opening", 1),
             PurchasedItem(
                 "mod_lighting_brook_16_black_3000k",
                 "electrical",
                 "MOD Lighting Brook MOD119, 16 in, black, 3000K; "
                 "variant 45573961023747, supplied bracket included",
-                1,
-            ),
-            PurchasedItem(
-                "provisional_brook_recessed_junction_box",
-                "electrical",
-                "PROVISIONAL recessed box envelope 4 x 2 x 3.3 in; "
-                "select compatible box and bracket fasteners before fabrication",
                 1,
             ),
             PurchasedItem(

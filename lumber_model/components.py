@@ -14,7 +14,7 @@ from lumber_model.lumber import AngledLumber, Lumber, LumberPiece
 
 
 FaceName = Literal["wide_pos", "wide_neg", "narrow_pos", "narrow_neg"]
-ComponentShape = Literal["box", "mesh", "primitive_union", "address_plaque"]
+ComponentShape = Literal["box", "mesh", "primitive_union", "address_plaque", "raised_numeral"]
 ComponentOrientation = Literal["up", "right", "down", "left", "inward"]
 Color = tuple[float, float, float, float]
 BoxPrimitive = tuple[Vector3, Vector3]
@@ -318,14 +318,16 @@ class ComponentType:
                 f"expected one of {FACE_NAMES}"
             )
 
-        if self.shape not in ("box", "mesh", "primitive_union", "address_plaque"):
+        if self.shape not in (
+            "box", "mesh", "primitive_union", "address_plaque", "raised_numeral"
+        ):
             raise ValueError(
                 f"{self.name}: invalid shape {self.shape!r}; expected 'box' or "
-                "'mesh', 'primitive_union', or 'address_plaque'"
+                "'mesh', 'primitive_union', 'address_plaque', or 'raised_numeral'"
             )
 
-        if self.shape == "address_plaque" and not self.text.strip():
-            raise ValueError(f"{self.name}: address_plaque requires non-empty text")
+        if self.shape in ("address_plaque", "raised_numeral") and not self.text.strip():
+            raise ValueError(f"{self.name}: {self.shape} requires non-empty text")
 
         if self.shape == "mesh" and not self.mesh_path:
             raise ValueError(f"{self.name}: mesh_path is required for mesh components")

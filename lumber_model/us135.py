@@ -266,12 +266,23 @@ class US135Siding(CompositeSiding):
 
     def wall_stations(self, wall: str) -> tuple[float,...]:
         a,b = self.span(wall)
-        stations=list(self._stations(a+1.6875,b-1.6875,16))
-        if wall=="right":
-            stations.extend(s for o in self.right_openings for s in (o.min_y-0.5,o.max_y+0.5) if a<=s<=b)
-        if wall=="front":
-            stations.extend(s for o in self.front_openings for s in (o.min_x-0.5,o.max_x+0.5) if a<=s<=b)
-        return tuple(sorted(set(stations)))
+        return self._stations(a+1.6875,b-1.6875,16)
+
+    def opening_supports(self, wall: str) -> tuple[tuple[float,float,float], ...]:
+        """Local screw stations and backing bounds for cutout-affected courses."""
+        openings = self.front_openings if wall=="front" else self.right_openings if wall=="right" else ()
+        a,b = self.span(wall)
+        supports = []
+        for opening in openings:
+            courses = [c for c in self.cuts if c.wall==wall
+                       and c.bottom<opening.top_z and c.top>opening.bottom_z]
+            if not courses:
+                continue
+            bottom = min(c.bottom for c in courses)
+            top = max(c.top for c in courses)
+            lo,hi = (opening.min_x,opening.max_x) if wall=="front" else (opening.min_y,opening.max_y)
+            supports.extend((s,bottom,top) for s in (lo-0.5,hi+0.5) if a<=s<=b)
+        return tuple(supports)
 
     @property
     def roof_stations(self) -> tuple[float,...]:
@@ -291,16 +302,26 @@ class US135Siding(CompositeSiding):
                 parts.append(SidingPart(f"{self.name}_{name}_{i}","PT_5/4x6_backing",tuple(pos),tuple(dims),
                     (0.44,0.26,0.11,1),cut_length=b-a))
         for wall in ("front","left","right"):
-            for j,s in enumerate(self.wall_stations(wall)[1:-1],1):
+            regular = self.wall_stations(wall)
+            supports = [(str(j),s,None,None) for j,s in enumerate(regular[1:-1],1)]
+            supports.extend((f"opening_{j}",s,bottom,top)
+                            for j,(s,bottom,top) in enumerate(self.opening_supports(wall),1)
+                            if s not in regular)
+            for j,s,bottom,top in supports:
                 wa,wb=(self.min_x,self.max_x) if wall=="front" else (self.min_y,self.max_y)
                 if s <= wa+3.5 or s >= wb-3.5:
                     continue  # already backed by a corner post
                 a=max(wa+3.5,s-1.75); b=min(wb-3.5,s+1.75)
                 z = self.ground_z(*self.xy(wall,s))+self.ground_clearance
+                if bottom is not None:
+                    z = max(z,bottom)
+                end_z = self.frame_top_z if top is None else min(top,self.frame_top_z)
+                if end_z<=z:
+                    continue
                 start,size = {
-                    "front": ((a,self.min_y,z),(b-a,1,self.frame_top_z-z)),
-                    "left": ((self.min_x,a,z),(1,b-a,self.frame_top_z-z)),
-                    "right": ((self.max_x-1,a,z),(1,b-a,self.frame_top_z-z)),
+                    "front": ((a,self.min_y,z),(b-a,1,end_z-z)),
+                    "left": ((self.min_x,a,z),(1,b-a,end_z-z)),
+                    "right": ((self.max_x-1,a,z),(1,b-a,end_z-z)),
                 }[wall]
                 add_notched(f"backing_{wall}_{j}",start,size,2)
         return tuple(parts)+self.roof_strips
@@ -380,6 +401,11 @@ class US135Siding(CompositeSiding):
         # remainder gets a single centered row instead of an off-board screw.
         for cut in self.cuts:
             stations=[s for s in self.wall_stations(cut.wall) if cut.start<=s<=cut.end]
+            openings=self.front_openings if cut.wall=="front" else self.right_openings if cut.wall=="right" else ()
+            for opening in openings:
+                if cut.bottom<opening.top_z and cut.top>opening.bottom_z:
+                    lo,hi = (opening.min_x,opening.max_x) if cut.wall=="front" else (opening.min_y,opening.max_y)
+                    stations.extend(s for s in (lo-0.5,hi+0.5) if cut.start<=s<=cut.end)
             midpoint=(cut.start+cut.end)/2
             stations.append(midpoint)
             candidates=[]

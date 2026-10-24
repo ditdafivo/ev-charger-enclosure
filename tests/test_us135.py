@@ -112,6 +112,26 @@ class US135Tests(unittest.TestCase):
                     self.assertFalse(all(p.start[k]<loc[k]+size[k]-1e-7 and
                         p.start[k]+p.size[k]>loc[k]+1e-7 for k in range(3)),p.name)
 
+    def test_outlet_backing_and_screws_are_local_to_notched_courses(self):
+        for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
+            s=build.build_enclosure(*dims).siding
+            opening=s.right_openings[0]
+            affected=[c for c in s.cuts if c.wall=='right'
+                      and c.bottom<opening.top_z and c.top>opening.bottom_z]
+            bottom=min(c.bottom for c in affected)
+            top=max(c.top for c in affected)
+            backing=[p for p in s.backing_parts if 'backing_right_opening_' in p.name]
+            self.assertTrue(backing)
+            for p in backing:
+                self.assertGreaterEqual(p.start[2],bottom)
+                self.assertLessEqual(p.start[2]+p.size[2],top)
+            for station in (opening.min_y-0.5,opening.max_y+0.5):
+                screws=[a for a in s.attachments if a.wall=='right' and a.along==station]
+                self.assertTrue(screws)
+                self.assertTrue(all(a.board in {c.name for c in affected} for a in screws))
+                for cut in affected:
+                    self.assertTrue(any(a.board==cut.name for a in screws),cut.name)
+
     def test_roof_strips_drainage_clearances_and_independent_fasteners(self):
         for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
             enclosure=build.build_enclosure(*dims); s=enclosure.siding

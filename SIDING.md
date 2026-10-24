@@ -74,8 +74,11 @@ pitch, access for face screws, head retention and movement-hole behavior.
    lowering the courses above. Remove props after permanent fasteners retain
    each board.
 
-Wall support spacing remains at most 16 inches. Backing near the outlet retains
-the notched courses. Removing the clips does not remove the backing requirement.
+Wall support spacing remains at most 16 inches. Extra backing beside the outlet
+extends only over the full heights of the courses intersected by the cutout;
+the extra screw stations apply only to those courses. Regular wall backing and
+screw stations continue independently above and below it. Existing framing fills
+interruptions in the local backing. Removing the clips does not remove the backing requirement.
 The hardware cloth has 1/4-inch openings, a 2-inch cut height and 2-inch joint
 overlaps. The nominal 3/4-inch grade gap remains under siding and trim. The rear
 access opening remains open.

@@ -185,11 +185,11 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertEqual(build.ROOF_SHIM_THICKNESS, 0.25)
         self.assertEqual(build.siding.frame_top_z, 49.625)
         self.assertEqual(build.siding.roof_support_z, 49.875)
-        self.assertEqual(build.siding.finished_top_z, 50.625)
-        self.assertEqual(build.siding.roof_finished_top_z, 50.875)
+        self.assertEqual(build.siding.finished_top_z, 50.125)
+        self.assertEqual(build.siding.roof_finished_top_z, 50.6875)
         for part in build.siding.parts:
-            if part.name.startswith("enclosure_siding_top_"):
-                self.assertEqual(part.start[2], 49.875)
+            if part.name.startswith("enclosure_siding_top_") and part.material == "US09":
+                self.assertEqual(part.start[2], 50.1875)
 
     def test_roof_shims_stop_at_gusset_envelopes(self) -> None:
         for enclosure in (
@@ -837,7 +837,7 @@ class BackRightOutletBuildTests(unittest.TestCase):
                 self.assertEqual(backer.axis, "y")
                 self.assertEqual(backer.length, 6.6875)
                 self.assertFalse(backer.rotated)
-                self.assertAlmostEqual(backer.max_on("x"), 26.45)
+                self.assertAlmostEqual(backer.max_on("x"), build.BACK_RIGHT_OUTLET_BACK_X)
                 self.assertAlmostEqual(backer.center_on("z"), expected_z)
 
     def test_outlet_and_cover_have_parameterized_finished_position(self) -> None:
@@ -845,16 +845,16 @@ class BackRightOutletBuildTests(unittest.TestCase):
         outlet = build.components["back_right_outlet"].resolved(lower_backer)
         cover = build.components["back_right_outlet_cover"].resolved(lower_backer)
 
-        self.assertVectorAlmostEqual(outlet.box_min, (26.45, 16.475, 15.15))
+        self.assertVectorAlmostEqual(outlet.box_min, (build.BACK_RIGHT_OUTLET_BACK_X, 16.475, 15.15))
         self.assertVectorAlmostEqual(outlet.box_size, (2.3, 2.8, 5.7))
-        self.assertAlmostEqual(outlet.box_min[0] + outlet.box_size[0], 28.75)
-        self.assertVectorAlmostEqual(cover.box_min, (28.75, 15.545, 14.835))
+        self.assertAlmostEqual(outlet.box_min[0] + outlet.box_size[0], build.BACK_RIGHT_OUTLET_FACE_X)
+        self.assertVectorAlmostEqual(cover.box_min, (build.BACK_RIGHT_OUTLET_FACE_X, 15.545, 14.835))
         self.assertVectorAlmostEqual(cover.box_size, (2.75, 4.66, 6.33))
 
     def test_bottom_hub_entry_is_available_for_future_conduit(self) -> None:
         self.assertVectorAlmostEqual(
             build.BACK_RIGHT_OUTLET_CONDUIT_ENTRY.resolve(build.members),
-            (27.016, 17.875, 15.15),
+            (build.BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0], 17.875, 15.15),
         )
 
     def test_right_siding_is_cut_out_for_outlet_box(self) -> None:
@@ -901,7 +901,7 @@ class FrontStreetLightBuildTests(unittest.TestCase):
                 self.assertAlmostEqual(light.box_min[2]+1.2, brace.min_on("z")+0.5)
                 self.assertGreaterEqual(bracket.box_min[2], brace.min_on("z"))
                 self.assertLessEqual(bracket.box_min[2]+bracket.box_size[2], brace.max_on("z"))
-                self.assertAlmostEqual(light.box_min[1]+3.9, -e.siding.board_thickness)
+                self.assertAlmostEqual(light.box_min[1]+3.9, -e.siding.exterior_offset)
                 bore = e.FRONT_STREET_LIGHT_SIDING_BORE
                 self.assertEqual(e.siding.front_openings, ())
                 self.assertEqual(bore.diameter, 0.5)
@@ -923,10 +923,10 @@ class FrontStreetLightBuildTests(unittest.TestCase):
                 for i, digit in enumerate(digits, 1):
                     self.assertVectorAlmostEqual(digit.box_size, (2.25, 1, 5))
                     self.assertAlmostEqual(light.box_min[2]-digit.box_min[2]-5, 3)
-                    self.assertAlmostEqual(digit.box_min[1], -3)
+                    self.assertAlmostEqual(digit.box_min[1], -e.siding.exterior_offset-2)
                     for pin in (1,2):
                         standoff = self.resolved(e, f"front_address_number_{i}_standoff_{pin}")
-                        self.assertAlmostEqual(standoff.box_min[1], -2)
+                        self.assertAlmostEqual(standoff.box_min[1], -e.siding.exterior_offset-1)
                         self.assertAlmostEqual(standoff.box_size[1], 1)
                         self.assertGreater(standoff.box_min[2], support.min_on("z"))
                         self.assertLess(standoff.box_min[2]+standoff.box_size[2], support.max_on("z"))
@@ -956,7 +956,7 @@ class FrontStreetLightBuildTests(unittest.TestCase):
             self.assertGreaterEqual(minimum_cable_bend_radius(cable.points), 2-1e-6)
             self.assertLess(max(p[2] for p in cable.points)+cable.diameter/2, e.members["brace_fl_fr"].min_on("z"))
             self.assertVectorAlmostEqual(cable.points[-1], (
-                e.FRONT_STREET_LIGHT_CENTER_X,-1.125,e.FRONT_STREET_LIGHT_SIDING_BORE.center_z))
+                e.FRONT_STREET_LIGHT_CENTER_X,-e.siding.exterior_offset-0.125,e.FRONT_STREET_LIGHT_SIDING_BORE.center_z))
             self.assertTrue(all(p[0] < e.members["post_fr"].min_on("x") for p in cable.points))
 
     def test_inventory_and_removed_hardware(self):
@@ -1773,7 +1773,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             outlet.box_min[0],
-            enclosure.members["post_br"].max_on("x")-1.05,
+            enclosure.BACK_RIGHT_OUTLET_BACK_X,
         )
 
         low_voltage_box = self.resolved_component(
@@ -2190,6 +2190,9 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "fabrication.csv",
                     "fabrication.json",
                     "gusset_plate_6x6.dxf",
+                    "siding_cut_list.csv", "siding_cut_list.json", "siding_installation.json",
+                    "siding_corner_front_left.scad", "siding_corner_front_right.scad",
+                    "siding_corner_rear_left.scad", "siding_corner_rear_right.scad",
                     "tambour",
                 },
             )

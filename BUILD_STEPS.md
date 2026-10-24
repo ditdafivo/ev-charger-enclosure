@@ -39,9 +39,9 @@ by a qualified installer.
   them in the completed-model view; they do not appear in numbered steps.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
-  - `build_step = 1..25`: show earlier objects normally, highlight objects from
+  - `build_step = 1..38`: show earlier objects normally, highlight objects from
     the selected step, and hide objects from later steps.
-  - `build_step = 26`: show the completed model in its normal colors.
+  - `build_step = 39`: show the completed model in its normal colors.
 - An invalid positive step number should fail clearly during generation rather
   than silently display an incomplete or misleading model.
 
@@ -423,13 +423,13 @@ power_junction_outlet_adapter_locknut
 
 Install the two 6 11/16-inch 2x4 backers between `right_center_rail` and
 `post_br`. Their modeled lower-face elevations are approximately 13 5/8 and
-18 7/8 inches. Check that both backing faces are coplanar at x = 26.45 inches;
+18 7/8 inches. Check that both backing faces are coplanar at x = 26.2625 inches;
 this plane sets the rear of the 2.30-inch-deep FSE outlet box and its final
 projection through the siding.
 
 Immediately after securing the backing, mount the Carlon E980DFN FSE box.
-Check that the box/cover mating plane will finish at x = 28.75 inches, roughly
-1/4 inch beyond the siding, and that the hub center is at x = 27.016 inches.
+Check that the box/cover mating plane will finish at x = 28.5625 inches, roughly
+1/4 inch beyond the siding, and that the hub center is at x = 26.8285 inches.
 
 New model objects:
 
@@ -583,7 +583,7 @@ power_guard_removable_panel
 ## 19. Add the address-number support (`address-number-support`)
 
 Install one actual 1 x 5 1/2-inch support board between `post_fl` and `post_fr`,
-with its front face against the back of the siding at y = 0. Use 5/4x6 stock
+with its front face at y = 0, behind the clip-created siding stand-off. Use 5/4x6 stock
 with a verified finished thickness of 1 inch, not nominal 1x lumber. Fasten its
 ends to the posts with exterior-rated support hardware. The default board is
 20 1/2 inches long and spans z = 39.175 to 44.675 inches. It receives the
@@ -661,28 +661,24 @@ New model objects:
 power_street_light_uf_b
 ```
 
-## 22. Install the composite siding (`composite-siding`)
+## 22. Prepare siding backing, ventilation and animal skirt (`siding-preparation`)
 
-Before placing the top boards, install 1/4-inch ripped pressure-treated shims
-on the exposed portions of all four perimeter members and across both
-non-gusseted corner posts. Keep the shims level and terminate them at the custom
-gusset envelopes so no shim rests on a plate or pan head. Let the decking span
-these short interruptions, and leave drainage paths at the plate edges. Use
-roof fasteners long enough to
-retain the originally required penetration after passing through the shims.
+Install the existing 1/4-inch perimeter roof shims, the modeled actual 1-inch
+backing segments, and the diagonal roof shim. Keep shims clear of gussets and
+pan heads. Added backing is split around existing lumber; use corrosion-resistant
+angles at both ends of each segment, with structural screws selected for the
+actual joint and adequate penetration. Do not screw only into end grain.
 
-Install the composite boards after the framing, interior equipment, conduit,
-and cable routes are installed and inspected. Only siding trim and the fixtures
-or covers that mount outside the siding follow this step.
+Install the 1/4-inch hardware-cloth skirt behind the siding, overlapping joints
+2 inches and securing it to framing. Extend it to grade while keeping siding
+and trim at least 3/4 inch above grade. The rear access opening remains open.
 
-The generated siding cut list accounts for the outlet opening and the top rear
-board surrounding the tambour opening. Those boards are split into rendered
-solids. The light uses a circular 1/2-inch bore, which does not split a board
-or change its stock cut length.
-
-Maintain the modeled bottom elevation of 2 inches, the small front-light bore,
-and the right-outlet and rear-tambour openings. Dry-fit opening courses before cutting
-and confirm the electrical boxes' finish projections. Use the generated cut and shopping lists for current decking quantities.
+Dry-fit two US09 courses with AW08s before cutting production pieces. Verify
+the provisional 130 mm installed pitch and the clip stand-off. Keep the boards
+in their intended orientation. Test engaging the supporting clips from below,
+fastening their flanges, reaching the single locking screw, and removing the
+temporary supports. This downward procedure is a project-specific adaptation;
+it has not been physically verified. See [SIDING.md](SIDING.md).
 
 New model objects:
 
@@ -691,101 +687,904 @@ roof_shim_brace_fl_fr
 roof_shim_brace_fl_bl
 roof_shim_brace_bl_br
 roof_shim_brace_fr_br
+enclosure_siding_backing_front_1_1
+enclosure_siding_backing_front_1_2
+enclosure_siding_backing_left_1_1
+enclosure_siding_backing_left_1_2
+enclosure_siding_backing_left_1_3
+enclosure_siding_backing_left_1_4
+enclosure_siding_backing_right_1_1
+enclosure_siding_backing_right_1_2
+enclosure_siding_backing_right_1_3
+enclosure_siding_backing_right_2_1
+enclosure_siding_backing_right_2_2
+enclosure_siding_backing_right_2_3
+enclosure_siding_backing_right_2_4
+enclosure_siding_backing_roof_1_1
+enclosure_siding_backing_roof_2_1
+enclosure_siding_backing_roof_2_2
+enclosure_siding_backing_roof_3_1
+enclosure_siding_diagonal_shim
+enclosure_siding_mesh_front_1_wire_0
+enclosure_siding_mesh_front_1_wire_1
+enclosure_siding_mesh_front_1_wire_2
+enclosure_siding_mesh_front_1_wire_3
+enclosure_siding_mesh_front_1_wire_4
+enclosure_siding_mesh_front_1_wire_5
+enclosure_siding_mesh_front_1_wire_6
+enclosure_siding_mesh_front_1_wire_7
+enclosure_siding_mesh_front_1_wire_8
+enclosure_siding_mesh_front_1_wire_9
+enclosure_siding_mesh_front_1_wire_10
+enclosure_siding_mesh_front_1_wire_11
+enclosure_siding_mesh_front_1_wire_12
+enclosure_siding_mesh_front_1_wire_13
+enclosure_siding_mesh_front_1_wire_14
+enclosure_siding_mesh_front_1_wire_15
+enclosure_siding_mesh_front_1_wire_16
+enclosure_siding_mesh_front_1_wire_17
+enclosure_siding_mesh_front_1_wire_18
+enclosure_siding_mesh_front_1_wire_19
+enclosure_siding_mesh_front_1_wire_20
+enclosure_siding_mesh_front_1_wire_21
+enclosure_siding_mesh_front_1_wire_22
+enclosure_siding_mesh_front_1_wire_23
+enclosure_siding_mesh_front_1_wire_24
+enclosure_siding_mesh_front_1_wire_25
+enclosure_siding_mesh_front_1_wire_26
+enclosure_siding_mesh_front_1_wire_27
+enclosure_siding_mesh_front_1_wire_28
+enclosure_siding_mesh_front_1_wire_29
+enclosure_siding_mesh_front_1_wire_30
+enclosure_siding_mesh_front_1_wire_31
+enclosure_siding_mesh_front_1_wire_32
+enclosure_siding_mesh_front_1_wire_33
+enclosure_siding_mesh_front_1_wire_34
+enclosure_siding_mesh_front_1_wire_35
+enclosure_siding_mesh_front_1_wire_36
+enclosure_siding_mesh_front_1_wire_37
+enclosure_siding_mesh_front_1_wire_38
+enclosure_siding_mesh_front_1_wire_39
+enclosure_siding_mesh_front_1_wire_40
+enclosure_siding_mesh_front_1_wire_41
+enclosure_siding_mesh_front_1_wire_42
+enclosure_siding_mesh_front_1_wire_43
+enclosure_siding_mesh_front_1_wire_44
+enclosure_siding_mesh_front_1_wire_45
+enclosure_siding_mesh_front_1_wire_46
+enclosure_siding_mesh_front_1_wire_47
+enclosure_siding_mesh_front_1_wire_48
+enclosure_siding_mesh_front_1_wire_49
+enclosure_siding_mesh_front_1_wire_50
+enclosure_siding_mesh_front_1_wire_51
+enclosure_siding_mesh_front_1_wire_52
+enclosure_siding_mesh_front_1_wire_53
+enclosure_siding_mesh_front_1_wire_54
+enclosure_siding_mesh_front_1_wire_55
+enclosure_siding_mesh_front_1_wire_56
+enclosure_siding_mesh_front_1_wire_57
+enclosure_siding_mesh_front_1_wire_58
+enclosure_siding_mesh_front_1_wire_59
+enclosure_siding_mesh_front_1_wire_60
+enclosure_siding_mesh_front_1_wire_61
+enclosure_siding_mesh_front_1_wire_62
+enclosure_siding_mesh_front_1_wire_63
+enclosure_siding_mesh_front_1_wire_64
+enclosure_siding_mesh_front_1_wire_65
+enclosure_siding_mesh_front_1_wire_66
+enclosure_siding_mesh_front_1_wire_67
+enclosure_siding_mesh_front_1_wire_68
+enclosure_siding_mesh_front_1_wire_69
+enclosure_siding_mesh_front_1_wire_70
+enclosure_siding_mesh_front_1_wire_71
+enclosure_siding_mesh_front_1_wire_72
+enclosure_siding_mesh_front_1_wire_73
+enclosure_siding_mesh_front_1_wire_74
+enclosure_siding_mesh_front_1_wire_75
+enclosure_siding_mesh_front_1_wire_76
+enclosure_siding_mesh_front_1_wire_77
+enclosure_siding_mesh_front_1_wire_78
+enclosure_siding_mesh_front_1_wire_79
+enclosure_siding_mesh_front_1_wire_80
+enclosure_siding_mesh_front_1_wire_81
+enclosure_siding_mesh_front_1_wire_82
+enclosure_siding_mesh_front_1_wire_83
+enclosure_siding_mesh_front_1_wire_84
+enclosure_siding_mesh_front_1_wire_85
+enclosure_siding_mesh_front_1_wire_86
+enclosure_siding_mesh_front_1_wire_87
+enclosure_siding_mesh_front_1_wire_88
+enclosure_siding_mesh_front_1_wire_89
+enclosure_siding_mesh_front_1_wire_90
+enclosure_siding_mesh_front_1_wire_91
+enclosure_siding_mesh_front_1_wire_92
+enclosure_siding_mesh_front_1_wire_93
+enclosure_siding_mesh_front_1_wire_94
+enclosure_siding_mesh_front_1_wire_95
+enclosure_siding_mesh_front_1_wire_96
+enclosure_siding_mesh_front_1_wire_97
+enclosure_siding_mesh_front_1_wire_98
+enclosure_siding_mesh_front_1_wire_99
+enclosure_siding_mesh_front_1_wire_100
+enclosure_siding_mesh_front_1_wire_101
+enclosure_siding_mesh_front_1_wire_102
+enclosure_siding_mesh_front_1_wire_103
+enclosure_siding_mesh_front_1_wire_104
+enclosure_siding_mesh_front_1_wire_105
+enclosure_siding_mesh_front_1_wire_106
+enclosure_siding_mesh_front_1_wire_107
+enclosure_siding_mesh_front_1_wire_108
+enclosure_siding_mesh_front_1_wire_109
+enclosure_siding_mesh_front_1_horizontal_0
+enclosure_siding_mesh_front_1_horizontal_1
+enclosure_siding_mesh_front_1_horizontal_2
+enclosure_siding_mesh_front_1_horizontal_3
+enclosure_siding_mesh_front_1_horizontal_4
+enclosure_siding_mesh_front_1_horizontal_5
+enclosure_siding_mesh_front_1_horizontal_6
+enclosure_siding_mesh_front_1_horizontal_7
+enclosure_siding_mesh_left_1_wire_0
+enclosure_siding_mesh_left_1_wire_1
+enclosure_siding_mesh_left_1_wire_2
+enclosure_siding_mesh_left_1_wire_3
+enclosure_siding_mesh_left_1_wire_4
+enclosure_siding_mesh_left_1_wire_5
+enclosure_siding_mesh_left_1_wire_6
+enclosure_siding_mesh_left_1_wire_7
+enclosure_siding_mesh_left_1_wire_8
+enclosure_siding_mesh_left_1_wire_9
+enclosure_siding_mesh_left_1_wire_10
+enclosure_siding_mesh_left_1_wire_11
+enclosure_siding_mesh_left_1_wire_12
+enclosure_siding_mesh_left_1_wire_13
+enclosure_siding_mesh_left_1_wire_14
+enclosure_siding_mesh_left_1_wire_15
+enclosure_siding_mesh_left_1_wire_16
+enclosure_siding_mesh_left_1_wire_17
+enclosure_siding_mesh_left_1_wire_18
+enclosure_siding_mesh_left_1_wire_19
+enclosure_siding_mesh_left_1_wire_20
+enclosure_siding_mesh_left_1_wire_21
+enclosure_siding_mesh_left_1_wire_22
+enclosure_siding_mesh_left_1_wire_23
+enclosure_siding_mesh_left_1_wire_24
+enclosure_siding_mesh_left_1_wire_25
+enclosure_siding_mesh_left_1_wire_26
+enclosure_siding_mesh_left_1_wire_27
+enclosure_siding_mesh_left_1_wire_28
+enclosure_siding_mesh_left_1_wire_29
+enclosure_siding_mesh_left_1_wire_30
+enclosure_siding_mesh_left_1_wire_31
+enclosure_siding_mesh_left_1_wire_32
+enclosure_siding_mesh_left_1_wire_33
+enclosure_siding_mesh_left_1_wire_34
+enclosure_siding_mesh_left_1_wire_35
+enclosure_siding_mesh_left_1_wire_36
+enclosure_siding_mesh_left_1_wire_37
+enclosure_siding_mesh_left_1_wire_38
+enclosure_siding_mesh_left_1_wire_39
+enclosure_siding_mesh_left_1_wire_40
+enclosure_siding_mesh_left_1_wire_41
+enclosure_siding_mesh_left_1_wire_42
+enclosure_siding_mesh_left_1_wire_43
+enclosure_siding_mesh_left_1_wire_44
+enclosure_siding_mesh_left_1_wire_45
+enclosure_siding_mesh_left_1_wire_46
+enclosure_siding_mesh_left_1_wire_47
+enclosure_siding_mesh_left_1_wire_48
+enclosure_siding_mesh_left_1_wire_49
+enclosure_siding_mesh_left_1_wire_50
+enclosure_siding_mesh_left_1_wire_51
+enclosure_siding_mesh_left_1_wire_52
+enclosure_siding_mesh_left_1_wire_53
+enclosure_siding_mesh_left_1_wire_54
+enclosure_siding_mesh_left_1_wire_55
+enclosure_siding_mesh_left_1_wire_56
+enclosure_siding_mesh_left_1_wire_57
+enclosure_siding_mesh_left_1_wire_58
+enclosure_siding_mesh_left_1_wire_59
+enclosure_siding_mesh_left_1_wire_60
+enclosure_siding_mesh_left_1_wire_61
+enclosure_siding_mesh_left_1_wire_62
+enclosure_siding_mesh_left_1_wire_63
+enclosure_siding_mesh_left_1_wire_64
+enclosure_siding_mesh_left_1_wire_65
+enclosure_siding_mesh_left_1_wire_66
+enclosure_siding_mesh_left_1_wire_67
+enclosure_siding_mesh_left_1_wire_68
+enclosure_siding_mesh_left_1_wire_69
+enclosure_siding_mesh_left_1_wire_70
+enclosure_siding_mesh_left_1_wire_71
+enclosure_siding_mesh_left_1_wire_72
+enclosure_siding_mesh_left_1_wire_73
+enclosure_siding_mesh_left_1_wire_74
+enclosure_siding_mesh_left_1_wire_75
+enclosure_siding_mesh_left_1_wire_76
+enclosure_siding_mesh_left_1_wire_77
+enclosure_siding_mesh_left_1_wire_78
+enclosure_siding_mesh_left_1_wire_79
+enclosure_siding_mesh_left_1_wire_80
+enclosure_siding_mesh_left_1_wire_81
+enclosure_siding_mesh_left_1_wire_82
+enclosure_siding_mesh_left_1_wire_83
+enclosure_siding_mesh_left_1_wire_84
+enclosure_siding_mesh_left_1_wire_85
+enclosure_siding_mesh_left_1_wire_86
+enclosure_siding_mesh_left_1_wire_87
+enclosure_siding_mesh_left_1_wire_88
+enclosure_siding_mesh_left_1_wire_89
+enclosure_siding_mesh_left_1_wire_90
+enclosure_siding_mesh_left_1_wire_91
+enclosure_siding_mesh_left_1_horizontal_0
+enclosure_siding_mesh_left_1_horizontal_1
+enclosure_siding_mesh_left_1_horizontal_2
+enclosure_siding_mesh_left_1_horizontal_3
+enclosure_siding_mesh_left_1_horizontal_4
+enclosure_siding_mesh_left_1_horizontal_5
+enclosure_siding_mesh_left_1_horizontal_6
+enclosure_siding_mesh_left_1_horizontal_7
+enclosure_siding_mesh_right_1_wire_0
+enclosure_siding_mesh_right_1_wire_1
+enclosure_siding_mesh_right_1_wire_2
+enclosure_siding_mesh_right_1_wire_3
+enclosure_siding_mesh_right_1_wire_4
+enclosure_siding_mesh_right_1_wire_5
+enclosure_siding_mesh_right_1_wire_6
+enclosure_siding_mesh_right_1_wire_7
+enclosure_siding_mesh_right_1_wire_8
+enclosure_siding_mesh_right_1_wire_9
+enclosure_siding_mesh_right_1_wire_10
+enclosure_siding_mesh_right_1_wire_11
+enclosure_siding_mesh_right_1_wire_12
+enclosure_siding_mesh_right_1_wire_13
+enclosure_siding_mesh_right_1_wire_14
+enclosure_siding_mesh_right_1_wire_15
+enclosure_siding_mesh_right_1_wire_16
+enclosure_siding_mesh_right_1_wire_17
+enclosure_siding_mesh_right_1_wire_18
+enclosure_siding_mesh_right_1_wire_19
+enclosure_siding_mesh_right_1_wire_20
+enclosure_siding_mesh_right_1_wire_21
+enclosure_siding_mesh_right_1_wire_22
+enclosure_siding_mesh_right_1_wire_23
+enclosure_siding_mesh_right_1_wire_24
+enclosure_siding_mesh_right_1_wire_25
+enclosure_siding_mesh_right_1_wire_26
+enclosure_siding_mesh_right_1_wire_27
+enclosure_siding_mesh_right_1_wire_28
+enclosure_siding_mesh_right_1_wire_29
+enclosure_siding_mesh_right_1_wire_30
+enclosure_siding_mesh_right_1_wire_31
+enclosure_siding_mesh_right_1_wire_32
+enclosure_siding_mesh_right_1_wire_33
+enclosure_siding_mesh_right_1_wire_34
+enclosure_siding_mesh_right_1_wire_35
+enclosure_siding_mesh_right_1_wire_36
+enclosure_siding_mesh_right_1_wire_37
+enclosure_siding_mesh_right_1_wire_38
+enclosure_siding_mesh_right_1_wire_39
+enclosure_siding_mesh_right_1_wire_40
+enclosure_siding_mesh_right_1_wire_41
+enclosure_siding_mesh_right_1_wire_42
+enclosure_siding_mesh_right_1_wire_43
+enclosure_siding_mesh_right_1_wire_44
+enclosure_siding_mesh_right_1_wire_45
+enclosure_siding_mesh_right_1_wire_46
+enclosure_siding_mesh_right_1_wire_47
+enclosure_siding_mesh_right_1_wire_48
+enclosure_siding_mesh_right_1_wire_49
+enclosure_siding_mesh_right_1_wire_50
+enclosure_siding_mesh_right_1_wire_51
+enclosure_siding_mesh_right_1_wire_52
+enclosure_siding_mesh_right_1_wire_53
+enclosure_siding_mesh_right_1_wire_54
+enclosure_siding_mesh_right_1_wire_55
+enclosure_siding_mesh_right_1_wire_56
+enclosure_siding_mesh_right_1_wire_57
+enclosure_siding_mesh_right_1_wire_58
+enclosure_siding_mesh_right_1_wire_59
+enclosure_siding_mesh_right_1_wire_60
+enclosure_siding_mesh_right_1_wire_61
+enclosure_siding_mesh_right_1_wire_62
+enclosure_siding_mesh_right_1_wire_63
+enclosure_siding_mesh_right_1_wire_64
+enclosure_siding_mesh_right_1_wire_65
+enclosure_siding_mesh_right_1_wire_66
+enclosure_siding_mesh_right_1_wire_67
+enclosure_siding_mesh_right_1_wire_68
+enclosure_siding_mesh_right_1_wire_69
+enclosure_siding_mesh_right_1_wire_70
+enclosure_siding_mesh_right_1_wire_71
+enclosure_siding_mesh_right_1_wire_72
+enclosure_siding_mesh_right_1_wire_73
+enclosure_siding_mesh_right_1_wire_74
+enclosure_siding_mesh_right_1_wire_75
+enclosure_siding_mesh_right_1_wire_76
+enclosure_siding_mesh_right_1_wire_77
+enclosure_siding_mesh_right_1_wire_78
+enclosure_siding_mesh_right_1_wire_79
+enclosure_siding_mesh_right_1_wire_80
+enclosure_siding_mesh_right_1_wire_81
+enclosure_siding_mesh_right_1_wire_82
+enclosure_siding_mesh_right_1_wire_83
+enclosure_siding_mesh_right_1_wire_84
+enclosure_siding_mesh_right_1_wire_85
+enclosure_siding_mesh_right_1_wire_86
+enclosure_siding_mesh_right_1_wire_87
+enclosure_siding_mesh_right_1_wire_88
+enclosure_siding_mesh_right_1_wire_89
+enclosure_siding_mesh_right_1_wire_90
+enclosure_siding_mesh_right_1_wire_91
+enclosure_siding_mesh_right_1_horizontal_0
+enclosure_siding_mesh_right_1_horizontal_1
+enclosure_siding_mesh_right_1_horizontal_2
+enclosure_siding_mesh_right_1_horizontal_3
+enclosure_siding_mesh_right_1_horizontal_4
+enclosure_siding_mesh_right_1_horizontal_5
+enclosure_siding_mesh_right_1_horizontal_6
+enclosure_siding_mesh_right_1_horizontal_7
+enclosure_siding_mesh_rear_1_wire_0
+enclosure_siding_mesh_rear_1_wire_1
+enclosure_siding_mesh_rear_1_wire_2
+enclosure_siding_mesh_rear_1_wire_3
+enclosure_siding_mesh_rear_1_wire_4
+enclosure_siding_mesh_rear_1_wire_5
+enclosure_siding_mesh_rear_1_wire_6
+enclosure_siding_mesh_rear_1_wire_7
+enclosure_siding_mesh_rear_1_wire_8
+enclosure_siding_mesh_rear_1_wire_9
+enclosure_siding_mesh_rear_1_wire_10
+enclosure_siding_mesh_rear_1_wire_11
+enclosure_siding_mesh_rear_1_wire_12
+enclosure_siding_mesh_rear_1_wire_13
+enclosure_siding_mesh_rear_1_wire_14
+enclosure_siding_mesh_rear_1_horizontal_0
+enclosure_siding_mesh_rear_1_horizontal_1
+enclosure_siding_mesh_rear_1_horizontal_2
+enclosure_siding_mesh_rear_1_horizontal_3
+enclosure_siding_mesh_rear_1_horizontal_4
+enclosure_siding_mesh_rear_1_horizontal_5
+enclosure_siding_mesh_rear_1_horizontal_6
+enclosure_siding_mesh_rear_1_horizontal_7
+enclosure_siding_mesh_rear_2_wire_0
+enclosure_siding_mesh_rear_2_wire_1
+enclosure_siding_mesh_rear_2_wire_2
+enclosure_siding_mesh_rear_2_wire_3
+enclosure_siding_mesh_rear_2_wire_4
+enclosure_siding_mesh_rear_2_wire_5
+enclosure_siding_mesh_rear_2_wire_6
+enclosure_siding_mesh_rear_2_wire_7
+enclosure_siding_mesh_rear_2_wire_8
+enclosure_siding_mesh_rear_2_wire_9
+enclosure_siding_mesh_rear_2_wire_10
+enclosure_siding_mesh_rear_2_wire_11
+enclosure_siding_mesh_rear_2_wire_12
+enclosure_siding_mesh_rear_2_wire_13
+enclosure_siding_mesh_rear_2_wire_14
+enclosure_siding_mesh_rear_2_horizontal_0
+enclosure_siding_mesh_rear_2_horizontal_1
+enclosure_siding_mesh_rear_2_horizontal_2
+enclosure_siding_mesh_rear_2_horizontal_3
+enclosure_siding_mesh_rear_2_horizontal_4
+enclosure_siding_mesh_rear_2_horizontal_5
+enclosure_siding_mesh_rear_2_horizontal_6
+enclosure_siding_mesh_rear_2_horizontal_7
+```
+
+## 23. Install the US46 outside corner trims (`siding-corners`)
+
+Install US46 at all four outside wall corners before installing any wall
+boards. Set the vertical trims to stop beneath the future US20 roof-edge
+faces with expansion clearance, and retain 3/4-inch clearance above local
+grade. Predrill the trim fasteners into framing, with one fixed point per
+physical trim and sliding holes elsewhere. Preserve the board-end movement
+gaps when fitting the siding into the corners. Pre-position any US44 rear
+access profiles that cannot be fitted after the boards.
+
+New model objects:
+
+```text
+enclosure_siding_US46_fl_1
+enclosure_siding_US46_fl_2
+enclosure_siding_US46_fr_1
+enclosure_siding_US46_fr_2
+enclosure_siding_US46_bl_1
+enclosure_siding_US46_bl_2
+enclosure_siding_US46_br_1
+enclosure_siding_US46_br_2
+```
+
+## 24. Wrap the front, left and right with wall siding course 1 (`siding-course-1`)
+
+Install the full-height top boards on the front, left and right walls at the
+level top datum, fitting their ends into the installed US46 corners with
+movement clearance. Hold each board with padded temporary supports attached
+to framing. Engage its supporting AW08s and fasten them from the open space
+below. Secure the free top edge over T-7 spacers. Lock only one attachment
+near the midpoint of each physical board; all other attachments must allow
+longitudinal movement. Use oversized sliding face holes at the other
+T-7-supported points. Remove temporary supports only after the permanent
+attachments retain the board.
+
+New model objects:
+
+```text
+enclosure_siding_front_1
+enclosure_siding_left_1
+enclosure_siding_right_1
+enclosure_siding_front_1_AW08_1
+enclosure_siding_front_1_AW08_2
+enclosure_siding_front_1_AW08_3
+enclosure_siding_front_1_T7_4
+enclosure_siding_front_1_T7_5
+enclosure_siding_front_1_T7_6
+enclosure_siding_left_1_AW08_7
+enclosure_siding_left_1_AW08_8
+enclosure_siding_left_1_AW08_9
+enclosure_siding_left_1_T7_10
+enclosure_siding_left_1_T7_11
+enclosure_siding_left_1_T7_12
+enclosure_siding_right_1_AW08_13
+enclosure_siding_right_1_AW08_14
+enclosure_siding_right_1_AW08_15
+enclosure_siding_right_1_AW08_16
+enclosure_siding_right_1_AW08_17
+enclosure_siding_right_1_T7_18
+enclosure_siding_right_1_T7_19
+enclosure_siding_right_1_T7_20
+enclosure_siding_right_1_T7_21
+enclosure_siding_right_1_T7_22
+```
+
+## 25. Install the notched rear top siding board (`siding-course-1-rear`)
+
+Cut the rear access notch in one physical top board and install it at the
+same level top datum as the front and side boards. The three rendered pieces
+below represent this single notched board. Fit the ends into the installed
+US46 corners with movement clearance. Hold the board with padded temporary
+supports, engage the wing AW08s and fasten them from the open space below.
+Use the backed header face screw above the opening as the board's only fixed
+point; keep both wing clips unlocked and use oversized sliding face holes at
+the other T-7-supported points. Remove temporary supports only after the
+permanent attachments retain the board.
+
+New model objects:
+
+```text
+enclosure_siding_rear_1_piece_1
+enclosure_siding_rear_1_piece_2
+enclosure_siding_rear_1_piece_3
+enclosure_siding_rear_1_AW08_23
+enclosure_siding_rear_1_AW08_24
+enclosure_siding_rear_1_T7_25
+enclosure_siding_rear_1_T7_26
+enclosure_siding_rear_1_T7_27
+```
+
+## 26. Install wall siding course 2, top down (`siding-course-2`)
+
+Install wall course 2, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+New model objects:
+
+```text
+enclosure_siding_front_2
+enclosure_siding_left_2
+enclosure_siding_right_2
+enclosure_siding_rear_2_1
+enclosure_siding_rear_2_2
+enclosure_siding_front_2_AW08_28
+enclosure_siding_front_2_AW08_29
+enclosure_siding_front_2_AW08_30
+enclosure_siding_left_2_AW08_31
+enclosure_siding_left_2_AW08_32
+enclosure_siding_left_2_AW08_33
+enclosure_siding_right_2_AW08_34
+enclosure_siding_right_2_AW08_35
+enclosure_siding_right_2_AW08_36
+enclosure_siding_right_2_AW08_37
+enclosure_siding_right_2_AW08_38
+enclosure_siding_rear_2_1_AW08_39
+enclosure_siding_rear_2_1_AW08_40
+enclosure_siding_rear_2_2_AW08_41
+enclosure_siding_rear_2_2_AW08_42
+```
+
+## 27. Install wall siding course 3, top down (`siding-course-3`)
+
+Install wall course 3, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+New model objects:
+
+```text
+enclosure_siding_front_3
+enclosure_siding_left_3
+enclosure_siding_right_3
+enclosure_siding_rear_3_1
+enclosure_siding_rear_3_2
+enclosure_siding_front_3_AW08_43
+enclosure_siding_front_3_AW08_44
+enclosure_siding_front_3_AW08_45
+enclosure_siding_left_3_AW08_46
+enclosure_siding_left_3_AW08_47
+enclosure_siding_left_3_AW08_48
+enclosure_siding_right_3_AW08_49
+enclosure_siding_right_3_AW08_50
+enclosure_siding_right_3_AW08_51
+enclosure_siding_right_3_AW08_52
+enclosure_siding_right_3_AW08_53
+enclosure_siding_rear_3_1_AW08_54
+enclosure_siding_rear_3_1_AW08_55
+enclosure_siding_rear_3_2_AW08_56
+enclosure_siding_rear_3_2_AW08_57
+```
+
+## 28. Install wall siding course 4, top down (`siding-course-4`)
+
+Install wall course 4, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+New model objects:
+
+```text
+enclosure_siding_front_4
+enclosure_siding_left_4
+enclosure_siding_right_4
+enclosure_siding_rear_4_1
+enclosure_siding_rear_4_2
+enclosure_siding_front_4_AW08_58
+enclosure_siding_front_4_AW08_59
+enclosure_siding_front_4_AW08_60
+enclosure_siding_left_4_AW08_61
+enclosure_siding_left_4_AW08_62
+enclosure_siding_left_4_AW08_63
+enclosure_siding_right_4_AW08_64
+enclosure_siding_right_4_AW08_65
+enclosure_siding_right_4_AW08_66
+enclosure_siding_right_4_AW08_67
+enclosure_siding_right_4_AW08_68
+enclosure_siding_rear_4_1_AW08_69
+enclosure_siding_rear_4_1_AW08_70
+enclosure_siding_rear_4_2_AW08_71
+enclosure_siding_rear_4_2_AW08_72
+```
+
+## 29. Install wall siding course 5, top down (`siding-course-5`)
+
+Install wall course 5, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+New model objects:
+
+```text
+enclosure_siding_front_5
+enclosure_siding_left_5
+enclosure_siding_right_5
+enclosure_siding_rear_5_1
+enclosure_siding_rear_5_2
+enclosure_siding_front_5_AW08_73
+enclosure_siding_front_5_AW08_74
+enclosure_siding_front_5_AW08_75
+enclosure_siding_left_5_AW08_76
+enclosure_siding_left_5_AW08_77
+enclosure_siding_left_5_AW08_78
+enclosure_siding_right_5_AW08_79
+enclosure_siding_right_5_AW08_80
+enclosure_siding_right_5_AW08_81
+enclosure_siding_right_5_AW08_82
+enclosure_siding_right_5_AW08_83
+enclosure_siding_rear_5_1_AW08_84
+enclosure_siding_rear_5_1_AW08_85
+enclosure_siding_rear_5_2_AW08_86
+enclosure_siding_rear_5_2_AW08_87
+```
+
+## 30. Install wall siding course 6, top down (`siding-course-6`)
+
+Install wall course 6, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+New model objects:
+
+```text
+enclosure_siding_front_6
+enclosure_siding_left_6
+enclosure_siding_right_6_piece_1
+enclosure_siding_right_6_piece_2
+enclosure_siding_right_6_piece_3
+enclosure_siding_rear_6_1
+enclosure_siding_rear_6_2
+enclosure_siding_front_6_AW08_88
+enclosure_siding_front_6_AW08_89
+enclosure_siding_front_6_AW08_90
+enclosure_siding_left_6_AW08_91
+enclosure_siding_left_6_AW08_92
+enclosure_siding_left_6_AW08_93
+enclosure_siding_right_6_AW08_94
+enclosure_siding_right_6_AW08_95
+enclosure_siding_right_6_AW08_96
+enclosure_siding_right_6_AW08_97
+enclosure_siding_right_6_AW08_98
+enclosure_siding_rear_6_1_AW08_99
+enclosure_siding_rear_6_1_AW08_100
+enclosure_siding_rear_6_2_AW08_101
+enclosure_siding_rear_6_2_AW08_102
+```
+
+## 31. Install wall siding course 7, top down (`siding-course-7`)
+
+Install wall course 7, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+New model objects:
+
+```text
+enclosure_siding_front_7
+enclosure_siding_left_7
+enclosure_siding_right_7_piece_1
+enclosure_siding_right_7_piece_2
+enclosure_siding_right_7_piece_3
+enclosure_siding_rear_7_1
+enclosure_siding_rear_7_2
+enclosure_siding_front_7_AW08_103
+enclosure_siding_front_7_AW08_104
+enclosure_siding_front_7_AW08_105
+enclosure_siding_left_7_AW08_106
+enclosure_siding_left_7_AW08_107
+enclosure_siding_left_7_AW08_108
+enclosure_siding_right_7_AW08_109
+enclosure_siding_right_7_AW08_110
+enclosure_siding_right_7_AW08_111
+enclosure_siding_right_7_AW08_112
+enclosure_siding_right_7_AW08_113
+enclosure_siding_rear_7_1_AW08_114
+enclosure_siding_rear_7_1_AW08_115
+enclosure_siding_rear_7_2_AW08_116
+enclosure_siding_rear_7_2_AW08_117
+```
+
+## 32. Install wall siding course 8, top down (`siding-course-8`)
+
+Install wall course 8, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+New model objects:
+
+```text
+enclosure_siding_front_8
+enclosure_siding_left_8
+enclosure_siding_right_8
+enclosure_siding_rear_8_1
+enclosure_siding_rear_8_2
+enclosure_siding_front_8_AW08_118
+enclosure_siding_front_8_AW08_119
+enclosure_siding_front_8_AW08_120
+enclosure_siding_left_8_AW08_121
+enclosure_siding_left_8_AW08_122
+enclosure_siding_left_8_AW08_123
+enclosure_siding_right_8_AW08_124
+enclosure_siding_right_8_AW08_125
+enclosure_siding_right_8_AW08_126
+enclosure_siding_right_8_AW08_127
+enclosure_siding_right_8_AW08_128
+enclosure_siding_rear_8_1_AW08_129
+enclosure_siding_rear_8_1_AW08_130
+enclosure_siding_rear_8_2_AW08_131
+enclosure_siding_rear_8_2_AW08_132
+```
+
+## 33. Install wall siding course 9, top down (`siding-course-9`)
+
+Install wall course 9, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+New model objects:
+
+```text
+enclosure_siding_front_9
+enclosure_siding_left_9
+enclosure_siding_right_9
+enclosure_siding_rear_9_1
+enclosure_siding_rear_9_2
+enclosure_siding_front_9_AW08_133
+enclosure_siding_front_9_AW08_134
+enclosure_siding_front_9_AW08_135
+enclosure_siding_left_9_AW08_136
+enclosure_siding_left_9_AW08_137
+enclosure_siding_left_9_AW08_138
+enclosure_siding_right_9_AW08_139
+enclosure_siding_right_9_AW08_140
+enclosure_siding_right_9_AW08_141
+enclosure_siding_right_9_AW08_142
+enclosure_siding_right_9_AW08_143
+enclosure_siding_rear_9_1_AW08_144
+enclosure_siding_rear_9_1_AW08_145
+enclosure_siding_rear_9_2_AW08_146
+enclosure_siding_rear_9_2_AW08_147
+```
+
+## 34. Install wall siding course 10, top down (`siding-course-10`)
+
+Install wall course 10, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
+Engage its supporting AW08s and fasten them from the open space below.
+Lock only one attachment near the midpoint of each physical board; all other
+attachments must accommodate longitudinal movement. Do not remove temporary
+supports until the permanent attachments retain the board. For the notched rear
+top board, the fixed point is the backed header face screw above the opening.
+Use oversized sliding face holes at the other T-7-supported points.
+
+Scribe the final course to the surveyed ground plus 3/4 inch. Field-check grade
+between survey points before cutting. Use T-7-backed face screws where the
+scribe removes the clip groove, preserving one fixed point and sliding holes
+elsewhere. Fit to the ground without lowering the courses above.
+
+New model objects:
+
+```text
+enclosure_siding_front_10
+enclosure_siding_left_10
+enclosure_siding_right_10
+enclosure_siding_rear_10_1
+enclosure_siding_rear_10_2
+enclosure_siding_front_10_T7_148
+enclosure_siding_front_10_T7_149
+enclosure_siding_front_10_T7_150
+enclosure_siding_left_10_T7_151
+enclosure_siding_left_10_T7_152
+enclosure_siding_left_10_T7_153
+enclosure_siding_right_10_T7_154
+enclosure_siding_right_10_T7_155
+enclosure_siding_right_10_T7_156
+enclosure_siding_right_10_T7_157
+enclosure_siding_right_10_T7_158
+enclosure_siding_rear_10_1_T7_159
+enclosure_siding_rear_10_1_T7_160
+enclosure_siding_rear_10_2_T7_161
+enclosure_siding_rear_10_2_T7_162
+```
+
+## 35. Install the US09 roof cover (`siding-roof`)
+
+Run boards along X and progress across Y. Attach AW08s at the generated
+lumber support points, with one locking point per physical board. Use
+T-7-backed face screws on the ripped terminal edge. Secure the first free edge
+with backed face fastening as documented in SIDING.md. The roof boards bear on
+lumber, independently of US20 trim. This level cover may leak; the wall and
+ceiling guides do not establish its snow, wind or roof load capacity.
+
+New model objects:
+
+```text
 enclosure_siding_top_1
 enclosure_siding_top_2
 enclosure_siding_top_3
 enclosure_siding_top_4
 enclosure_siding_top_5
-enclosure_siding_front_1
-enclosure_siding_left_1
-enclosure_siding_right_1
-enclosure_siding_rear_top_left
-enclosure_siding_rear_top_header
-enclosure_siding_rear_top_right
-enclosure_siding_front_2
-enclosure_siding_left_2
-enclosure_siding_right_2
-enclosure_siding_rear_left_2
-enclosure_siding_rear_right_2
-enclosure_siding_front_3
-enclosure_siding_left_3
-enclosure_siding_right_3
-enclosure_siding_rear_left_3
-enclosure_siding_rear_right_3
-enclosure_siding_front_4
-enclosure_siding_left_4
-enclosure_siding_right_4
-enclosure_siding_rear_left_4
-enclosure_siding_rear_right_4
-enclosure_siding_front_5
-enclosure_siding_left_5
-enclosure_siding_right_5
-enclosure_siding_rear_left_5
-enclosure_siding_rear_right_5
-enclosure_siding_front_6
-enclosure_siding_left_6
-enclosure_siding_right_6_1
-enclosure_siding_right_6_2
-enclosure_siding_right_6_3
-enclosure_siding_rear_left_6
-enclosure_siding_rear_right_6
-enclosure_siding_front_7
-enclosure_siding_left_7
-enclosure_siding_right_7_1
-enclosure_siding_right_7_2
-enclosure_siding_right_7_3
-enclosure_siding_rear_left_7
-enclosure_siding_rear_right_7
-enclosure_siding_front_8
-enclosure_siding_left_8
-enclosure_siding_right_8
-enclosure_siding_rear_left_8
-enclosure_siding_rear_right_8
-enclosure_siding_front_9
-enclosure_siding_left_9
-enclosure_siding_right_9
-enclosure_siding_rear_left_9
-enclosure_siding_rear_right_9
+enclosure_siding_top_1_AW08_163
+enclosure_siding_top_1_AW08_164
+enclosure_siding_top_1_AW08_165
+enclosure_siding_top_1_AW08_166
+enclosure_siding_top_1_AW08_167
+enclosure_siding_top_1_AW08_168
+enclosure_siding_top_1_AW08_169
+enclosure_siding_top_1_AW08_170
+enclosure_siding_top_1_T7_171
+enclosure_siding_top_1_T7_172
+enclosure_siding_top_1_T7_173
+enclosure_siding_top_1_T7_174
+enclosure_siding_top_1_T7_175
+enclosure_siding_top_2_AW08_176
+enclosure_siding_top_2_AW08_177
+enclosure_siding_top_2_AW08_178
+enclosure_siding_top_2_AW08_179
+enclosure_siding_top_2_AW08_180
+enclosure_siding_top_2_AW08_181
+enclosure_siding_top_2_AW08_182
+enclosure_siding_top_3_AW08_183
+enclosure_siding_top_3_AW08_184
+enclosure_siding_top_3_AW08_185
+enclosure_siding_top_3_AW08_186
+enclosure_siding_top_3_AW08_187
+enclosure_siding_top_3_AW08_188
+enclosure_siding_top_3_AW08_189
+enclosure_siding_top_4_AW08_190
+enclosure_siding_top_4_AW08_191
+enclosure_siding_top_4_AW08_192
+enclosure_siding_top_4_AW08_193
+enclosure_siding_top_4_AW08_194
+enclosure_siding_top_5_T7_195
+enclosure_siding_top_5_T7_196
+enclosure_siding_top_5_T7_197
+enclosure_siding_top_5_T7_198
+enclosure_siding_top_5_T7_199
 ```
 
-## 23. Install the siding trim (`siding-trim`)
+## 36. Fit roof-edge and rear-access trim (`siding-trim`)
 
-Install the paired black-aluminum angle legs at all four enclosure corners and
-both sides of the tambour opening, then install the paired header legs. The
-vertical trim pieces are modeled at 46 inches; the rear opening header is
-20 1/2 inches.
+Install US44 at rear access edges; pre-position any profiles that cannot be
+fitted after the boards. Fit US20 over the roof edges with 45-degree plan
+miters, above the previously installed US46 corner trims. Preserve expansion
+clearance at the junctions. Use the four generated siding_corner_*.scad views.
 
-Check the trim for plumb, straight edges, safe cut edges, and clear openings
-around the enclosure. The rear opening remains available for a possible future
-tambour installation.
+Relieve the front US20 vertical leg locally around the Brook mounting body:
+6 1/4 inches wide, to 1/8 inch above its modeled top. Verify the actual fixture
+before cutting; fasten this trim on either side of the relief into the brace.
+Fasten the US20 vertical faces into backing; its horizontal legs cover the roof
+edges without carrying the roof. Keep expansion gaps at all joints, and use
+oversized sliding holes except at each trim piece's single fixed point.
+The 1/8-inch modeled gaps assume installation at 32 F or warmer and pieces
+no longer than 8 feet; check the guide table against field conditions.
 
 New model objects:
 
 ```text
-enclosure_siding_angle_front_left_a
-enclosure_siding_angle_front_left_b
-enclosure_siding_angle_front_right_a
-enclosure_siding_angle_front_right_b
-enclosure_siding_angle_rear_left_a
-enclosure_siding_angle_rear_left_b
-enclosure_siding_angle_rear_right_a
-enclosure_siding_angle_rear_right_b
-enclosure_siding_angle_tambour_left_a
-enclosure_siding_angle_tambour_left_b
-enclosure_siding_angle_tambour_right_a
-enclosure_siding_angle_tambour_right_b
-enclosure_siding_angle_tambour_header_face
-enclosure_siding_angle_tambour_header_bottom
+enclosure_siding_US20_front_top
+enclosure_siding_US20_front_face
+enclosure_siding_US20_rear_top
+enclosure_siding_US20_rear_face
+enclosure_siding_US20_left_top
+enclosure_siding_US20_left_face
+enclosure_siding_US20_right_top
+enclosure_siding_US20_right_face
+enclosure_siding_US44_left_1
+enclosure_siding_US44_left_2
+enclosure_siding_US44_left_3
+enclosure_siding_US44_right_1
+enclosure_siding_US44_right_2
+enclosure_siding_US44_right_3
+enclosure_siding_US44_header
 ```
 
-## 24. Finish the Brook and address numbers (`street-light-finish`)
+## 37. Finish the Brook and address numbers (`street-light-finish`)
 
 Install the MOD Lighting Brook MOD119, 16-inch black, 3000K variant
 45573961023747. Published dimensions are 16 inches long, 2.4 inches high,
 and 3.9 inches projecting from the wall. Center the supplied bracket at
 x = 13.75 and z = 48.625 inches in the default enclosure: 1/2 inch above the
 underside of `brace_fl_fr`. Set the bracket against the siding exterior at
-y = -1 inch and fasten through the siding into the low part of the brace.
+y = -0.8125 inch and fasten through the siding into the low part of the brace.
 The cable enters the lower base below the bracket, through the small bore
 specified in step 21. There is no large box opening in the siding.
 
@@ -804,7 +1603,7 @@ arrangement is 12 inches wide: four 2 1/4-inch digit envelopes with 1-inch
 spacing. Keep a 3-inch vertical gap below the Brook. Default numeral bounds
 span x = 7.75 to 19.75, z = 39.425 to 44.425 inches. Each digit has two
 1-inch standoffs, leaving 1 inch from siding to its back; its front is at
-y = -3 inches. Fasten the standoffs through the siding into the actual
+y = -2.8125 inches. Fasten the standoffs through the siding into the actual
 1-inch-thick support installed in step 19. Standoff diameter and mounting
 positions are schematic and must follow the selected numeral hardware.
 
@@ -834,7 +1633,7 @@ front_address_number_4_standoff_1
 front_address_number_4_standoff_2
 ```
 
-## 25. Finish the right-side outlet (`outlet-finish`)
+## 38. Finish the right-side outlet (`outlet-finish`)
 
 Install the Intermatic WP5100BL in-use cover on the FSE box after the siding is
 complete.
@@ -850,23 +1649,7 @@ New model objects:
 back_right_outlet_cover
 ```
 
-## Model coverage checklist
-
-The 25 steps above assign all active construction objects exactly once.
-Thirteen deferred tambour objects remain available in the model for future
-reference and are hidden unless `show_deferred` is enabled in the completed
-view.
-
-| Category | Modeled count | Assigned steps |
-| --- | ---: | --- |
-| Lumber members | 25 | 2-8, 12-13, 18-19 |
-| Components and fittings | 29 | 3, 9-11, 13, 15-16, 18, 21-22, 24-25 |
-| Footings | 4 | 2 |
-| Conduit runs | 6 | 1, 10, 14, 21 |
-| Cable paths | 4 | 9, 16-17, 20 |
-| Composite siding render parts | 58 | 22 |
-| Siding trim render parts | 14 | 23 |
-| Deferred tambour reference objects | 13 | Completed view with `show_deferred` |
-
-The `ground` object is visualization context rather than an installed enclosure
-component, so it intentionally remains outside the numbered sequence.
+The 36 steps assign every active construction object exactly once.
+Thirteen deferred tambour reference objects remain hidden unless `show_deferred`
+is enabled in the completed view. Ground is visualization context outside the
+numbered installation sequence. Wall course steps descend from top to bottom.

@@ -69,6 +69,7 @@ from lumber_model.gusset import (
     pan_head_cylinder_primitives,
 )
 from lumber_model.gusset_dxf import generate_gusset_dxf
+from lumber_model.us09 import US09Siding, US09_THICKNESS, AW08_STANDOFF
 
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 19.375
@@ -162,9 +163,10 @@ def build_enclosure(
     FRAME_DIMS=AbsoluteCoord(width, depth, height)
     BURIED_FRAME_Z=32
     FULL_POST_LEN=BURIED_FRAME_Z+height
-    SIDING_BOTTOM_Z=2
+    SIDING_BOTTOM_Z=0.75
     SIDING_STOCK_LENGTH_FT=16
-    SIDING_BOARD_THICKNESS=1
+    # Finished face offset includes the clip-created space behind US09.
+    SIDING_BOARD_THICKNESS=US09_THICKNESS+AW08_STANDOFF
     TAMBOUR_DOOR_COLOR=(0.10, 0.12, 0.14, 1.0)
 
     HEIGHT_2x4=1.5
@@ -1735,7 +1737,7 @@ def build_enclosure(
         ),
     )
 
-    siding = CompositeSiding(
+    siding = US09Siding(
         "enclosure_siding",
         min_x=0,
         max_x=FRAME_DIMS.x + WIDTH_4x4,
@@ -1750,7 +1752,13 @@ def build_enclosure(
         front_bores=(FRONT_STREET_LIGHT_SIDING_BORE,),
         right_openings=(BACK_RIGHT_OUTLET_SIDING_OPENING,),
         stock_length=SIDING_STOCK_LENGTH_FT * 12,
-        board_thickness=SIDING_BOARD_THICKNESS,
+        board_thickness=US09_THICKNESS,
+        ground=grounds[0].resolved(members),
+        framing=tuple((m.start,m.size) for m in members.values() if m.name != "brace_bl_fr"),
+        diagonal=diagonal_footprint,
+        front_trim_relief=(FRONT_STREET_LIGHT_CENTER_X-3.125,
+                           FRONT_STREET_LIGHT_CENTER_X+3.125,
+                           FRONT_STREET_LIGHT_CENTER_Z+1.2+1/8),
     )
 
     cables = CableCollection()
@@ -2252,6 +2260,7 @@ def write_outputs(
     enclosure.model.write_shopping_list_json(output_dir / "shopping_list.json")
     enclosure.model.write_fabrication_csv(output_dir / "fabrication.csv")
     enclosure.model.write_fabrication_json(output_dir / "fabrication.json")
+    enclosure.siding.write_artifacts(output_dir)
     generate_gusset_dxf(output_dir / "gusset_plate_6x6.dxf")
     generate_tambour_fabrication(
         output_dir / "tambour",

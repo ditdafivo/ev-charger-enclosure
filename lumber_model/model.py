@@ -650,6 +650,18 @@ class Model:
                 }
             )
 
+        for siding in self.sidings:
+            if hasattr(siding, "fabrication_rows"):
+                for cut in siding.fabrication_rows():
+                    rows.append({
+                        "assembly": siding.assembly, "type": cut["material"],
+                        "length_in": cut["length_in"],
+                        "length_display": inches_to_fraction_text(cut["length_in"]),
+                        "stock_width_in": cut["blank_width_in"],
+                        "finished_width_in": cut["finished_width_in"], "start_cut_angle_deg": "",
+                        "end_cut_angle_deg": "", "end_profile": cut["operation"],
+                        "qty": 1, "members": cut["name"],
+                    })
         return rows
 
     def shopping_list_rows(
@@ -706,6 +718,14 @@ class Model:
                 }
             )
 
+        for siding in self.sidings:
+            if hasattr(siding, "fabrication_rows"):
+                rows.extend({
+                    "type": row["type"],
+                    "stock_length_in": row["stock_length_ft"]*12 if row["stock_length_ft"] else "",
+                    "stock_length_display": inches_to_fraction_text(row["stock_length_ft"]*12) if row["stock_length_ft"] else "",
+                    "qty": row["stock_board_qty"] or row["qty"],
+                } for row in siding.bom_rows())
         rows.extend(
             {
                 "type": item.description,

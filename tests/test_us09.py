@@ -1,0 +1,167 @@
+from __future__ import annotations
+
+from collections import defaultdict
+from dataclasses import replace
+import json
+from itertools import combinations
+from pathlib import Path
+import tempfile
+import unittest
+
+import build
+from lumber_model.us09 import US09Siding, US09_PREVIEW_CLEARANCE
+
+
+def rebate_boxes(part):
+    """Conservative solid boxes: omit polygon/bores, subtract actual rebates."""
+    boxes = [(part.start, tuple(a+b for a,b in zip(part.start,part.size)))]
+    for start,size in part.rebates:
+        end = tuple(a+b for a,b in zip(start,size))
+        remaining = []
+        for lo,hi in boxes:
+            cut_lo = tuple(max(a,b) for a,b in zip(lo,start))
+            cut_hi = tuple(min(a,b) for a,b in zip(hi,end))
+            if any(a>=b for a,b in zip(cut_lo,cut_hi)):
+                remaining.append((lo,hi))
+                continue
+            lo,hi = list(lo),list(hi)
+            for axis in range(3):
+                if lo[axis]<cut_lo[axis]:
+                    edge = hi.copy(); edge[axis] = cut_lo[axis]
+                    remaining.append((tuple(lo),tuple(edge)))
+                    lo[axis] = cut_lo[axis]
+                if hi[axis]>cut_hi[axis]:
+                    edge = lo.copy(); edge[axis] = cut_hi[axis]
+                    remaining.append((tuple(edge),tuple(hi)))
+                    hi[axis] = cut_hi[axis]
+        boxes = remaining
+    return boxes
+
+
+class US09Tests(unittest.TestCase):
+    def test_lapped_boards_have_preview_clearance(self):
+        for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
+            siding = build.build_enclosure(*dims).siding
+            for wall in ('front','rear','left','right','top'):
+                boards = [p for p in siding.board_parts if f'_{wall}_' in p.name]
+                joints = 0
+                for a,b in combinations(boards,2):
+                    if not all(min(a.start[k]+a.size[k],b.start[k]+b.size[k])
+                               > max(a.start[k],b.start[k])+1e-8 for k in range(3)):
+                        continue
+                    joints += 1
+                    for (alo,ahi),(blo,bhi) in ((x,y) for x in rebate_boxes(a) for y in rebate_boxes(b)):
+                        # A shared face also fails: distinct highlighted boards
+                        # need air between their mating faces in the preview.
+                        separation = max(max(alo[k]-bhi[k],blo[k]-ahi[k]) for k in range(3))
+                        self.assertGreaterEqual(separation,US09_PREVIEW_CLEARANCE/2-1e-8,
+                                                (a.name,b.name,alo,ahi,blo,bhi))
+                self.assertGreater(joints,0,wall)
+
+    def test_full_top_course_and_scribed_bottom(self):
+        s=build.siding
+        self.assertIsInstance(s,US09Siding)
+        for wall in ('front','left','right'):
+            cuts=[c for c in s.cuts if c.wall==wall]
+            self.assertAlmostEqual(cuts[0].top-cuts[0].bottom,s.board_width)
+            self.assertEqual([c.course for c in cuts],list(range(1,len(cuts)+1)))
+            self.assertTrue(all(c.top-c.bottom==cuts[0].top-cuts[0].bottom or
+                                abs((c.top-c.bottom)-s.board_width)<1e-8 for c in cuts))
+            for along,z in cuts[-1].bottom_edge:
+                self.assertAlmostEqual(z-s.ground_z(*s.xy(wall,along)),0.75)
+        # Physical profiles overlap; pitch is not overall width plus a gap.
+        self.assertAlmostEqual(s.courses[0][0]-s.courses[1][0],s.course_pitch)
+        self.assertLess(s.course_pitch,s.board_width)
+        self.assertTrue(all(p.rebates for p in s.board_parts))
+
+    def test_openings_and_one_physical_notched_rear_board(self):
+        s=build.siding
+        rear=next(c for c in s.cuts if c.notched)
+        fragments=[p for p in s.board_parts if p.name.startswith(rear.name+'_piece_')]
+        self.assertEqual(len(fragments),3)
+        self.assertEqual(sum(p.cut_length is not None for p in fragments),1)
+        self.assertEqual(sum(a.locked for a in s.attachments if a.board==rear.name),1)
+        for part in s.board_parts:
+            if '_right_' not in part.name: continue
+            for opening in s.right_openings:
+                self.assertFalse(part.start[1]<opening.max_y and part.start[1]+part.size[1]>opening.min_y
+                    and part.start[2]<opening.top_z and part.start[2]+part.size[2]>opening.bottom_z)
+        self.assertEqual(sum(bool(p.front_bores) for p in s.board_parts),1)
+
+    def test_attachments_backing_and_spans_for_multiple_envelopes(self):
+        for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
+            s=build.build_enclosure(*dims).siding
+            groups=defaultdict(list)
+            for a in s.attachments:
+                groups[a.board].append(a)
+                if a.wall=='roof':
+                    self.assertTrue(s._roof_supported(a.along,a.elevation),a)
+                else:
+                    self.assertTrue(s._surface_supported(a.wall,a.along,a.elevation),a)
+            for name,attachments in groups.items():
+                self.assertEqual(sum(a.locked for a in attachments),1,name)
+                at_edge=sorted(set(a.along for a in attachments))
+                maximum=12 if attachments[0].wall=='roof' else 16
+                self.assertTrue(all(b-a<=maximum+1e-8 for a,b in zip(at_edge,at_edge[1:])),name)
+            for p in s.backing_parts:
+                if p.material=='PT_roof_shim': continue
+                # Added wood must fit around existing wood, not occupy it.
+                for loc,size in s.framing:
+                    self.assertFalse(all(p.start[k]<loc[k]+size[k]-1e-7 and
+                        p.start[k]+p.size[k]>loc[k]+1e-7 for k in range(3)),p.name)
+
+    def test_trim_ground_clearance_and_upper_corner_junctions(self):
+        s=build.siding
+        for p in s.angle_parts:
+            if p.material=='US46':
+                self.assertAlmostEqual(p.start[2]+p.size[2],s.roof_finished_top_z-40/25.4-s.end_gap)
+            if p.material=='US20' and p.name.endswith('_top'):
+                self.assertEqual(len(p.polygon),4)
+                self.assertAlmostEqual(p.start[2],s.roof_finished_top_z)
+        relief=next(p for p in s.angle_parts if p.name.endswith('US20_front_face'))
+        self.assertTrue(relief.rebates)
+        a,dim=relief.rebates[0]
+        self.assertAlmostEqual(a[0],s.front_trim_relief[0])
+        self.assertAlmostEqual(a[2]+dim[2],s.front_trim_relief[2])
+        for name,x in (('left',s.rear_opening_min_x),('right',s.rear_opening_max_x)):
+            p=next(p for p in s.angle_parts if p.name.endswith(f'US44_{name}_1'))
+            self.assertAlmostEqual(p.start[2],s.ground_z(x,s.max_y)+0.75)
+
+    def test_cut_bom_shopping_and_generated_artifacts(self):
+        s=build.siding
+        bom={r['name']:r for r in s.bom_rows()}
+        self.assertEqual(bom[f'{s.name}_AW08']['qty'],sum(a.kind=='AW08' for a in s.attachments))
+        self.assertEqual(bom[f'{s.name}_T-7']['qty'],sum(a.kind=='T-7' for a in s.attachments))
+        self.assertEqual(bom[f'{s.name}_US09']['qty'],len(s.cut_lengths))
+        self.assertTrue(any(r['type'].startswith('US09') for r in build.model.shopping_list_rows()))
+        rows=s.fabrication_rows()
+        self.assertEqual(sum(r['material']=='US09' for r in rows),len(s.cut_lengths))
+        with tempfile.TemporaryDirectory() as tmp:
+            s.write_artifacts(tmp)
+            manifest=json.loads((Path(tmp)/'siding_installation.json').read_text())
+            self.assertIn('top downward',manifest['wall_installation'])
+            self.assertIn('NOT PERFORMED',manifest['physical_dry_fit_status'])
+            self.assertEqual(len(list(Path(tmp).glob('siding_corner_*.scad'))),4)
+        # Increasing saw kerf must never decrease stock requirements.
+        wide={r['name']:r for r in replace(s,kerf=0.25).bom_rows()}
+        self.assertGreaterEqual(wide[f'{s.name}_US09']['stock_board_qty'],bom[f'{s.name}_US09']['stock_board_qty'])
+
+    def test_viewer_installs_wall_courses_downward(self):
+        steps={name:step.number for step in build.model.build_steps for name in step.object_names}
+        s=build.siding
+        for wall in ('front','left','right'):
+            cuts=[c for c in s.cuts if c.wall==wall]
+            numbers=[min(steps[p.name] for p in s.board_parts if p.name==c.name or p.name.startswith(c.name+'_piece_')) for c in cuts]
+            self.assertEqual(numbers,sorted(numbers))
+            self.assertEqual(len(set(numbers)),len(cuts))
+        build.model.validate()
+
+    def test_rejects_invalid_pitch_and_clearance(self):
+        for kwargs in ({'course_pitch':0},{'course_pitch':7},{'ground_clearance':0.5},
+                       {'clip_standoff':float('nan')},{'ground':None}):
+            with self.subTest(kwargs=kwargs),self.assertRaises(ValueError):
+                replace(build.siding,**kwargs)
+
+
+if __name__=='__main__':
+    unittest.main()

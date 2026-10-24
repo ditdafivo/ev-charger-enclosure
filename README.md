@@ -48,7 +48,7 @@ the surveyed ground stays fixed. The installed diagonal is friction-fitted
 between the corner posts and secured by the two gussets. The diagonal and
 perimeter bracing finish flush with the level post tops at `z = 49.625`.
 The existing 1/4-inch roof shims put roof support at `49.875` and the finished
-roof at `50.875`. Post bottoms remain at the assumed `z = -32` datum; the survey
+US09 roof board at `50.6875` (before US20 trim). Post bottoms remain at the assumed `z = -32` datum; the survey
 does not establish their actual buried lengths.
 
 ## First deployment
@@ -118,7 +118,7 @@ attach through the siding into a spanning support board with an actual
 This is a physical installation concept; the open-backed fixture connection
 has not been verified against its certification. Measure the actual bracket,
 cable, connector, and numeral hardware before drilling. See
-[steps 19–24](BUILD_STEPS.md#19-add-the-address-number-support-address-number-support)
+[the build sequence](BUILD_STEPS.md#19-add-the-address-number-support-address-number-support)
 for routing, sealing, grounding, access, and fabrication assumptions.
 
 ## Licensing
@@ -128,3 +128,17 @@ available under the [MIT license](LICENSE). The customized and compiled
 OpenSCAD Playground remains GPL-covered. See
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the exact boundary and
 third-party licensing information.
+
+## Horizontal US09 siding
+
+The shell uses US09 tongue-and-groove siding, with full-height top boards and
+ground-following bottom cuts 3/4 inch above grade. A separate 1/4-inch mesh skirt
+closes the lower gap. Wall installation proceeds **top downward**, using temporary
+supports while fastening supporting AW08 clips from below. The build-step viewer
+shows each course in that order. The rear access opening remains open.
+
+The US09 top is a level cover that may leak. Added lumber carries the boards;
+US46 wall corners terminate beneath mitered US20 roof-edge trim. See
+[SIDING.md](SIDING.md) for the downward procedure, the required two-course
+physical dry fit, provisional course pitch/clip dimensions, corner details,
+fastener assumptions and the generated siding fabrication files.

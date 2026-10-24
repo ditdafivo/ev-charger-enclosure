@@ -116,6 +116,11 @@ class SidingPart:
     color: SidingColor
     cut_length: float | None = None
     front_bores: tuple[FrontSidingBore, ...] = ()
+    # Optional local 2D extrusion. plane=xz extrudes toward +Y, yz toward +X,
+    # and xy toward +Z. Legacy rectangular siding records remain supported.
+    polygon: tuple[tuple[float, float], ...] = ()
+    plane: str = "xy"
+    rebates: tuple[tuple[Vector3, Vector3], ...] = ()
 
     def scad_record(self) -> str:
         return (
@@ -125,7 +130,10 @@ class SidingPart:
             f"{_format_vector(self.start)}, "
             f"{_format_vector(self.size)}, "
             f"{_format_vector(self.color)}, "
-            f"[{', '.join(b.scad_record() for b in self.front_bores)}]"
+            f"[{', '.join(b.scad_record() for b in self.front_bores)}], "
+            f"[{', '.join(_format_vector(p) for p in self.polygon)}], "
+            f"{scad_string(self.plane)}, "
+            f"[{', '.join('['+_format_vector(a)+', '+_format_vector(b)+']' for a,b in self.rebates)}]"
             "]"
         )
 

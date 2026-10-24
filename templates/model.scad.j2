@@ -887,14 +887,65 @@ module render_tambour_door_component(t, is_open, highlighted = false) {
             );
 }
 
-module render_siding_part(s, highlighted = false) {
-    color(highlighted ? build_step_highlight_color() : s_color(s))
+module siding_part_geometry(s) {
         difference() {
-            translate(s_start(s)) cube(s_size(s));
+            translate(s_start(s))
+                if (len(s) < 8 || len(s[6]) == 0) cube(s_size(s));
+                else if (s[7] == "xz")
+                    multmatrix([[1,0,0,0],[0,0,1,0],[0,1,0,0],[0,0,0,1]])
+                        linear_extrude(height=s_size(s)[1]) polygon(s[6]);
+                else if (s[7] == "yz")
+                    multmatrix([[0,0,1,0],[1,0,0,0],[0,1,0,0],[0,0,0,1]])
+                        linear_extrude(height=s_size(s)[0]) polygon(s[6]);
+                else linear_extrude(height=s_size(s)[2]) polygon(s[6]);
+            if (len(s) > 8) for (r = s[8])
+                translate(r[0]) cube(r[1]);
             for (b = s[5])
                 translate([b[0], s_start(s)[1] - 0.01, b[1]])
                     rotate([-90, 0, 0]) cylinder(d = b[2], h = s_size(s)[1] + 0.02, $fn = 48);
         }
+}
+
+// A narrow surface marking makes the extent of each overlapping US09 visible.
+// Intersect with the finished solid so bores, notches and rebates stay clear.
+module siding_bottom_band(s) {
+    line_width = 0.035;
+    translate(s_start(s))
+        if (len(s) >= 8 && len(s[6]) > 0) {
+            p = s[6];
+            for (i = [0 : len(p) - 1]) {
+                a = p[i];
+                b = p[(i + 1) % len(p)];
+                // Lower polygon edges run left to right, including grade slopes.
+                if (b[0] > a[0])
+                    multmatrix(s[7] == "xz"
+                        ? [[1,0,0,0],[0,0,1,0],[0,1,0,0],[0,0,0,1]]
+                        : [[0,0,1,0],[1,0,0,0],[0,1,0,0],[0,0,0,1]])
+                        linear_extrude(height=s[7] == "xz" ? s_size(s)[1] : s_size(s)[0])
+                            polygon([a, b, [b[0], b[1] + line_width],
+                                           [a[0], a[1] + line_width]]);
+            }
+        } else {
+            // Roof boards lie in XY; the upper rebate sets their exposed edge.
+            lap = len(s) > 8 && len(s[8]) > 0 ? s[8][0][1][1] : 0;
+            cube([s_size(s)[0], lap + line_width, s_size(s)[2]]);
+        }
+}
+
+module render_siding_part(s, highlighted = false) {
+    color(highlighted ? build_step_highlight_color() : s_color(s))
+        siding_part_geometry(s);
+    if (s_material(s) == "US09")
+        color("black")
+            // Lift the marking just clear of both faces to avoid z-fighting.
+            translate(s_start(s) + s_size(s) / 2)
+                scale(len(s[6]) == 0 ? [1, 1, 1.008]
+                    : s[7] == "xz" ? [1, 1.008, 1] : [1.008, 1, 1])
+                    translate(-(s_start(s) + s_size(s) / 2))
+                        intersection() {
+                            siding_part_geometry(s);
+                            siding_bottom_band(s);
+                        }
 }
 
 module render_xygrid(bounds, origin, zloc) {

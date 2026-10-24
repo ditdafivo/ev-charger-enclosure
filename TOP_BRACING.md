@@ -113,7 +113,7 @@ both load directions:
 - corrosion compatibility with treated lumber and the outdoor environment.
 
 The model includes the two side-brace routed cuts, plates, screw-head
-envelopes, and roof shims. It does not select screw length or establish a
+envelopes, plywood roof strips and local routed support blocks. It does not select screw length or establish a
 published capacity for the custom connection. A qualified engineer must check
 plate thickness, hole pattern, screw specification, wood edge distances, and
 the complete post load path before temporary bracing is removed.
@@ -133,12 +133,17 @@ modeled connection.
 ## Roof interface
 
 The modeled 0.074-inch plate and pan-head projection is 0.184 inch above the
-49.625-inch frame plane. The 1/4-inch ripped PT-lumber shims cover the exposed
-perimeter framing and both non-gusseted corner posts, but stop at the gusset
-envelopes. They raise the composite roof support plane to `z = 49.875`; the
-decking spans the short interruptions above the plates and finishes at
-`z = 50.875`. Preserve drainage around both plates and increase roof-fastener
-length by the shim thickness so the original substrate penetration is retained.
+49.625-inch frame plane. The roof uses 3/4-inch PT plywood strips in place of
+perimeter/diagonal shims and intermediate roof backing. The siding underside is
+z = 50.375 and its top is z = 50.875 before trim.
+
+Strip ends stop 1/8 inch clear of the gusset envelopes. Flat 2x4 support blocks
+beside the plates meet the front/rear rails and have routed seats for the existing
+diagonal. Two opposed structural toe screws per block enter the rail below the
+seat; product, length, pilot holes and connection capacity remain unverified.
+There are no roof-support angles or inserts resting on plate fasteners. Strip
+anchors are independent of the short, movement-accommodating siding screws.
+Keep channels and outlets open for drainage. See [SIDING.md](SIDING.md).
 
 ## Sources
 

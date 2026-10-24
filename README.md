@@ -47,8 +47,8 @@ error inside the surveyed rectangle.
 the surveyed ground stays fixed. The installed diagonal is friction-fitted
 between the corner posts and secured by the two gussets. The diagonal and
 perimeter bracing finish flush with the level post tops at `z = 49.625`.
-The existing 1/4-inch roof shims put roof support at `49.875` and the finished
-US135 roof board at `50.375` (before US20 trim). Post bottoms remain at the assumed `z = -32` datum; the survey
+The 3/4-inch PT plywood roof strips put roof support at `50.375` and the finished
+US135 roof board at `50.875` (before US20 trim). Post bottoms remain at the assumed `z = -32` datum; the survey
 does not establish their actual buried lengths.
 
 ## First deployment
@@ -138,7 +138,8 @@ closes the lower gap. Wall installation proceeds **top downward**, using tempora
 supports while face-fastening boards directly into the lumber. The build-step viewer
 shows each course in that order. The rear access opening remains open.
 
-The US135 top is a level cover that may leak. Added lumber carries the boards;
+The US135 top is a level cover that may leak. Paired 3/4-inch PT plywood strips
+carry the boards, with toe-screwed local support blocks beside the gussets;
 US20 covers outside corners and the rear opening; vertical corners terminate
 beneath mitered US20 roof-edge trim. See
 [SIDING.md](SIDING.md) for the downward procedure, the required two-course

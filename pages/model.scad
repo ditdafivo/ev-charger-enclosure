@@ -25,7 +25,7 @@ label_lift = 0.03;
 lumber_color = [0.50, 0.18, 0.08, 1.0];
 /* [Grids] */
 xygrid_enabled = false;
-xygrid_zloc = 0; // [-37:1:52]
+xygrid_zloc = 0; // [-37:1:53]
 xygrid_region = 0; // [-2:1:2]
 xzgrid_enabled = false;
 xzgrid_yloc = 0; // [-38:1:61]
@@ -39,13 +39,14 @@ electrical_backing = true;
 frame = true;
 posts = true;
 power_cord_guard = true;
+roof_supports = true;
 tambour_supports = true;
 component_electrical = true;
 component_electrical_conduit_fittings = true;
 component_exterior_fixtures = true;
 component_low_voltage_fittings = true;
 component_power_cord_guard = true;
-component_roof_shims = true;
+component_roof_support_hardware = true;
 component_tambour_guard = true;
 component_tambour_supports = true;
 component_top_bracing_hardware = true;
@@ -111,6 +112,10 @@ show_lumber_back_right_outlet_backer_lower = true;
 show_lumber_back_right_outlet_backer_upper = true;
 // front address number support
 show_lumber_front_address_number_support = true;
+// roof support bl
+show_lumber_roof_support_bl = true;
+// roof support fr
+show_lumber_roof_support_fr = true;
 // power guard left upright
 show_lumber_power_guard_left_upright = true;
 // power guard right upright
@@ -132,14 +137,14 @@ show_component_right_tambour_upper_backing = true;
 show_component_gusset_back_left = true;
 // gusset front right
 show_component_gusset_front_right = true;
-// roof shim brace fl fr
-show_component_roof_shim_brace_fl_fr = true;
-// roof shim brace fl bl
-show_component_roof_shim_brace_fl_bl = true;
-// roof shim brace bl br
-show_component_roof_shim_brace_bl_br = true;
-// roof shim brace fr br
-show_component_roof_shim_brace_fr_br = true;
+// roof support bl toe screw 1
+show_component_roof_support_bl_toe_screw_1 = true;
+// roof support bl toe screw 2
+show_component_roof_support_bl_toe_screw_2 = true;
+// roof support fr toe screw 1
+show_component_roof_support_fr_toe_screw_1 = true;
+// roof support fr toe screw 2
+show_component_roof_support_fr_toe_screw_2 = true;
 // low voltage termination box
 show_component_low_voltage_termination_box = true;
 // low voltage input adapter
@@ -250,10 +255,10 @@ show_component_power_guard_removable_panel = true;
 /* [Hidden] */
 
 lumber_object_toggles = [
-    ["post_fl", show_lumber_post_fl],    ["post_fr", show_lumber_post_fr],    ["post_bl", show_lumber_post_bl],    ["post_br", show_lumber_post_br],    ["brace_fl_fr", show_lumber_brace_fl_fr],    ["brace_fl_bl", show_lumber_brace_fl_bl],    ["brace_bl_br", show_lumber_brace_bl_br],    ["brace_fr_br", show_lumber_brace_fr_br],    ["brace_bl_fr", show_lumber_brace_bl_fr],    ["rail_rbl", show_lumber_rail_rbl],    ["rail_lbu", show_lumber_rail_lbu],    ["rail_rbu", show_lumber_rail_rbu],    ["rail_lbl", show_lumber_rail_lbl],    ["rail_fbu", show_lumber_rail_fbu],    ["rail_fbl", show_lumber_rail_fbl],    ["rail_lt", show_lumber_rail_lt],    ["rail_rt", show_lumber_rail_rt],    ["rail_ltam", show_lumber_rail_ltam],    ["rail_rtam", show_lumber_rail_rtam],    ["rail_ltam_upper", show_lumber_rail_ltam_upper],    ["rail_rtam_upper", show_lumber_rail_rtam_upper],    ["rail_ft", show_lumber_rail_ft],    ["front_center_rail", show_lumber_front_center_rail],    ["right_center_rail", show_lumber_right_center_rail],    ["back_right_outlet_backer_lower", show_lumber_back_right_outlet_backer_lower],    ["back_right_outlet_backer_upper", show_lumber_back_right_outlet_backer_upper],    ["front_address_number_support", show_lumber_front_address_number_support],    ["power_guard_left_upright", show_lumber_power_guard_left_upright],    ["power_guard_right_upright", show_lumber_power_guard_right_upright]];
+    ["post_fl", show_lumber_post_fl],    ["post_fr", show_lumber_post_fr],    ["post_bl", show_lumber_post_bl],    ["post_br", show_lumber_post_br],    ["brace_fl_fr", show_lumber_brace_fl_fr],    ["brace_fl_bl", show_lumber_brace_fl_bl],    ["brace_bl_br", show_lumber_brace_bl_br],    ["brace_fr_br", show_lumber_brace_fr_br],    ["brace_bl_fr", show_lumber_brace_bl_fr],    ["rail_rbl", show_lumber_rail_rbl],    ["rail_lbu", show_lumber_rail_lbu],    ["rail_rbu", show_lumber_rail_rbu],    ["rail_lbl", show_lumber_rail_lbl],    ["rail_fbu", show_lumber_rail_fbu],    ["rail_fbl", show_lumber_rail_fbl],    ["rail_lt", show_lumber_rail_lt],    ["rail_rt", show_lumber_rail_rt],    ["rail_ltam", show_lumber_rail_ltam],    ["rail_rtam", show_lumber_rail_rtam],    ["rail_ltam_upper", show_lumber_rail_ltam_upper],    ["rail_rtam_upper", show_lumber_rail_rtam_upper],    ["rail_ft", show_lumber_rail_ft],    ["front_center_rail", show_lumber_front_center_rail],    ["right_center_rail", show_lumber_right_center_rail],    ["back_right_outlet_backer_lower", show_lumber_back_right_outlet_backer_lower],    ["back_right_outlet_backer_upper", show_lumber_back_right_outlet_backer_upper],    ["front_address_number_support", show_lumber_front_address_number_support],    ["roof_support_bl", show_lumber_roof_support_bl],    ["roof_support_fr", show_lumber_roof_support_fr],    ["power_guard_left_upright", show_lumber_power_guard_left_upright],    ["power_guard_right_upright", show_lumber_power_guard_right_upright]];
 
 component_object_toggles = [
-    ["left_tambour_bend_backer", show_component_left_tambour_bend_backer],    ["right_tambour_bend_backer", show_component_right_tambour_bend_backer],    ["left_tambour_vertical_backing", show_component_left_tambour_vertical_backing],    ["right_tambour_vertical_backing", show_component_right_tambour_vertical_backing],    ["left_tambour_upper_backing", show_component_left_tambour_upper_backing],    ["right_tambour_upper_backing", show_component_right_tambour_upper_backing],    ["gusset_back_left", show_component_gusset_back_left],    ["gusset_front_right", show_component_gusset_front_right],    ["roof_shim_brace_fl_fr", show_component_roof_shim_brace_fl_fr],    ["roof_shim_brace_fl_bl", show_component_roof_shim_brace_fl_bl],    ["roof_shim_brace_bl_br", show_component_roof_shim_brace_bl_br],    ["roof_shim_brace_fr_br", show_component_roof_shim_brace_fr_br],    ["low_voltage_termination_box", show_component_low_voltage_termination_box],    ["low_voltage_input_adapter", show_component_low_voltage_input_adapter],    ["low_voltage_cable_gland_2", show_component_low_voltage_cable_gland_2],    ["low_voltage_cable_gland_3", show_component_low_voltage_cable_gland_3],    ["low_voltage_unused_port_closure", show_component_low_voltage_unused_port_closure],    ["front_street_light_base_box", show_component_front_street_light_base_box],    ["front_street_light_box_cover", show_component_front_street_light_box_cover],    ["front_street_light_uf_connector", show_component_front_street_light_uf_connector],    ["front_street_light", show_component_front_street_light],    ["front_street_light_bracket", show_component_front_street_light_bracket],    ["front_address_number_1", show_component_front_address_number_1],    ["front_address_number_1_standoff_1", show_component_front_address_number_1_standoff_1],    ["front_address_number_1_standoff_2", show_component_front_address_number_1_standoff_2],    ["front_address_number_2", show_component_front_address_number_2],    ["front_address_number_2_standoff_1", show_component_front_address_number_2_standoff_1],    ["front_address_number_2_standoff_2", show_component_front_address_number_2_standoff_2],    ["front_address_number_3", show_component_front_address_number_3],    ["front_address_number_3_standoff_1", show_component_front_address_number_3_standoff_1],    ["front_address_number_3_standoff_2", show_component_front_address_number_3_standoff_2],    ["front_address_number_4", show_component_front_address_number_4],    ["front_address_number_4_standoff_1", show_component_front_address_number_4_standoff_1],    ["front_address_number_4_standoff_2", show_component_front_address_number_4_standoff_2],    ["front_ev_charger_plug", show_component_front_ev_charger_plug],    ["front_ev_charger_body", show_component_front_ev_charger_body],    ["front_wifi_access_point", show_component_front_wifi_access_point],    ["back_right_outlet", show_component_back_right_outlet],    ["back_right_outlet_cover", show_component_back_right_outlet_cover],    ["power_junction_box", show_component_power_junction_box],    ["power_ev_pull_box", show_component_power_ev_pull_box],    ["power_ev_top_adapter", show_component_power_ev_top_adapter],    ["power_ev_bottom_adapter", show_component_power_ev_bottom_adapter],    ["power_ev_back_adapter", show_component_power_ev_back_adapter],    ["power_junction_input_adapter", show_component_power_junction_input_adapter],    ["power_junction_light_adapter", show_component_power_junction_light_adapter],    ["power_junction_outlet_adapter", show_component_power_junction_outlet_adapter],    ["power_ev_top_adapter_sealing_washer", show_component_power_ev_top_adapter_sealing_washer],    ["power_ev_top_adapter_locknut", show_component_power_ev_top_adapter_locknut],    ["power_ev_bottom_adapter_sealing_washer", show_component_power_ev_bottom_adapter_sealing_washer],    ["power_ev_bottom_adapter_locknut", show_component_power_ev_bottom_adapter_locknut],    ["power_ev_back_adapter_sealing_washer", show_component_power_ev_back_adapter_sealing_washer],    ["power_ev_back_adapter_locknut", show_component_power_ev_back_adapter_locknut],    ["power_junction_input_adapter_sealing_washer", show_component_power_junction_input_adapter_sealing_washer],    ["power_junction_input_adapter_locknut", show_component_power_junction_input_adapter_locknut],    ["power_junction_light_adapter_sealing_washer", show_component_power_junction_light_adapter_sealing_washer],    ["power_junction_light_adapter_locknut", show_component_power_junction_light_adapter_locknut],    ["power_junction_outlet_adapter_sealing_washer", show_component_power_junction_outlet_adapter_sealing_washer],    ["power_junction_outlet_adapter_locknut", show_component_power_junction_outlet_adapter_locknut],    ["low_voltage_input_adapter_sealing_washer", show_component_low_voltage_input_adapter_sealing_washer],    ["low_voltage_input_adapter_locknut", show_component_low_voltage_input_adapter_locknut],    ["low_voltage_ground_sweep_elbow_1", show_component_low_voltage_ground_sweep_elbow_1],    ["low_voltage_ground_sweep_elbow_2", show_component_low_voltage_ground_sweep_elbow_2],    ["tambour_ceiling_panel", show_component_tambour_ceiling_panel],    ["power_guard_removable_panel", show_component_power_guard_removable_panel]];
+    ["left_tambour_bend_backer", show_component_left_tambour_bend_backer],    ["right_tambour_bend_backer", show_component_right_tambour_bend_backer],    ["left_tambour_vertical_backing", show_component_left_tambour_vertical_backing],    ["right_tambour_vertical_backing", show_component_right_tambour_vertical_backing],    ["left_tambour_upper_backing", show_component_left_tambour_upper_backing],    ["right_tambour_upper_backing", show_component_right_tambour_upper_backing],    ["gusset_back_left", show_component_gusset_back_left],    ["gusset_front_right", show_component_gusset_front_right],    ["roof_support_bl_toe_screw_1", show_component_roof_support_bl_toe_screw_1],    ["roof_support_bl_toe_screw_2", show_component_roof_support_bl_toe_screw_2],    ["roof_support_fr_toe_screw_1", show_component_roof_support_fr_toe_screw_1],    ["roof_support_fr_toe_screw_2", show_component_roof_support_fr_toe_screw_2],    ["low_voltage_termination_box", show_component_low_voltage_termination_box],    ["low_voltage_input_adapter", show_component_low_voltage_input_adapter],    ["low_voltage_cable_gland_2", show_component_low_voltage_cable_gland_2],    ["low_voltage_cable_gland_3", show_component_low_voltage_cable_gland_3],    ["low_voltage_unused_port_closure", show_component_low_voltage_unused_port_closure],    ["front_street_light_base_box", show_component_front_street_light_base_box],    ["front_street_light_box_cover", show_component_front_street_light_box_cover],    ["front_street_light_uf_connector", show_component_front_street_light_uf_connector],    ["front_street_light", show_component_front_street_light],    ["front_street_light_bracket", show_component_front_street_light_bracket],    ["front_address_number_1", show_component_front_address_number_1],    ["front_address_number_1_standoff_1", show_component_front_address_number_1_standoff_1],    ["front_address_number_1_standoff_2", show_component_front_address_number_1_standoff_2],    ["front_address_number_2", show_component_front_address_number_2],    ["front_address_number_2_standoff_1", show_component_front_address_number_2_standoff_1],    ["front_address_number_2_standoff_2", show_component_front_address_number_2_standoff_2],    ["front_address_number_3", show_component_front_address_number_3],    ["front_address_number_3_standoff_1", show_component_front_address_number_3_standoff_1],    ["front_address_number_3_standoff_2", show_component_front_address_number_3_standoff_2],    ["front_address_number_4", show_component_front_address_number_4],    ["front_address_number_4_standoff_1", show_component_front_address_number_4_standoff_1],    ["front_address_number_4_standoff_2", show_component_front_address_number_4_standoff_2],    ["front_ev_charger_plug", show_component_front_ev_charger_plug],    ["front_ev_charger_body", show_component_front_ev_charger_body],    ["front_wifi_access_point", show_component_front_wifi_access_point],    ["back_right_outlet", show_component_back_right_outlet],    ["back_right_outlet_cover", show_component_back_right_outlet_cover],    ["power_junction_box", show_component_power_junction_box],    ["power_ev_pull_box", show_component_power_ev_pull_box],    ["power_ev_top_adapter", show_component_power_ev_top_adapter],    ["power_ev_bottom_adapter", show_component_power_ev_bottom_adapter],    ["power_ev_back_adapter", show_component_power_ev_back_adapter],    ["power_junction_input_adapter", show_component_power_junction_input_adapter],    ["power_junction_light_adapter", show_component_power_junction_light_adapter],    ["power_junction_outlet_adapter", show_component_power_junction_outlet_adapter],    ["power_ev_top_adapter_sealing_washer", show_component_power_ev_top_adapter_sealing_washer],    ["power_ev_top_adapter_locknut", show_component_power_ev_top_adapter_locknut],    ["power_ev_bottom_adapter_sealing_washer", show_component_power_ev_bottom_adapter_sealing_washer],    ["power_ev_bottom_adapter_locknut", show_component_power_ev_bottom_adapter_locknut],    ["power_ev_back_adapter_sealing_washer", show_component_power_ev_back_adapter_sealing_washer],    ["power_ev_back_adapter_locknut", show_component_power_ev_back_adapter_locknut],    ["power_junction_input_adapter_sealing_washer", show_component_power_junction_input_adapter_sealing_washer],    ["power_junction_input_adapter_locknut", show_component_power_junction_input_adapter_locknut],    ["power_junction_light_adapter_sealing_washer", show_component_power_junction_light_adapter_sealing_washer],    ["power_junction_light_adapter_locknut", show_component_power_junction_light_adapter_locknut],    ["power_junction_outlet_adapter_sealing_washer", show_component_power_junction_outlet_adapter_sealing_washer],    ["power_junction_outlet_adapter_locknut", show_component_power_junction_outlet_adapter_locknut],    ["low_voltage_input_adapter_sealing_washer", show_component_low_voltage_input_adapter_sealing_washer],    ["low_voltage_input_adapter_locknut", show_component_low_voltage_input_adapter_locknut],    ["low_voltage_ground_sweep_elbow_1", show_component_low_voltage_ground_sweep_elbow_1],    ["low_voltage_ground_sweep_elbow_2", show_component_low_voltage_ground_sweep_elbow_2],    ["tambour_ceiling_panel", show_component_tambour_ceiling_panel],    ["power_guard_removable_panel", show_component_power_guard_removable_panel]];
 
 pieces = [
     ["post_fl", "posts", "4x4", "z", [0, 0, -32], 81.625, true],
@@ -283,13 +288,17 @@ pieces = [
     ["back_right_outlet_backer_lower", "electrical_backing", "2x4", "y", [24.45, 12.6875, 13.63], 6.6875, false],
     ["back_right_outlet_backer_upper", "electrical_backing", "2x4", "y", [24.45, 12.6875, 18.87], 6.6875, false],
     ["front_address_number_support", "electrical_backing", "5/4x6", "x", [3.5, 0, 39.175], 20.5, false],
+    ["roof_support_bl", "roof_supports", "2x4", "x", [6.375, 15.875, 48.125], 3.5, true],
+    ["roof_support_fr", "roof_supports", "2x4", "x", [17.625, 3.5, 48.125], 3.5, true],
     ["power_guard_left_upright", "power_cord_guard", "2x4", "z", [11.6, 10.6875, 0.75], 11.25, false, 3.2175],
     ["power_guard_right_upright", "power_cord_guard", "2x4", "z", [17.6, 10.6875, 0.75], 11.25, false, 3.2175]
 ];
 
 routed_seats = [
     ["route_brace_fl_bl_for_brace_bl_fr", "brace_fl_bl", [[0, 19.0035], [3.5, 16.178], [3.5, 19.375], [0, 19.375]], 0.75, 49.625],
-    ["route_brace_fr_br_for_brace_bl_fr", "brace_fr_br", [[27.5, 3.5], [27.5, 3.8715], [24, 6.697], [24, 3.5]], 0.75, 49.625]
+    ["route_brace_fr_br_for_brace_bl_fr", "brace_fr_br", [[27.5, 3.5], [27.5, 3.8715], [24, 6.697], [24, 3.5]], 0.75, 49.625],
+    ["route_roof_support_bl_for_brace_bl_fr", "roof_support_bl", [[9.875, 15.875], [9.875, 18.1], [8.2957, 19.375], [6.375, 19.375], [6.375, 15.875]], 0.75, 49.625],
+    ["route_roof_support_fr_for_brace_bl_fr", "roof_support_fr", [[17.625, 4.775], [19.2043, 3.5], [21.125, 3.5], [21.125, 7], [17.625, 7]], 0.75, 49.625]
 ];
 
 components = [
@@ -301,10 +310,10 @@ components = [
     ["right_tambour_upper_backing", "tambour_supports", "recessed_three_quarter_inch_plywood_tambour_backing", "rail_rtam_upper", "narrow_pos", 0, [24, 4.125, 45], [0.75, 1.75, 1.125], [0.72, 0.58, 0.38, 1], "box", [24, 4.125, 45], [0, 0, 1], [1, 0, 0], [0, 1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [1.125, 0.75, 1.75]],
     ["gusset_back_left", "top_bracing_hardware", "custom_6x6_g90_gusset_with_number_9_pan_head_screws", "post_bl", "wide_neg", 81.625, [0.25, 16.625, 49.625], [6, 6, 0.184], [0.62, 0.66, 0.68, 1], "primitive_union", [0.25, 16.625, 49.625], [1, -0, -0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6, 6, 0.074]]], [[[0.75, 0.75, 0.074], "out", 0.045, 0.35], [[0.75, 0.75, 0.119], "out", 0.035, 0.315], [[0.75, 0.75, 0.154], "out", 0.025, 0.252], [[0.75, 0.75, 0.179], "out", 0.005, 0.147], [[0.75, 2.25, 0.074], "out", 0.045, 0.35], [[0.75, 2.25, 0.119], "out", 0.035, 0.315], [[0.75, 2.25, 0.154], "out", 0.025, 0.252], [[0.75, 2.25, 0.179], "out", 0.005, 0.147], [[0.75, 3.75, 0.074], "out", 0.045, 0.35], [[0.75, 3.75, 0.119], "out", 0.035, 0.315], [[0.75, 3.75, 0.154], "out", 0.025, 0.252], [[0.75, 3.75, 0.179], "out", 0.005, 0.147], [[0.75, 5.25, 0.074], "out", 0.045, 0.35], [[0.75, 5.25, 0.119], "out", 0.035, 0.315], [[0.75, 5.25, 0.154], "out", 0.025, 0.252], [[0.75, 5.25, 0.179], "out", 0.005, 0.147], [[2.25, 0.75, 0.074], "out", 0.045, 0.35], [[2.25, 0.75, 0.119], "out", 0.035, 0.315], [[2.25, 0.75, 0.154], "out", 0.025, 0.252], [[2.25, 0.75, 0.179], "out", 0.005, 0.147], [[2.25, 2.25, 0.074], "out", 0.045, 0.35], [[2.25, 2.25, 0.119], "out", 0.035, 0.315], [[2.25, 2.25, 0.154], "out", 0.025, 0.252], [[2.25, 2.25, 0.179], "out", 0.005, 0.147], [[2.25, 3.75, 0.074], "out", 0.045, 0.35], [[2.25, 3.75, 0.119], "out", 0.035, 0.315], [[2.25, 3.75, 0.154], "out", 0.025, 0.252], [[2.25, 3.75, 0.179], "out", 0.005, 0.147], [[2.25, 5.25, 0.074], "out", 0.045, 0.35], [[2.25, 5.25, 0.119], "out", 0.035, 0.315], [[2.25, 5.25, 0.154], "out", 0.025, 0.252], [[2.25, 5.25, 0.179], "out", 0.005, 0.147], [[3.75, 0.75, 0.074], "out", 0.045, 0.35], [[3.75, 0.75, 0.119], "out", 0.035, 0.315], [[3.75, 0.75, 0.154], "out", 0.025, 0.252], [[3.75, 0.75, 0.179], "out", 0.005, 0.147], [[3.75, 2.25, 0.074], "out", 0.045, 0.35], [[3.75, 2.25, 0.119], "out", 0.035, 0.315], [[3.75, 2.25, 0.154], "out", 0.025, 0.252], [[3.75, 2.25, 0.179], "out", 0.005, 0.147], [[3.75, 3.75, 0.074], "out", 0.045, 0.35], [[3.75, 3.75, 0.119], "out", 0.035, 0.315], [[3.75, 3.75, 0.154], "out", 0.025, 0.252], [[3.75, 3.75, 0.179], "out", 0.005, 0.147], [[3.75, 5.25, 0.074], "out", 0.045, 0.35], [[3.75, 5.25, 0.119], "out", 0.035, 0.315], [[3.75, 5.25, 0.154], "out", 0.025, 0.252], [[3.75, 5.25, 0.179], "out", 0.005, 0.147], [[5.25, 0.75, 0.074], "out", 0.045, 0.35], [[5.25, 0.75, 0.119], "out", 0.035, 0.315], [[5.25, 0.75, 0.154], "out", 0.025, 0.252], [[5.25, 0.75, 0.179], "out", 0.005, 0.147], [[5.25, 2.25, 0.074], "out", 0.045, 0.35], [[5.25, 2.25, 0.119], "out", 0.035, 0.315], [[5.25, 2.25, 0.154], "out", 0.025, 0.252], [[5.25, 2.25, 0.179], "out", 0.005, 0.147], [[5.25, 3.75, 0.074], "out", 0.045, 0.35], [[5.25, 3.75, 0.119], "out", 0.035, 0.315], [[5.25, 3.75, 0.154], "out", 0.025, 0.252], [[5.25, 3.75, 0.179], "out", 0.005, 0.147], [[5.25, 5.25, 0.074], "out", 0.045, 0.35], [[5.25, 5.25, 0.119], "out", 0.035, 0.315], [[5.25, 5.25, 0.154], "out", 0.025, 0.252], [[5.25, 5.25, 0.179], "out", 0.005, 0.147]], false, "", [6, 6, 0.184]],
     ["gusset_front_right", "top_bracing_hardware", "custom_6x6_g90_gusset_with_number_9_pan_head_screws", "post_fr", "wide_pos", 81.625, [21.25, 0.25, 49.625], [6, 6, 0.184], [0.62, 0.66, 0.68, 1], "primitive_union", [27.25, 0.25, 49.625], [-1, -0, -0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [6, 6, 0.074]]], [[[0.75, 0.75, 0.074], "out", 0.045, 0.35], [[0.75, 0.75, 0.119], "out", 0.035, 0.315], [[0.75, 0.75, 0.154], "out", 0.025, 0.252], [[0.75, 0.75, 0.179], "out", 0.005, 0.147], [[0.75, 2.25, 0.074], "out", 0.045, 0.35], [[0.75, 2.25, 0.119], "out", 0.035, 0.315], [[0.75, 2.25, 0.154], "out", 0.025, 0.252], [[0.75, 2.25, 0.179], "out", 0.005, 0.147], [[0.75, 3.75, 0.074], "out", 0.045, 0.35], [[0.75, 3.75, 0.119], "out", 0.035, 0.315], [[0.75, 3.75, 0.154], "out", 0.025, 0.252], [[0.75, 3.75, 0.179], "out", 0.005, 0.147], [[0.75, 5.25, 0.074], "out", 0.045, 0.35], [[0.75, 5.25, 0.119], "out", 0.035, 0.315], [[0.75, 5.25, 0.154], "out", 0.025, 0.252], [[0.75, 5.25, 0.179], "out", 0.005, 0.147], [[2.25, 0.75, 0.074], "out", 0.045, 0.35], [[2.25, 0.75, 0.119], "out", 0.035, 0.315], [[2.25, 0.75, 0.154], "out", 0.025, 0.252], [[2.25, 0.75, 0.179], "out", 0.005, 0.147], [[2.25, 2.25, 0.074], "out", 0.045, 0.35], [[2.25, 2.25, 0.119], "out", 0.035, 0.315], [[2.25, 2.25, 0.154], "out", 0.025, 0.252], [[2.25, 2.25, 0.179], "out", 0.005, 0.147], [[2.25, 3.75, 0.074], "out", 0.045, 0.35], [[2.25, 3.75, 0.119], "out", 0.035, 0.315], [[2.25, 3.75, 0.154], "out", 0.025, 0.252], [[2.25, 3.75, 0.179], "out", 0.005, 0.147], [[2.25, 5.25, 0.074], "out", 0.045, 0.35], [[2.25, 5.25, 0.119], "out", 0.035, 0.315], [[2.25, 5.25, 0.154], "out", 0.025, 0.252], [[2.25, 5.25, 0.179], "out", 0.005, 0.147], [[3.75, 0.75, 0.074], "out", 0.045, 0.35], [[3.75, 0.75, 0.119], "out", 0.035, 0.315], [[3.75, 0.75, 0.154], "out", 0.025, 0.252], [[3.75, 0.75, 0.179], "out", 0.005, 0.147], [[3.75, 2.25, 0.074], "out", 0.045, 0.35], [[3.75, 2.25, 0.119], "out", 0.035, 0.315], [[3.75, 2.25, 0.154], "out", 0.025, 0.252], [[3.75, 2.25, 0.179], "out", 0.005, 0.147], [[3.75, 3.75, 0.074], "out", 0.045, 0.35], [[3.75, 3.75, 0.119], "out", 0.035, 0.315], [[3.75, 3.75, 0.154], "out", 0.025, 0.252], [[3.75, 3.75, 0.179], "out", 0.005, 0.147], [[3.75, 5.25, 0.074], "out", 0.045, 0.35], [[3.75, 5.25, 0.119], "out", 0.035, 0.315], [[3.75, 5.25, 0.154], "out", 0.025, 0.252], [[3.75, 5.25, 0.179], "out", 0.005, 0.147], [[5.25, 0.75, 0.074], "out", 0.045, 0.35], [[5.25, 0.75, 0.119], "out", 0.035, 0.315], [[5.25, 0.75, 0.154], "out", 0.025, 0.252], [[5.25, 0.75, 0.179], "out", 0.005, 0.147], [[5.25, 2.25, 0.074], "out", 0.045, 0.35], [[5.25, 2.25, 0.119], "out", 0.035, 0.315], [[5.25, 2.25, 0.154], "out", 0.025, 0.252], [[5.25, 2.25, 0.179], "out", 0.005, 0.147], [[5.25, 3.75, 0.074], "out", 0.045, 0.35], [[5.25, 3.75, 0.119], "out", 0.035, 0.315], [[5.25, 3.75, 0.154], "out", 0.025, 0.252], [[5.25, 3.75, 0.179], "out", 0.005, 0.147], [[5.25, 5.25, 0.074], "out", 0.045, 0.35], [[5.25, 5.25, 0.119], "out", 0.035, 0.315], [[5.25, 5.25, 0.154], "out", 0.025, 0.252], [[5.25, 5.25, 0.179], "out", 0.005, 0.147]], false, "", [6, 6, 0.184]],
-    ["roof_shim_brace_fl_fr", "roof_shims", "continuous_pt_roof_shim_brace_fl_fr", "brace_fl_fr", "narrow_pos", 0, [0, 0, 49.625], [21.25, 3.5, 0.25], [0.44, 0.26, 0.11, 1], "box", [0, 0, 49.625], [1, 0, 0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [21.25, 3.5, 0.25]],
-    ["roof_shim_brace_fl_bl", "roof_shims", "continuous_pt_roof_shim_brace_fl_bl", "brace_fl_bl", "narrow_pos", 0, [0, 3.5, 49.625], [3.5, 13.125, 0.25], [0.44, 0.26, 0.11, 1], "box", [0, 3.5, 49.625], [0, 1, 0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [13.125, 3.5, 0.25]],
-    ["roof_shim_brace_bl_br", "roof_shims", "continuous_pt_roof_shim_brace_bl_br", "brace_bl_br", "narrow_pos", 2.75, [6.25, 19.375, 49.625], [21.25, 3.5, 0.25], [0.44, 0.26, 0.11, 1], "box", [6.25, 19.375, 49.625], [1, 0, 0], [0, 1, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [21.25, 3.5, 0.25]],
-    ["roof_shim_brace_fr_br", "roof_shims", "continuous_pt_roof_shim_brace_fr_br", "brace_fr_br", "narrow_pos", 2.75, [24, 6.25, 49.625], [3.5, 13.125, 0.25], [0.44, 0.26, 0.11, 1], "box", [24, 6.25, 49.625], [0, 1, 0], [1, 0, 0], [0, 0, 1], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [], false, "", [13.125, 3.5, 0.25]],
+    ["roof_support_bl_toe_screw_1", "roof_support_hardware", "roof_support_structural_toe_screw_head_length_unspecified", "roof_support_bl", "wide_pos", 0, [6.1805, 18.4305, 48.325], [0.3182, 0.3182, 0.35], [0.45, 0.48, 0.5, 1], "primitive_union", [6.2513, 18.7487, 48.325], [0.7071, -0.7071, 0], [0, 0, 1], [-0.7071, -0.7071, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.175, 0.175, 0], "out", 0.1, 0.35]], false, "", [0.35, 0.35, 0.1]],
+    ["roof_support_bl_toe_screw_2", "roof_support_hardware", "roof_support_structural_toe_screw_head_length_unspecified", "roof_support_bl", "wide_pos", 0, [9.7513, 18.4305, 48.325], [0.3182, 0.3182, 0.35], [0.45, 0.48, 0.5, 1], "primitive_union", [9.7513, 18.5013, 48.325], [0.7071, 0.7071, 0], [0, 0, 1], [0.7071, -0.7071, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.175, 0.175, 0], "out", 0.1, 0.35]], false, "", [0.35, 0.35, 0.1]],
+    ["roof_support_fr_toe_screw_1", "roof_support_hardware", "roof_support_structural_toe_screw_head_length_unspecified", "roof_support_fr", "wide_pos", 0, [17.4305, 4.1263, 48.325], [0.3182, 0.3182, 0.35], [0.45, 0.48, 0.5, 1], "primitive_union", [17.7487, 4.3737, 48.325], [-0.7071, -0.7071, 0], [0, 0, 1], [-0.7071, 0.7071, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.175, 0.175, 0], "out", 0.1, 0.35]], false, "", [0.35, 0.35, 0.1]],
+    ["roof_support_fr_toe_screw_2", "roof_support_hardware", "roof_support_structural_toe_screw_head_length_unspecified", "roof_support_fr", "wide_pos", 0, [21.0013, 4.1263, 48.325], [0.3182, 0.3182, 0.35], [0.45, 0.48, 0.5, 1], "primitive_union", [21.2487, 4.1263, 48.325], [-0.7071, 0.7071, 0], [0, 0, 1], [0.7071, 0.7071, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0.175, 0.175, 0], "out", 0.1, 0.35]], false, "", [0.35, 0.35, 0.1]],
     ["low_voltage_termination_box", "low_voltage_fittings", "carlon_e987n_junction_box", "front_center_rail", "wide_neg", 0, [8.6569, 3.1875, 11.6958], [4, 4, 4], [0.55, 0.57, 0.58, 1], "primitive_union", [8.6569, 7.1875, 11.6958], [0, 0, 1], [1, 0, 0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[[0, 0, 0], [4, 4, 3.875]], [[0, 0, 3.875], [4, 4, 0.125]]], [], false, "", [4, 4, 4]],
     ["low_voltage_input_adapter", "low_voltage_fittings", "pvc_3/4_male_terminal_adapter", "front_center_rail", "wide_neg", 0, [9.9819, 5.575, 10.2258], [1.35, 1.35, 1.97], [0.55, 0.57, 0.58, 1], "primitive_union", [11.3319, 6.925, 12.1958], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.675, 0.675], "along", 0.58, 1.05], [[0.58, 0.675, 0.675], "along", 1.39, 1.35]], false, "", [1.97, 1.35, 1.35]],
     ["low_voltage_cable_gland_2", "low_voltage_fittings", "one_inch_cable_gland", "front_center_rail", "wide_neg", 0, [10.1569, 3.4375, 10.9458], [1, 1, 0.75], [0.1, 0.1, 0.11, 1], "primitive_union", [11.1569, 4.4375, 11.6958], [-0, -0, -1], [-1, -0, -0], [0, -1, 0], "", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [], [[[0, 0.5, 0.5], "along", 0.75, 1]], false, "", [0.75, 1, 1]],
@@ -405,11 +414,15 @@ siding_parts = [
     ["enclosure_siding_backing_right_2_2", "PT_5/4x6_backing", [26.5, 14.225, 6.75], [1, 3.5, 5.5], [0.44, 0.26, 0.11, 1], [], [], "xy", []],
     ["enclosure_siding_backing_right_2_3", "PT_5/4x6_backing", [26.5, 14.225, 13.75], [1, 3.5, 29.75], [0.44, 0.26, 0.11, 1], [], [], "xy", []],
     ["enclosure_siding_backing_right_2_4", "PT_5/4x6_backing", [26.5, 14.225, 45], [1, 3.5, 1.125], [0.44, 0.26, 0.11, 1], [], [], "xy", []],
-    ["enclosure_siding_backing_roof_1_1", "PT_5/4x6_backing", [6, 3.5, 48.875], [3.5, 7.8342, 1], [0.44, 0.26, 0.11, 1], [], [], "xy", []],
-    ["enclosure_siding_backing_roof_2_1", "PT_5/4x6_backing", [12, 3.5, 48.875], [3.5, 2.9905, 1], [0.44, 0.26, 0.11, 1], [], [], "xy", []],
-    ["enclosure_siding_backing_roof_2_2", "PT_5/4x6_backing", [12, 16.3845, 48.875], [3.5, 2.9905, 1], [0.44, 0.26, 0.11, 1], [], [], "xy", []],
-    ["enclosure_siding_backing_roof_3_1", "PT_5/4x6_backing", [18, 11.5408, 48.875], [3.5, 7.8342, 1], [0.44, 0.26, 0.11, 1], [], [], "xy", []],
-    ["enclosure_siding_diagonal_shim", "PT_roof_shim", [6.25, 3.5, 49.625], [15, 15.875, 0.25], [0.44, 0.26, 0.11, 1], [], [[0, 10.4579], [12.9543, 0], [15, 0], [15, 5.4171], [2.0457, 15.875], [0, 15.875]], "xy", []],
+    ["enclosure_siding_roof_strip_1_1", "PT_exterior_plywood_3_4", [0.125, 0.5974, 49.625], [21, 1.5, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_1_2", "PT_exterior_plywood_3_4", [0.125, 3.7431, 49.625], [21, 1.5, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_2_1", "PT_exterior_plywood_3_4", [0.125, 5.7156, 49.625], [21, 1.5, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_2_2", "PT_exterior_plywood_3_4", [0.125, 8.8612, 49.625], [27.25, 1.5, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_3_1", "PT_exterior_plywood_3_4", [0.125, 10.8337, 49.625], [27.25, 1.5, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_3_2", "PT_exterior_plywood_3_4", [0.125, 13.9793, 49.625], [27.25, 1.5, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_4_1", "PT_exterior_plywood_3_4", [6.375, 15.9518, 49.625], [21, 1.5, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_4_2", "PT_exterior_plywood_3_4", [6.375, 19.0974, 49.625], [21, 1.5, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_5_1", "PT_exterior_plywood_3_4", [6.375, 21.0699, 49.625], [21, 1.6801, 0.75], [0.56, 0.38, 0.19, 1], [], [], "xy", []],
     ["enclosure_siding_front_1", "US135", [0.125, -0.5, 44.5344], [27.25, 0.5, 5.5906], [0.17, 0.18, 0.19, 1], [[13.75, 47.75, 0.5]], [[0, 0], [27.25, 0], [27.25, 5.5906], [0, 5.5906]], "xz", [[[0.124, -0.251, 44.5334], [27.252, 0.252, 0.4744]], [[0.124, -0.501, 49.6516], [27.252, 0.252, 0.4744]]]],
     ["enclosure_siding_left_1", "US135", [-0.5, 0.125, 44.5344], [0.5, 22.625, 5.5906], [0.17, 0.18, 0.19, 1], [], [[0, 0], [22.625, 0], [22.625, 5.5906], [0, 5.5906]], "yz", [[[-0.251, 0.124, 44.5334], [0.252, 22.627, 0.4744]], [[-0.501, 0.124, 49.6516], [0.252, 22.627, 0.4744]]]],
     ["enclosure_siding_right_1", "US135", [27.5, 0.125, 44.5344], [0.5, 22.625, 5.5906], [0.17, 0.18, 0.19, 1], [], [[0, 0], [22.625, 0], [22.625, 5.5906], [0, 5.5906]], "yz", [[[27.499, 0.124, 44.5334], [0.252, 22.627, 0.4744]], [[27.749, 0.124, 49.6516], [0.252, 22.627, 0.4744]]]],
@@ -465,11 +478,11 @@ siding_parts = [
     ["enclosure_siding_right_10", "US135", [27.5, 0.125, 1.1373], [0.5, 22.625, 2.9247], [0.17, 0.18, 0.19, 1], [], [[0, 0], [22.625, 2.2254], [22.625, 2.9247], [0, 2.9247]], "yz", [[[27.499, 0.124, -1.5295], [0.252, 22.627, 0.4744]], [[27.749, 0.124, 3.5886], [0.252, 22.627, 0.4744]]]],
     ["enclosure_siding_rear_10_1", "US135", [0.125, 22.875, 1.8818], [3.25, 0.5, 2.1802], [0.17, 0.18, 0.19, 1], [], [[0, 0], [3.25, 0.1773], [3.25, 2.1802], [0, 2.1802]], "xz", [[[0.124, 22.874, -1.5295], [3.252, 0.252, 0.4744]], [[0.124, 23.124, 3.5886], [3.252, 0.252, 0.4744]]]],
     ["enclosure_siding_rear_10_2", "US135", [24.125, 22.875, 3.1909], [3.25, 0.5, 0.8711], [0.17, 0.18, 0.19, 1], [], [[0, 0], [3.25, 0.1773], [3.25, 0.8711], [0, 0.8711]], "xz", [[[24.124, 22.874, -1.5295], [3.252, 0.252, 0.4744]], [[24.124, 23.124, 3.5886], [3.252, 0.252, 0.4744]]]],
-    ["enclosure_siding_top_1", "US135", [0.125, 0.125, 49.875], [27.25, 5.5906, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 0.124, 50.124], [27.252, 0.4744, 0.252]], [[0.124, 5.2421, 49.874], [27.252, 0.4744, 0.252]]]],
-    ["enclosure_siding_top_2", "US135", [0.125, 5.2431, 49.875], [27.25, 5.5906, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 5.2421, 50.124], [27.252, 0.4744, 0.252]], [[0.124, 10.3602, 49.874], [27.252, 0.4744, 0.252]]]],
-    ["enclosure_siding_top_3", "US135", [0.125, 10.3612, 49.875], [27.25, 5.5906, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 10.3602, 50.124], [27.252, 0.4744, 0.252]], [[0.124, 15.4783, 49.874], [27.252, 0.4744, 0.252]]]],
-    ["enclosure_siding_top_4", "US135", [0.125, 15.4793, 49.875], [27.25, 5.5906, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 15.4783, 50.124], [27.252, 0.4744, 0.252]], [[0.124, 20.5964, 49.874], [27.252, 0.4744, 0.252]]]],
-    ["enclosure_siding_top_5", "US135", [0.125, 20.5974, 49.875], [27.25, 2.1526, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 20.5964, 50.124], [27.252, 0.4744, 0.252]], [[0.124, 25.7146, 49.874], [27.252, 0.4744, 0.252]]]],
+    ["enclosure_siding_top_1", "US135", [0.125, 0.125, 50.375], [27.25, 5.5906, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 0.124, 50.624], [27.252, 0.4744, 0.252]], [[0.124, 5.2421, 50.374], [27.252, 0.4744, 0.252]]]],
+    ["enclosure_siding_top_2", "US135", [0.125, 5.2431, 50.375], [27.25, 5.5906, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 5.2421, 50.624], [27.252, 0.4744, 0.252]], [[0.124, 10.3602, 50.374], [27.252, 0.4744, 0.252]]]],
+    ["enclosure_siding_top_3", "US135", [0.125, 10.3612, 50.375], [27.25, 5.5906, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 10.3602, 50.624], [27.252, 0.4744, 0.252]], [[0.124, 15.4783, 50.374], [27.252, 0.4744, 0.252]]]],
+    ["enclosure_siding_top_4", "US135", [0.125, 15.4793, 50.375], [27.25, 5.5906, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 15.4783, 50.624], [27.252, 0.4744, 0.252]], [[0.124, 20.5964, 50.374], [27.252, 0.4744, 0.252]]]],
+    ["enclosure_siding_top_5", "US135", [0.125, 20.5974, 50.375], [27.25, 2.1526, 0.5], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[0.124, 20.5964, 50.624], [27.252, 0.4744, 0.252]], [[0.124, 25.7146, 50.374], [27.252, 0.4744, 0.252]]]],
     ["enclosure_siding_front_1_face_screw_1", "face_screw", [1.6875, -0.58, 45.1594], [0.25, 0.08, 0.25], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
     ["enclosure_siding_front_1_face_screw_2", "face_screw", [1.6875, -0.58, 49.25], [0.25, 0.08, 0.25], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
     ["enclosure_siding_front_1_face_screw_3", "face_screw", [13.625, -0.58, 45.1594], [0.25, 0.08, 0.25], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
@@ -762,87 +775,79 @@ siding_parts = [
     ["enclosure_siding_rear_10_1_face_screw_290", "face_screw", [1.6875, 23.375, 3.187], [0.25, 0.08, 0.25], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
     ["enclosure_siding_rear_10_2_face_screw_291", "face_screw", [25.5625, 23.375, 3.5441], [0.25, 0.08, 0.25], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
     ["enclosure_siding_rear_10_2_face_screw_292", "face_screw", [25.625, 23.375, 3.5458], [0.25, 0.08, 0.25], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_293", "face_screw", [1.625, 0.75, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_294", "face_screw", [7.625, 0.75, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_295", "face_screw", [13.625, 0.75, 50.375], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_296", "face_screw", [19.625, 0.75, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_297", "face_screw", [25.625, 0.75, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_298", "face_screw", [1.625, 4.8406, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_299", "face_screw", [7.625, 4.8406, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_300", "face_screw", [13.625, 4.8406, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_301", "face_screw", [17.6389, 4.8406, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_302", "face_screw", [19.1945, 4.8406, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_303", "face_screw", [19.625, 4.8406, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_304", "face_screw", [20.75, 4.8406, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_1_face_screw_305", "face_screw", [25.625, 4.8406, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_306", "face_screw", [1.625, 5.8681, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_307", "face_screw", [7.625, 5.8681, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_308", "face_screw", [13.625, 5.8681, 50.375], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_309", "face_screw", [16.3661, 5.8681, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_310", "face_screw", [18.558, 5.8681, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_311", "face_screw", [19.625, 5.8681, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_312", "face_screw", [20.75, 5.8681, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_313", "face_screw", [25.625, 5.8681, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_314", "face_screw", [1.625, 9.9587, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_315", "face_screw", [7.625, 9.9587, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_316", "face_screw", [11.2991, 9.9587, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_317", "face_screw", [13.625, 9.9587, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_318", "face_screw", [15.302, 9.9587, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_319", "face_screw", [19.305, 9.9587, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_320", "face_screw", [19.625, 9.9587, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_2_face_screw_321", "face_screw", [25.625, 9.9587, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_322", "face_screw", [1.625, 10.9862, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_323", "face_screw", [7.625, 10.9862, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_324", "face_screw", [10.0262, 10.9862, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_325", "face_screw", [13.625, 10.9862, 50.375], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_326", "face_screw", [14.0292, 10.9862, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_327", "face_screw", [18.0321, 10.9862, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_328", "face_screw", [25.625, 10.9862, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_329", "face_screw", [1.625, 15.0768, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_330", "face_screw", [6.5, 15.0768, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_331", "face_screw", [7.625, 15.0768, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_332", "face_screw", [9.7326, 15.0768, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_333", "face_screw", [12.9651, 15.0768, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_334", "face_screw", [19.625, 15.0768, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_3_face_screw_335", "face_screw", [25.625, 15.0768, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_336", "face_screw", [1.625, 16.1043, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_337", "face_screw", [6.5, 16.1043, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_338", "face_screw", [7.625, 16.1043, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_339", "face_screw", [9.0961, 16.1043, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_340", "face_screw", [11.6923, 16.1043, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_341", "face_screw", [19.625, 16.1043, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_342", "face_screw", [25.625, 16.1043, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_343", "face_screw", [1.625, 20.1949, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_344", "face_screw", [7.625, 20.1949, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_345", "face_screw", [13.625, 20.1949, 50.375], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_346", "face_screw", [19.625, 20.1949, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_4_face_screw_347", "face_screw", [25.625, 20.1949, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_348", "face_screw", [1.625, 21.2224, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_349", "face_screw", [7.625, 21.2224, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_350", "face_screw", [13.625, 21.2224, 50.375], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_351", "face_screw", [19.625, 21.2224, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_352", "face_screw", [25.625, 21.2224, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_353", "face_screw", [1.625, 21.875, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_354", "face_screw", [7.625, 21.875, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_355", "face_screw", [13.625, 21.875, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_356", "face_screw", [19.625, 21.875, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_top_5_face_screw_357", "face_screw", [25.625, 21.875, 50.375], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_corner_fl_1", "US20", [-0.72, -0.72, 0.75], [1.5748, 0.22, 48.1452], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_corner_fl_2", "US20", [-0.72, -0.72, 0.75], [0.22, 1.5748, 48.1452], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_corner_fr_1", "US20", [26.6452, -0.72, 1.125], [1.5748, 0.22, 47.7702], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_corner_fr_2", "US20", [28, -0.72, 1.125], [0.22, 1.5748, 47.7702], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_corner_bl_1", "US20", [-0.72, 23.375, 1.875], [1.5748, 0.22, 47.0202], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_corner_bl_2", "US20", [-0.72, 22.0202, 1.875], [0.22, 1.5748, 47.0202], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_corner_br_1", "US20", [26.6452, 23.375, 3.375], [1.5748, 0.22, 45.5202], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_corner_br_2", "US20", [28, 22.0202, 3.375], [0.22, 1.5748, 45.5202], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_front_top", "US20", [-0.72, -0.72, 50.375], [28.94, 1.5748, 0.22], [0.17, 0.18, 0.19, 1], [], [[0.0625, 0.0625], [28.8775, 0.0625], [27.3027, 1.5123], [1.6373, 1.5123]], "xy", []],
-    ["enclosure_siding_US20_front_face", "US20", [-0.72, -0.72, 49.0202], [28.94, 0.22, 1.5748], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[10.625, -0.73, 49.0102], [6.25, 0.24, 0.9398]]]],
-    ["enclosure_siding_US20_rear_top", "US20", [-0.72, 22.0202, 50.375], [28.94, 1.5748, 0.22], [0.17, 0.18, 0.19, 1], [], [[1.6373, 0.0625], [27.3027, 0.0625], [28.8775, 1.5123], [0.0625, 1.5123]], "xy", []],
-    ["enclosure_siding_US20_rear_face", "US20", [-0.72, 23.375, 49.0202], [28.94, 0.22, 1.5748], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_left_top", "US20", [-0.72, -0.72, 50.375], [1.5748, 24.315, 0.22], [0.17, 0.18, 0.19, 1], [], [[0.0625, 0.0625], [1.5123, 1.6373], [1.5123, 22.6777], [0.0625, 24.2525]], "xy", []],
-    ["enclosure_siding_US20_left_face", "US20", [-0.72, -0.5, 49.0202], [0.22, 23.875, 1.5748], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
-    ["enclosure_siding_US20_right_top", "US20", [26.6452, -0.72, 50.375], [1.5748, 24.315, 0.22], [0.17, 0.18, 0.19, 1], [], [[0.0625, 1.6373], [1.5123, 0.0625], [1.5123, 24.2525], [0.0625, 22.6777]], "xy", []],
-    ["enclosure_siding_US20_right_face", "US20", [28, -0.5, 49.0202], [0.22, 23.875, 1.5748], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_top_1_face_screw_293", "face_screw", [0.75, 1.2224, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_1_face_screw_294", "face_screw", [10.5, 1.2224, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_1_face_screw_295", "face_screw", [13.625, 1.2224, 50.875], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
+    ["enclosure_siding_top_1_face_screw_296", "face_screw", [20.25, 1.2224, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_1_face_screw_297", "face_screw", [0.75, 4.3681, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_1_face_screw_298", "face_screw", [10.5, 4.3681, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_1_face_screw_299", "face_screw", [13.625, 4.3681, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_1_face_screw_300", "face_screw", [20.25, 4.3681, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_301", "face_screw", [0.75, 6.3406, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_302", "face_screw", [10.5, 6.3406, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_303", "face_screw", [13.625, 6.3406, 50.875], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_304", "face_screw", [20.25, 6.3406, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_305", "face_screw", [0.75, 9.4862, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_306", "face_screw", [7.1875, 9.4862, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_307", "face_screw", [13.625, 9.4862, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_308", "face_screw", [20.0625, 9.4862, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_2_face_screw_309", "face_screw", [26.5, 9.4862, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_310", "face_screw", [0.75, 11.4587, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_311", "face_screw", [7.1875, 11.4587, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_312", "face_screw", [13.625, 11.4587, 50.875], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_313", "face_screw", [20.0625, 11.4587, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_314", "face_screw", [26.5, 11.4587, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_315", "face_screw", [0.75, 14.6043, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_316", "face_screw", [7.1875, 14.6043, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_317", "face_screw", [13.625, 14.6043, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_318", "face_screw", [20.0625, 14.6043, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_3_face_screw_319", "face_screw", [26.5, 14.6043, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_4_face_screw_320", "face_screw", [7, 16.5768, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_4_face_screw_321", "face_screw", [13.625, 16.5768, 50.875], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
+    ["enclosure_siding_top_4_face_screw_322", "face_screw", [16.75, 16.5768, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_4_face_screw_323", "face_screw", [26.5, 16.5768, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_4_face_screw_324", "face_screw", [7, 19.7224, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_4_face_screw_325", "face_screw", [13.625, 19.7224, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_4_face_screw_326", "face_screw", [16.75, 19.7224, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_4_face_screw_327", "face_screw", [26.5, 19.7224, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_5_face_screw_328", "face_screw", [7, 21.7849, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_5_face_screw_329", "face_screw", [13.625, 21.7849, 50.875], [0.25, 0.25, 0.08], [0.85, 0.62, 0.12, 1], [], [], "xy", []],
+    ["enclosure_siding_top_5_face_screw_330", "face_screw", [16.75, 21.7849, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_top_5_face_screw_331", "face_screw", [26.5, 21.7849, 50.875], [0.25, 0.25, 0.08], [0.45, 0.48, 0.5, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_1_1_anchor_1", "strip_anchor", [0.75, 1.2224, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_1_1_anchor_2", "strip_anchor", [20.25, 1.2224, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_1_2_anchor_3", "strip_anchor", [0.75, 4.3681, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_1_2_anchor_4", "strip_anchor", [20.25, 4.3681, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_2_1_anchor_5", "strip_anchor", [0.75, 6.3406, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_2_1_anchor_6", "strip_anchor", [20.25, 6.3406, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_2_2_anchor_7", "strip_anchor", [0.75, 9.4862, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_2_2_anchor_8", "strip_anchor", [26.5, 9.4862, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_3_1_anchor_9", "strip_anchor", [0.75, 11.4587, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_3_1_anchor_10", "strip_anchor", [26.5, 11.4587, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_3_2_anchor_11", "strip_anchor", [0.75, 14.6043, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_3_2_anchor_12", "strip_anchor", [26.5, 14.6043, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_4_1_anchor_13", "strip_anchor", [7, 16.5768, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_4_1_anchor_14", "strip_anchor", [26.5, 16.5768, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_4_2_anchor_15", "strip_anchor", [7, 19.7224, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_4_2_anchor_16", "strip_anchor", [26.5, 19.7224, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_5_1_anchor_17", "strip_anchor", [7, 21.7849, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_roof_strip_5_1_anchor_18", "strip_anchor", [26.5, 21.7849, 50.295], [0.25, 0.25, 0.08], [0.35, 0.38, 0.4, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_corner_fl_1", "US20", [-0.72, -0.72, 0.75], [1.5748, 0.22, 48.6452], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_corner_fl_2", "US20", [-0.72, -0.72, 0.75], [0.22, 1.5748, 48.6452], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_corner_fr_1", "US20", [26.6452, -0.72, 1.125], [1.5748, 0.22, 48.2702], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_corner_fr_2", "US20", [28, -0.72, 1.125], [0.22, 1.5748, 48.2702], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_corner_bl_1", "US20", [-0.72, 23.375, 1.875], [1.5748, 0.22, 47.5202], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_corner_bl_2", "US20", [-0.72, 22.0202, 1.875], [0.22, 1.5748, 47.5202], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_corner_br_1", "US20", [26.6452, 23.375, 3.375], [1.5748, 0.22, 46.0202], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_corner_br_2", "US20", [28, 22.0202, 3.375], [0.22, 1.5748, 46.0202], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_front_top", "US20", [-0.72, -0.72, 50.875], [28.94, 1.5748, 0.22], [0.17, 0.18, 0.19, 1], [], [[0.0625, 0.0625], [28.8775, 0.0625], [27.3027, 1.5123], [1.6373, 1.5123]], "xy", []],
+    ["enclosure_siding_US20_front_face", "US20", [-0.72, -0.72, 49.5202], [28.94, 0.22, 1.5748], [0.17, 0.18, 0.19, 1], [], [], "xy", [[[10.625, -0.73, 49.5102], [6.25, 0.24, 0.4398]]]],
+    ["enclosure_siding_US20_rear_top", "US20", [-0.72, 22.0202, 50.875], [28.94, 1.5748, 0.22], [0.17, 0.18, 0.19, 1], [], [[1.6373, 0.0625], [27.3027, 0.0625], [28.8775, 1.5123], [0.0625, 1.5123]], "xy", []],
+    ["enclosure_siding_US20_rear_face", "US20", [-0.72, 23.375, 49.5202], [28.94, 0.22, 1.5748], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_left_top", "US20", [-0.72, -0.72, 50.875], [1.5748, 24.315, 0.22], [0.17, 0.18, 0.19, 1], [], [[0.0625, 0.0625], [1.5123, 1.6373], [1.5123, 22.6777], [0.0625, 24.2525]], "xy", []],
+    ["enclosure_siding_US20_left_face", "US20", [-0.72, -0.5, 49.5202], [0.22, 23.875, 1.5748], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
+    ["enclosure_siding_US20_right_top", "US20", [26.6452, -0.72, 50.875], [1.5748, 24.315, 0.22], [0.17, 0.18, 0.19, 1], [], [[0.0625, 1.6373], [1.5123, 0.0625], [1.5123, 24.2525], [0.0625, 22.6777]], "xy", []],
+    ["enclosure_siding_US20_right_face", "US20", [28, -0.5, 49.5202], [0.22, 23.875, 1.5748], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
     ["enclosure_siding_US20_opening_left_1", "US20", [2.1452, 23.375, 2.0659], [1.5748, 0.22, 44.8091], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
     ["enclosure_siding_US20_opening_left_2", "US20", [3.5, 22.0202, 2.0659], [0.22, 1.5748, 44.8091], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
     ["enclosure_siding_US20_opening_right_1", "US20", [23.78, 23.375, 3.1841], [1.5748, 0.22, 43.6909], [0.17, 0.18, 0.19, 1], [], [], "xy", []],
@@ -1217,7 +1222,7 @@ siding_parts = [
 
 xygrid_bounds = [-35.25, 62.75, -37.5625, 60.4375];
 xygrid_origin = [0, 0];
-model_bounds = [-36, 63, -38, 61, -37, 52];
+model_bounds = [-36, 63, -38, 61, -37, 53];
 
 assert(
     xygrid_zloc == floor(xygrid_zloc),
@@ -1345,10 +1350,12 @@ build_step_objects = [
     ["front_street_light_uf_connector", 20],
     ["power_street_light_feed", 20],
     ["power_street_light_uf_b", 21],
-    ["roof_shim_brace_fl_fr", 22],
-    ["roof_shim_brace_fl_bl", 22],
-    ["roof_shim_brace_bl_br", 22],
-    ["roof_shim_brace_fr_br", 22],
+    ["roof_support_bl", 22],
+    ["roof_support_fr", 22],
+    ["roof_support_bl_toe_screw_1", 22],
+    ["roof_support_bl_toe_screw_2", 22],
+    ["roof_support_fr_toe_screw_1", 22],
+    ["roof_support_fr_toe_screw_2", 22],
     ["enclosure_siding_backing_front_1_1", 22],
     ["enclosure_siding_backing_front_1_2", 22],
     ["enclosure_siding_backing_left_1_1", 22],
@@ -1362,11 +1369,33 @@ build_step_objects = [
     ["enclosure_siding_backing_right_2_2", 22],
     ["enclosure_siding_backing_right_2_3", 22],
     ["enclosure_siding_backing_right_2_4", 22],
-    ["enclosure_siding_backing_roof_1_1", 22],
-    ["enclosure_siding_backing_roof_2_1", 22],
-    ["enclosure_siding_backing_roof_2_2", 22],
-    ["enclosure_siding_backing_roof_3_1", 22],
-    ["enclosure_siding_diagonal_shim", 22],
+    ["enclosure_siding_roof_strip_1_1", 22],
+    ["enclosure_siding_roof_strip_1_2", 22],
+    ["enclosure_siding_roof_strip_2_1", 22],
+    ["enclosure_siding_roof_strip_2_2", 22],
+    ["enclosure_siding_roof_strip_3_1", 22],
+    ["enclosure_siding_roof_strip_3_2", 22],
+    ["enclosure_siding_roof_strip_4_1", 22],
+    ["enclosure_siding_roof_strip_4_2", 22],
+    ["enclosure_siding_roof_strip_5_1", 22],
+    ["enclosure_siding_roof_strip_1_1_anchor_1", 22],
+    ["enclosure_siding_roof_strip_1_1_anchor_2", 22],
+    ["enclosure_siding_roof_strip_1_2_anchor_3", 22],
+    ["enclosure_siding_roof_strip_1_2_anchor_4", 22],
+    ["enclosure_siding_roof_strip_2_1_anchor_5", 22],
+    ["enclosure_siding_roof_strip_2_1_anchor_6", 22],
+    ["enclosure_siding_roof_strip_2_2_anchor_7", 22],
+    ["enclosure_siding_roof_strip_2_2_anchor_8", 22],
+    ["enclosure_siding_roof_strip_3_1_anchor_9", 22],
+    ["enclosure_siding_roof_strip_3_1_anchor_10", 22],
+    ["enclosure_siding_roof_strip_3_2_anchor_11", 22],
+    ["enclosure_siding_roof_strip_3_2_anchor_12", 22],
+    ["enclosure_siding_roof_strip_4_1_anchor_13", 22],
+    ["enclosure_siding_roof_strip_4_1_anchor_14", 22],
+    ["enclosure_siding_roof_strip_4_2_anchor_15", 22],
+    ["enclosure_siding_roof_strip_4_2_anchor_16", 22],
+    ["enclosure_siding_roof_strip_5_1_anchor_17", 22],
+    ["enclosure_siding_roof_strip_5_1_anchor_18", 22],
     ["enclosure_siding_mesh_front_1_wire_0", 23],
     ["enclosure_siding_mesh_front_1_wire_1", 23],
     ["enclosure_siding_mesh_front_1_wire_2", 23],
@@ -2091,63 +2120,37 @@ build_step_objects = [
     ["enclosure_siding_top_1_face_screw_298", 35],
     ["enclosure_siding_top_1_face_screw_299", 35],
     ["enclosure_siding_top_1_face_screw_300", 35],
-    ["enclosure_siding_top_1_face_screw_301", 35],
-    ["enclosure_siding_top_1_face_screw_302", 35],
-    ["enclosure_siding_top_1_face_screw_303", 35],
-    ["enclosure_siding_top_1_face_screw_304", 35],
-    ["enclosure_siding_top_1_face_screw_305", 35],
+    ["enclosure_siding_top_2_face_screw_301", 35],
+    ["enclosure_siding_top_2_face_screw_302", 35],
+    ["enclosure_siding_top_2_face_screw_303", 35],
+    ["enclosure_siding_top_2_face_screw_304", 35],
+    ["enclosure_siding_top_2_face_screw_305", 35],
     ["enclosure_siding_top_2_face_screw_306", 35],
     ["enclosure_siding_top_2_face_screw_307", 35],
     ["enclosure_siding_top_2_face_screw_308", 35],
     ["enclosure_siding_top_2_face_screw_309", 35],
-    ["enclosure_siding_top_2_face_screw_310", 35],
-    ["enclosure_siding_top_2_face_screw_311", 35],
-    ["enclosure_siding_top_2_face_screw_312", 35],
-    ["enclosure_siding_top_2_face_screw_313", 35],
-    ["enclosure_siding_top_2_face_screw_314", 35],
-    ["enclosure_siding_top_2_face_screw_315", 35],
-    ["enclosure_siding_top_2_face_screw_316", 35],
-    ["enclosure_siding_top_2_face_screw_317", 35],
-    ["enclosure_siding_top_2_face_screw_318", 35],
-    ["enclosure_siding_top_2_face_screw_319", 35],
-    ["enclosure_siding_top_2_face_screw_320", 35],
-    ["enclosure_siding_top_2_face_screw_321", 35],
-    ["enclosure_siding_top_3_face_screw_322", 35],
-    ["enclosure_siding_top_3_face_screw_323", 35],
-    ["enclosure_siding_top_3_face_screw_324", 35],
-    ["enclosure_siding_top_3_face_screw_325", 35],
-    ["enclosure_siding_top_3_face_screw_326", 35],
-    ["enclosure_siding_top_3_face_screw_327", 35],
-    ["enclosure_siding_top_3_face_screw_328", 35],
-    ["enclosure_siding_top_3_face_screw_329", 35],
-    ["enclosure_siding_top_3_face_screw_330", 35],
-    ["enclosure_siding_top_3_face_screw_331", 35],
-    ["enclosure_siding_top_3_face_screw_332", 35],
-    ["enclosure_siding_top_3_face_screw_333", 35],
-    ["enclosure_siding_top_3_face_screw_334", 35],
-    ["enclosure_siding_top_3_face_screw_335", 35],
-    ["enclosure_siding_top_4_face_screw_336", 35],
-    ["enclosure_siding_top_4_face_screw_337", 35],
-    ["enclosure_siding_top_4_face_screw_338", 35],
-    ["enclosure_siding_top_4_face_screw_339", 35],
-    ["enclosure_siding_top_4_face_screw_340", 35],
-    ["enclosure_siding_top_4_face_screw_341", 35],
-    ["enclosure_siding_top_4_face_screw_342", 35],
-    ["enclosure_siding_top_4_face_screw_343", 35],
-    ["enclosure_siding_top_4_face_screw_344", 35],
-    ["enclosure_siding_top_4_face_screw_345", 35],
-    ["enclosure_siding_top_4_face_screw_346", 35],
-    ["enclosure_siding_top_4_face_screw_347", 35],
-    ["enclosure_siding_top_5_face_screw_348", 35],
-    ["enclosure_siding_top_5_face_screw_349", 35],
-    ["enclosure_siding_top_5_face_screw_350", 35],
-    ["enclosure_siding_top_5_face_screw_351", 35],
-    ["enclosure_siding_top_5_face_screw_352", 35],
-    ["enclosure_siding_top_5_face_screw_353", 35],
-    ["enclosure_siding_top_5_face_screw_354", 35],
-    ["enclosure_siding_top_5_face_screw_355", 35],
-    ["enclosure_siding_top_5_face_screw_356", 35],
-    ["enclosure_siding_top_5_face_screw_357", 35],
+    ["enclosure_siding_top_3_face_screw_310", 35],
+    ["enclosure_siding_top_3_face_screw_311", 35],
+    ["enclosure_siding_top_3_face_screw_312", 35],
+    ["enclosure_siding_top_3_face_screw_313", 35],
+    ["enclosure_siding_top_3_face_screw_314", 35],
+    ["enclosure_siding_top_3_face_screw_315", 35],
+    ["enclosure_siding_top_3_face_screw_316", 35],
+    ["enclosure_siding_top_3_face_screw_317", 35],
+    ["enclosure_siding_top_3_face_screw_318", 35],
+    ["enclosure_siding_top_3_face_screw_319", 35],
+    ["enclosure_siding_top_4_face_screw_320", 35],
+    ["enclosure_siding_top_4_face_screw_321", 35],
+    ["enclosure_siding_top_4_face_screw_322", 35],
+    ["enclosure_siding_top_4_face_screw_323", 35],
+    ["enclosure_siding_top_4_face_screw_324", 35],
+    ["enclosure_siding_top_4_face_screw_325", 35],
+    ["enclosure_siding_top_4_face_screw_326", 35],
+    ["enclosure_siding_top_4_face_screw_327", 35],
+    ["enclosure_siding_top_5_face_screw_328", 35],
+    ["enclosure_siding_top_5_face_screw_329", 35],
+    ["enclosure_siding_top_5_face_screw_330", 35],
+    ["enclosure_siding_top_5_face_screw_331", 35],
     ["enclosure_siding_US20_corner_fl_1", 36],
     ["enclosure_siding_US20_corner_fl_2", 36],
     ["enclosure_siding_US20_corner_fr_1", 36],
@@ -3163,6 +3166,9 @@ if (posts) {
 if (power_cord_guard) {
     render_assembly("power_cord_guard", power_cord_guard);
 }
+if (roof_supports) {
+    render_assembly("roof_supports", roof_supports);
+}
 if (tambour_supports) {
     render_assembly("tambour_supports", tambour_supports);
 }
@@ -3181,8 +3187,8 @@ if (component_low_voltage_fittings) {
 if (component_power_cord_guard) {
     render_component_assembly("power_cord_guard", component_power_cord_guard);
 }
-if (component_roof_shims) {
-    render_component_assembly("roof_shims", component_roof_shims);
+if (component_roof_support_hardware) {
+    render_component_assembly("roof_support_hardware", component_roof_support_hardware);
 }
 if (component_tambour_guard) {
     render_component_assembly("tambour_guard", component_tambour_guard);

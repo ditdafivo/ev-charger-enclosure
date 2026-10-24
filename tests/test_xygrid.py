@@ -161,7 +161,7 @@ class XYGridTests(unittest.TestCase):
             "-36:1:63",
         )
         self.assertEqual(build.model._grid_slider_range(1), "-38:1:61")
-        self.assertEqual(build.model._grid_slider_range(2), "-37:1:52")
+        self.assertEqual(build.model._grid_slider_range(2), "-37:1:53")
 
 
 if __name__ == "__main__":

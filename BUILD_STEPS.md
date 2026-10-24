@@ -663,11 +663,22 @@ power_street_light_uf_b
 
 ## 22. Prepare siding backing and ventilation (`siding-preparation`)
 
-Install the existing 1/4-inch perimeter roof shims, actual 1-inch backing
-segments, and diagonal roof shim. Keep shims clear of gussets and pan heads.
-Attach the backing positively to framing using corrosion-resistant angles and
-structural screws selected for each joint. Keep open paths behind and between
-framing members for drainage and the guide's 1-inch net free ventilation area.
+Install the actual 1-inch wall backing segments with their existing specified
+connections. For the roof, fit the two flat 2x4 local support blocks beside the
+gussets. Route 3/4-inch-deep seats around the diagonal, keeping tops flush with
+framing. Install two opposed toe screws per block below the seats, directly
+into the adjacent front/rear rail. Use exterior structural screws suitable for
+toe installation; field-select product, length, pilot holes and edge distances.
+There are no roof-support steel angles.
+
+Install the 3/4-inch PT exterior plywood roof strips in place of all roof shims
+and intermediate roof backing. Rip with the panel strength axis along X.
+Full courses use paired provisional 1.5-inch strips; the narrow closure uses
+one backer. Shorten strip ends around gussets with 1/8-inch clearance and
+anchor independently at generated framing-supported locations. Recess anchor
+heads flush in plywood. Preserve open channels and joint outlets; do not cut
+transversely through a strip for drainage. Field-treat cut edges as required.
+Keep open paths behind and between framing members for drainage and the guide's 1-inch net free ventilation area.
 
 Dry-fit two US135 courses directly against representative lumber before cutting
 production pieces. Verify the provisional 130 mm installed pitch, rear-profile
@@ -678,10 +689,12 @@ The model does not establish approval or connection load capacity.
 New model objects:
 
 ```text
-roof_shim_brace_fl_fr
-roof_shim_brace_fl_bl
-roof_shim_brace_bl_br
-roof_shim_brace_fr_br
+roof_support_bl
+roof_support_fr
+roof_support_bl_toe_screw_1
+roof_support_bl_toe_screw_2
+roof_support_fr_toe_screw_1
+roof_support_fr_toe_screw_2
 enclosure_siding_backing_front_1_1
 enclosure_siding_backing_front_1_2
 enclosure_siding_backing_left_1_1
@@ -695,11 +708,33 @@ enclosure_siding_backing_right_2_1
 enclosure_siding_backing_right_2_2
 enclosure_siding_backing_right_2_3
 enclosure_siding_backing_right_2_4
-enclosure_siding_backing_roof_1_1
-enclosure_siding_backing_roof_2_1
-enclosure_siding_backing_roof_2_2
-enclosure_siding_backing_roof_3_1
-enclosure_siding_diagonal_shim
+enclosure_siding_roof_strip_1_1
+enclosure_siding_roof_strip_1_2
+enclosure_siding_roof_strip_2_1
+enclosure_siding_roof_strip_2_2
+enclosure_siding_roof_strip_3_1
+enclosure_siding_roof_strip_3_2
+enclosure_siding_roof_strip_4_1
+enclosure_siding_roof_strip_4_2
+enclosure_siding_roof_strip_5_1
+enclosure_siding_roof_strip_1_1_anchor_1
+enclosure_siding_roof_strip_1_1_anchor_2
+enclosure_siding_roof_strip_1_2_anchor_3
+enclosure_siding_roof_strip_1_2_anchor_4
+enclosure_siding_roof_strip_2_1_anchor_5
+enclosure_siding_roof_strip_2_1_anchor_6
+enclosure_siding_roof_strip_2_2_anchor_7
+enclosure_siding_roof_strip_2_2_anchor_8
+enclosure_siding_roof_strip_3_1_anchor_9
+enclosure_siding_roof_strip_3_1_anchor_10
+enclosure_siding_roof_strip_3_2_anchor_11
+enclosure_siding_roof_strip_3_2_anchor_12
+enclosure_siding_roof_strip_4_1_anchor_13
+enclosure_siding_roof_strip_4_1_anchor_14
+enclosure_siding_roof_strip_4_2_anchor_15
+enclosure_siding_roof_strip_4_2_anchor_16
+enclosure_siding_roof_strip_5_1_anchor_17
+enclosure_siding_roof_strip_5_1_anchor_18
 ```
 
 ## 23. Install the hardware-cloth skirt (`siding-skirt`)
@@ -1586,10 +1621,15 @@ enclosure_siding_rear_10_2_face_screw_292
 ## 35. Install the US135 roof cover (`siding-roof`)
 
 Run boards along X and progress across Y. Seat boards directly on the
-perimeter shims, added lumber and diagonal shim. Face-fasten at the generated
-supported points, with two rows where width permits. Use one fixed point per
+3/4-inch plywood support strips. Use provisional #8 x 1-1/8-inch stainless
+retaining-head screws into plywood only, nominally 5/8-inch penetration.
+Verify production profile thickness, actual plywood thickness, usable thread
+engagement and contained tips before installation. Face-fasten along the strip
+centerlines at generated locations, no more than 10 inches apart. Use one fixed point per
 physical board and sliding holes elsewhere, including the ripped final board.
-US20 trim carries no roof weight. This level cover may leak; snow, uplift,
+Horizontal roof trim uses 2-1/2-inch screws through the increased stack, with
+framing landing and movement checked separately. US20 trim carries no roof
+weight. This level cover may leak; snow, uplift,
 ponding and exposed-roof capacity remain unverified.
 
 New model objects:
@@ -1608,63 +1648,37 @@ enclosure_siding_top_1_face_screw_297
 enclosure_siding_top_1_face_screw_298
 enclosure_siding_top_1_face_screw_299
 enclosure_siding_top_1_face_screw_300
-enclosure_siding_top_1_face_screw_301
-enclosure_siding_top_1_face_screw_302
-enclosure_siding_top_1_face_screw_303
-enclosure_siding_top_1_face_screw_304
-enclosure_siding_top_1_face_screw_305
+enclosure_siding_top_2_face_screw_301
+enclosure_siding_top_2_face_screw_302
+enclosure_siding_top_2_face_screw_303
+enclosure_siding_top_2_face_screw_304
+enclosure_siding_top_2_face_screw_305
 enclosure_siding_top_2_face_screw_306
 enclosure_siding_top_2_face_screw_307
 enclosure_siding_top_2_face_screw_308
 enclosure_siding_top_2_face_screw_309
-enclosure_siding_top_2_face_screw_310
-enclosure_siding_top_2_face_screw_311
-enclosure_siding_top_2_face_screw_312
-enclosure_siding_top_2_face_screw_313
-enclosure_siding_top_2_face_screw_314
-enclosure_siding_top_2_face_screw_315
-enclosure_siding_top_2_face_screw_316
-enclosure_siding_top_2_face_screw_317
-enclosure_siding_top_2_face_screw_318
-enclosure_siding_top_2_face_screw_319
-enclosure_siding_top_2_face_screw_320
-enclosure_siding_top_2_face_screw_321
-enclosure_siding_top_3_face_screw_322
-enclosure_siding_top_3_face_screw_323
-enclosure_siding_top_3_face_screw_324
-enclosure_siding_top_3_face_screw_325
-enclosure_siding_top_3_face_screw_326
-enclosure_siding_top_3_face_screw_327
-enclosure_siding_top_3_face_screw_328
-enclosure_siding_top_3_face_screw_329
-enclosure_siding_top_3_face_screw_330
-enclosure_siding_top_3_face_screw_331
-enclosure_siding_top_3_face_screw_332
-enclosure_siding_top_3_face_screw_333
-enclosure_siding_top_3_face_screw_334
-enclosure_siding_top_3_face_screw_335
-enclosure_siding_top_4_face_screw_336
-enclosure_siding_top_4_face_screw_337
-enclosure_siding_top_4_face_screw_338
-enclosure_siding_top_4_face_screw_339
-enclosure_siding_top_4_face_screw_340
-enclosure_siding_top_4_face_screw_341
-enclosure_siding_top_4_face_screw_342
-enclosure_siding_top_4_face_screw_343
-enclosure_siding_top_4_face_screw_344
-enclosure_siding_top_4_face_screw_345
-enclosure_siding_top_4_face_screw_346
-enclosure_siding_top_4_face_screw_347
-enclosure_siding_top_5_face_screw_348
-enclosure_siding_top_5_face_screw_349
-enclosure_siding_top_5_face_screw_350
-enclosure_siding_top_5_face_screw_351
-enclosure_siding_top_5_face_screw_352
-enclosure_siding_top_5_face_screw_353
-enclosure_siding_top_5_face_screw_354
-enclosure_siding_top_5_face_screw_355
-enclosure_siding_top_5_face_screw_356
-enclosure_siding_top_5_face_screw_357
+enclosure_siding_top_3_face_screw_310
+enclosure_siding_top_3_face_screw_311
+enclosure_siding_top_3_face_screw_312
+enclosure_siding_top_3_face_screw_313
+enclosure_siding_top_3_face_screw_314
+enclosure_siding_top_3_face_screw_315
+enclosure_siding_top_3_face_screw_316
+enclosure_siding_top_3_face_screw_317
+enclosure_siding_top_3_face_screw_318
+enclosure_siding_top_3_face_screw_319
+enclosure_siding_top_4_face_screw_320
+enclosure_siding_top_4_face_screw_321
+enclosure_siding_top_4_face_screw_322
+enclosure_siding_top_4_face_screw_323
+enclosure_siding_top_4_face_screw_324
+enclosure_siding_top_4_face_screw_325
+enclosure_siding_top_4_face_screw_326
+enclosure_siding_top_4_face_screw_327
+enclosure_siding_top_5_face_screw_328
+enclosure_siding_top_5_face_screw_329
+enclosure_siding_top_5_face_screw_330
+enclosure_siding_top_5_face_screw_331
 ```
 
 ## 36. Fit US20 corners, rear-access and roof-edge trim (`siding-trim`)

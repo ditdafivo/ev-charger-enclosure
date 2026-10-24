@@ -112,6 +112,53 @@ class US135Tests(unittest.TestCase):
                     self.assertFalse(all(p.start[k]<loc[k]+size[k]-1e-7 and
                         p.start[k]+p.size[k]>loc[k]+1e-7 for k in range(3)),p.name)
 
+    def test_roof_strips_drainage_clearances_and_independent_fasteners(self):
+        for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
+            enclosure=build.build_enclosure(*dims); s=enclosure.siding
+            self.assertFalse(any("backing_roof" in p.name or "shim" in p.name for p in s.backing_parts))
+            for board in (p for p in s.board_parts if "_top_" in p.name):
+                course=board.name.rsplit('_',1)[1]
+                strips=[p for p in s.roof_strips if p.name.startswith(f"{s.name}_roof_strip_{course}_")]
+                self.assertIn(len(strips),(1,2))
+                if len(strips)==2:
+                    self.assertGreater(strips[1].start[1]-strips[0].start[1]-strips[0].size[1],0)
+                for strip in strips:
+                    self.assertEqual(strip.size[2],0.75)
+                    # The entire strip bears beneath solid profile, not a groove lip.
+                    self.assertGreaterEqual(strip.start[1],board.start[1]+s.board_width-s.course_pitch-1e-8)
+                    self.assertLessEqual(strip.start[1]+strip.size[1],min(board.start[1]+board.size[1],board.start[1]+s.course_pitch)+1e-8)
+                    for loc,size in s.roof_gussets:
+                        self.assertFalse(all(strip.start[k]<loc[k]+size[k]+0.125-1e-8 and
+                            strip.start[k]+strip.size[k]>loc[k]-0.125+1e-8 for k in (0,1)))
+                    anchors=[a for a in s.roof_strip_anchors if a.board==strip.name]
+                    self.assertEqual(len(anchors),2)
+                    self.assertLess(anchors[0].along,anchors[1].along)
+                    for a in anchors:
+                        self.assertTrue(s._base_supported(a.along,a.elevation))
+                        self.assertGreaterEqual(a.along,strip.start[0]+0.75-1e-8)
+                        self.assertLessEqual(a.along,strip.start[0]+strip.size[0]-0.75+1e-8)
+                attachments=[a for a in s.attachments if a.board==board.name]
+                fixed=next(a for a in attachments if a.locked)
+                self.assertAlmostEqual(fixed.along,(s.min_x+s.max_x)/2)
+                for strip in strips:
+                    row=[a for a in attachments if abs(a.elevation-strip.start[1]-strip.size[1]/2)<1e-8]
+                    xs=sorted(a.along for a in row)
+                    self.assertTrue(xs)
+                    self.assertTrue(all(b-a<=10+1e-8 for a,b in zip(xs,xs[1:])))
+                    for a in row:
+                        self.assertEqual(a.length_in,1.125)
+                        self.assertGreater(board.start[2]+board.size[2]-a.length_in,strip.start[2])
+            if dims[0]==24:
+                self.assertEqual(len(s.roof_strips),9)
+                self.assertEqual(len([p for p in s.roof_strips if "strip_5_" in p.name]),1)
+            rows={r['name']:r for r in s.bom_rows()}
+            self.assertEqual(rows[f'{s.name}_roof_face_screws']['qty'],sum(a.wall=='roof' for a in s.attachments))
+            self.assertEqual(rows[f'{s.name}_roof_strip_anchors']['qty'],len(s.roof_strip_anchors))
+            self.assertEqual(rows[f'{s.name}_roof_support_toe_screws']['qty'],4)
+            plywood=rows[f'{s.name}_PT_exterior_plywood_3_4']
+            self.assertEqual(plywood['category'],'sheet')
+            self.assertEqual(plywood['stock_length_ft'],'')
+
     def test_trim_ground_clearance_and_upper_corner_junctions(self):
         s=build.siding
         for p in s.angle_parts:
@@ -140,7 +187,7 @@ class US135Tests(unittest.TestCase):
                 self.assertAlmostEqual(max(p.size[:2]),40/25.4)
             if p.name.endswith('US20_front_face'):
                 self.assertAlmostEqual(p.start[2]+p.size[2],s.roof_finished_top_z+0.22)
-        self.assertEqual({p.material for p in s.hardware_parts},{'face_screw'})
+        self.assertEqual({p.material for p in s.hardware_parts},{'face_screw','strip_anchor'})
         for p in s.hardware_parts:
             self.assertTrue(all(d>0 for d in p.size))
         jamb=next(p for p in s.angle_parts if p.name.endswith('opening_left_1'))
@@ -174,14 +221,14 @@ class US135Tests(unittest.TestCase):
     def test_cut_bom_shopping_and_generated_artifacts(self):
         s=build.siding
         bom={r['name']:r for r in s.bom_rows()}
-        self.assertEqual(bom[f'{s.name}_face_screws']['qty'],len(s.attachments))
+        self.assertEqual(bom[f'{s.name}_face_screws']['qty'],sum(a.wall!='roof' for a in s.attachments))
         self.assertEqual(bom[f'{s.name}_US20']['stock_board_qty'],5)
         self.assertEqual(bom[f'{s.name}_US135']['stock_board_qty'],10)
         self.assertEqual(bom[f'{s.name}_US20']['qty'],11)
         self.assertFalse(any(token in row['name'] for row in bom.values()
                              for token in ('AW08','T-7','US44','US46','clip_screws','locking_screws','stopper_screws')))
         purchases={r['item']:r for r in s.purchase_bom_rows()}
-        self.assertEqual(purchases['face_screws']['quantity'],len(s.attachments))
+        self.assertEqual(purchases['face_screws']['quantity'],sum(a.wall!='roof' for a in s.attachments))
         self.assertEqual(purchases['US20']['quantity'],5)
         self.assertEqual(bom[f'{s.name}_US135']['qty'],len(s.cut_lengths))
         self.assertTrue(any(r['type'].startswith('US135') for r in build.model.shopping_list_rows()))
@@ -214,7 +261,8 @@ class US135Tests(unittest.TestCase):
 
     def test_rejects_invalid_pitch_and_clearance(self):
         for kwargs in ({'course_pitch':0},{'course_pitch':7},{'ground_clearance':0.5},
-                       {'course_pitch':float('nan')},{'ground':None}):
+                       {'course_pitch':float('nan')},{'ground':None},{'roof_strip_width':0},
+                       {'roof_strip_thickness':0.5},{'roof_hardware_clearance':0}):
             with self.subTest(kwargs=kwargs),self.assertRaises(ValueError):
                 replace(build.siding,**kwargs)
 

@@ -69,7 +69,7 @@ from lumber_model.gusset import (
     pan_head_cylinder_primitives,
 )
 from lumber_model.gusset_dxf import generate_gusset_dxf
-from lumber_model.us135 import US135Siding, US135_THICKNESS
+from lumber_model.us135 import US135Siding, US135_THICKNESS, ROOF_STRIP_THICKNESS
 
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 19.375
@@ -869,7 +869,6 @@ def build_enclosure(
     GUSSET_HARDWARE_PROJECTION=(
         GUSSET_THICKNESS_IN+GUSSET_SCREW_HEAD_HEIGHT_IN
     )
-    ROOF_SHIM_THICKNESS=math.ceil(GUSSET_HARDWARE_PROJECTION*8)/8
     gusset_with_screws_type=ComponentType(
         name="custom_6x6_g90_gusset_with_number_9_pan_head_screws",
         size=(GUSSET_SIZE_IN, GUSSET_SIZE_IN, GUSSET_HARDWARE_PROJECTION),
@@ -900,58 +899,53 @@ def build_enclosure(
             offset=(0.25, across_offset, 0),
         )
 
-    # Stop each shim at the resolved hardware envelope.  The shim establishes a
-    # support plane above the gusset; placing it on the gusset would instead
-    # stack the two parts and raise the decking locally.
-    for member_name, gusset_name, keep_side, end_post_name in (
-        ("brace_fl_fr", "gusset_front_right", "before", "post_fl"),
-        ("brace_fl_bl", "gusset_back_left", "before", None),
-        ("brace_bl_br", "gusset_back_left", "after", "post_br"),
-        ("brace_fr_br", "gusset_front_right", "after", None),
+    # Local flat 2x4 blocks replace the end bearing lost at gusset cutouts.
+    # Route their tops around the existing diagonal, preserving its load path.
+    roof_gusset_envelopes = []
+    roof_toe_screw_locations = []
+    toe_head_type = ComponentType(
+        name="roof_support_structural_toe_screw_head_length_unspecified",
+        size=(0.35, 0.35, 0.10), mount_point=(0.175, 0.175, 0),
+        shape="primitive_union",
+        cylinder_primitives=(((0.175, 0.175, 0), "out", 0.10, 0.35),),
+        color=(0.45, 0.48, 0.5, 1),
+    )
+    for corner, gusset_name, rail_name in (
+        ("bl", "gusset_back_left", "brace_bl_br"),
+        ("fr", "gusset_front_right", "brace_fl_fr"),
     ):
-        member=members[member_name]
-        gusset=components[gusset_name]
-        resolved_gusset=gusset.resolved(members[gusset.member])
-        along_index={"x": 0, "y": 1}[member.axis]
-        gusset_min=resolved_gusset.box_min[along_index]
-        gusset_max=gusset_min+resolved_gusset.box_size[along_index]
-        member_min=member.min_on(member.axis)
-        member_max=member.max_on(member.axis)
-        if keep_side == "before":
-            shim_start=(
-                members[end_post_name].min_on(member.axis)
-                if end_post_name is not None
-                else member_min
-            )
-            shim_end=min(gusset_min, member_max)
-        else:
-            shim_start=max(gusset_max, member_min)
-            shim_end=(
-                members[end_post_name].max_on(member.axis)
-                if end_post_name is not None
-                else member_max
-            )
-        shim_length=shim_end-shim_start
-        if shim_length <= 0:
-            raise ValueError(
-                f"{gusset_name} leaves no roof-shim support on {member_name}"
-            )
-        shim_type=ComponentType(
-            name=f"continuous_pt_roof_shim_{member_name}",
-            size=(shim_length, 3.5, ROOF_SHIM_THICKNESS),
-            color=(0.44, 0.26, 0.11, 1.0),
-            default_face="narrow_pos",
-            mount_point=(0, 1.75, 0),
-        )
-        components.add(
-            f"roof_shim_{member_name}",
-            assembly="roof_shims",
-            component_type=shim_type,
-            member=member_name,
-            at=max(shim_start-member_min, 0),
-            face="narrow_pos",
-            offset=(min(shim_start-member_min, 0), 0, 0),
-        )
+        instance = components[gusset_name]
+        gusset = instance.resolved(members[instance.member])
+        roof_gusset_envelopes.append((gusset.box_min, gusset.box_size))
+        rail = members[rail_name]
+        clearance = 1/8
+        x = (gusset.box_min[0]+gusset.box_size[0]+clearance if corner=="bl"
+             else gusset.box_min[0]-clearance-3.5)
+        y = rail.min_on("y")-3.5 if corner=="bl" else rail.max_on("y")
+        block_name = f"roof_support_{corner}"
+        block = members.add(block_name, assembly="roof_supports", type="2x4",
+            axis="x", start=AbsoluteCoord(x,y,FRAME_DIMS.z-1.5), length=3.5)
+        seat = clip_polygon_to_box(diagonal_footprint, min_x=x, max_x=x+3.5,
+                                  min_y=y, max_y=y+3.5)
+        if len(seat)>=3:
+            routed_seats += (RoutedSeat(name=f"route_{block_name}_for_brace_bl_fr",
+                member=block_name, polygon=seat, depth=0.75, top_z=FRAME_DIMS.z),)
+        # Opposed 45-degree plan toe screws enter the rail below the routed seat.
+        # Heads and entry directions are shown; product/length remain field-selected.
+        toward_rail = 1 if corner=="bl" else -1
+        entry_y = y+2.75 if corner=="bl" else y+0.75
+        for i, (entry_x, toward_x) in enumerate(((x,1),(x+3.5,-1)),1):
+            direction=(toward_x/math.sqrt(2),toward_rail/math.sqrt(2),0)
+            outward=tuple(-v for v in direction)
+            entry=(entry_x,entry_y,FRAME_DIMS.z-1.125)
+            screw_name=f"{block_name}_toe_screw_{i}"
+            components.add(screw_name, assembly="roof_support_hardware",
+                component_type=toe_head_type, member=block_name, at=0,
+                absolute_anchor=entry,
+                component_basis=((-outward[1],outward[0],0),(0,0,1),outward))
+            roof_toe_screw_locations.append(dict(name=screw_name, block=block_name,
+                receiving_member=rail_name, entry_in=entry, direction=direction,
+                product_and_length="field-select structural screw approved for toe installation"))
 
     components.add(
         "low_voltage_termination_box",
@@ -1744,7 +1738,9 @@ def build_enclosure(
         min_y=0,
         max_y=FRAME_DIMS.y + WIDTH_4x4,
         frame_top_z=FRAME_DIMS.z,
-        roof_support_z=FRAME_DIMS.z+ROOF_SHIM_THICKNESS,
+        roof_support_z=FRAME_DIMS.z+ROOF_STRIP_THICKNESS,
+        roof_gussets=tuple(roof_gusset_envelopes),
+        roof_toe_screws=tuple(roof_toe_screw_locations),
         bottom_z=SIDING_BOTTOM_Z,
         rear_opening_min_x=TAMBOUR_LEFT_X,
         rear_opening_max_x=TAMBOUR_RIGHT_X,
@@ -2166,12 +2162,6 @@ def build_enclosure(
                 "top_bracing_hardware",
                 "#9 pan-head screw; length intentionally unspecified",
                 2 * GUSSET_FASTENER_COUNT,
-            ),
-            PurchasedItem(
-                "continuous_pt_roof_shim",
-                "roof_shims",
-                f"continuous ripped PT lumber, {ROOF_SHIM_THICKNESS:g} in thick",
-                4,
             ),
             PurchasedItem(
                 "power_guard_rail_screw",

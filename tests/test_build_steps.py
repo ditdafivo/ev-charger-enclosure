@@ -193,7 +193,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertEqual(
             model.build_steps[13].object_names, ("power_back_right_outlet_feed",),
         )
-        self.assertEqual(step_by_object["roof_shim_brace_fl_fr"], 22)
+        self.assertEqual(step_by_object["roof_support_fr"], 22)
         corners = {
             name for name in assigned if name.startswith("enclosure_siding_US20_corner_")
         }
@@ -232,7 +232,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn('["power_ev_charger_feed", 11]', scad)
         self.assertIn('["power_ev_pull_box", 11]', scad)
         self.assertIn('["power_pull_box_junction_feed", 11]', scad)
-        self.assertIn('["roof_shim_brace_fl_fr", 22]', scad)
+        self.assertIn('["roof_support_fr", 22]', scad)
         self.assertIn('["back_right_outlet_backer_lower", 13]', scad)
         self.assertIn('["back_right_outlet", 13]', scad)
         self.assertIn('["right_center_rail", 9]', scad)

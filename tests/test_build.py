@@ -114,12 +114,12 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertIn("jigsaw", fabrication_row["operation"])
 
     def test_side_brace_rabbets_and_custom_gusset_hardware_are_explicit(self) -> None:
-        self.assertEqual(len(build.routed_seats), 2)
+        self.assertEqual(len(build.routed_seats), 4)
         self.assertEqual({seat.depth for seat in build.routed_seats}, {0.75})
         self.assertEqual({seat.top_z for seat in build.routed_seats}, {49.625})
         self.assertEqual(
             {seat.member for seat in build.routed_seats},
-            {"brace_fl_bl", "brace_fr_br"},
+            {"brace_fl_bl", "brace_fr_br", "roof_support_bl", "roof_support_fr"},
         )
         for name in ("gusset_back_left", "gusset_front_right"):
             hardware = build.components[name]
@@ -181,72 +181,50 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertEqual(hardware_rows["number_9_pan_head_screw"]["qty"], 32)
         self.assertNotIn("2-1/2", hardware_rows["number_9_pan_head_screw"]["type"])
 
-    def test_roof_shims_raise_only_top_boards(self) -> None:
-        self.assertEqual(build.ROOF_SHIM_THICKNESS, 0.25)
+    def test_plywood_strips_raise_roof_and_replace_shims(self) -> None:
+        self.assertEqual(build.siding.roof_strip_thickness, 0.75)
         self.assertEqual(build.siding.frame_top_z, 49.625)
-        self.assertEqual(build.siding.roof_support_z, 49.875)
+        self.assertEqual(build.siding.roof_support_z, 50.375)
         self.assertEqual(build.siding.finished_top_z, 50.125)
-        self.assertEqual(build.siding.roof_finished_top_z, 50.375)
-        for part in build.siding.parts:
-            if part.name.startswith("enclosure_siding_top_") and part.material == "US135":
-                self.assertEqual(part.start[2], 49.875)
+        self.assertEqual(build.siding.roof_finished_top_z, 50.875)
+        self.assertFalse(any("roof_shim" in n for n in build.components))
+        self.assertFalse(any("roof_shim" in r["name"] for r in build.model.bom_rows()))
+        for part in build.siding.board_parts:
+            if "_top_" in part.name:
+                self.assertEqual(part.start[2], 50.375)
 
-    def test_roof_shims_stop_at_gusset_envelopes(self) -> None:
-        for enclosure in (
-            build.default_build,
-            build.build_enclosure(width=36, depth=30, height=55),
-        ):
-            gussets = [
-                enclosure.components[name].resolved(
-                    enclosure.members[enclosure.components[name].member]
-                )
-                for name in ("gusset_back_left", "gusset_front_right")
-            ]
-            shim_names = (
-                "roof_shim_brace_fl_fr", "roof_shim_brace_fl_bl",
-                "roof_shim_brace_bl_br", "roof_shim_brace_fr_br",
-            )
-            shims = []
-            for name in shim_names:
-                shim_instance = enclosure.components[name]
-                shim = shim_instance.resolved(
-                    enclosure.members[shim_instance.member]
-                )
-                shims.append(shim)
-                self.assertAlmostEqual(shim.box_min[2], enclosure.FRAME_DIMS.z)
-                self.assertAlmostEqual(
-                    shim.box_min[2] + shim.box_size[2],
-                    enclosure.FRAME_DIMS.z + build.ROOF_SHIM_THICKNESS,
-                )
-                for gusset in gussets:
-                    overlap_x = min(
-                        shim.box_min[0] + shim.box_size[0],
-                        gusset.box_min[0] + gusset.box_size[0],
-                    ) - max(shim.box_min[0], gusset.box_min[0])
-                    overlap_y = min(
-                        shim.box_min[1] + shim.box_size[1],
-                        gusset.box_min[1] + gusset.box_size[1],
-                    ) - max(shim.box_min[1], gusset.box_min[1])
-                    self.assertFalse(
-                        overlap_x > 1e-9 and overlap_y > 1e-9,
-                        f"{name} overlaps {gusset.name}",
-                    )
-
-            for post_name in ("post_fl", "post_br"):
-                post = enclosure.members[post_name]
-                covering_shims = [
-                    shim for shim in shims
-                    if shim.box_min[0] <= post.min_on("x") + 1e-9
-                    and shim.box_min[0] + shim.box_size[0]
-                    >= post.max_on("x") - 1e-9
-                    and shim.box_min[1] <= post.min_on("y") + 1e-9
-                    and shim.box_min[1] + shim.box_size[1]
-                    >= post.max_on("y") - 1e-9
-                ]
-                self.assertTrue(
-                    covering_shims,
-                    f"no roof shim covers non-gusseted {post_name}",
-                )
+    def test_local_roof_blocks_have_diagonal_seats_and_opposed_toe_screws(self) -> None:
+        for enclosure in (build.default_build,build.build_enclosure(36,30,55)):
+            for corner,rail_name,gusset_name in (
+                ("bl","brace_bl_br","gusset_back_left"),
+                ("fr","brace_fl_fr","gusset_front_right")):
+                block=enclosure.members[f"roof_support_{corner}"]
+                rail=enclosure.members[rail_name]
+                self.assertEqual(block.type,"2x4")
+                self.assertAlmostEqual(block.max_on("z"),enclosure.height)
+                self.assertAlmostEqual(block.max_on("y") if corner=="bl" else block.min_on("y"),
+                                       rail.min_on("y") if corner=="bl" else rail.max_on("y"))
+                seat=next(r for r in enclosure.routed_seats if r.member==block.name)
+                self.assertEqual(seat.depth,0.75)
+                instance=enclosure.components[gusset_name]
+                gusset=instance.resolved(enclosure.members[instance.member])
+                separation=(block.min_on("x")-gusset.box_min[0]-gusset.box_size[0]
+                            if corner=="bl" else gusset.box_min[0]-block.max_on("x"))
+                self.assertAlmostEqual(separation,0.125)
+                screws=[r for r in enclosure.siding.roof_toe_screws if r["block"]==block.name]
+                self.assertEqual(len(screws),2)
+                self.assertLess(screws[0]["direction"][0]*screws[1]["direction"][0],0)
+                for screw in screws:
+                    self.assertLess(screw["entry_in"][2]+0.175,enclosure.height-seat.depth)
+                    direction=screw["direction"]
+                    self.assertEqual(screw["receiving_member"],rail_name)
+                    self.assertGreater(direction[1] if corner=="bl" else -direction[1],0)
+                    # Each proposed axis crosses into the receiving rail below the seat.
+                    target_y=rail.min_on("y")+0.5 if corner=="bl" else rail.max_on("y")-0.5
+                    distance=(target_y-screw["entry_in"][1])/direction[1]
+                    target_x=screw["entry_in"][0]+distance*direction[0]
+                    self.assertTrue(rail.min_on("x")<target_x<rail.max_on("x"))
+                    self.assertIn(screw["name"],enclosure.components)
 
     def test_side_4x4s_and_rails_support_tambour_and_header(self) -> None:
         enclosure = build.default_build
@@ -1852,7 +1830,7 @@ class ParameterizedBuildTests(unittest.TestCase):
         self.assertAlmostEqual(taller.members["rail_rt"].max_on("z"), 50.375)
         self.assertAlmostEqual(taller.members["rail_rtam"].max_on("z"), 48.875)
         self.assertAlmostEqual(taller.siding.frame_top_z, 55)
-        self.assertAlmostEqual(taller.siding.roof_support_z, 55.25)
+        self.assertAlmostEqual(taller.siding.roof_support_z, 55.75)
         self.assertAlmostEqual(taller.TAMBOUR_TOP_Z, 52.375)
         self.assertAlmostEqual(taller.TAMBOUR_REAR_VERTICAL_LENGTH, 46.75)
         self.assertAlmostEqual(taller.TAMBOUR_TOP_TANGENT_LENGTH, 11.75)
@@ -2191,7 +2169,7 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "fabrication.json",
                     "gusset_plate_6x6.dxf",
                     "siding_cut_list.csv", "siding_cut_list.json", "siding_installation.json",
-                    "siding_bom.csv",
+                    "siding_bom.csv", "roof_support_review.scad",
                     "siding_corner_front_left.scad", "siding_corner_front_right.scad",
                     "siding_corner_rear_left.scad", "siding_corner_rear_right.scad",
                     "tambour",

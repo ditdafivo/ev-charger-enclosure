@@ -27,9 +27,9 @@ rebate faces prevents flicker without changing stock dimensions or pitch.
 Boards seat directly on framing, with **zero added stand-off**. The finished
 wall face is 1/2 inch outside the framing; the front face is y = -0.5. Fixture,
 numeral and outlet positions follow that face. The wall top remains z = 50.125.
-Existing perimeter shims and the added diagonal shim put roof support at
-z = 49.875; the roof board top is z = 50.375. Schematic US20 thickness adds
-0.22 inch above that.
+The 3/4-inch PT plywood strips replace the roof shims and intermediate roof
+backing, putting roof support at z = 50.375 and the roof board top at z = 50.875.
+Schematic US20 thickness adds 0.22 inch above that.
 
 The defaults give ten wall courses. Solid-wall top boards retain their full
 profile height. The rear top board is one physical board with an access notch;
@@ -43,10 +43,11 @@ pitch, access for face screws, head retention and movement-hole behavior.
 
 ## Face fastening and downward installation
 
-1. Install the framing, fixture backing, added wall and roof backing, and shims.
+1. Install the framing, fixture backing, added wall backing and plywood roof strips.
    Existing rails and posts fill interruptions between new backing segments.
-   Attach each segment positively to framing with suitable stainless angles
-   and structural screws. Field-fit small blocks and keep gusset/head gaps.
+   Attach wall backing segments positively to framing with suitable stainless
+   angles and structural screws. Roof support blocks use opposed toe screws
+   directly into framing, with no steel angles; see the roof detail below.
 2. Install the hardware-cloth skirt independently of the boards. Keep paths
    behind and between framing members unobstructed for drainage and the guide's
    minimum 1-inch continuous net free ventilation area. The open frame must
@@ -100,8 +101,8 @@ miter and uses no unsupported corner cap.
 The front roof-edge face needs relief around the Brook mounting body:
 6 1/4 inches wide, to 1/8 inch above its modeled top. Check the actual fixture
 before cutting. Fasten on either side of the relief into the front brace.
-Use #8 x 2-inch stainless trim screws through US20/board into lumber, checking
-actual penetration. The trim-screw BOM is an allowance, not a drilled layout.
+Use #8 x 2-inch stainless wall trim screws into lumber. Horizontal roof trim
+uses 2-1/2-inch screws through the thicker roof stack; check actual penetration. The trim-screw BOM is an allowance, not a drilled layout.
 
 Fix each trim piece once and allow its other connections to slide. Screws
 passing through siding must allow independent movement of that board too.
@@ -116,18 +117,58 @@ Default purchase stock is 8 feet for both US135 and US20.
 
 ## Roof cover and review files
 
-Roof boards run along X and courses progress along Y. Boards bear directly on
-the existing perimeter shims, added actual 1-inch backing strips, and the
-1/4-inch diagonal shim. Added strips stop at the diagonal. Support spans remain
-no greater than 12 inches along the boards. Face screws retain both edges where
-width permits, with one fixed point per physical roof board. The trim carries
-no roof weight. This level cover permits leakage; snow, uplift, ponding and
-exposed-roof capacity remain unverified. The [ceiling guide](https://www.newtechwood.com/pdf/All_Weather_Siding_Ceiling_Installation_Guide.pdf)
-informs support spacing without establishing exposed-roof suitability.
+Roof boards run along X and courses progress along Y. Each full-width board
+rests on two continuous **3/4-inch PT exterior structural plywood strips**,
+provisionally 1.5 inches wide. Rip with the panel strength axis along X. Place
+strips within the full-thickness underside, clear of mating rebates. The narrow
+final course uses one backer instead of overlapping strips. Verify these bearing
+zones against the production profile before ripping plywood.
+
+The strips replace the intermediate roof backing, perimeter shims and diagonal
+shim. Their bottoms bear on the common framing/diagonal top plane, z = 49.625.
+Open channels between strips leave the middle of each full board exposed below;
+keep joint outlets and perimeter drainage open. Do not sever strips transversely
+for drainage. This arrangement does not establish manufacturer acceptance of the
+ventilation or exposed-roof adaptation. Treat cut plywood edges as required by
+the selected preservative system; verify exterior bond, grade and actual thickness.
+
+Shorten strip ends around the gusset envelopes with 1/8-inch clearance. Two flat
+2x4 local support blocks sit immediately inboard of the affected gussets, against
+the front/rear rails. Route their tops 3/4 inch deep where the diagonal crosses.
+Each block has two opposed 45-degree plan toe-screw locations below the routed
+seat, entering the adjacent rail. Heads are schematic; select exterior structural
+screws with published suitability for toe installation, required pilot holes,
+edge distances and adequate receiving-member penetration. No steel angles,
+thinner gusset inserts or printed fastener caps are used for these supports.
+
+Anchor each plywood strip independently near its two ends at the generated
+framing/diagonal-supported locations. Recess anchor heads flush in plywood so
+they do not clamp the siding. Field-select anchor screw length and penetration.
+
+Roof face screws are separately counted: provisional **#8 x 1-1/8-inch stainless
+retaining-head screws**, nominally 5/8-inch penetration through 1/2-inch siding
+into 3/4-inch plywood. This is a geometric candidate, not a verified fastener
+product or connection capacity. Check the actual stack, contained tip, usable
+thread engagement, head retention and sliding-hole behavior. Attach along strip
+centerlines at no more than 10-inch spacing, with exactly one midpoint fixed
+connection per physical board and sliding connections elsewhere.
+
+Use 2-1/2-inch roof trim screws through horizontal US20/board/plywood into
+framing, preserving the former nominal framing penetration. Wall trim retains
+2-inch screws. Verify actual landing and penetration; trim carries no roof load.
+This level cover permits leakage; snow, uplift, ponding and exposed-roof capacity
+remain unverified. The [ceiling guide](https://www.newtechwood.com/pdf/All_Weather_Siding_Ceiling_Installation_Guide.pdf)
+informs movement guidance without establishing this support arrangement's capacity.
+
+Plywood purchasing uses a conservative 4 x 8 ft sheet allowance: one longitudinal
+rip lane per strip including kerf, without optimized offcut reuse. Sheet quantities
+are separate from linear lumber stock. The installation JSON records strip
+coordinates, independent anchors, short siding screws and toe-screw entry axes.
 
 Generated files include:
 
 - `output/model.scad`: enclosure, exposed screw heads and downward build steps.
+- `output/roof_support_review.scad`: cropped roof framing, routed blocks and strips; render with `openscad -D build_step=22`.
 - `output/siding_corner_*.scad`: four cropped roof/wall corner views.
 - `output/siding_cut_list.csv` and `.json`: physical board, backing and trim cuts.
 - `output/siding_installation.json`: supported attachment locations, fixed

@@ -39,9 +39,9 @@ by a qualified installer.
   them in the completed-model view; they do not appear in numbered steps.
 - The OpenSCAD `build_step` parameter behaves as follows:
   - `build_step = 0`: show only permanent context, including the ground plane.
-  - `build_step = 1..25`: show earlier objects normally, highlight objects from
+  - `build_step = 1..38`: show earlier objects normally, highlight objects from
     the selected step, and hide objects from later steps.
-  - `build_step = 26`: show the completed model in its normal colors.
+  - `build_step = 39`: show the completed model in its normal colors.
 - An invalid positive step number should fail clearly during generation rather
   than silently display an incomplete or misleading model.
 
@@ -1071,15 +1071,40 @@ enclosure_siding_mesh_rear_2_horizontal_6
 enclosure_siding_mesh_rear_2_horizontal_7
 ```
 
-## 23. Install wall siding course 1, top down (`siding-course-1`)
+## 23. Install the US46 outside corner trims (`siding-corners`)
 
-Install wall course 1, proceeding downward from the level top datum. Use full-height top boards; retain the rear access notch. Hold each board with padded temporary supports attached to framing.
-Engage its supporting AW08s and fasten them from the open space below.
-Lock only one attachment near the midpoint of each physical board; all other
-attachments must accommodate longitudinal movement. Do not remove temporary
-supports until the permanent attachments retain the board. For the notched rear
-top board, the fixed point is the backed header face screw above the opening.
-Use oversized sliding face holes at the other T-7-supported points.
+Install US46 at all four outside wall corners before installing any wall
+boards. Set the vertical trims to stop beneath the future US20 roof-edge
+faces with expansion clearance, and retain 3/4-inch clearance above local
+grade. Predrill the trim fasteners into framing, with one fixed point per
+physical trim and sliding holes elsewhere. Preserve the board-end movement
+gaps when fitting the siding into the corners. Pre-position any US44 rear
+access profiles that cannot be fitted after the boards.
+
+New model objects:
+
+```text
+enclosure_siding_US46_fl_1
+enclosure_siding_US46_fl_2
+enclosure_siding_US46_fr_1
+enclosure_siding_US46_fr_2
+enclosure_siding_US46_bl_1
+enclosure_siding_US46_bl_2
+enclosure_siding_US46_br_1
+enclosure_siding_US46_br_2
+```
+
+## 24. Wrap the front, left and right with wall siding course 1 (`siding-course-1`)
+
+Install the full-height top boards on the front, left and right walls at the
+level top datum, fitting their ends into the installed US46 corners with
+movement clearance. Hold each board with padded temporary supports attached
+to framing. Engage its supporting AW08s and fasten them from the open space
+below. Secure the free top edge over T-7 spacers. Lock only one attachment
+near the midpoint of each physical board; all other attachments must allow
+longitudinal movement. Use oversized sliding face holes at the other
+T-7-supported points. Remove temporary supports only after the permanent
+attachments retain the board.
 
 New model objects:
 
@@ -1087,9 +1112,6 @@ New model objects:
 enclosure_siding_front_1
 enclosure_siding_left_1
 enclosure_siding_right_1
-enclosure_siding_rear_1_piece_1
-enclosure_siding_rear_1_piece_2
-enclosure_siding_rear_1_piece_3
 enclosure_siding_front_1_AW08_1
 enclosure_siding_front_1_AW08_2
 enclosure_siding_front_1_AW08_3
@@ -1112,6 +1134,26 @@ enclosure_siding_right_1_T7_19
 enclosure_siding_right_1_T7_20
 enclosure_siding_right_1_T7_21
 enclosure_siding_right_1_T7_22
+```
+
+## 25. Install the notched rear top siding board (`siding-course-1-rear`)
+
+Cut the rear access notch in one physical top board and install it at the
+same level top datum as the front and side boards. The three rendered pieces
+below represent this single notched board. Fit the ends into the installed
+US46 corners with movement clearance. Hold the board with padded temporary
+supports, engage the wing AW08s and fasten them from the open space below.
+Use the backed header face screw above the opening as the board's only fixed
+point; keep both wing clips unlocked and use oversized sliding face holes at
+the other T-7-supported points. Remove temporary supports only after the
+permanent attachments retain the board.
+
+New model objects:
+
+```text
+enclosure_siding_rear_1_piece_1
+enclosure_siding_rear_1_piece_2
+enclosure_siding_rear_1_piece_3
 enclosure_siding_rear_1_AW08_23
 enclosure_siding_rear_1_AW08_24
 enclosure_siding_rear_1_T7_25
@@ -1119,7 +1161,7 @@ enclosure_siding_rear_1_T7_26
 enclosure_siding_rear_1_T7_27
 ```
 
-## 24. Install wall siding course 2, top down (`siding-course-2`)
+## 26. Install wall siding course 2, top down (`siding-course-2`)
 
 Install wall course 2, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1154,7 +1196,7 @@ enclosure_siding_rear_2_2_AW08_41
 enclosure_siding_rear_2_2_AW08_42
 ```
 
-## 25. Install wall siding course 3, top down (`siding-course-3`)
+## 27. Install wall siding course 3, top down (`siding-course-3`)
 
 Install wall course 3, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1189,7 +1231,7 @@ enclosure_siding_rear_3_2_AW08_56
 enclosure_siding_rear_3_2_AW08_57
 ```
 
-## 26. Install wall siding course 4, top down (`siding-course-4`)
+## 28. Install wall siding course 4, top down (`siding-course-4`)
 
 Install wall course 4, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1224,7 +1266,7 @@ enclosure_siding_rear_4_2_AW08_71
 enclosure_siding_rear_4_2_AW08_72
 ```
 
-## 27. Install wall siding course 5, top down (`siding-course-5`)
+## 29. Install wall siding course 5, top down (`siding-course-5`)
 
 Install wall course 5, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1259,7 +1301,7 @@ enclosure_siding_rear_5_2_AW08_86
 enclosure_siding_rear_5_2_AW08_87
 ```
 
-## 28. Install wall siding course 6, top down (`siding-course-6`)
+## 30. Install wall siding course 6, top down (`siding-course-6`)
 
 Install wall course 6, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1296,7 +1338,7 @@ enclosure_siding_rear_6_2_AW08_101
 enclosure_siding_rear_6_2_AW08_102
 ```
 
-## 29. Install wall siding course 7, top down (`siding-course-7`)
+## 31. Install wall siding course 7, top down (`siding-course-7`)
 
 Install wall course 7, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1333,7 +1375,7 @@ enclosure_siding_rear_7_2_AW08_116
 enclosure_siding_rear_7_2_AW08_117
 ```
 
-## 30. Install wall siding course 8, top down (`siding-course-8`)
+## 32. Install wall siding course 8, top down (`siding-course-8`)
 
 Install wall course 8, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1368,7 +1410,7 @@ enclosure_siding_rear_8_2_AW08_131
 enclosure_siding_rear_8_2_AW08_132
 ```
 
-## 31. Install wall siding course 9, top down (`siding-course-9`)
+## 33. Install wall siding course 9, top down (`siding-course-9`)
 
 Install wall course 9, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1403,7 +1445,7 @@ enclosure_siding_rear_9_2_AW08_146
 enclosure_siding_rear_9_2_AW08_147
 ```
 
-## 32. Install wall siding course 10, top down (`siding-course-10`)
+## 34. Install wall siding course 10, top down (`siding-course-10`)
 
 Install wall course 10, proceeding downward from the level top datum. Hold each board with padded temporary supports attached to framing.
 Engage its supporting AW08s and fasten them from the open space below.
@@ -1443,7 +1485,7 @@ enclosure_siding_rear_10_2_T7_161
 enclosure_siding_rear_10_2_T7_162
 ```
 
-## 33. Install the US09 roof cover (`siding-roof`)
+## 35. Install the US09 roof cover (`siding-roof`)
 
 Run boards along X and progress across Y. Attach AW08s at the generated
 lumber support points, with one locking point per physical board. Use
@@ -1499,12 +1541,12 @@ enclosure_siding_top_5_T7_198
 enclosure_siding_top_5_T7_199
 ```
 
-## 34. Fit composite trim and upper corners (`siding-trim`)
+## 36. Fit roof-edge and rear-access trim (`siding-trim`)
 
-Install US46 at wall corners and US44 at rear access edges; pre-position any
-profiles that cannot be fitted after the boards. Fit US20 over the roof edges,
-with 45-degree plan miters, and stop vertical US46 beneath the roof-edge faces
-with expansion clearance. Use the four generated siding_corner_*.scad views.
+Install US44 at rear access edges; pre-position any profiles that cannot be
+fitted after the boards. Fit US20 over the roof edges with 45-degree plan
+miters, above the previously installed US46 corner trims. Preserve expansion
+clearance at the junctions. Use the four generated siding_corner_*.scad views.
 
 Relieve the front US20 vertical leg locally around the Brook mounting body:
 6 1/4 inches wide, to 1/8 inch above its modeled top. Verify the actual fixture
@@ -1518,14 +1560,6 @@ no longer than 8 feet; check the guide table against field conditions.
 New model objects:
 
 ```text
-enclosure_siding_US46_fl_1
-enclosure_siding_US46_fl_2
-enclosure_siding_US46_fr_1
-enclosure_siding_US46_fr_2
-enclosure_siding_US46_bl_1
-enclosure_siding_US46_bl_2
-enclosure_siding_US46_br_1
-enclosure_siding_US46_br_2
 enclosure_siding_US20_front_top
 enclosure_siding_US20_front_face
 enclosure_siding_US20_rear_top
@@ -1543,7 +1577,7 @@ enclosure_siding_US44_right_3
 enclosure_siding_US44_header
 ```
 
-## 35. Finish the Brook and address numbers (`street-light-finish`)
+## 37. Finish the Brook and address numbers (`street-light-finish`)
 
 Install the MOD Lighting Brook MOD119, 16-inch black, 3000K variant
 45573961023747. Published dimensions are 16 inches long, 2.4 inches high,
@@ -1599,7 +1633,7 @@ front_address_number_4_standoff_1
 front_address_number_4_standoff_2
 ```
 
-## 36. Finish the right-side outlet (`outlet-finish`)
+## 38. Finish the right-side outlet (`outlet-finish`)
 
 Install the Intermatic WP5100BL in-use cover on the FSE box after the siding is
 complete.

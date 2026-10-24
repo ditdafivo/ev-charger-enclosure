@@ -60,7 +60,9 @@ sequence. The physical dry fit has **not been performed**.
    between new backing segments. Attach each segment positively to framing
    using suitable stainless angles/plates and structural screws; field-fit
    the small blocks and their hardware. Preserve gusset and screw-head gaps.
-2. Pre-position any US46/US44 profile that cannot be inserted afterward.
+2. Install US46 at all four outside corners before any wall boards, stopping
+   beneath the future US20 roof-edge faces with expansion clearance.
+   Pre-position any US44 profile that cannot be inserted afterward.
    Keep the rear access opening available. Install mesh behind the lower
    siding before that space becomes inaccessible.
 3. Make a two-course sample on representative backing. Keep the boards in
@@ -80,7 +82,9 @@ sequence. The physical dry fit has **not been performed**.
 5. Engage the next board with the installed course, support it temporarily,
    then fasten its supporting clips from below. Remove temporary supports
    only after the permanent connections retain the board. Continue downward.
-   The build-step viewer follows the same order, one wall course per step.
+   The build-step viewer follows the same order: the first course wraps the
+   front, left and right walls in one step, followed by the single notched rear
+   board in its own step; later steps each install one complete wall course.
 6. At the rear top notch, the single fixed point is the header face screw
    into the rear brace; the wing clips remain unlocked. Each separate lower
    rear wing gets its own single fixed point. Do not lock rendering fragments

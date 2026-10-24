@@ -195,9 +195,10 @@ class BuildStepModelTests(unittest.TestCase):
         )
         self.assertEqual(step_by_object["roof_shim_brace_fl_fr"], 22)
         corners = {
-            name for name in assigned if name.startswith("enclosure_siding_US46_")
+            name for name in assigned if name.startswith("enclosure_siding_US20_corner_")
         }
-        self.assertEqual(set(model.build_steps[22].object_names), corners)
+        self.assertTrue(corners.issubset(set(model.build_steps[35].object_names)))
+        self.assertTrue(all("_mesh_" in name for name in model.build_steps[22].object_names))
         self.assertEqual(len(corners), 8)
         for wall in ("front", "left", "right"):
             self.assertEqual(step_by_object[f"enclosure_siding_{wall}_1"], 24)

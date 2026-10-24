@@ -48,7 +48,7 @@ the surveyed ground stays fixed. The installed diagonal is friction-fitted
 between the corner posts and secured by the two gussets. The diagonal and
 perimeter bracing finish flush with the level post tops at `z = 49.625`.
 The existing 1/4-inch roof shims put roof support at `49.875` and the finished
-US135 roof board at `50.6875` (before US20 trim). Post bottoms remain at the assumed `z = -32` datum; the survey
+US135 roof board at `50.375` (before US20 trim). Post bottoms remain at the assumed `z = -32` datum; the survey
 does not establish their actual buried lengths.
 
 ## First deployment
@@ -135,11 +135,12 @@ The shell uses US135 All Weather Pro tongue-and-groove siding with a
 straight-grain face and V-groove joints. Full-height top boards and
 ground-following bottom cuts keep the shell 3/4 inch above grade. A separate 1/4-inch mesh skirt
 closes the lower gap. Wall installation proceeds **top downward**, using temporary
-supports while fastening supporting AW08 clips from below. The build-step viewer
+supports while face-fastening boards directly into the lumber. The build-step viewer
 shows each course in that order. The rear access opening remains open.
 
 The US135 top is a level cover that may leak. Added lumber carries the boards;
-US46 wall corners terminate beneath mitered US20 roof-edge trim. See
+US20 covers outside corners and the rear opening; vertical corners terminate
+beneath mitered US20 roof-edge trim. See
 [SIDING.md](SIDING.md) for the downward procedure, the required two-course
-physical dry fit, provisional course pitch/clip dimensions, corner details,
+physical dry fit, provisional course pitch, custom face fastening, corner details,
 fastener assumptions and the generated siding fabrication files.

@@ -69,7 +69,7 @@ from lumber_model.gusset import (
     pan_head_cylinder_primitives,
 )
 from lumber_model.gusset_dxf import generate_gusset_dxf
-from lumber_model.us135 import US135Siding, US135_THICKNESS, AW08_STANDOFF
+from lumber_model.us135 import US135Siding, US135_THICKNESS
 
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 19.375
@@ -164,9 +164,9 @@ def build_enclosure(
     BURIED_FRAME_Z=32
     FULL_POST_LEN=BURIED_FRAME_Z+height
     SIDING_BOTTOM_Z=0.75
-    SIDING_STOCK_LENGTH_FT=16
-    # Finished face offset includes the clip-created space behind US135.
-    SIDING_BOARD_THICKNESS=US135_THICKNESS+AW08_STANDOFF
+    SIDING_STOCK_LENGTH_FT=8
+    # Boards seat directly on the open lumber framing.
+    SIDING_BOARD_THICKNESS=US135_THICKNESS
     TAMBOUR_DOOR_COLOR=(0.10, 0.12, 0.14, 1.0)
 
     HEIGHT_2x4=1.5

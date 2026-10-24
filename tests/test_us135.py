@@ -115,8 +115,8 @@ class US135Tests(unittest.TestCase):
     def test_trim_ground_clearance_and_upper_corner_junctions(self):
         s=build.siding
         for p in s.angle_parts:
-            if p.material=='US46':
-                self.assertAlmostEqual(p.start[2]+p.size[2],s.roof_finished_top_z-40/25.4-s.end_gap)
+            if '_US20_corner_' in p.name:
+                self.assertAlmostEqual(p.start[2]+p.size[2],s.roof_finished_top_z+0.22-40/25.4-s.end_gap)
             if p.material=='US20' and p.name.endswith('_top'):
                 self.assertEqual(len(p.polygon),4)
                 self.assertAlmostEqual(p.start[2],s.roof_finished_top_z)
@@ -126,14 +126,63 @@ class US135Tests(unittest.TestCase):
         self.assertAlmostEqual(a[0],s.front_trim_relief[0])
         self.assertAlmostEqual(a[2]+dim[2],s.front_trim_relief[2])
         for name,x in (('left',s.rear_opening_min_x),('right',s.rear_opening_max_x)):
-            p=next(p for p in s.angle_parts if p.name.endswith(f'US44_{name}_1'))
+            p=next(p for p in s.angle_parts if p.name.endswith(f'US20_opening_{name}_1'))
             self.assertAlmostEqual(p.start[2],s.ground_z(x,s.max_y)+0.75)
+
+    def test_direct_seating_and_applied_trim(self):
+        s=build.siding
+        self.assertEqual(s.exterior_offset,0.5)
+        self.assertEqual(s.xy('front',s.min_x)[1],-0.5)
+        self.assertTrue(all(p.start[2]==s.roof_support_z for p in s.board_parts if '_top_' in p.name))
+        self.assertEqual({p.material for p in s.angle_parts},{'US20'})
+        for p in s.angle_parts:
+            if '_US20_corner_' in p.name:
+                self.assertAlmostEqual(max(p.size[:2]),40/25.4)
+            if p.name.endswith('US20_front_face'):
+                self.assertAlmostEqual(p.start[2]+p.size[2],s.roof_finished_top_z+0.22)
+        self.assertEqual({p.material for p in s.hardware_parts},{'face_screw'})
+        for p in s.hardware_parts:
+            self.assertTrue(all(d>0 for d in p.size))
+        jamb=next(p for p in s.angle_parts if p.name.endswith('opening_left_1'))
+        header=next(p for p in s.angle_parts if p.name.endswith('opening_header_return'))
+        self.assertAlmostEqual(header.start[2]-(jamb.start[2]+jamb.size[2]),s.end_gap)
+
+    def test_screws_land_on_boards_and_retain_both_edges(self):
+        for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
+            s=build.build_enclosure(*dims).siding
+            for a in s.attachments:
+                if a.wall=='roof':
+                    p=next(p for p in s.board_parts if p.name==a.board)
+                    self.assertTrue(p.start[0]<a.along<p.start[0]+p.size[0])
+                    self.assertTrue(p.start[1]<a.elevation<p.start[1]+p.size[1])
+                else:
+                    c=next(c for c in s.cuts if c.name==a.board)
+                    self.assertTrue(c.start<a.along<c.end)
+                    self.assertTrue(max(c.bottom,s.ground_z(*s.xy(c.wall,a.along))+s.ground_clearance)<a.elevation<c.top)
+                    if c.notched and s.rear_opening_min_x<=a.along<=s.rear_opening_max_x:
+                        self.assertGreater(a.elevation,s.rear_opening_top_z+s.end_gap)
+                    openings=s.front_openings if c.wall=='front' else s.right_openings if c.wall=='right' else ()
+                    for o in openings:
+                        lo,hi=(o.min_x,o.max_x) if c.wall=='front' else (o.min_y,o.max_y)
+                        self.assertFalse(lo<=a.along<=hi and o.bottom_z<=a.elevation<=o.top_z)
+            # Intact full courses have supported fastening at both edges.
+            for c in s.cuts:
+                if c.wall not in ('front','left') or c.course!=2: continue
+                rows={round(a.elevation,6) for a in s.attachments if a.board==c.name}
+                self.assertEqual(rows,{round(c.bottom+0.75,6),round(c.top-0.75,6)})
 
     def test_cut_bom_shopping_and_generated_artifacts(self):
         s=build.siding
         bom={r['name']:r for r in s.bom_rows()}
-        self.assertEqual(bom[f'{s.name}_AW08']['qty'],sum(a.kind=='AW08' for a in s.attachments))
-        self.assertEqual(bom[f'{s.name}_T-7']['qty'],sum(a.kind=='T-7' for a in s.attachments))
+        self.assertEqual(bom[f'{s.name}_face_screws']['qty'],len(s.attachments))
+        self.assertEqual(bom[f'{s.name}_US20']['stock_board_qty'],5)
+        self.assertEqual(bom[f'{s.name}_US135']['stock_board_qty'],10)
+        self.assertEqual(bom[f'{s.name}_US20']['qty'],11)
+        self.assertFalse(any(token in row['name'] for row in bom.values()
+                             for token in ('AW08','T-7','US44','US46','clip_screws','locking_screws','stopper_screws')))
+        purchases={r['item']:r for r in s.purchase_bom_rows()}
+        self.assertEqual(purchases['face_screws']['quantity'],len(s.attachments))
+        self.assertEqual(purchases['US20']['quantity'],5)
         self.assertEqual(bom[f'{s.name}_US135']['qty'],len(s.cut_lengths))
         self.assertTrue(any(r['type'].startswith('US135') for r in build.model.shopping_list_rows()))
         rows=s.fabrication_rows()
@@ -141,6 +190,9 @@ class US135Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             s.write_artifacts(tmp)
             manifest=json.loads((Path(tmp)/'siding_installation.json').read_text())
+            self.assertEqual(manifest['board_standoff_in'],0)
+            self.assertIn('custom direct face fastening',manifest['attachment_method'])
+            self.assertTrue((Path(tmp)/'siding_bom.csv').exists())
             self.assertEqual(manifest['product'],'US135')
             self.assertEqual(manifest['product_line'],'All Weather Pro')
             self.assertIn('top downward',manifest['wall_installation'])
@@ -162,7 +214,7 @@ class US135Tests(unittest.TestCase):
 
     def test_rejects_invalid_pitch_and_clearance(self):
         for kwargs in ({'course_pitch':0},{'course_pitch':7},{'ground_clearance':0.5},
-                       {'clip_standoff':float('nan')},{'ground':None}):
+                       {'course_pitch':float('nan')},{'ground':None}):
             with self.subTest(kwargs=kwargs),self.assertRaises(ValueError):
                 replace(build.siding,**kwargs)
 

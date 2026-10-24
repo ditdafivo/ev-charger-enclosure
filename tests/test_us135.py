@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 import build
-from lumber_model.us09 import US09Siding, US09_PREVIEW_CLEARANCE
+from lumber_model.us135 import US135Siding, US135_PREVIEW_CLEARANCE
 
 
 def rebate_boxes(part):
@@ -38,7 +38,7 @@ def rebate_boxes(part):
     return boxes
 
 
-class US09Tests(unittest.TestCase):
+class US135Tests(unittest.TestCase):
     def test_lapped_boards_have_preview_clearance(self):
         for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
             siding = build.build_enclosure(*dims).siding
@@ -54,13 +54,15 @@ class US09Tests(unittest.TestCase):
                         # A shared face also fails: distinct highlighted boards
                         # need air between their mating faces in the preview.
                         separation = max(max(alo[k]-bhi[k],blo[k]-ahi[k]) for k in range(3))
-                        self.assertGreaterEqual(separation,US09_PREVIEW_CLEARANCE/2-1e-8,
+                        self.assertGreaterEqual(separation,US135_PREVIEW_CLEARANCE/2-1e-8,
                                                 (a.name,b.name,alo,ahi,blo,bhi))
                 self.assertGreater(joints,0,wall)
 
     def test_full_top_course_and_scribed_bottom(self):
         s=build.siding
-        self.assertIsInstance(s,US09Siding)
+        self.assertIsInstance(s,US135Siding)
+        self.assertAlmostEqual(s.board_width,142/25.4)
+        self.assertEqual(s.board_thickness,0.5)
         for wall in ('front','left','right'):
             cuts=[c for c in s.cuts if c.wall==wall]
             self.assertAlmostEqual(cuts[0].top-cuts[0].bottom,s.board_width)
@@ -132,19 +134,21 @@ class US09Tests(unittest.TestCase):
         bom={r['name']:r for r in s.bom_rows()}
         self.assertEqual(bom[f'{s.name}_AW08']['qty'],sum(a.kind=='AW08' for a in s.attachments))
         self.assertEqual(bom[f'{s.name}_T-7']['qty'],sum(a.kind=='T-7' for a in s.attachments))
-        self.assertEqual(bom[f'{s.name}_US09']['qty'],len(s.cut_lengths))
-        self.assertTrue(any(r['type'].startswith('US09') for r in build.model.shopping_list_rows()))
+        self.assertEqual(bom[f'{s.name}_US135']['qty'],len(s.cut_lengths))
+        self.assertTrue(any(r['type'].startswith('US135') for r in build.model.shopping_list_rows()))
         rows=s.fabrication_rows()
-        self.assertEqual(sum(r['material']=='US09' for r in rows),len(s.cut_lengths))
+        self.assertEqual(sum(r['material']=='US135' for r in rows),len(s.cut_lengths))
         with tempfile.TemporaryDirectory() as tmp:
             s.write_artifacts(tmp)
             manifest=json.loads((Path(tmp)/'siding_installation.json').read_text())
+            self.assertEqual(manifest['product'],'US135')
+            self.assertEqual(manifest['product_line'],'All Weather Pro')
             self.assertIn('top downward',manifest['wall_installation'])
             self.assertIn('NOT PERFORMED',manifest['physical_dry_fit_status'])
             self.assertEqual(len(list(Path(tmp).glob('siding_corner_*.scad'))),4)
         # Increasing saw kerf must never decrease stock requirements.
         wide={r['name']:r for r in replace(s,kerf=0.25).bom_rows()}
-        self.assertGreaterEqual(wide[f'{s.name}_US09']['stock_board_qty'],bom[f'{s.name}_US09']['stock_board_qty'])
+        self.assertGreaterEqual(wide[f'{s.name}_US135']['stock_board_qty'],bom[f'{s.name}_US135']['stock_board_qty'])
 
     def test_viewer_installs_wall_courses_downward(self):
         steps={name:step.number for step in build.model.build_steps for name in step.object_names}

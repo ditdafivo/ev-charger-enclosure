@@ -906,7 +906,7 @@ module siding_part_geometry(s) {
         }
 }
 
-// A narrow surface marking makes the extent of each overlapping US09 visible.
+// A narrow surface marking makes the extent of each overlapping US135 visible.
 // Intersect with the finished solid so bores, notches and rebates stay clear.
 module siding_bottom_band(s) {
     line_width = 0.035;
@@ -935,7 +935,7 @@ module siding_bottom_band(s) {
 module render_siding_part(s, highlighted = false) {
     color(highlighted ? build_step_highlight_color() : s_color(s))
         siding_part_geometry(s);
-    if (s_material(s) == "US09")
+    if (s_material(s) == "US135")
         color("black")
             // Lift the marking just clear of both faces to avoid z-fighting.
             translate(s_start(s) + s_size(s) / 2)

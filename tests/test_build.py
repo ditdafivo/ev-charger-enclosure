@@ -188,7 +188,7 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertEqual(build.siding.finished_top_z, 50.125)
         self.assertEqual(build.siding.roof_finished_top_z, 50.6875)
         for part in build.siding.parts:
-            if part.name.startswith("enclosure_siding_top_") and part.material == "US09":
+            if part.name.startswith("enclosure_siding_top_") and part.material == "US135":
                 self.assertEqual(part.start[2], 50.1875)
 
     def test_roof_shims_stop_at_gusset_envelopes(self) -> None:

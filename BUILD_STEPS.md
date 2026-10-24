@@ -673,7 +673,7 @@ Install the 1/4-inch hardware-cloth skirt behind the siding, overlapping joints
 2 inches and securing it to framing. Extend it to grade while keeping siding
 and trim at least 3/4 inch above grade. The rear access opening remains open.
 
-Dry-fit two US09 courses with AW08s before cutting production pieces. Verify
+Dry-fit two US135 courses with AW08s before cutting production pieces. Verify
 the provisional 130 mm installed pitch and the clip stand-off. Keep the boards
 in their intended orientation. Test engaging the supporting clips from below,
 fastening their flanges, reaching the single locking screw, and removing the
@@ -1485,7 +1485,7 @@ enclosure_siding_rear_10_2_T7_161
 enclosure_siding_rear_10_2_T7_162
 ```
 
-## 35. Install the US09 roof cover (`siding-roof`)
+## 35. Install the US135 roof cover (`siding-roof`)
 
 Run boards along X and progress across Y. Attach AW08s at the generated
 lumber support points, with one locking point per physical board. Use

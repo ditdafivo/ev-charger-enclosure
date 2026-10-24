@@ -69,7 +69,7 @@ from lumber_model.gusset import (
     pan_head_cylinder_primitives,
 )
 from lumber_model.gusset_dxf import generate_gusset_dxf
-from lumber_model.us09 import US09Siding, US09_THICKNESS, AW08_STANDOFF
+from lumber_model.us135 import US135Siding, US135_THICKNESS, AW08_STANDOFF
 
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 19.375
@@ -165,8 +165,8 @@ def build_enclosure(
     FULL_POST_LEN=BURIED_FRAME_Z+height
     SIDING_BOTTOM_Z=0.75
     SIDING_STOCK_LENGTH_FT=16
-    # Finished face offset includes the clip-created space behind US09.
-    SIDING_BOARD_THICKNESS=US09_THICKNESS+AW08_STANDOFF
+    # Finished face offset includes the clip-created space behind US135.
+    SIDING_BOARD_THICKNESS=US135_THICKNESS+AW08_STANDOFF
     TAMBOUR_DOOR_COLOR=(0.10, 0.12, 0.14, 1.0)
 
     HEIGHT_2x4=1.5
@@ -1737,7 +1737,7 @@ def build_enclosure(
         ),
     )
 
-    siding = US09Siding(
+    siding = US135Siding(
         "enclosure_siding",
         min_x=0,
         max_x=FRAME_DIMS.x + WIDTH_4x4,
@@ -1752,7 +1752,7 @@ def build_enclosure(
         front_bores=(FRONT_STREET_LIGHT_SIDING_BORE,),
         right_openings=(BACK_RIGHT_OUTLET_SIDING_OPENING,),
         stock_length=SIDING_STOCK_LENGTH_FT * 12,
-        board_thickness=US09_THICKNESS,
+        board_thickness=US135_THICKNESS,
         ground=grounds[0].resolved(members),
         framing=tuple((m.start,m.size) for m in members.values() if m.name != "brace_bl_fr"),
         diagonal=diagonal_footprint,

@@ -1,4 +1,4 @@
-"""US09 enclosure cladding; product envelopes, not manufacturing CAD.
+"""US135 enclosure cladding; product envelopes, not manufacturing CAD.
 
 The 130 mm course pitch and reversed AW08 access are prototype assumptions.
 See SIDING.md before cutting stock or installing this roof-cover adaptation.
@@ -17,17 +17,17 @@ from lumber_model.siding import (
     minimum_stock_board_count,
 )
 
-US09_THICKNESS = 0.5
-US09_PROFILE_WIDTH = 142 / 25.4
-US09_COURSE_PITCH = 130 / 25.4  # provisional: verify two engaged samples
+US135_THICKNESS = 0.5
+US135_PROFILE_WIDTH = 142 / 25.4
+US135_COURSE_PITCH = 130 / 25.4  # provisional: verify two engaged samples
 AW08_STANDOFF = 5 / 16
 # Visualization clearance only; stock dimensions and installed pitch stay exact.
-US09_PREVIEW_CLEARANCE = 0.002
+US135_PREVIEW_CLEARANCE = 0.002
 
 
 def _preview_rebate(start: tuple[float, float, float], size: tuple[float, float, float]):
     """Overcut rebate faces to avoid coplanar cutters and mating-board faces."""
-    margin = US09_PREVIEW_CLEARANCE / 2
+    margin = US135_PREVIEW_CLEARANCE / 2
     return (tuple(v-margin for v in start), tuple(v+2*margin for v in size))
 
 
@@ -56,11 +56,11 @@ class Attachment:
 
 
 @dataclass(frozen=True)
-class US09Siding(CompositeSiding):
-    board_width: float = US09_PROFILE_WIDTH
-    board_thickness: float = US09_THICKNESS
+class US135Siding(CompositeSiding):
+    board_width: float = US135_PROFILE_WIDTH
+    board_thickness: float = US135_THICKNESS
     gap: float = 0.0
-    course_pitch: float = US09_COURSE_PITCH
+    course_pitch: float = US135_COURSE_PITCH
     clip_standoff: float = AW08_STANDOFF
     ground_clearance: float = 0.75
     end_gap: float = 1 / 8
@@ -76,17 +76,17 @@ class US09Siding(CompositeSiding):
         for value in (self.course_pitch, self.clip_standoff, self.ground_clearance,
                       self.end_gap, self.kerf):
             if not math.isfinite(value) or value <= 0:
-                raise ValueError("US09 layout dimensions must be finite and positive")
+                raise ValueError("US135 layout dimensions must be finite and positive")
         if self.course_pitch > self.board_width:
-            raise ValueError("US09 course pitch exceeds profile width")
+            raise ValueError("US135 course pitch exceeds profile width")
         if max(self.max_x-self.min_x,self.max_y-self.min_y,self.frame_top_z-self.bottom_z)>96:
-            raise ValueError("US09 layout exceeds the 8 ft / 32 F expansion-gap design envelope")
+            raise ValueError("US135 layout exceeds the 8 ft / 32 F expansion-gap design envelope")
         if self.ground is None:
-            raise ValueError("US09 siding requires surveyed ground")
+            raise ValueError("US135 siding requires surveyed ground")
         if self.ground_clearance < 0.75:
-            raise ValueError("US09 siding requires at least 3/4 inch ground clearance")
+            raise ValueError("US135 siding requires at least 3/4 inch ground clearance")
         if self.frame_top_z - self.ground_z(self.max_x, self.max_y) < self.board_width:
-            raise ValueError("US09 enclosure is too short for a full top course")
+            raise ValueError("US135 enclosure is too short for a full top course")
 
     @property
     def exterior_offset(self) -> float:
@@ -156,7 +156,7 @@ class US09Siding(CompositeSiding):
                              (self.rear_opening_max_x+self.end_gap,b)]
                 for j,(a,b) in enumerate(spans,1):
                     if b <= a:
-                        raise ValueError("US09 trim clearance consumes a rear wing")
+                        raise ValueError("US135 trim clearance consumes a rear wing")
                     edge = self._edge(wall,a,b,bottom)
                     if min(z for _,z in edge) >= top-1e-9:
                         continue
@@ -197,7 +197,7 @@ class US09Siding(CompositeSiding):
             inner=x+t/2 if cut.wall=="left" else x
             rebates=(((inner,y,cut.bottom),(t/2,dy,lap)),
                      ((outer,y,cut.top-lap),(t/2,dy,lap)))
-        return SidingPart(cut.name+suffix,"US09",start,size,self.decking_color,
+        return SidingPart(cut.name+suffix,"US135",start,size,self.decking_color,
             front_bores=tuple(bore for bore in self.front_bores if cut.wall=="front"
                 and bore.center_x+bore.diameter/2>a and bore.center_x-bore.diameter/2<b
                 and bore.center_z+bore.diameter/2>z0 and bore.center_z-bore.diameter/2<hi),
@@ -235,7 +235,7 @@ class US09Siding(CompositeSiding):
             width = min(self.board_width,self.max_y-self.end_gap-y)
             x=self.min_x+self.end_gap; z=self.roof_support_z+self.clip_standoff
             lap=self.board_width-self.course_pitch
-            parts.append(SidingPart(f"{self.name}_top_{i}","US09",
+            parts.append(SidingPart(f"{self.name}_top_{i}","US135",
                 (self.min_x+self.end_gap,y,self.roof_support_z+self.clip_standoff),
                 (self.max_x-self.min_x-2*self.end_gap,width,self.board_thickness),
                 self.decking_color,cut_length=self.max_x-self.min_x-2*self.end_gap,
@@ -530,7 +530,7 @@ class US09Siding(CompositeSiding):
         for p in self.board_parts:
             if p.cut_length is None: continue
             cut=next((c for name,c in cuts.items() if p.name==name or p.name.startswith(name+"_piece_")),None)
-            rows.append(dict(name=cut.name if cut else p.name,material="US09",length_in=p.cut_length,
+            rows.append(dict(name=cut.name if cut else p.name,material="US135",length_in=p.cut_length,
                 blank_width_in=self.board_width,finished_width_in="scribe/profile",thickness_in=self.board_thickness,
                 course=cut.course if cut else int(p.name.rsplit('_',1)[1]),
                 wall=cut.wall if cut else "roof",bottom_edge=list(cut.bottom_edge) if cut else [],
@@ -548,12 +548,12 @@ class US09Siding(CompositeSiding):
 
     def bom_rows(self) -> list[dict[str,Any]]:
         rows=[]
-        groups={"US09":self.board_parts,"US46":self.angle_parts,"US44":self.angle_parts,"US20":self.angle_parts,
+        groups={"US135":self.board_parts,"US46":self.angle_parts,"US44":self.angle_parts,"US20":self.angle_parts,
                 "PT_5/4x6_backing":self.backing_parts,"PT_roof_shim":self.backing_parts}
         for material,parts in groups.items():
             lengths=tuple(p.cut_length for p in parts if p.material==material and p.cut_length is not None)
             if not lengths: continue
-            stock=self.stock_length if material=="US09" else 96
+            stock=self.stock_length if material=="US135" else 96
             qty=minimum_stock_board_count(tuple(x+self.kerf for x in lengths),stock)
             rows.append(dict(category="siding",assembly=self.assembly,name=f"{self.name}_{material}",
                 type=f"{material}; 1/8 in kerf per cut",qty=len(lengths),length_in=round(sum(lengths),4),
@@ -591,6 +591,7 @@ class US09Siding(CompositeSiding):
             writer.writeheader()
             writer.writerows({**r,"bottom_edge":json.dumps(r["bottom_edge"])} for r in rows)
         manifest={
+            "product":"US135", "product_line":"All Weather Pro",
             "units":"inches", "wall_installation":"top downward; temporary framing-mounted padded supports",
             "physical_dry_fit_status":"NOT PERFORMED: verify reverse-access AW08 engagement and screw access",
             "course_pitch_in":self.course_pitch, "course_pitch_status":"provisional 130 mm; verify two engaged samples before cutting",

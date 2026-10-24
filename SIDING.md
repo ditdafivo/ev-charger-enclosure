@@ -1,26 +1,30 @@
-# US09 enclosure siding and roof cover
+# US135 enclosure siding and roof cover
 
-The enclosure uses horizontal NewTechWood US09, installed **from the top
+The enclosure uses horizontal NewTechWood US135, installed **from the top
 downward**. Layout, cut blanks, hardware and corner views are generated with
 `uv run build.py --no-deploy`. Dimensions are inches.
 
 The controlling wall reference is the supplied
 [horizontal installation guide](ALL_WEATHER_Siding_Horizontal_Installation_Guide.pdf)
 (09.16.25 US). Supporting references are the manufacturer's
-[US09 drawing](https://www.newtechwood.com/pdf/5467-014.pdf),
-[US46 drawing](https://www.newtechwood.com/pdf/5467-017.pdf),
-[product dimensions](https://www.newtechwood.com/siding/all-weather/), and
+[US135 product specifications](https://www.newtechwood.com/siding/all-weather-pro/),
+[US46 drawing](https://www.newtechwood.com/pdf/5467-017.pdf), and
 [ceiling guide](https://www.newtechwood.com/pdf/All_Weather_Siding_Ceiling_Installation_Guide.pdf).
 The ceiling guide informs the 12-inch maximum roof support spacing; it does
 not establish suitability or load capacity for an exposed roof.
 
 ## Dimensions and fabrication status
 
-US09 is modeled at 142 mm overall width and 1/2-inch thickness. These are
+US135 All Weather Pro has a straight-grain face and V-groove course joints.
+It uses the same AW08 clips and accessory trims as All Weather siding.
+The preview represents course joints with schematic seam markings; it does
+not reproduce the V-groove machining or grain texture.
+
+US135 is modeled at 142 mm overall width and 1/2-inch thickness. These are
 separate from the **provisional 130 mm installed course pitch** and the
 **provisional 5/16-inch clip stand-off**. Measure two engaged production boards
 and actual clips before cutting; change `course_pitch` and `clip_standoff` in
-`US09Siding` if the samples differ. The model uses simplified mating edge
+`US135Siding` if the samples differ. The model uses simplified mating edge
 rebates, clip envelopes and trim envelopes, rather than machining profiles.
 In particular, the top and bottom rebates illustrate engagement without
 claiming an exact groove or clip cross-section.
@@ -36,10 +40,10 @@ without multiplying the stock-board count.
 
 The wall top is z = 50.125. Existing perimeter shims and the added diagonal
 shim put the roof support plane at z = 49.875. Including clip stand-off and
-US09 thickness, the finished roof board top is z = 50.6875; US20 adds its
+US135 thickness, the finished roof board top is z = 50.6875; US20 adds its
 schematic 0.22-inch thickness above that. The finished wall face is 13/16 inch
 outside framing, so the front face is y = -0.8125. Fixture, numeral and outlet
-positions follow that face; US09 thickness alone is not the mounting offset.
+positions follow that face; US135 thickness alone is not the mounting offset.
 
 The 1/8-inch end and trim gaps are a conservative modeled allowance for pieces
 up to 8 feet, installed at 32 F or warmer. Check page 11 of the supplied guide

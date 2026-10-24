@@ -96,7 +96,7 @@ from lumber_model.tambour import (
     TambourDoor,
     TambourInstalledDetails,
 )
-from lumber_model.us09 import US09Siding
+from lumber_model.us135 import US135Siding
 from lumber_model.tambour_fabrication import (
     TambourFabricationConfig,
     TambourPart,
@@ -106,7 +106,7 @@ from lumber_model.tambour_fabrication import (
 )
 
 __all__ = [
-    "US09Siding",
+    "US135Siding",
     "ACTUAL_DIMS",
     "AXES",
     "AXIS_INDEX",

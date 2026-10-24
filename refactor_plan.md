@@ -1,3 +1,7 @@
+> Historical plan: the active siding product is now **US135 All Weather Pro**.
+> The US09 product references, prices and takeoff below describe the earlier
+> proposal. Use `SIDING.md` and generated BOM/cut lists for the current design.
+
 # NewTechWood Cladding and Matching Deck Roof
 
 ## Summary

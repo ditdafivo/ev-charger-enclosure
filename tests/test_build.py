@@ -186,10 +186,10 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertEqual(build.siding.frame_top_z, 49.625)
         self.assertEqual(build.siding.roof_support_z, 49.875)
         self.assertEqual(build.siding.finished_top_z, 50.125)
-        self.assertEqual(build.siding.roof_finished_top_z, 50.6875)
+        self.assertEqual(build.siding.roof_finished_top_z, 50.375)
         for part in build.siding.parts:
-            if part.name.startswith("enclosure_siding_top_") and part.material == "US09":
-                self.assertEqual(part.start[2], 50.1875)
+            if part.name.startswith("enclosure_siding_top_") and part.material == "US135":
+                self.assertEqual(part.start[2], 49.875)
 
     def test_roof_shims_stop_at_gusset_envelopes(self) -> None:
         for enclosure in (
@@ -2191,6 +2191,7 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "fabrication.json",
                     "gusset_plate_6x6.dxf",
                     "siding_cut_list.csv", "siding_cut_list.json", "siding_installation.json",
+                    "siding_bom.csv",
                     "siding_corner_front_left.scad", "siding_corner_front_right.scad",
                     "siding_corner_rear_left.scad", "siding_corner_rear_right.scad",
                     "tambour",

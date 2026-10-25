@@ -62,11 +62,14 @@ desert installation; keep the existing drainage paths open.
    behind and between framing members unobstructed for drainage and the guide's
    minimum 1-inch continuous net free ventilation area. The open frame must
    provide this airflow; there is no clip-created space behind the boards.
-3. Hold each inverted top board level with padded temporary supports fixed to
+3. Install the US135 roof cover while the sides remain open for access to the
+   support strips and fasteners. Leave US20 roof-edge trim until after the wall
+   siding is installed.
+4. Hold each inverted top board level with padded temporary supports fixed to
    framing. Seat it against the lumber and install #8 x 1-1/4-inch stainless
    composite screws through the recessed lower overlap at supported stations.
    Verify usable material, penetration and head clearance on production boards.
-4. Engage the next inverted course below, concealing the preceding fastening
+5. Engage the next inverted course below, concealing the preceding fastening
    row, and continue downward. Intact courses use one lower-overlap row, with
    their upper edges engaged in the preceding course. At cutouts, the rear header
    and scribed terminations, use supported local face screws where the overlap
@@ -75,15 +78,15 @@ desert installation; keep the existing drainage paths open.
    The generated manifest classifies full-head coverage using actual modeled
    trim extents, including the front fixture relief. Retention remains untested;
    do not assume an unsupported lip can carry a fastener.
-5. Use **one fixed point per physical board**. All remaining face connections
+6. Use **one fixed point per physical board**. All remaining face connections
    need oversized holes and heads free to slide. Page 5 of the supplied guide
    gives thread/hole/head size relationships. Do not clamp or countersink the
    sliding connections tightly into the composite. The preview shows schematic screw
    head envelopes; it does not machine the holes. Gold heads mark the fixed points.
-6. The notched rear top board fixes at the backed header near its midpoint;
+7. The notched rear top board fixes at the backed header near its midpoint;
    all wing connections slide. Each separate lower wing has its own fixed
    point. Do not treat display fragments as separate physical boards.
-7. Scribe the final course to surveyed grade plus 3/4 inch and check intervening
+8. Scribe the final course to surveyed grade plus 3/4 inch and check intervening
    high spots. Retain supported local fastening and movement clearance without
    lowering the courses above. Remove props after permanent fasteners retain
    each board.

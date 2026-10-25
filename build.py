@@ -36,7 +36,6 @@ from lumber_model import (
     Footing,
     GroundSurface,
     FrontSidingBore,
-    COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
     LumberCollection,
     Model,
     PurchasedItem,
@@ -602,24 +601,9 @@ def build_enclosure(
         "front_street_light", FRONT_STREET_LIGHT_CENTER_X,
         FRONT_STREET_LIGHT_CABLE_Z, 0.5,
     )
-    FRONT_STREET_LIGHT_BOX_TOP_Z=members["brace_fl_fr"].min_on("z")-4
-    FRONT_STREET_LIGHT_BOX_CENTER_Z=(
-        FRONT_STREET_LIGHT_BOX_TOP_Z-COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1]/2
-    )
-    FRONT_STREET_LIGHT_BOX_CENTER_Y=0.25+COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2
-    FRONT_STREET_LIGHT_BOX_BASIS=((0,-1,0),(0,0,1),(-1,0,0))
-    FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT=(
-        members["post_fr"].min_on("x")-COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[2]/2,
-        FRONT_STREET_LIGHT_BOX_CENTER_Y,
-        FRONT_STREET_LIGHT_BOX_TOP_Z-COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[1],
-    )
-    FRONT_STREET_LIGHT_CONDUIT_ENTRY=_member_relative_coord(
-        "post_fr", *FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT,
-    )
-    FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR=ComponentAnchor(
-        "front_street_light_base_box",
-        position=(COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX.size[0]/2, 0),
-    )
+    # Retain the former conduit corridor up the inside of the front-right post.
+    FRONT_LIGHT_ROUTE_X=members["post_fr"].min_on("x")-0.8
+    FRONT_LIGHT_ROUTE_Y=2.35
     FRONT_ADDRESS_CENTER_Z=FRONT_STREET_LIGHT_CENTER_Z-1.2-3-2.5
     members.add(
         "front_address_number_support", assembly="electrical_backing",
@@ -706,7 +690,8 @@ def build_enclosure(
     )
     POWER_JUNCTION_LIGHT_PORT_Y=(POWER_JUNCTION_PORT_Y-2)
     POWER_JUNCTION_LIGHT_PORT_Z=POWER_JUNCTION_CENTER_Z
-    # Align the outlet fitting with the conduit seated on the lower right rail.
+    POWER_UF_CABLE_DIAMETER=0.45  # Schematic circular envelope for flat UF-B.
+    # Preserve the former conduit centerline and connector clearance at the box.
     POWER_OUTLET_HORIZONTAL_RUN_Z=(
         members["rail_rbl"].max_on("z")
         + CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2
@@ -715,8 +700,8 @@ def build_enclosure(
 
     POWER_JUNCTION_BOX_FILL=BoxFillCalculation(
         marked_volume=49,
-        conductor_groups=((12, 7),),
-        equipment_grounding_awgs=(12, 12, 12),
+        conductor_groups=((12, 5), (14, 2)),
+        equipment_grounding_awgs=(12, 12, 14),
     )
     POWER_JUNCTION_BOX_FILL.validate()
 
@@ -964,38 +949,6 @@ def build_enclosure(
     )
 
     components.add(
-        "front_street_light_base_box", assembly="electrical",
-        component_type=COMMERCIAL_ELECTRIC_WRB550B_OUTLET_BOX,
-        member="post_fr", at=0, face="wide_neg",
-        absolute_anchor=(members["post_fr"].min_on("x"), FRONT_STREET_LIGHT_BOX_CENTER_Y,
-                         FRONT_STREET_LIGHT_BOX_CENTER_Z),
-        component_basis=FRONT_STREET_LIGHT_BOX_BASIS,
-    )
-    components.add(
-        "front_street_light_box_cover", assembly="electrical",
-        component_type=ComponentType(
-            name="commercial_electric_wbc300g_cover", size=(4.2,4.2,0.15),
-            color=(0.4,0.42,0.44,1), shape="primitive_union",
-            cylinder_primitives=(((2.1,2.1,0),"out",0.15,4.2),),
-        ), member="post_fr", at=0, face="wide_neg",
-        absolute_anchor=(members["post_fr"].min_on("x")-1.6,
-                         FRONT_STREET_LIGHT_BOX_CENTER_Y, FRONT_STREET_LIGHT_BOX_CENTER_Z),
-        component_basis=FRONT_STREET_LIGHT_BOX_BASIS,
-    )
-    FRONT_UF_CONNECTOR_LENGTH=1.25  # Schematic envelope, not a machining dimension.
-    FRONT_UF_CONNECTOR_ORIGIN=(FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT[0],
-                               FRONT_STREET_LIGHT_BOX_CENTER_Y, FRONT_STREET_LIGHT_BOX_TOP_Z)
-    components.add(
-        "front_street_light_uf_connector", assembly="electrical",
-        component_type=ComponentType(
-            name="commercial_electric_fsw50z_12_2_1", size=(1.12,1.12,FRONT_UF_CONNECTOR_LENGTH),
-            shape="primitive_union", color=(0.5,0.52,0.54,1),
-            cylinder_primitives=(((0.56,0.56,0),"out",FRONT_UF_CONNECTOR_LENGTH,1.12),),
-        ), member="post_fr", at=0, face="wide_neg",
-        absolute_anchor=FRONT_UF_CONNECTOR_ORIGIN,
-        component_basis=((1,0,0),(0,1,0),(0,0,1)),
-    )
-    components.add(
         "front_street_light", assembly="electrical", component_type=MOD_LIGHTING_BROOK_16,
         member="brace_fl_fr", at=0, face="wide_neg",
         absolute_anchor=(FRONT_STREET_LIGHT_CENTER_X, FRONT_STREET_LIGHT_BOX_FACE_Y,
@@ -1181,20 +1134,32 @@ def build_enclosure(
                     (POWER_PULL_BOX_AXIS_X,
                      POWER_JUNCTION_CENTER_Y+2, POWER_PULL_BOX_CENTER_Z),
                     "inward")
-    add_box_fitting("power_junction_light_adapter", "1/2",
-                    (POWER_JUNCTION_RIGHT_X, POWER_JUNCTION_LIGHT_PORT_Y,
-                     POWER_JUNCTION_LIGHT_PORT_Z), "left")
-    add_box_fitting("power_junction_outlet_adapter", "1/2",
-                    (POWER_JUNCTION_RIGHT_X, POWER_JUNCTION_PORT_Y,
-                     POWER_JUNCTION_OUTLET_PORT_Z), "left")
+    POWER_UF_CONNECTOR_LENGTH=1.25  # Schematic envelope; measure actual hardware.
+    power_uf_connector_type=ComponentType(
+        name="commercial_electric_fsw50z_12_2_1",
+        size=(1.12,1.12,POWER_UF_CONNECTOR_LENGTH),
+        shape="primitive_union", color=(0.5,0.52,0.54,1),
+        cylinder_primitives=(((0.56,0.56,0),"out",POWER_UF_CONNECTOR_LENGTH,1.12),),
+    )
+    for name, anchor, basis in (
+        ("power_junction_light_uf_connector",
+         (POWER_JUNCTION_RIGHT_X,POWER_JUNCTION_LIGHT_PORT_Y,POWER_JUNCTION_LIGHT_PORT_Z),
+         ((0,1,0),(0,0,1),(1,0,0))),
+        ("power_junction_outlet_uf_connector",
+         (POWER_JUNCTION_RIGHT_X,POWER_JUNCTION_PORT_Y,POWER_JUNCTION_OUTLET_PORT_Z),
+         ((0,1,0),(0,0,1),(1,0,0))),
+        ("back_right_outlet_uf_connector",BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT,
+         ((1,0,0),(0,-1,0),(0,0,-1))),
+    ):
+        components.add(name, assembly="electrical", component_type=power_uf_connector_type,
+                       member="front_center_rail", at=0, face="wide_neg",
+                       absolute_anchor=anchor, component_basis=basis)
 
     # Every male fitting is clamped through a cut hole: sealing washer
     # outside, locknut inside. Copy the fitting placement to keep them coaxial.
     box_fitting_sizes = {
         "power_ev_top_adapter": "1", "power_ev_bottom_adapter": "1-1/4",
         "power_ev_back_adapter": "3/4", "power_junction_input_adapter": "3/4",
-        "power_junction_light_adapter": "1/2",
-        "power_junction_outlet_adapter": "1/2",
         "low_voltage_input_adapter": "3/4",
     }
     for fitting_name, trade_size in box_fitting_sizes.items():
@@ -1266,72 +1231,26 @@ def build_enclosure(
         ),
     )
 
-    POWER_LIGHT_ADAPTER_END=(
-        POWER_JUNCTION_RIGHT_X
-        + MALE_TERMINAL_ADAPTERS["1/2"].size[0]-MALE_FITTING_WALL_OFFSET,
-        POWER_JUNCTION_LIGHT_PORT_Y,
-        POWER_JUNCTION_LIGHT_PORT_Z,
-    )
-    power_light_entry=FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT
-    POWER_LIGHT_POST_X=power_light_entry[0]
-    POWER_LIGHT_OFFSET_START=(POWER_LIGHT_POST_X, power_light_entry[1]+0.4,
+    POWER_LIGHT_UF_EXIT=(POWER_JUNCTION_RIGHT_X+POWER_UF_CONNECTOR_LENGTH,
+                         POWER_JUNCTION_LIGHT_PORT_Y,POWER_JUNCTION_LIGHT_PORT_Z)
+    POWER_LIGHT_POST_X=FRONT_LIGHT_ROUTE_X
+    POWER_LIGHT_OFFSET_START=(POWER_LIGHT_POST_X,FRONT_LIGHT_ROUTE_Y+0.4,
                               POWER_JUNCTION_LIGHT_PORT_Z+10)
-    POWER_LIGHT_OFFSET_END=(POWER_LIGHT_POST_X,power_light_entry[1],
+    POWER_LIGHT_OFFSET_END=(POWER_LIGHT_POST_X,FRONT_LIGHT_ROUTE_Y,
                             POWER_JUNCTION_LIGHT_PORT_Z+16)
     POWER_LIGHT_OFFSET_POINTS=cubic_bezier_conduit_points(
         POWER_LIGHT_OFFSET_START,
-        (POWER_LIGHT_POST_X, POWER_LIGHT_OFFSET_START[1]
+        (POWER_LIGHT_POST_X,POWER_LIGHT_OFFSET_START[1]
          +(POWER_LIGHT_OFFSET_START[1]-POWER_JUNCTION_LIGHT_PORT_Y)/5,
          POWER_LIGHT_OFFSET_START[2]+2),
-        (POWER_LIGHT_POST_X,power_light_entry[1],POWER_LIGHT_OFFSET_END[2]-2),
+        (POWER_LIGHT_POST_X,FRONT_LIGHT_ROUTE_Y,POWER_LIGHT_OFFSET_END[2]-2),
         POWER_LIGHT_OFFSET_END,
     )
-    conduits.add(
-        "power_street_light_feed", trade_size="1/2",
-        points=(
-            ComponentAnchor("power_junction_light_adapter", position=(
-                MALE_TERMINAL_ADAPTERS["1/2"].size[0], MALE_TERMINAL_ADAPTERS["1/2"].size[1]/2)),
-            _member_relative_coord("post_fr", POWER_LIGHT_POST_X,
-                                   POWER_JUNCTION_LIGHT_PORT_Y, POWER_JUNCTION_LIGHT_PORT_Z),
-            *POWER_LIGHT_OFFSET_POINTS,
-            FRONT_STREET_LIGHT_CONDUIT_ENTRY_ANCHOR,
-        ),
-        bends=(ConduitBend(point_index=1,radius=2.5),),
-    )
-
-    POWER_OUTLET_ADAPTER_END_X=(
-        POWER_JUNCTION_RIGHT_X
-        + MALE_TERMINAL_ADAPTERS["1/2"].size[0]-MALE_FITTING_WALL_OFFSET
-    )
-    conduits.add(
-        "power_back_right_outlet_feed",
-        trade_size="1/2",
-        points=(
-            _member_relative_coord(
-                "front_center_rail",
-                POWER_OUTLET_ADAPTER_END_X,
-                POWER_JUNCTION_PORT_Y,
-                POWER_JUNCTION_OUTLET_PORT_Z,
-            ),
-            _member_relative_coord(
-                "post_br",
-                BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0],
-                POWER_JUNCTION_PORT_Y,
-                POWER_OUTLET_HORIZONTAL_RUN_Z,
-            ),
-            _member_relative_coord(
-                "post_br",
-                BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0],
-                BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[1],
-                POWER_OUTLET_HORIZONTAL_RUN_Z,
-            ),
-            BACK_RIGHT_OUTLET_CONDUIT_ENTRY,
-        ),
-        bends=(
-            ConduitBend(point_index=1, radius=4),
-            ConduitBend(point_index=2, radius=4),
-        ),
-    )
+    POWER_OUTLET_UF_EXIT=(POWER_JUNCTION_RIGHT_X+POWER_UF_CONNECTOR_LENGTH,
+                          POWER_JUNCTION_PORT_Y,POWER_JUNCTION_OUTLET_PORT_Z)
+    POWER_OUTLET_UF_ENTRY=(BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0],
+                           BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[1],
+                           BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[2]-POWER_UF_CONNECTOR_LENGTH)
 
     LOW_VOLTAGE_INPUT_ADAPTER_END_Z=(
         LOW_VOLTAGE_BOX_BOTTOM_Z-CARLON_E943E_MALE_TERMINAL_ADAPTER.size[0]
@@ -1797,21 +1716,30 @@ def build_enclosure(
     LOW_VOLTAGE_RAIL_FT_POS_Y=(
         members["rail_ft"].max_on("y")+LOW_VOLTAGE_CABLE_DIAMETER/2
     )
-    FRONT_UF_CABLE_DIAMETER=0.45
+    FRONT_UF_CABLE_DIAMETER=POWER_UF_CABLE_DIAMETER
     FRONT_UF_MINIMUM_BEND_RADIUS=2.0
     FRONT_UF_RUN_Z=FRONT_STREET_LIGHT_CABLE_Z
-    FRONT_UF_EXIT=(FRONT_UF_CONNECTOR_ORIGIN[0],FRONT_UF_CONNECTOR_ORIGIN[1],
-                   FRONT_UF_CONNECTOR_ORIGIN[2]+FRONT_UF_CONNECTOR_LENGTH)
     FRONT_UF_WALL_POINT=(FRONT_STREET_LIGHT_CENTER_X,0,FRONT_STREET_LIGHT_CABLE_Z)
-    front_uf_points=rounded_cable_points((
-        FRONT_UF_EXIT,
-        (FRONT_UF_EXIT[0],FRONT_UF_EXIT[1],FRONT_UF_RUN_Z),
-        (FRONT_STREET_LIGHT_CENTER_X,FRONT_UF_EXIT[1],FRONT_UF_RUN_Z),
+    front_uf_rise=rounded_cable_points((
+        POWER_LIGHT_UF_EXIT,
+        (POWER_LIGHT_POST_X,POWER_JUNCTION_LIGHT_PORT_Y,POWER_JUNCTION_LIGHT_PORT_Z),
+        POWER_LIGHT_OFFSET_START), {1:2.5})
+    front_uf_top=rounded_cable_points((
+        POWER_LIGHT_OFFSET_END,
+        (POWER_LIGHT_POST_X,FRONT_LIGHT_ROUTE_Y,FRONT_UF_RUN_Z),
+        (FRONT_STREET_LIGHT_CENTER_X,FRONT_LIGHT_ROUTE_Y,FRONT_UF_RUN_Z),
         FRONT_UF_WALL_POINT,
         (FRONT_STREET_LIGHT_CENTER_X,FRONT_STREET_LIGHT_BOX_FACE_Y-0.125,FRONT_STREET_LIGHT_CABLE_Z)),
         {1:FRONT_UF_MINIMUM_BEND_RADIUS,2:FRONT_UF_MINIMUM_BEND_RADIUS})
     cables.add("power_street_light_uf_b", assembly="electrical", diameter=FRONT_UF_CABLE_DIAMETER,
-               points=front_uf_points, color=(0.48,0.49,0.50,1))
+               points=(*front_uf_rise,*(p.resolve(members) for p in POWER_LIGHT_OFFSET_POINTS[1:-1]),*front_uf_top),
+               color=(0.48,0.49,0.50,1))
+    cables.add("power_back_right_outlet_uf_b", assembly="electrical", diameter=POWER_UF_CABLE_DIAMETER,
+               points=rounded_cable_points((
+                   POWER_OUTLET_UF_EXIT,
+                   (POWER_OUTLET_UF_ENTRY[0],POWER_JUNCTION_PORT_Y,POWER_OUTLET_HORIZONTAL_RUN_Z),
+                   (POWER_OUTLET_UF_ENTRY[0],POWER_OUTLET_UF_ENTRY[1],POWER_OUTLET_HORIZONTAL_RUN_Z),
+                   POWER_OUTLET_UF_ENTRY), {1:4,2:4}), color=(0.48,0.49,0.50,1))
 
     LOW_VOLTAGE_WIFI_LANE_OFFSET=-LOW_VOLTAGE_CABLE_DIAMETER/2
     LOW_VOLTAGE_CHARGER_LANE_OFFSET=LOW_VOLTAGE_CABLE_DIAMETER/2
@@ -2095,12 +2023,12 @@ def build_enclosure(
             PurchasedItem("silver_address_number_standoff", "exterior_fixtures",
                 "Silver numeral standoff, 1 in long; schematic 3/8 in diameter", 8,
                 include_in_shopping_list=True),
-            PurchasedItem("commercial_electric_wrb550b_outlet_box", "electrical",
-                "Commercial Electric WRB550B round weatherproof transition box; no extension ring", 1),
-            PurchasedItem("commercial_electric_wbc300g_cover", "electrical",
-                "Commercial Electric WBC300G round blank cover with gasket", 1),
+            PurchasedItem("outlet_12_2_uf_b", "electrical",
+                f"12/2 copper UF-B with ground, {math.ceil((cables['power_back_right_outlet_uf_b'].centerline_length+18)/12)} ft cut "
+                f"(route {cables['power_back_right_outlet_uf_b'].centerline_length:.1f} in plus 18 in termination/service allowance)", 1,
+                category="cable", include_in_shopping_list=True),
             PurchasedItem("commercial_electric_fsw50z_12_2_1", "electrical",
-                "Commercial Electric FSW50Z-12.2-1 watertight 1/2 in connector for 14/2 UF-B", 1),
+                "Commercial Electric FSW50Z-12.2-1 watertight 1/2 in connector for 14/2 or 12/2 UF-B", 3),
             PurchasedItem("half_inch_panel_hole_weatherproof_closure", "low_voltage_fittings",
                 "Weatherproof closure for unused 0.500 in low-voltage gland opening", 1),
             PurchasedItem(

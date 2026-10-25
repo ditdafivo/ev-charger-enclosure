@@ -56,8 +56,8 @@ desert installation; keep the existing drainage paths open.
 1. Install the framing, fixture backing, added wall backing and plywood roof strips.
    Existing rails and posts fill interruptions between new backing segments.
    Attach wall backing segments positively to framing with suitable stainless
-   angles and structural screws. Roof support blocks use opposed toe screws
-   directly into framing, with no steel angles; see the roof detail below.
+   angles and structural screws. Roof strips bear on the existing perimeter
+   framing and diagonal; keep the space below the diagonal clear.
 2. Install the hardware-cloth skirt independently of the boards. Keep paths
    behind and between framing members unobstructed for drainage and the guide's
    minimum 1-inch continuous net free ventilation area. The open frame must
@@ -149,14 +149,12 @@ for drainage. This arrangement does not establish manufacturer acceptance of the
 ventilation or exposed-roof adaptation. Treat cut plywood edges as required by
 the selected preservative system; verify exterior bond, grade and actual thickness.
 
-Shorten strip ends around the gusset envelopes with 1/8-inch clearance. Two flat
-2x4 local support blocks sit immediately inboard of the affected gussets, against
-the front/rear rails. Route their tops 3/4 inch deep where the diagonal crosses.
-Each block has two opposed 45-degree plan toe-screw locations below the routed
-seat, entering the adjacent rail. Heads are schematic; select exterior structural
-screws with published suitability for toe installation, required pilot holes,
-edge distances and adequate receiving-member penetration. No steel angles,
-thinner gusset inserts or printed fastener caps are used for these supports.
+Shorten strip ends around the gusset envelopes with 1/8-inch clearance. The
+strips bear on the existing perimeter framing and diagonal, without local
+support blocks below the diagonal. This preserves the 1-inch modeled clearance
+between the diagonal underside and the prototype tambour hardware envelope.
+The strip anchors retain their existing supported locations. Remaining strip
+bearing and roof load capacity are unverified.
 
 Anchor each plywood strip independently near its two ends at the generated
 framing/diagonal-supported locations. Recess anchor heads flush in plywood so
@@ -166,7 +164,9 @@ Roof face screws are separately counted: provisional **#8 x 1-1/8-inch stainless
 retaining-head screws**, nominally 5/8-inch penetration through 1/2-inch siding
 into 3/4-inch plywood. This is a geometric candidate, not a verified fastener
 product or connection capacity. Check the actual stack, contained tip, usable
-thread engagement, head retention and sliding-hole behavior. Attach along strip
+thread engagement, head retention and sliding-hole behavior. A #8 x 1-1/4-inch
+screw through the nominal 1/2-inch siding and 3/4-inch plywood reaches only
+the framing surface; it provides no penetration into the diagonal. Attach along strip
 centerlines at no more than 10-inch spacing, with exactly one midpoint fixed
 connection per physical board and sliding connections elsewhere.
 
@@ -185,7 +185,7 @@ coordinates, independent anchors, short siding screws and toe-screw entry axes.
 Generated files include:
 
 - `output/model.scad`: enclosure, schematic recessed/face screw heads and downward build steps.
-- `output/roof_support_review.scad`: cropped roof framing, routed blocks and strips; render with `openscad -D build_step=22`.
+- `output/roof_support_review.scad`: cropped roof framing, gussets and strips; render with `openscad -D build_step=22`.
 - `output/siding_corner_*.scad`: four cropped roof/wall corner views.
 - `output/siding_cut_list.csv` and `.json`: physical board, backing and trim cuts.
 - `output/siding_installation.json`: supported attachment locations, fixed

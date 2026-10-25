@@ -113,7 +113,7 @@ both load directions:
 - corrosion compatibility with treated lumber and the outdoor environment.
 
 The model includes the two side-brace routed cuts, plates, screw-head
-envelopes, plywood roof strips and local routed support blocks. It does not select screw length or establish a
+envelopes and plywood roof strips. It does not select screw length or establish a
 published capacity for the custom connection. A qualified engineer must check
 plate thickness, hole pattern, screw specification, wood edge distances, and
 the complete post load path before temporary bracing is removed.
@@ -137,12 +137,10 @@ The modeled 0.074-inch plate and pan-head projection is 0.184 inch above the
 perimeter/diagonal shims and intermediate roof backing. The siding underside is
 z = 50.375 and its top is z = 50.875 before trim.
 
-Strip ends stop 1/8 inch clear of the gusset envelopes. Flat 2x4 support blocks
-beside the plates meet the front/rear rails and have routed seats for the existing
-diagonal. Two opposed structural toe screws per block enter the rail below the
-seat; product, length, pilot holes and connection capacity remain unverified.
-There are no roof-support angles or inserts resting on plate fasteners. Strip
-anchors are independent of the short, movement-accommodating siding screws.
+Strip ends stop 1/8 inch clear of the gusset envelopes and bear on the existing
+perimeter framing and diagonal. No local support blocks extend beneath the
+diagonal, preserving clearance for the prototype tambour door. Strip anchors
+are independent of the short, movement-accommodating siding screws.
 Keep channels and outlets open for drainage. See [SIDING.md](SIDING.md).
 
 ## Sources

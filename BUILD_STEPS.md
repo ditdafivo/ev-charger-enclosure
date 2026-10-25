@@ -664,12 +664,9 @@ power_street_light_uf_b
 ## 22. Prepare siding backing and ventilation (`siding-preparation`)
 
 Install the actual 1-inch wall backing segments with their existing specified
-connections. For the roof, fit the two flat 2x4 local support blocks beside the
-gussets. Route 3/4-inch-deep seats around the diagonal, keeping tops flush with
-framing. Install two opposed toe screws per block below the seats, directly
-into the adjacent front/rear rail. Use exterior structural screws suitable for
-toe installation; field-select product, length, pilot holes and edge distances.
-There are no roof-support steel angles.
+connections. Keep the space below the top diagonal clear for the prototype
+tambour door; no local roof-support blocks or their toe screws are installed.
+The plywood roof strips bear on the existing perimeter framing and diagonal.
 
 Limit the extra outlet-side backing to the full heights of the courses cut by
 the outlet. Keep the regular wall supports above and below this local backing.
@@ -692,12 +689,6 @@ The model does not establish approval or connection load capacity.
 New model objects:
 
 ```text
-roof_support_bl
-roof_support_fr
-roof_support_bl_toe_screw_1
-roof_support_bl_toe_screw_2
-roof_support_fr_toe_screw_1
-roof_support_fr_toe_screw_2
 enclosure_siding_backing_front_1_1
 enclosure_siding_backing_front_1_2
 enclosure_siding_backing_left_1_1

@@ -114,12 +114,12 @@ class TopBracingBuildTests(unittest.TestCase):
         self.assertIn("jigsaw", fabrication_row["operation"])
 
     def test_side_brace_rabbets_and_custom_gusset_hardware_are_explicit(self) -> None:
-        self.assertEqual(len(build.routed_seats), 4)
+        self.assertEqual(len(build.routed_seats), 2)
         self.assertEqual({seat.depth for seat in build.routed_seats}, {0.75})
         self.assertEqual({seat.top_z for seat in build.routed_seats}, {49.625})
         self.assertEqual(
             {seat.member for seat in build.routed_seats},
-            {"brace_fl_bl", "brace_fr_br", "roof_support_bl", "roof_support_fr"},
+            {"brace_fl_bl", "brace_fr_br"},
         )
         for name in ("gusset_back_left", "gusset_front_right"):
             hardware = build.components[name]
@@ -192,39 +192,6 @@ class TopBracingBuildTests(unittest.TestCase):
         for part in build.siding.board_parts:
             if "_top_" in part.name:
                 self.assertEqual(part.start[2], 50.375)
-
-    def test_local_roof_blocks_have_diagonal_seats_and_opposed_toe_screws(self) -> None:
-        for enclosure in (build.default_build,build.build_enclosure(36,30,55)):
-            for corner,rail_name,gusset_name in (
-                ("bl","brace_bl_br","gusset_back_left"),
-                ("fr","brace_fl_fr","gusset_front_right")):
-                block=enclosure.members[f"roof_support_{corner}"]
-                rail=enclosure.members[rail_name]
-                self.assertEqual(block.type,"2x4")
-                self.assertAlmostEqual(block.max_on("z"),enclosure.height)
-                self.assertAlmostEqual(block.max_on("y") if corner=="bl" else block.min_on("y"),
-                                       rail.min_on("y") if corner=="bl" else rail.max_on("y"))
-                seat=next(r for r in enclosure.routed_seats if r.member==block.name)
-                self.assertEqual(seat.depth,0.75)
-                instance=enclosure.components[gusset_name]
-                gusset=instance.resolved(enclosure.members[instance.member])
-                separation=(block.min_on("x")-gusset.box_min[0]-gusset.box_size[0]
-                            if corner=="bl" else gusset.box_min[0]-block.max_on("x"))
-                self.assertAlmostEqual(separation,0.125)
-                screws=[r for r in enclosure.siding.roof_toe_screws if r["block"]==block.name]
-                self.assertEqual(len(screws),2)
-                self.assertLess(screws[0]["direction"][0]*screws[1]["direction"][0],0)
-                for screw in screws:
-                    self.assertLess(screw["entry_in"][2]+0.175,enclosure.height-seat.depth)
-                    direction=screw["direction"]
-                    self.assertEqual(screw["receiving_member"],rail_name)
-                    self.assertGreater(direction[1] if corner=="bl" else -direction[1],0)
-                    # Each proposed axis crosses into the receiving rail below the seat.
-                    target_y=rail.min_on("y")+0.5 if corner=="bl" else rail.max_on("y")-0.5
-                    distance=(target_y-screw["entry_in"][1])/direction[1]
-                    target_x=screw["entry_in"][0]+distance*direction[0]
-                    self.assertTrue(rail.min_on("x")<target_x<rail.max_on("x"))
-                    self.assertIn(screw["name"],enclosure.components)
 
     def test_side_4x4s_and_rails_support_tambour_and_header(self) -> None:
         enclosure = build.default_build

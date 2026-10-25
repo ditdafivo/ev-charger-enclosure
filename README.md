@@ -141,7 +141,7 @@ where possible and local exposed screws at remaining terminations. The build-ste
 shows each course in that order. The rear access opening remains open.
 
 The US135 top is a level cover that may leak. Paired 3/4-inch PT plywood strips
-carry the boards, with toe-screwed local support blocks beside the gussets;
+carry the boards and bear on the existing perimeter framing and diagonal;
 US20 covers outside corners and the rear opening; vertical corners terminate
 beneath mitered US20 roof-edge trim. See
 [SIDING.md](SIDING.md) for the downward procedure, the required two-course

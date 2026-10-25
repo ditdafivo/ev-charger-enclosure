@@ -77,7 +77,6 @@ class US135Siding(CompositeSiding):
     roof_strip_width: float = 1.5
     roof_hardware_clearance: float = 1/8
     roof_gussets: tuple[tuple[tuple[float,float,float],tuple[float,float,float]], ...] = ()
-    roof_toe_screws: tuple[dict[str,Any], ...] = ()
     front_trim_relief: tuple[float,float,float] | None = None  # x min/max, clear-above Z
 
     def __post_init__(self) -> None:
@@ -696,7 +695,6 @@ class US135Siding(CompositeSiding):
             ("face_screws","#8 x 1-1/4 in SS304 composite face screw into lumber; one fixed point per board, other holes oversized and free to slide",sum(a.wall!="roof" for a in self.attachments)),
             ("roof_face_screws","Provisional #8 x 1-1/8 in stainless retaining-head screw into plywood only; nominal 5/8 in penetration; verify thread engagement and sliding retention",sum(a.wall=="roof" for a in self.attachments)),
             ("roof_strip_anchors","Corrosion-resistant framing screws; recess heads flush in plywood; field-select length and substrate penetration",len(self.roof_strip_anchors)),
-            ("roof_support_toe_screws","Exterior structural wood screws suitable for opposed toe installation; product and length field-selected; no angles",len(self.roof_toe_screws)),
             ("trim_screws","#8 x 2 in SS304 trim screw through US20/board into lumber; predrill for independent board and trim movement",sum(2+math.ceil(p.cut_length/24) for p in self.angle_parts if p.cut_length and not p.name.endswith("_top"))),
             ("roof_trim_screws","#8 x 2-1/2 in stainless roof trim screw through US20/board/plywood into framing; allow independent movement",sum(2+math.ceil(p.cut_length/24) for p in self.angle_parts if p.cut_length and p.name.endswith("_top"))),
             ("backing_brackets","Stainless backing attachment angle, two at each end; field-select structural screws",4*sum(p.material=="PT_5/4x6_backing" for p in self.backing_parts)),
@@ -717,7 +715,6 @@ class US135Siding(CompositeSiding):
             ROOF_STRIP_MATERIAL:"Rip 1.5 in paired strips beneath full roof courses; narrow closure uses one backer. 3/4 in actual modeled thickness. Keep drainage channels open. Conservative sheet allowance: one rip lane per strip, including kerf; verify actual grade, thickness and sheet layout.",
             "roof_face_screws":"Roof only. One midpoint fixed connection per board; all others slide. Tip stays within plywood; verify production stack and usable thread engagement. Custom unverified connection.",
             "roof_strip_anchors":"Two end anchors per strip at generated framing-supported locations; independent of siding screws. Countersink into plywood only, flush below siding.",
-            "roof_support_toe_screws":"Two opposed toe screws per local 2x4 block, below its diagonal seat. Field-select approved structural screws and predrill/edge distances; connection capacity unverified.",
             "face_screws":"Walls only. One per generated wall attachment. One concealed overlap row on intact courses; local cut/termination exceptions; one fixed point per physical board and sliding holes elsewhere. Custom schedule, not load-verified.",
             "roof_trim_screws":"Roof horizontal legs only. Added 1/2 in length preserves former nominal framing penetration through the thicker stack. Verify framing landing and independent movement.",
             "trim_screws":"Wall and vertical trim allowance; verify backing, penetration and independent movement of trim and underlying siding.",
@@ -788,7 +785,6 @@ class US135Siding(CompositeSiding):
             "roof_strips":[dict(name=p.name,start_in=p.start,size_in=p.size,
                 strength_axis="X",gusset_clearance_in=self.roof_hardware_clearance) for p in self.roof_strips],
             "roof_strip_anchors":[asdict(a) for a in self.roof_strip_anchors],
-            "roof_support_toe_screws":list(self.roof_toe_screws),
             "roof_drainage":"Open channels between continuous strips; clear tongue/groove rebates and gusset outlets. Final narrow course has one backer. No transverse cuts through load-bearing strips.",
             "roof_fastener_status":"Provisional #8 x 1-1/8 in; nominal 5/8 in plywood penetration; contained tip, thread engagement and head retention require production dry fit",
             "roof_status":"level cover allowing leakage; snow/wind/load capacity not established by siding or ceiling guide",
@@ -797,7 +793,7 @@ class US135Siding(CompositeSiding):
             "courses_top_down":[{"course":i,"bottom_z":b,"top_z":t} for i,(b,t) in enumerate(self.courses,1)],
         }
         (directory/"siding_installation.json").write_text(json.dumps(manifest,indent=2)+"\n")
-        # Crop the actual model so routed seats and angled screw heads remain exact.
+        # Crop the actual roof framing, gussets and plywood strips.
         review=("// Roof support review. Render with openscad -D build_step=22.\n"
                 "use <model.scad>\nintersection() {\n  render_model();\n"
                 f"  translate([{self.min_x-1}, {self.min_y-1}, {self.frame_top_z-1.75}]) "

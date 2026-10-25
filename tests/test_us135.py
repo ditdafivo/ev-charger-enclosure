@@ -174,7 +174,7 @@ class US135Tests(unittest.TestCase):
             rows={r['name']:r for r in s.bom_rows()}
             self.assertEqual(rows[f'{s.name}_roof_face_screws']['qty'],sum(a.wall=='roof' for a in s.attachments))
             self.assertEqual(rows[f'{s.name}_roof_strip_anchors']['qty'],len(s.roof_strip_anchors))
-            self.assertEqual(rows[f'{s.name}_roof_support_toe_screws']['qty'],4)
+            self.assertNotIn(f'{s.name}_roof_support_toe_screws', rows)
             plywood=rows[f'{s.name}_PT_exterior_plywood_3_4']
             self.assertEqual(plywood['category'],'sheet')
             self.assertEqual(plywood['stock_length_ft'],'')

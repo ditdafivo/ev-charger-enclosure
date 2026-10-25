@@ -899,53 +899,13 @@ def build_enclosure(
             offset=(0.25, across_offset, 0),
         )
 
-    # Local flat 2x4 blocks replace the end bearing lost at gusset cutouts.
-    # Route their tops around the existing diagonal, preserving its load path.
+    # Roof strips bear directly on the perimeter and diagonal. Keep the
+    # space below the diagonal clear for the prototype tambour door.
     roof_gusset_envelopes = []
-    roof_toe_screw_locations = []
-    toe_head_type = ComponentType(
-        name="roof_support_structural_toe_screw_head_length_unspecified",
-        size=(0.35, 0.35, 0.10), mount_point=(0.175, 0.175, 0),
-        shape="primitive_union",
-        cylinder_primitives=(((0.175, 0.175, 0), "out", 0.10, 0.35),),
-        color=(0.45, 0.48, 0.5, 1),
-    )
-    for corner, gusset_name, rail_name in (
-        ("bl", "gusset_back_left", "brace_bl_br"),
-        ("fr", "gusset_front_right", "brace_fl_fr"),
-    ):
+    for gusset_name in ("gusset_back_left", "gusset_front_right"):
         instance = components[gusset_name]
         gusset = instance.resolved(members[instance.member])
         roof_gusset_envelopes.append((gusset.box_min, gusset.box_size))
-        rail = members[rail_name]
-        clearance = 1/8
-        x = (gusset.box_min[0]+gusset.box_size[0]+clearance if corner=="bl"
-             else gusset.box_min[0]-clearance-3.5)
-        y = rail.min_on("y")-3.5 if corner=="bl" else rail.max_on("y")
-        block_name = f"roof_support_{corner}"
-        block = members.add(block_name, assembly="roof_supports", type="2x4",
-            axis="x", start=AbsoluteCoord(x,y,FRAME_DIMS.z-1.5), length=3.5)
-        seat = clip_polygon_to_box(diagonal_footprint, min_x=x, max_x=x+3.5,
-                                  min_y=y, max_y=y+3.5)
-        if len(seat)>=3:
-            routed_seats += (RoutedSeat(name=f"route_{block_name}_for_brace_bl_fr",
-                member=block_name, polygon=seat, depth=0.75, top_z=FRAME_DIMS.z),)
-        # Opposed 45-degree plan toe screws enter the rail below the routed seat.
-        # Heads and entry directions are shown; product/length remain field-selected.
-        toward_rail = 1 if corner=="bl" else -1
-        entry_y = y+2.75 if corner=="bl" else y+0.75
-        for i, (entry_x, toward_x) in enumerate(((x,1),(x+3.5,-1)),1):
-            direction=(toward_x/math.sqrt(2),toward_rail/math.sqrt(2),0)
-            outward=tuple(-v for v in direction)
-            entry=(entry_x,entry_y,FRAME_DIMS.z-1.125)
-            screw_name=f"{block_name}_toe_screw_{i}"
-            components.add(screw_name, assembly="roof_support_hardware",
-                component_type=toe_head_type, member=block_name, at=0,
-                absolute_anchor=entry,
-                component_basis=((-outward[1],outward[0],0),(0,0,1),outward))
-            roof_toe_screw_locations.append(dict(name=screw_name, block=block_name,
-                receiving_member=rail_name, entry_in=entry, direction=direction,
-                product_and_length="field-select structural screw approved for toe installation"))
 
     components.add(
         "low_voltage_termination_box",
@@ -1740,7 +1700,6 @@ def build_enclosure(
         frame_top_z=FRAME_DIMS.z,
         roof_support_z=FRAME_DIMS.z+ROOF_STRIP_THICKNESS,
         roof_gussets=tuple(roof_gusset_envelopes),
-        roof_toe_screws=tuple(roof_toe_screw_locations),
         bottom_z=SIDING_BOTTOM_Z,
         rear_opening_min_x=TAMBOUR_LEFT_X,
         rear_opening_max_x=TAMBOUR_RIGHT_X,

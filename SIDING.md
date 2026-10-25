@@ -1,13 +1,15 @@
 # US135 enclosure siding and roof cover
 
 The enclosure uses horizontal NewTechWood US135, installed **from the top
-downward**, with exposed face screws directly into open lumber framing.
+downward**, with the wall profiles **upside down and finished face outward**.
+Screws into open lumber framing are normally concealed by the next lower board’s
+overlap; US20 conceals edge exceptions where its actual coverage permits.
 US20 L-angle covers all four outside corners, the rear access opening and the
 roof perimeter. There are no AW08 clips, T-7 spacers, US46 or US44 profiles.
 Generate the model and fabrication files with `uv run build.py --no-deploy`.
 Dimensions are inches.
 
-This is a **custom face-fastened adaptation**, not the manufacturer's illustrated
+This is a **custom concealed face-fastened adaptation**, not the manufacturer's illustrated
 US135 attachment system. The supplied [horizontal installation guide](ALL_WEATHER_Siding_Horizontal_Installation_Guide.pdf)
 (09.16.25 US) controls the reference material and movement guidance; its face
 fastening details do not establish an approved all-face-fastened connection
@@ -37,45 +39,60 @@ each lower rear wing is a separate physical offcut. Rendered opening fragments
 do not multiply the stock-board count or fixed-point count.
 
 Before cutting production pieces, dry-fit two courses on representative lumber.
-Check rear-profile seating, engagement in the intended orientation, installed
-pitch, access for face screws, head retention and movement-hole behavior.
+Check rear-profile seating, engagement in the inverted orientation, installed
+pitch, usable overlap material, screw access, head clearance and retention, and
+movement-hole behavior. The modeled row is at the overlap midpoint, provisionally
+6 mm (0.236 inch) from the original lower profile edge; it is not a drilling
+dimension. Schematic heads sit on the recessed fastening surface and may intersect
+the simplified covering tongue. No head cavity or machining relief is specified;
+the physical profile must provide clearance without clamping the adjacent board.
 **This physical dry fit has not been performed.**
 
-## Face fastening and downward installation
+The small inverted-joint gap can retain water. This tradeoff is accepted for this
+desert installation; keep the existing drainage paths open.
+
+## Concealed fastening and downward installation
 
 1. Install the framing, fixture backing, added wall backing and plywood roof strips.
    Existing rails and posts fill interruptions between new backing segments.
    Attach wall backing segments positively to framing with suitable stainless
-   angles and structural screws. Roof support blocks use opposed toe screws
-   directly into framing, with no steel angles; see the roof detail below.
+   angles and structural screws. Roof strips bear on the existing perimeter
+   framing and diagonal; keep the space below the diagonal clear.
 2. Install the hardware-cloth skirt independently of the boards. Keep paths
    behind and between framing members unobstructed for drainage and the guide's
    minimum 1-inch continuous net free ventilation area. The open frame must
    provide this airflow; there is no clip-created space behind the boards.
-3. Hold each top board level with padded temporary supports fixed to framing.
-   Seat it against the lumber and install exposed #8 x 1-1/4-inch stainless
-   composite face screws at the generated supported locations. Check actual
-   penetration and head selection against the production profile and lumber.
-4. Engage the next course with the course above and continue downward. Each
-   course has two screw rows where its remaining width permits, nominally
-   3/4 inch from its upper and lower edges. Narrow scribed remainders use a
-   centered row. These locations are a custom retention proposal, not tested
-   load capacities. Do not screw through unsupported groove lips.
+3. Hold each inverted top board level with padded temporary supports fixed to
+   framing. Seat it against the lumber and install #8 x 1-1/4-inch stainless
+   composite screws through the recessed lower overlap at supported stations.
+   Verify usable material, penetration and head clearance on production boards.
+4. Engage the next inverted course below, concealing the preceding fastening
+   row, and continue downward. Intact courses use one lower-overlap row, with
+   their upper edges engaged in the preceding course. At cutouts, the rear header
+   and scribed terminations, use supported local face screws where the overlap
+   is unavailable. US20 is the preferred concealment at corners and opening
+   edges; exposed screws remain only where neither overlap nor trim covers them.
+   The generated manifest classifies full-head coverage using actual modeled
+   trim extents, including the front fixture relief. Retention remains untested;
+   do not assume an unsupported lip can carry a fastener.
 5. Use **one fixed point per physical board**. All remaining face connections
    need oversized holes and heads free to slide. Page 5 of the supplied guide
    gives thread/hole/head size relationships. Do not clamp or countersink the
-   sliding connections tightly into the composite. The preview shows screw
-   heads; it does not machine the holes. Gold heads mark the fixed points.
+   sliding connections tightly into the composite. The preview shows schematic screw
+   head envelopes; it does not machine the holes. Gold heads mark the fixed points.
 6. The notched rear top board fixes at the backed header near its midpoint;
    all wing connections slide. Each separate lower wing has its own fixed
    point. Do not treat display fragments as separate physical boards.
 7. Scribe the final course to surveyed grade plus 3/4 inch and check intervening
-   high spots. Retain supported face fastening and movement clearance without
+   high spots. Retain supported local fastening and movement clearance without
    lowering the courses above. Remove props after permanent fasteners retain
    each board.
 
-Wall support spacing remains at most 16 inches. Backing near the outlet retains
-the notched courses. Removing the clips does not remove the backing requirement.
+Wall support spacing remains at most 16 inches. Extra backing beside the outlet
+extends only over the full heights of the courses intersected by the cutout;
+the extra screw stations apply only to those courses. Regular wall backing and
+screw stations continue independently above and below it. Existing framing fills
+interruptions in the local backing. Removing the clips does not remove the backing requirement.
 The hardware cloth has 1/4-inch openings, a 2-inch cut height and 2-inch joint
 overlaps. The nominal 3/4-inch grade gap remains under siding and trim. The rear
 access opening remains open.
@@ -132,14 +149,12 @@ for drainage. This arrangement does not establish manufacturer acceptance of the
 ventilation or exposed-roof adaptation. Treat cut plywood edges as required by
 the selected preservative system; verify exterior bond, grade and actual thickness.
 
-Shorten strip ends around the gusset envelopes with 1/8-inch clearance. Two flat
-2x4 local support blocks sit immediately inboard of the affected gussets, against
-the front/rear rails. Route their tops 3/4 inch deep where the diagonal crosses.
-Each block has two opposed 45-degree plan toe-screw locations below the routed
-seat, entering the adjacent rail. Heads are schematic; select exterior structural
-screws with published suitability for toe installation, required pilot holes,
-edge distances and adequate receiving-member penetration. No steel angles,
-thinner gusset inserts or printed fastener caps are used for these supports.
+Shorten strip ends around the gusset envelopes with 1/8-inch clearance. The
+strips bear on the existing perimeter framing and diagonal, without local
+support blocks below the diagonal. This preserves the 1-inch modeled clearance
+between the diagonal underside and the prototype tambour hardware envelope.
+The strip anchors retain their existing supported locations. Remaining strip
+bearing and roof load capacity are unverified.
 
 Anchor each plywood strip independently near its two ends at the generated
 framing/diagonal-supported locations. Recess anchor heads flush in plywood so
@@ -149,7 +164,9 @@ Roof face screws are separately counted: provisional **#8 x 1-1/8-inch stainless
 retaining-head screws**, nominally 5/8-inch penetration through 1/2-inch siding
 into 3/4-inch plywood. This is a geometric candidate, not a verified fastener
 product or connection capacity. Check the actual stack, contained tip, usable
-thread engagement, head retention and sliding-hole behavior. Attach along strip
+thread engagement, head retention and sliding-hole behavior. A #8 x 1-1/4-inch
+screw through the nominal 1/2-inch siding and 3/4-inch plywood reaches only
+the framing surface; it provides no penetration into the diagonal. Attach along strip
 centerlines at no more than 10-inch spacing, with exactly one midpoint fixed
 connection per physical board and sliding connections elsewhere.
 
@@ -167,12 +184,12 @@ coordinates, independent anchors, short siding screws and toe-screw entry axes.
 
 Generated files include:
 
-- `output/model.scad`: enclosure, exposed screw heads and downward build steps.
-- `output/roof_support_review.scad`: cropped roof framing, routed blocks and strips; render with `openscad -D build_step=22`.
+- `output/model.scad`: enclosure, schematic recessed/face screw heads and downward build steps.
+- `output/roof_support_review.scad`: cropped roof framing, gussets and strips; render with `openscad -D build_step=22`.
 - `output/siding_corner_*.scad`: four cropped roof/wall corner views.
 - `output/siding_cut_list.csv` and `.json`: physical board, backing and trim cuts.
 - `output/siding_installation.json`: supported attachment locations, fixed
-  points, course order and prototype assumptions.
+  points, concealment classifications, exception reasons, course order and prototype assumptions.
 - `output/siding_bom.csv`: siding purchase quantities and installation notes;
   the repository-root `siding_bom.csv` is the current default-build snapshot.
 - Shared BOM, cut and shopping lists include the revised materials/hardware.

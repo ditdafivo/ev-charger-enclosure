@@ -112,6 +112,26 @@ class US135Tests(unittest.TestCase):
                     self.assertFalse(all(p.start[k]<loc[k]+size[k]-1e-7 and
                         p.start[k]+p.size[k]>loc[k]+1e-7 for k in range(3)),p.name)
 
+    def test_outlet_backing_and_screws_are_local_to_notched_courses(self):
+        for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
+            s=build.build_enclosure(*dims).siding
+            opening=s.right_openings[0]
+            affected=[c for c in s.cuts if c.wall=='right'
+                      and c.bottom<opening.top_z and c.top>opening.bottom_z]
+            bottom=min(c.bottom for c in affected)
+            top=max(c.top for c in affected)
+            backing=[p for p in s.backing_parts if 'backing_right_opening_' in p.name]
+            self.assertTrue(backing)
+            for p in backing:
+                self.assertGreaterEqual(p.start[2],bottom)
+                self.assertLessEqual(p.start[2]+p.size[2],top)
+            for station in (opening.min_y-0.5,opening.max_y+0.5):
+                screws=[a for a in s.attachments if a.wall=='right' and a.along==station]
+                self.assertTrue(screws)
+                self.assertTrue(all(a.board in {c.name for c in affected} for a in screws))
+                for cut in affected:
+                    self.assertTrue(any(a.board==cut.name for a in screws),cut.name)
+
     def test_roof_strips_drainage_clearances_and_independent_fasteners(self):
         for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
             enclosure=build.build_enclosure(*dims); s=enclosure.siding
@@ -154,7 +174,7 @@ class US135Tests(unittest.TestCase):
             rows={r['name']:r for r in s.bom_rows()}
             self.assertEqual(rows[f'{s.name}_roof_face_screws']['qty'],sum(a.wall=='roof' for a in s.attachments))
             self.assertEqual(rows[f'{s.name}_roof_strip_anchors']['qty'],len(s.roof_strip_anchors))
-            self.assertEqual(rows[f'{s.name}_roof_support_toe_screws']['qty'],4)
+            self.assertNotIn(f'{s.name}_roof_support_toe_screws', rows)
             plywood=rows[f'{s.name}_PT_exterior_plywood_3_4']
             self.assertEqual(plywood['category'],'sheet')
             self.assertEqual(plywood['stock_length_ft'],'')
@@ -194,7 +214,7 @@ class US135Tests(unittest.TestCase):
         header=next(p for p in s.angle_parts if p.name.endswith('opening_header_return'))
         self.assertAlmostEqual(header.start[2]-(jamb.start[2]+jamb.size[2]),s.end_gap)
 
-    def test_screws_land_on_boards_and_retain_both_edges(self):
+    def test_screws_land_on_boards_and_use_concealed_overlap(self):
         for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
             s=build.build_enclosure(*dims).siding
             for a in s.attachments:
@@ -212,11 +232,46 @@ class US135Tests(unittest.TestCase):
                     for o in openings:
                         lo,hi=(o.min_x,o.max_x) if c.wall=='front' else (o.min_y,o.max_y)
                         self.assertFalse(lo<=a.along<=hi and o.bottom_z<=a.elevation<=o.top_z)
-            # Intact full courses have supported fastening at both edges.
+            # Intact full courses use the provisional lower-overlap midpoint.
             for c in s.cuts:
                 if c.wall not in ('front','left') or c.course!=2: continue
                 rows={round(a.elevation,6) for a in s.attachments if a.board==c.name}
-                self.assertEqual(rows,{round(c.bottom+0.75,6),round(c.top-0.75,6)})
+                self.assertEqual(rows,{round(c.bottom+(s.board_width-s.course_pitch)/2,6)})
+
+    def test_concealment_and_recessed_head_envelopes(self):
+        s=build.build_enclosure().siding
+        kinds=set()
+        for a,head in zip(s.attachments,s.hardware_parts):
+            if a.wall=="roof": continue
+            kinds.add(a.concealment)
+            cut=next(c for c in s.cuts if c.name==a.board)
+            if a.concealment=="overlap-concealed":
+                self.assertTrue(a.recessed)
+                self.assertTrue(s._overlap_covers(cut,a.along,a.elevation))
+                self.assertIsNone(a.exception_reason)
+            elif a.concealment=="trim-concealed":
+                self.assertTrue(s._trim_covers(a.wall,a.along,a.elevation))
+            else:
+                self.assertIsNotNone(a.exception_reason)
+                self.assertFalse(s._trim_covers(a.wall,a.along,a.elevation))
+            if a.recessed:
+                axis=1 if a.wall in ("front","rear") else 0
+                face=s.xy(a.wall,a.along)[axis]
+                bearing=head.start[axis]+(head.size[axis] if a.wall in ("front","left") else 0)
+                self.assertAlmostEqual(abs(face-bearing),s.board_thickness/2)
+        self.assertEqual(kinds,{"overlap-concealed","trim-concealed","exposed"})
+
+    def test_inverted_wall_profiles_keep_lower_fastening_lip_against_frame(self):
+        s=build.build_enclosure().siding
+        for wall in ("front","rear","left","right"):
+            cut=next(c for c in s.cuts if c.wall==wall and c.course==2)
+            p=next(p for p in s.board_parts if p.name.startswith(cut.name))
+            axis=1 if wall in ("front","rear") else 0
+            lower,upper=p.rebates
+            outer=s.xy(wall,cut.start)[axis]
+            lower_mid=lower[0][axis]+lower[1][axis]/2
+            upper_mid=upper[0][axis]+upper[1][axis]/2
+            self.assertLess(abs(lower_mid-outer),abs(upper_mid-outer))
 
     def test_cut_bom_shopping_and_generated_artifacts(self):
         s=build.siding

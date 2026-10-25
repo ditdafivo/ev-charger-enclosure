@@ -55,6 +55,9 @@ class Attachment:
     kind: str
     locked: bool = False
     length_in: float | None = None
+    concealment: str = "exposed"
+    exception_reason: str | None = None
+    recessed: bool = False
 
 
 @dataclass(frozen=True)
@@ -199,13 +202,13 @@ class US135Siding(CompositeSiding):
         if cut.wall in ("front","rear"):
             outer=y if cut.wall=="front" else y+t/2
             inner=y+t/2 if cut.wall=="front" else y
-            rebates=(((x,inner,cut.bottom),(dx,t/2,lap)),
-                     ((x,outer,cut.top-lap),(dx,t/2,lap)))
+            rebates=(((x,outer,cut.bottom),(dx,t/2,lap)),
+                     ((x,inner,cut.top-lap),(dx,t/2,lap)))
         else:
             outer=x if cut.wall=="left" else x+t/2
             inner=x+t/2 if cut.wall=="left" else x
-            rebates=(((inner,y,cut.bottom),(t/2,dy,lap)),
-                     ((outer,y,cut.top-lap),(t/2,dy,lap)))
+            rebates=(((outer,y,cut.bottom),(t/2,dy,lap)),
+                     ((inner,y,cut.top-lap),(t/2,dy,lap)))
         return SidingPart(cut.name+suffix,"US135",start,size,self.decking_color,
             front_bores=tuple(bore for bore in self.front_bores if cut.wall=="front"
                 and bore.center_x+bore.diameter/2>a and bore.center_x-bore.diameter/2<b
@@ -393,40 +396,86 @@ class US135Siding(CompositeSiding):
             and loc[2]-eps<=z<=loc[2]+size[2]+eps
             for loc,size in (*self.framing,*((p.start,p.size) for p in self.backing_parts)))
 
+    def _wall_intervals(self, cut: BoardCut, station: float) -> list[tuple[float,float]]:
+        """Remaining board material at a station, including cutouts and grade."""
+        bottom=max(cut.bottom,self.ground_z(*self.xy(cut.wall,station))+self.ground_clearance)
+        if cut.notched and self.rear_opening_min_x-self.end_gap<=station<=self.rear_opening_max_x+self.end_gap:
+            bottom=max(bottom,self.rear_opening_top_z+self.end_gap)
+        intervals=[(bottom,cut.top)] if bottom<cut.top else []
+        openings=self.front_openings if cut.wall=="front" else self.right_openings if cut.wall=="right" else ()
+        for o in openings:
+            lo,hi=(o.min_x,o.max_x) if cut.wall=="front" else (o.min_y,o.max_y)
+            if lo-0.125<=station<=hi+0.125:
+                intervals=[piece for low,high in intervals for piece in
+                           ((low,min(high,o.bottom_z-0.125)),(max(low,o.top_z+0.125),high))
+                           if piece[1]>piece[0]]
+        return intervals
+
+    def _overlap_covers(self, cut: BoardCut, station: float, z: float) -> bool:
+        radius=0.125
+        return any(other.wall==cut.wall and other.course==cut.course+1
+                   and other.start<=station-radius and station+radius<=other.end
+                   and all(any(lo<=z-radius and z+radius<=hi
+                               for lo,hi in self._wall_intervals(other,x))
+                           for x in (station-radius,station,station+radius))
+                   for other in self.cuts)
+
+    def _trim_covers(self, wall: str, station: float, z: float) -> bool:
+        # Project the complete head onto actual wall-facing US20 rectangles.
+        axis=0 if wall in ("front","rear") else 1
+        normal=1-axis
+        face=self.xy(wall,station)[normal]
+        for p in self.angle_parts:
+            if abs(p.size[normal]-0.22)>1e-8: continue
+            near=p.start[normal]+(p.size[normal] if wall in ("front","left") else 0)
+            if abs(near-face)>1e-8: continue
+            if not (p.start[axis]<=station-0.125 and station+0.125<=p.start[axis]+p.size[axis]
+                    and p.start[2]<=z-0.125 and z+0.125<=p.start[2]+p.size[2]): continue
+            if any(pos[axis]<station+0.125 and pos[axis]+size[axis]>station-0.125
+                   and pos[2]<z+0.125 and pos[2]+size[2]>z-0.125 for pos,size in p.rebates): continue
+            return True
+        return False
+
     @cached_property
     def attachments(self) -> tuple[Attachment,...]:
         result=[]
-        # Two face-screw rows retain both edges without relying on clip grooves.
-        # Stay beyond the simplified tongue/rebate region. A scribed narrow
-        # remainder gets a single centered row instead of an off-board screw.
+        lap=self.board_width-self.course_pitch
         for cut in self.cuts:
-            stations=[s for s in self.wall_stations(cut.wall) if cut.start<=s<=cut.end]
+            stations=[s for s in self.wall_stations(cut.wall) if cut.start<s<cut.end]
             openings=self.front_openings if cut.wall=="front" else self.right_openings if cut.wall=="right" else ()
             for opening in openings:
                 if cut.bottom<opening.top_z and cut.top>opening.bottom_z:
                     lo,hi = (opening.min_x,opening.max_x) if cut.wall=="front" else (opening.min_y,opening.max_y)
-                    stations.extend(s for s in (lo-0.5,hi+0.5) if cut.start<=s<=cut.end)
+                    stations.extend(s for s in (lo-0.5,hi+0.5) if cut.start<s<cut.end)
             midpoint=(cut.start+cut.end)/2
             stations.append(midpoint)
             candidates=[]
             for station in sorted(set(stations)):
-                bottom=max(cut.bottom,self.ground_z(*self.xy(cut.wall,station))+self.ground_clearance)
-                if cut.notched and self.rear_opening_min_x-self.end_gap<=station<=self.rear_opening_max_x+self.end_gap:
-                    bottom=max(bottom,self.rear_opening_top_z+self.end_gap)
-                height=cut.top-bottom
-                if height<=0: continue
-                elevations=(bottom+0.75,cut.top-0.75) if height>1.5 else ((bottom+cut.top)/2,)
-                for z in sorted(set(elevations)):
-                    openings=self.front_openings if cut.wall=="front" else self.right_openings if cut.wall=="right" else ()
-                    if any((o.min_x if cut.wall=="front" else o.min_y)<=station<=
-                           (o.max_x if cut.wall=="front" else o.max_y) and o.bottom_z<=z<=o.top_z
-                           for o in openings):
-                        continue
-                    if self._surface_supported(cut.wall,station,z):
-                        candidates.append(Attachment(cut.name,cut.wall,station,z,"face_screw"))
+                for bottom,top in self._wall_intervals(cut,station):
+                    nominal=cut.bottom+lap/2
+                    recessed=(lap>=0.25 and bottom+0.125<=nominal<=top-0.125)
+                    z=nominal if recessed else bottom+min(0.75,(top-bottom)/2)
+                    covered=recessed and self._overlap_covers(cut,station,z)
+                    if not covered or not self._surface_supported(cut.wall,station,z):
+                        # Prefer a supported trim-covered exception, including the header.
+                        trim_rows=[bottom+0.125+i*0.125 for i in range(max(0,int((top-bottom-0.25)/0.125)+1))]
+                        trim_rows=[v for v in trim_rows if self._trim_covers(cut.wall,station,v)
+                                   and self._surface_supported(cut.wall,station,v)]
+                        if trim_rows:
+                            z=min(trim_rows,key=lambda v:abs(v-z))
+                            recessed=cut.bottom+0.125<=z<=cut.bottom+lap-0.125
+                    if not self._surface_supported(cut.wall,station,z):
+                        z=top-min(0.75,(top-bottom)/2)
+                        recessed=False
+                        if not self._surface_supported(cut.wall,station,z): continue
+                    covered=recessed and self._overlap_covers(cut,station,z)
+                    concealment="overlap-concealed" if covered else "trim-concealed" if self._trim_covers(cut.wall,station,z) else "exposed"
+                    reason=None if covered else "cutout, termination, scribe or missing support prevents concealed overlap fastening"
+                    candidates.append(Attachment(cut.name,cut.wall,station,z,"face_screw",
+                        concealment=concealment,exception_reason=reason,recessed=recessed))
             if not candidates:
                 raise ValueError(f"{cut.name}: no supported face fastening")
-            # Header screw fixes the single notched rear board; its wings slide.
+            # Keep the notched physical board fixed at its header midpoint.
             fixed=min(candidates,key=lambda a:(abs(a.along-midpoint),-a.elevation))
             result.extend(replace(a,locked=a==fixed) for a in candidates)
         for part in self.board_parts:
@@ -454,7 +503,8 @@ class US135Siding(CompositeSiding):
     @cached_property
     def hardware_parts(self) -> tuple[SidingPart,...]:
         parts=[]
-        # Schematic exposed screw heads; shanks and movement bores are not CAD.
+        # Schematic head envelopes; overlap head clearance remains a sample check.
+        # Shanks and movement bores are not machining CAD.
         head=0.25; height=0.08
         for i,a in enumerate(self.attachments,1):
             if a.wall=="roof":
@@ -462,6 +512,10 @@ class US135Siding(CompositeSiding):
                 size=(head,head,height)
             else:
                 x,y=self.xy(a.wall,a.along)
+                if a.recessed:
+                    offset=self.board_thickness/2
+                    x += offset if a.wall=="left" else -offset if a.wall=="right" else 0
+                    y += offset if a.wall=="front" else -offset if a.wall=="rear" else 0
                 start,size={
                     "front":((x-head/2,y-height,a.elevation-head/2),(head,height,head)),
                     "rear":((x-head/2,y,a.elevation-head/2),(head,height,head)),
@@ -664,7 +718,7 @@ class US135Siding(CompositeSiding):
             "roof_face_screws":"Roof only. One midpoint fixed connection per board; all others slide. Tip stays within plywood; verify production stack and usable thread engagement. Custom unverified connection.",
             "roof_strip_anchors":"Two end anchors per strip at generated framing-supported locations; independent of siding screws. Countersink into plywood only, flush below siding.",
             "roof_support_toe_screws":"Two opposed toe screws per local 2x4 block, below its diagonal seat. Field-select approved structural screws and predrill/edge distances; connection capacity unverified.",
-            "face_screws":"Walls only. One per generated wall attachment. Two rows where width permits; one fixed point per physical board and sliding holes elsewhere. Custom schedule, not load-verified.",
+            "face_screws":"Walls only. One per generated wall attachment. One concealed overlap row on intact courses; local cut/termination exceptions; one fixed point per physical board and sliding holes elsewhere. Custom schedule, not load-verified.",
             "roof_trim_screws":"Roof horizontal legs only. Added 1/2 in length preserves former nominal framing penetration through the thicker stack. Verify framing landing and independent movement.",
             "trim_screws":"Wall and vertical trim allowance; verify backing, penetration and independent movement of trim and underlying siding.",
             "backing_brackets":"Four per backing segment; field-select hardware and structural screws for each actual joint.",
@@ -714,8 +768,13 @@ class US135Siding(CompositeSiding):
         manifest={
             "product":"US135", "product_line":"All Weather Pro",
             "units":"inches", "wall_installation":"top downward; temporary framing-mounted padded supports",
-            "physical_dry_fit_status":"NOT PERFORMED: verify direct seating, two-course engagement, face-screw retention and sliding holes",
-            "attachment_method":"custom direct face fastening to open lumber framing; two rows where board width permits; not a manufacturer-approved replacement for AW08",
+            "physical_dry_fit_status":"NOT PERFORMED: verify inverted engagement, overlap material, head clearance, retention and sliding holes",
+            "wall_orientation":"inverted; finished face outward",
+            "wall_screw_row_offset_in":(self.board_width-self.course_pitch)/2,
+            "wall_screw_row_status":"provisional overlap midpoint; not a drilling dimension",
+            "head_clearance_status":"schematic head envelopes may intersect the simplified covering tongue; production clearance unverified; no machining relief specified",
+            "wall_drainage_tradeoff":"small inverted-joint water-retention gap accepted for desert climate",
+            "attachment_method":"custom direct face fastening to open lumber framing; inverted wall profiles, one concealed lower-overlap row with local exceptions; not a manufacturer-approved replacement for AW08",
             "trim_method":"applied US20 at four outside corners, rear opening and roof edges; corners stop below roof trim",
             "ventilation_status":"verify unobstructed 1 inch net free airflow behind open framing; no clip-created stand-off",
             "course_pitch_in":self.course_pitch, "course_pitch_status":"provisional 130 mm; verify two engaged samples before cutting",

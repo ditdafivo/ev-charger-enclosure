@@ -214,7 +214,7 @@ class US135Tests(unittest.TestCase):
         header=next(p for p in s.angle_parts if p.name.endswith('opening_header_return'))
         self.assertAlmostEqual(header.start[2]-(jamb.start[2]+jamb.size[2]),s.end_gap)
 
-    def test_screws_land_on_boards_and_retain_both_edges(self):
+    def test_screws_land_on_boards_and_use_concealed_overlap(self):
         for dims in ((24,19.375,49.625),(30,26,55),(36,30,55)):
             s=build.build_enclosure(*dims).siding
             for a in s.attachments:
@@ -232,11 +232,46 @@ class US135Tests(unittest.TestCase):
                     for o in openings:
                         lo,hi=(o.min_x,o.max_x) if c.wall=='front' else (o.min_y,o.max_y)
                         self.assertFalse(lo<=a.along<=hi and o.bottom_z<=a.elevation<=o.top_z)
-            # Intact full courses have supported fastening at both edges.
+            # Intact full courses use the provisional lower-overlap midpoint.
             for c in s.cuts:
                 if c.wall not in ('front','left') or c.course!=2: continue
                 rows={round(a.elevation,6) for a in s.attachments if a.board==c.name}
-                self.assertEqual(rows,{round(c.bottom+0.75,6),round(c.top-0.75,6)})
+                self.assertEqual(rows,{round(c.bottom+(s.board_width-s.course_pitch)/2,6)})
+
+    def test_concealment_and_recessed_head_envelopes(self):
+        s=build.build_enclosure().siding
+        kinds=set()
+        for a,head in zip(s.attachments,s.hardware_parts):
+            if a.wall=="roof": continue
+            kinds.add(a.concealment)
+            cut=next(c for c in s.cuts if c.name==a.board)
+            if a.concealment=="overlap-concealed":
+                self.assertTrue(a.recessed)
+                self.assertTrue(s._overlap_covers(cut,a.along,a.elevation))
+                self.assertIsNone(a.exception_reason)
+            elif a.concealment=="trim-concealed":
+                self.assertTrue(s._trim_covers(a.wall,a.along,a.elevation))
+            else:
+                self.assertIsNotNone(a.exception_reason)
+                self.assertFalse(s._trim_covers(a.wall,a.along,a.elevation))
+            if a.recessed:
+                axis=1 if a.wall in ("front","rear") else 0
+                face=s.xy(a.wall,a.along)[axis]
+                bearing=head.start[axis]+(head.size[axis] if a.wall in ("front","left") else 0)
+                self.assertAlmostEqual(abs(face-bearing),s.board_thickness/2)
+        self.assertEqual(kinds,{"overlap-concealed","trim-concealed","exposed"})
+
+    def test_inverted_wall_profiles_keep_lower_fastening_lip_against_frame(self):
+        s=build.build_enclosure().siding
+        for wall in ("front","rear","left","right"):
+            cut=next(c for c in s.cuts if c.wall==wall and c.course==2)
+            p=next(p for p in s.board_parts if p.name.startswith(cut.name))
+            axis=1 if wall in ("front","rear") else 0
+            lower,upper=p.rebates
+            outer=s.xy(wall,cut.start)[axis]
+            lower_mid=lower[0][axis]+lower[1][axis]/2
+            upper_mid=upper[0][axis]+upper[1][axis]/2
+            self.assertLess(abs(lower_mid-outer),abs(upper_mid-outer))
 
     def test_cut_bom_shopping_and_generated_artifacts(self):
         s=build.siding

@@ -1104,363 +1104,11 @@ enclosure_siding_mesh_rear_2_horizontal_6
 enclosure_siding_mesh_rear_2_horizontal_7
 ```
 
-## 24. Wrap the front, left and right with wall siding course 1 (`siding-course-1`)
+## 24. Install the US135 roof cover (`siding-roof`)
 
-Hold the full-height top boards level with padded framing-mounted supports.
-Seat the boards directly against the lumber and face-fasten at the generated
-supported locations. Use one fixed point per physical board; predrill all other
-holes for movement and leave their heads free to slide. Install profiles upside
-down, finished face outward. One recessed lower-overlap row is concealed by the
-next course. Schematic heads require a production-profile clearance check.
-Keep the ends clear for the applied US20 corner covers installed in step 36.
-Remove temporary supports after permanent fasteners retain each board.
-
-New model objects:
-
-```text
-enclosure_siding_front_1
-enclosure_siding_left_1
-enclosure_siding_right_1
-enclosure_siding_front_1_face_screw_1
-enclosure_siding_front_1_face_screw_2
-enclosure_siding_front_1_face_screw_3
-enclosure_siding_left_1_face_screw_4
-enclosure_siding_left_1_face_screw_5
-enclosure_siding_left_1_face_screw_6
-enclosure_siding_right_1_face_screw_7
-enclosure_siding_right_1_face_screw_8
-enclosure_siding_right_1_face_screw_9
-```
-
-## 25. Install the notched rear top siding board (`siding-course-1-rear`)
-
-Cut one physical rear board with an access notch; the three displayed solids
-are portions of this same board. Support it temporarily and face-fasten into
-the rear posts and header. Its one fixed point is the supported header screw
-near the midpoint. All wing and other header connections must permit movement.
-Keep clearance around the opening and beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_rear_1_piece_1
-enclosure_siding_rear_1_piece_2
-enclosure_siding_rear_1_piece_3
-enclosure_siding_rear_1_face_screw_10
-enclosure_siding_rear_1_face_screw_11
-enclosure_siding_rear_1_face_screw_12
-```
-
-## 26. Install wall siding course 2, top down (`siding-course-2`)
-
-Install wall course 2, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_2
-enclosure_siding_left_2
-enclosure_siding_right_2
-enclosure_siding_rear_2_1
-enclosure_siding_rear_2_2
-enclosure_siding_front_2_face_screw_13
-enclosure_siding_front_2_face_screw_14
-enclosure_siding_front_2_face_screw_15
-enclosure_siding_left_2_face_screw_16
-enclosure_siding_left_2_face_screw_17
-enclosure_siding_left_2_face_screw_18
-enclosure_siding_right_2_face_screw_19
-enclosure_siding_right_2_face_screw_20
-enclosure_siding_right_2_face_screw_21
-enclosure_siding_rear_2_1_face_screw_22
-enclosure_siding_rear_2_1_face_screw_23
-enclosure_siding_rear_2_2_face_screw_24
-enclosure_siding_rear_2_2_face_screw_25
-```
-
-## 27. Install wall siding course 3, top down (`siding-course-3`)
-
-Install wall course 3, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_3
-enclosure_siding_left_3
-enclosure_siding_right_3
-enclosure_siding_rear_3_1
-enclosure_siding_rear_3_2
-enclosure_siding_front_3_face_screw_26
-enclosure_siding_front_3_face_screw_27
-enclosure_siding_front_3_face_screw_28
-enclosure_siding_left_3_face_screw_29
-enclosure_siding_left_3_face_screw_30
-enclosure_siding_left_3_face_screw_31
-enclosure_siding_right_3_face_screw_32
-enclosure_siding_right_3_face_screw_33
-enclosure_siding_right_3_face_screw_34
-enclosure_siding_rear_3_1_face_screw_35
-enclosure_siding_rear_3_1_face_screw_36
-enclosure_siding_rear_3_2_face_screw_37
-enclosure_siding_rear_3_2_face_screw_38
-```
-
-## 28. Install wall siding course 4, top down (`siding-course-4`)
-
-Install wall course 4, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_4
-enclosure_siding_left_4
-enclosure_siding_right_4
-enclosure_siding_rear_4_1
-enclosure_siding_rear_4_2
-enclosure_siding_front_4_face_screw_39
-enclosure_siding_front_4_face_screw_40
-enclosure_siding_front_4_face_screw_41
-enclosure_siding_left_4_face_screw_42
-enclosure_siding_left_4_face_screw_43
-enclosure_siding_left_4_face_screw_44
-enclosure_siding_right_4_face_screw_45
-enclosure_siding_right_4_face_screw_46
-enclosure_siding_right_4_face_screw_47
-enclosure_siding_rear_4_1_face_screw_48
-enclosure_siding_rear_4_1_face_screw_49
-enclosure_siding_rear_4_2_face_screw_50
-enclosure_siding_rear_4_2_face_screw_51
-```
-
-## 29. Install wall siding course 5, top down (`siding-course-5`)
-
-Install wall course 5, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_5
-enclosure_siding_left_5
-enclosure_siding_right_5
-enclosure_siding_rear_5_1
-enclosure_siding_rear_5_2
-enclosure_siding_front_5_face_screw_52
-enclosure_siding_front_5_face_screw_53
-enclosure_siding_front_5_face_screw_54
-enclosure_siding_left_5_face_screw_55
-enclosure_siding_left_5_face_screw_56
-enclosure_siding_left_5_face_screw_57
-enclosure_siding_right_5_face_screw_58
-enclosure_siding_right_5_face_screw_59
-enclosure_siding_right_5_face_screw_60
-enclosure_siding_rear_5_1_face_screw_61
-enclosure_siding_rear_5_1_face_screw_62
-enclosure_siding_rear_5_2_face_screw_63
-enclosure_siding_rear_5_2_face_screw_64
-```
-
-## 30. Install wall siding course 6, top down (`siding-course-6`)
-
-Install wall course 6, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_6
-enclosure_siding_left_6
-enclosure_siding_right_6_piece_1
-enclosure_siding_right_6_piece_2
-enclosure_siding_right_6_piece_3
-enclosure_siding_rear_6_1
-enclosure_siding_rear_6_2
-enclosure_siding_front_6_face_screw_65
-enclosure_siding_front_6_face_screw_66
-enclosure_siding_front_6_face_screw_67
-enclosure_siding_left_6_face_screw_68
-enclosure_siding_left_6_face_screw_69
-enclosure_siding_left_6_face_screw_70
-enclosure_siding_right_6_face_screw_71
-enclosure_siding_right_6_face_screw_72
-enclosure_siding_right_6_face_screw_73
-enclosure_siding_right_6_face_screw_74
-enclosure_siding_right_6_face_screw_75
-enclosure_siding_rear_6_1_face_screw_76
-enclosure_siding_rear_6_1_face_screw_77
-enclosure_siding_rear_6_2_face_screw_78
-enclosure_siding_rear_6_2_face_screw_79
-```
-
-## 31. Install wall siding course 7, top down (`siding-course-7`)
-
-Install wall course 7, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_7
-enclosure_siding_left_7
-enclosure_siding_right_7_piece_1
-enclosure_siding_right_7_piece_2
-enclosure_siding_right_7_piece_3
-enclosure_siding_rear_7_1
-enclosure_siding_rear_7_2
-enclosure_siding_front_7_face_screw_80
-enclosure_siding_front_7_face_screw_81
-enclosure_siding_front_7_face_screw_82
-enclosure_siding_left_7_face_screw_83
-enclosure_siding_left_7_face_screw_84
-enclosure_siding_left_7_face_screw_85
-enclosure_siding_right_7_face_screw_86
-enclosure_siding_right_7_face_screw_87
-enclosure_siding_right_7_face_screw_88
-enclosure_siding_right_7_face_screw_89
-enclosure_siding_right_7_face_screw_90
-enclosure_siding_rear_7_1_face_screw_91
-enclosure_siding_rear_7_1_face_screw_92
-enclosure_siding_rear_7_2_face_screw_93
-enclosure_siding_rear_7_2_face_screw_94
-```
-
-## 32. Install wall siding course 8, top down (`siding-course-8`)
-
-Install wall course 8, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_8
-enclosure_siding_left_8
-enclosure_siding_right_8
-enclosure_siding_rear_8_1
-enclosure_siding_rear_8_2
-enclosure_siding_front_8_face_screw_95
-enclosure_siding_front_8_face_screw_96
-enclosure_siding_front_8_face_screw_97
-enclosure_siding_left_8_face_screw_98
-enclosure_siding_left_8_face_screw_99
-enclosure_siding_left_8_face_screw_100
-enclosure_siding_right_8_face_screw_101
-enclosure_siding_right_8_face_screw_102
-enclosure_siding_right_8_face_screw_103
-enclosure_siding_rear_8_1_face_screw_104
-enclosure_siding_rear_8_1_face_screw_105
-enclosure_siding_rear_8_2_face_screw_106
-enclosure_siding_rear_8_2_face_screw_107
-```
-
-## 33. Install wall siding course 9, top down (`siding-course-9`)
-
-Install wall course 9, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_9
-enclosure_siding_left_9
-enclosure_siding_right_9
-enclosure_siding_rear_9_1
-enclosure_siding_rear_9_2
-enclosure_siding_front_9_face_screw_108
-enclosure_siding_front_9_face_screw_109
-enclosure_siding_front_9_face_screw_110
-enclosure_siding_left_9_face_screw_111
-enclosure_siding_left_9_face_screw_112
-enclosure_siding_left_9_face_screw_113
-enclosure_siding_right_9_face_screw_114
-enclosure_siding_right_9_face_screw_115
-enclosure_siding_right_9_face_screw_116
-enclosure_siding_rear_9_1_face_screw_117
-enclosure_siding_rear_9_1_face_screw_118
-enclosure_siding_rear_9_2_face_screw_119
-enclosure_siding_rear_9_2_face_screw_120
-```
-
-## 34. Install wall siding course 10, top down (`siding-course-10`)
-
-Install wall course 10, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-Scribe the final course to actual grade plus 3/4 inch, checking intervening
-high spots. Narrow remainders use a centered screw row. Preserve movement
-clearance without lowering the courses above.
-
-New model objects:
-
-```text
-enclosure_siding_front_10
-enclosure_siding_left_10
-enclosure_siding_right_10
-enclosure_siding_rear_10_1
-enclosure_siding_rear_10_2
-enclosure_siding_front_10_face_screw_121
-enclosure_siding_front_10_face_screw_122
-enclosure_siding_front_10_face_screw_123
-enclosure_siding_left_10_face_screw_124
-enclosure_siding_left_10_face_screw_125
-enclosure_siding_left_10_face_screw_126
-enclosure_siding_right_10_face_screw_127
-enclosure_siding_right_10_face_screw_128
-enclosure_siding_right_10_face_screw_129
-enclosure_siding_rear_10_1_face_screw_130
-enclosure_siding_rear_10_1_face_screw_131
-enclosure_siding_rear_10_2_face_screw_132
-enclosure_siding_rear_10_2_face_screw_133
-```
-
-## 35. Install the US135 roof cover (`siding-roof`)
+Install the roof cover before the wall siding so the open sides preserve
+access to the roof support strips and fasteners. Leave roof-edge trim until
+after the wall siding is installed.
 
 Run boards along X and progress across Y. Seat boards directly on the
 3/4-inch plywood support strips. Use provisional #8 x 1-1/8-inch stainless
@@ -1521,6 +1169,362 @@ enclosure_siding_top_5_face_screw_169
 enclosure_siding_top_5_face_screw_170
 enclosure_siding_top_5_face_screw_171
 enclosure_siding_top_5_face_screw_172
+```
+
+## 25. Wrap the front, left and right with wall siding course 1 (`siding-course-1`)
+
+Hold the full-height top boards level with padded framing-mounted supports.
+Seat the boards directly against the lumber and face-fasten at the generated
+supported locations. Use one fixed point per physical board; predrill all other
+holes for movement and leave their heads free to slide. Install profiles upside
+down, finished face outward. One recessed lower-overlap row is concealed by the
+next course. Schematic heads require a production-profile clearance check.
+Keep the ends clear for the applied US20 corner covers installed in step 36.
+Remove temporary supports after permanent fasteners retain each board.
+
+New model objects:
+
+```text
+enclosure_siding_front_1
+enclosure_siding_left_1
+enclosure_siding_right_1
+enclosure_siding_front_1_face_screw_1
+enclosure_siding_front_1_face_screw_2
+enclosure_siding_front_1_face_screw_3
+enclosure_siding_left_1_face_screw_4
+enclosure_siding_left_1_face_screw_5
+enclosure_siding_left_1_face_screw_6
+enclosure_siding_right_1_face_screw_7
+enclosure_siding_right_1_face_screw_8
+enclosure_siding_right_1_face_screw_9
+```
+
+## 26. Install the notched rear top siding board (`siding-course-1-rear`)
+
+Cut one physical rear board with an access notch; the three displayed solids
+are portions of this same board. Support it temporarily and face-fasten into
+the rear posts and header. Its one fixed point is the supported header screw
+near the midpoint. All wing and other header connections must permit movement.
+Keep clearance around the opening and beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_rear_1_piece_1
+enclosure_siding_rear_1_piece_2
+enclosure_siding_rear_1_piece_3
+enclosure_siding_rear_1_face_screw_10
+enclosure_siding_rear_1_face_screw_11
+enclosure_siding_rear_1_face_screw_12
+```
+
+## 27. Install wall siding course 2, top down (`siding-course-2`)
+
+Install wall course 2, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_front_2
+enclosure_siding_left_2
+enclosure_siding_right_2
+enclosure_siding_rear_2_1
+enclosure_siding_rear_2_2
+enclosure_siding_front_2_face_screw_13
+enclosure_siding_front_2_face_screw_14
+enclosure_siding_front_2_face_screw_15
+enclosure_siding_left_2_face_screw_16
+enclosure_siding_left_2_face_screw_17
+enclosure_siding_left_2_face_screw_18
+enclosure_siding_right_2_face_screw_19
+enclosure_siding_right_2_face_screw_20
+enclosure_siding_right_2_face_screw_21
+enclosure_siding_rear_2_1_face_screw_22
+enclosure_siding_rear_2_1_face_screw_23
+enclosure_siding_rear_2_2_face_screw_24
+enclosure_siding_rear_2_2_face_screw_25
+```
+
+## 28. Install wall siding course 3, top down (`siding-course-3`)
+
+Install wall course 3, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_front_3
+enclosure_siding_left_3
+enclosure_siding_right_3
+enclosure_siding_rear_3_1
+enclosure_siding_rear_3_2
+enclosure_siding_front_3_face_screw_26
+enclosure_siding_front_3_face_screw_27
+enclosure_siding_front_3_face_screw_28
+enclosure_siding_left_3_face_screw_29
+enclosure_siding_left_3_face_screw_30
+enclosure_siding_left_3_face_screw_31
+enclosure_siding_right_3_face_screw_32
+enclosure_siding_right_3_face_screw_33
+enclosure_siding_right_3_face_screw_34
+enclosure_siding_rear_3_1_face_screw_35
+enclosure_siding_rear_3_1_face_screw_36
+enclosure_siding_rear_3_2_face_screw_37
+enclosure_siding_rear_3_2_face_screw_38
+```
+
+## 29. Install wall siding course 4, top down (`siding-course-4`)
+
+Install wall course 4, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_front_4
+enclosure_siding_left_4
+enclosure_siding_right_4
+enclosure_siding_rear_4_1
+enclosure_siding_rear_4_2
+enclosure_siding_front_4_face_screw_39
+enclosure_siding_front_4_face_screw_40
+enclosure_siding_front_4_face_screw_41
+enclosure_siding_left_4_face_screw_42
+enclosure_siding_left_4_face_screw_43
+enclosure_siding_left_4_face_screw_44
+enclosure_siding_right_4_face_screw_45
+enclosure_siding_right_4_face_screw_46
+enclosure_siding_right_4_face_screw_47
+enclosure_siding_rear_4_1_face_screw_48
+enclosure_siding_rear_4_1_face_screw_49
+enclosure_siding_rear_4_2_face_screw_50
+enclosure_siding_rear_4_2_face_screw_51
+```
+
+## 30. Install wall siding course 5, top down (`siding-course-5`)
+
+Install wall course 5, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_front_5
+enclosure_siding_left_5
+enclosure_siding_right_5
+enclosure_siding_rear_5_1
+enclosure_siding_rear_5_2
+enclosure_siding_front_5_face_screw_52
+enclosure_siding_front_5_face_screw_53
+enclosure_siding_front_5_face_screw_54
+enclosure_siding_left_5_face_screw_55
+enclosure_siding_left_5_face_screw_56
+enclosure_siding_left_5_face_screw_57
+enclosure_siding_right_5_face_screw_58
+enclosure_siding_right_5_face_screw_59
+enclosure_siding_right_5_face_screw_60
+enclosure_siding_rear_5_1_face_screw_61
+enclosure_siding_rear_5_1_face_screw_62
+enclosure_siding_rear_5_2_face_screw_63
+enclosure_siding_rear_5_2_face_screw_64
+```
+
+## 31. Install wall siding course 6, top down (`siding-course-6`)
+
+Install wall course 6, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_front_6
+enclosure_siding_left_6
+enclosure_siding_right_6_piece_1
+enclosure_siding_right_6_piece_2
+enclosure_siding_right_6_piece_3
+enclosure_siding_rear_6_1
+enclosure_siding_rear_6_2
+enclosure_siding_front_6_face_screw_65
+enclosure_siding_front_6_face_screw_66
+enclosure_siding_front_6_face_screw_67
+enclosure_siding_left_6_face_screw_68
+enclosure_siding_left_6_face_screw_69
+enclosure_siding_left_6_face_screw_70
+enclosure_siding_right_6_face_screw_71
+enclosure_siding_right_6_face_screw_72
+enclosure_siding_right_6_face_screw_73
+enclosure_siding_right_6_face_screw_74
+enclosure_siding_right_6_face_screw_75
+enclosure_siding_rear_6_1_face_screw_76
+enclosure_siding_rear_6_1_face_screw_77
+enclosure_siding_rear_6_2_face_screw_78
+enclosure_siding_rear_6_2_face_screw_79
+```
+
+## 32. Install wall siding course 7, top down (`siding-course-7`)
+
+Install wall course 7, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_front_7
+enclosure_siding_left_7
+enclosure_siding_right_7_piece_1
+enclosure_siding_right_7_piece_2
+enclosure_siding_right_7_piece_3
+enclosure_siding_rear_7_1
+enclosure_siding_rear_7_2
+enclosure_siding_front_7_face_screw_80
+enclosure_siding_front_7_face_screw_81
+enclosure_siding_front_7_face_screw_82
+enclosure_siding_left_7_face_screw_83
+enclosure_siding_left_7_face_screw_84
+enclosure_siding_left_7_face_screw_85
+enclosure_siding_right_7_face_screw_86
+enclosure_siding_right_7_face_screw_87
+enclosure_siding_right_7_face_screw_88
+enclosure_siding_right_7_face_screw_89
+enclosure_siding_right_7_face_screw_90
+enclosure_siding_rear_7_1_face_screw_91
+enclosure_siding_rear_7_1_face_screw_92
+enclosure_siding_rear_7_2_face_screw_93
+enclosure_siding_rear_7_2_face_screw_94
+```
+
+## 33. Install wall siding course 8, top down (`siding-course-8`)
+
+Install wall course 8, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_front_8
+enclosure_siding_left_8
+enclosure_siding_right_8
+enclosure_siding_rear_8_1
+enclosure_siding_rear_8_2
+enclosure_siding_front_8_face_screw_95
+enclosure_siding_front_8_face_screw_96
+enclosure_siding_front_8_face_screw_97
+enclosure_siding_left_8_face_screw_98
+enclosure_siding_left_8_face_screw_99
+enclosure_siding_left_8_face_screw_100
+enclosure_siding_right_8_face_screw_101
+enclosure_siding_right_8_face_screw_102
+enclosure_siding_right_8_face_screw_103
+enclosure_siding_rear_8_1_face_screw_104
+enclosure_siding_rear_8_1_face_screw_105
+enclosure_siding_rear_8_2_face_screw_106
+enclosure_siding_rear_8_2_face_screw_107
+```
+
+## 34. Install wall siding course 9, top down (`siding-course-9`)
+
+Install wall course 9, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+New model objects:
+
+```text
+enclosure_siding_front_9
+enclosure_siding_left_9
+enclosure_siding_right_9
+enclosure_siding_rear_9_1
+enclosure_siding_rear_9_2
+enclosure_siding_front_9_face_screw_108
+enclosure_siding_front_9_face_screw_109
+enclosure_siding_front_9_face_screw_110
+enclosure_siding_left_9_face_screw_111
+enclosure_siding_left_9_face_screw_112
+enclosure_siding_left_9_face_screw_113
+enclosure_siding_right_9_face_screw_114
+enclosure_siding_right_9_face_screw_115
+enclosure_siding_right_9_face_screw_116
+enclosure_siding_rear_9_1_face_screw_117
+enclosure_siding_rear_9_1_face_screw_118
+enclosure_siding_rear_9_2_face_screw_119
+enclosure_siding_rear_9_2_face_screw_120
+```
+
+## 35. Install wall siding course 10, top down (`siding-course-10`)
+
+Install wall course 10, proceeding downward. Engage it with the course
+above, support it temporarily, and face-fasten directly into lumber at the
+generated locations in the inverted lower overlap, concealed by the next course.
+Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
+Fix each physical board once; keep all other holes oversized and free to slide.
+Each separate rear wing has its own fixed point. Keep screws clear of openings
+and keep the board ends clear beneath the future US20 covers.
+
+Scribe the final course to actual grade plus 3/4 inch, checking intervening
+high spots. Narrow remainders use a centered screw row. Preserve movement
+clearance without lowering the courses above.
+
+New model objects:
+
+```text
+enclosure_siding_front_10
+enclosure_siding_left_10
+enclosure_siding_right_10
+enclosure_siding_rear_10_1
+enclosure_siding_rear_10_2
+enclosure_siding_front_10_face_screw_121
+enclosure_siding_front_10_face_screw_122
+enclosure_siding_front_10_face_screw_123
+enclosure_siding_left_10_face_screw_124
+enclosure_siding_left_10_face_screw_125
+enclosure_siding_left_10_face_screw_126
+enclosure_siding_right_10_face_screw_127
+enclosure_siding_right_10_face_screw_128
+enclosure_siding_right_10_face_screw_129
+enclosure_siding_rear_10_1_face_screw_130
+enclosure_siding_rear_10_1_face_screw_131
+enclosure_siding_rear_10_2_face_screw_132
+enclosure_siding_rear_10_2_face_screw_133
 ```
 
 ## 36. Fit US20 corners, rear-access and roof-edge trim (`siding-trim`)

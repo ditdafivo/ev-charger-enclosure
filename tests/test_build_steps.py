@@ -201,15 +201,15 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertTrue(all("_mesh_" in name for name in model.build_steps[22].object_names))
         self.assertEqual(len(corners), 8)
         for wall in ("front", "left", "right"):
-            self.assertEqual(step_by_object[f"enclosure_siding_{wall}_1"], 24)
+            self.assertEqual(step_by_object[f"enclosure_siding_{wall}_1"], 25)
         rear_top = {
             name for name in assigned
             if name.startswith("enclosure_siding_rear_1_")
         }
-        self.assertEqual(set(model.build_steps[24].object_names), rear_top)
-        self.assertEqual(step_by_object["enclosure_siding_front_2"], 26)
+        self.assertEqual(set(model.build_steps[25].object_names), rear_top)
+        self.assertEqual(step_by_object["enclosure_siding_front_2"], 27)
         self.assertEqual(step_by_object["enclosure_siding_US20_front_top"], 36)
-        self.assertEqual(step_by_object["enclosure_siding_top_5"], 35)
+        self.assertEqual(step_by_object["enclosure_siding_top_5"], 24)
         self.assertEqual(step_by_object["back_right_outlet_backer_lower"], 13)
         self.assertEqual(step_by_object["back_right_outlet"], 13)
 

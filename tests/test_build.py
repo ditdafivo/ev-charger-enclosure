@@ -492,8 +492,6 @@ class TambourClearanceBuildTests(unittest.TestCase):
             build.TAMBOUR_INWARD_ENVELOPE_DEPTH,
         )
 
-        ceiling_instance = build.components["tambour_ceiling_panel"]
-        ceiling = ceiling_instance.resolved(build.members[ceiling_instance.member])
         obstacles = [
             (name, member.min, member.max)
             for name, member in build.members.items()
@@ -504,15 +502,6 @@ class TambourClearanceBuildTests(unittest.TestCase):
                 tuple(a + b for a, b in zip(part.start, part.size, strict=True)),
             )
             for part in build.siding.board_parts
-        ] + [
-            (
-                "tambour_ceiling_panel",
-                ceiling.box_min,
-                tuple(
-                    a + b
-                    for a, b in zip(ceiling.box_min, ceiling.box_size, strict=True)
-                ),
-            )
         ]
         handle_center_x = (
             tambour.left_points[0][0] + tambour.right_points[0][0]
@@ -723,24 +712,9 @@ class TambourClearanceBuildTests(unittest.TestCase):
                             f"track channel conflicts with lumber {name}",
                         )
 
-    def test_removable_ceiling_guards_horizontal_run(self) -> None:
-        panel_instance=build.components["tambour_ceiling_panel"]
-        panel=panel_instance.resolved(build.members[panel_instance.member])
-
-        self.assertEqual(panel_instance.assembly, "tambour_guard")
-        self.assertEqual(panel.type_name, "quarter_inch_exterior_plywood_panel")
-        self.assertEqual(panel.box_min, (3.5, 10.6875, 45.875))
-        self.assertEqual(panel.box_size, (20.5, 7.9375, 0.25))
-        self.assertEqual(panel.box_min[1], build.members["rail_ft"].max_on("y"))
-        self.assertGreaterEqual(
-            build.TAMBOUR_TOP_Z-build.TAMBOUR_INWARD_ENVELOPE_DEPTH
-            -(panel.box_min[2]+panel.box_size[2]),
-            build.TAMBOUR_CEILING_CLEARANCE,
-        )
-        self.assertGreaterEqual(
-            panel.box_min[2]-build.members["rail_ft"].max_on("z"),
-            build.TAMBOUR_CEILING_BEND_INSET,
-        )
+    def test_ceiling_is_omitted_for_future_access(self) -> None:
+        self.assertNotIn("tambour_ceiling_panel", build.components)
+        self.assertFalse(any("CEILING" in name for name in build.default_build.anchors))
 
     def test_charger_riser_stays_below_or_behind_front_curtain(self) -> None:
         branch=build.conduits["power_pull_box_junction_feed"].resolved(
@@ -856,11 +830,12 @@ class FrontStreetLightBuildTests(unittest.TestCase):
                 parts = [p for p in e.siding.board_parts if p.front_bores]
                 self.assertEqual(len(parts), 1)
                 self.assertEqual(parts[0].front_bores, (bore,))
-                support = e.members["front_address_number_support"]
-                self.assertVectorAlmostEqual(support.size, (dimensions[0]-3.5, 1, 5.5))
-                self.assertEqual(support.min_on("y"), 0)
-                self.assertEqual(support.min_on("x"), e.members["post_fl"].max_on("x"))
-                self.assertEqual(support.max_on("x"), e.members["post_fr"].min_on("x"))
+                self.assertNotIn("front_address_number_support", e.members)
+                panels = [p for p in e.siding.infill_parts if "_address_" in p.name]
+                self.assertTrue(panels)
+                for panel in panels:
+                    self.assertEqual(panel.start[1], .25)
+                    self.assertEqual(panel.size[1], .75)
                 digits = [self.resolved(e, f"front_address_number_{i}") for i in range(1,5)]
                 self.assertEqual("".join(d.text for d in digits), "4754")
                 self.assertAlmostEqual(digits[-1].box_min[0]+2.25-digits[0].box_min[0], 12)
@@ -873,8 +848,8 @@ class FrontStreetLightBuildTests(unittest.TestCase):
                         standoff = self.resolved(e, f"front_address_number_{i}_standoff_{pin}")
                         self.assertAlmostEqual(standoff.box_min[1], -e.siding.exterior_offset-1)
                         self.assertAlmostEqual(standoff.box_size[1], 1)
-                        self.assertGreater(standoff.box_min[2], support.min_on("z"))
-                        self.assertLess(standoff.box_min[2]+standoff.box_size[2], support.max_on("z"))
+                        self.assertGreater(standoff.box_min[2], min(p.start[2] for p in panels))
+                        self.assertLess(standoff.box_min[2]+standoff.box_size[2], max(p.start[2]+p.size[2] for p in panels))
 
     def test_direct_uf_connections_replace_round_box_and_branch_conduits(self):
         for e in (build.default_build, build.build_enclosure(36,24,55)):
@@ -2092,6 +2067,7 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "gusset_covers",
                     "siding_cut_list.csv", "siding_cut_list.json", "siding_installation.json",
                     "siding_bom.csv", "roof_support_review.scad",
+                    "plywood_layout.svg", "plywood_layout.json",
                     "siding_corner_front_left.scad", "siding_corner_front_right.scad",
                     "siding_corner_rear_left.scad", "siding_corner_rear_right.scad",
                     "tambour",

@@ -40,7 +40,7 @@ the build record at the end of this guide.
 | Minimum backing width | 1 3/4 in | Required at narrow supports |
 | Total end clearance at minimum spacing | 1/16 in | Provisional |
 | Minimum slat-end capture | 1/4 in | Prototype-controlled |
-| Removable ceiling panel | 20 1/2 by 7 15/16 by 1/4 in | Fixed enclosure interface |
+| Ceiling | Omitted; overhead space remains open for future access |
 
 The model places 56 slats on the 44-inch curtain. The 1/32-inch difference
 between the 3/4-inch slat height and 25/32-inch attachment pitch is a setup
@@ -229,13 +229,7 @@ Side path and handle orientation (not to scale):
  The printed ledge must remain inside the approved 1 1/2-in envelope.
 ```
 
-The model includes a removable 1/4-inch exterior-plywood ceiling from
-`y = 10.6875` to `y = 18.625` and `z = 43.25` to `z = 43.5`. Its front edge
-aligns with the positive-Y face of `rail_ft`, avoiding an unnecessary forward
-overhang. It shields the overhead curtain from hands and the charger cord while
-retaining 1/4 inch below the maximum curtain envelope. Support it on independent
-removable retainers; do not fasten through a printed track or obstruct track
-inspection.
+No ceiling panel is included. Keep the overhead space open for installation and service of a possible future tambour door.
 
 Attach one centered printed ASA lift ledge to each pull slat. The nominal ledge
 is 300 mm wide, no more than 5/8 inch proud of the wood face, and secured from
@@ -330,9 +324,9 @@ this design.
 
 If tambour installation resumes, first compare the completed enclosure and its
 support rails with the prototype and confirm access for mounting the tracks.
-The current build sequence omits the plywood backers, tracks, curtain, and
-ceiling panel, so reassess the mounting details and installation order against
-the as-built enclosure before fabricating production parts.
+The current build sequence defers the tambour plywood backers, tracks and
+curtain, and leaves the ceiling open. Reassess mounting access against the
+as-built wall infill before fabricating production parts.
 
 1. Measure the actual frame and compare it with the prototype test frame.
 2. Use the prototype alignment gauges to position both guide paths. Shim the
@@ -350,7 +344,7 @@ the as-built enclosure before fabricating production parts.
    fastener or trim movement changed their spacing.
 7. Reinstall the curtain, loading sections, and stops, then repeat the full
    acceptance test, including clearance from the already completed conduit
-   and fixed cable routes. Install the removable ceiling and repeat the test.
+   and fixed cable routes. Keep the overhead space open during the test.
 
 The rendered charger cord is illustrative rather than an accurate operating
 envelope. Do not use its modeled path as a hard tambour-clearance datum; if the

@@ -108,7 +108,7 @@ class US135Tests(unittest.TestCase):
             for p in s.backing_parts:
                 if p.material=='PT_roof_shim': continue
                 # Added wood must fit around existing wood, not occupy it.
-                for loc,size in s.framing:
+                for loc,size in (s.infill_framing if p in s.infill_parts else s.framing):
                     self.assertFalse(all(p.start[k]<loc[k]+size[k]-1e-7 and
                         p.start[k]+p.size[k]>loc[k]+1e-7 for k in range(3)),p.name)
 

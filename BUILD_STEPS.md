@@ -584,21 +584,27 @@ power_guard_removable_panel
 
 ## 19. Add the address-number support (`address-number-support`)
 
-Install one actual 1 x 5 1/2-inch support board between `post_fl` and `post_fr`,
-with its front face at y = 0, directly behind the siding. Use 5/4x6 stock
-with a verified finished thickness of 1 inch, not nominal 1x lumber. Fasten its
-ends to the posts with exterior-rated support hardware. The default board is
-20 1/2 inches long and spans z = 39.175 to 44.675 inches. It receives the
-address-number standoff fasteners through the siding. Verify end attachments
-and actual numeral mounting locations before drilling.
+Install the front vertical siding backing first, then fit 3/4-inch PT plywood across both upper front bays, from the half-height
+line to the underside of the front brace. The posts and vertical siding backing
+fill the interruptions. Set the exterior plywood faces 1/4 inch behind the
+post/backing faces, leaving a gap behind the siding. These panels replace the
+narrow 5/4x6 numeral support and allow the numeral position to be decided later.
 
-The former three street-light backing 2x4s are removed. The light mounts to
-`brace_fl_fr`; the established tambour track position remains y = 5 inches.
+Predrill angled entries from the accessible interior panel face into adjacent
+lumber; use toe screws rather than surface-mounted cleats. Field-select screw
+length and angle for sound timber engagement with contained tips. Do not drive
+into plywood edges. The BOM allows four screws per panel; confirm the final
+pattern on the fitted parts. Field-fit panel edges with a small installation gap.
+Seal numeral penetrations and use rigid local spacers across the siding-to-panel
+gap so tightening standoffs does not pull the siding inward. Confirm actual
+numeral mounting screw engagement in 3/4-inch plywood before drilling.
 
 New model objects:
 
 ```text
-front_address_number_support
+enclosure_siding_backing_front_1_1
+enclosure_siding_infill_front_address_3
+enclosure_siding_infill_front_address_4
 ```
 
 ## 20. Prepare the direct lighting cable route (`light-transition-box`)
@@ -651,6 +657,22 @@ power_street_light_uf_b
 
 ## 22. Prepare siding backing and ventilation (`siding-preparation`)
 
+Fit the remaining 3/4-inch PT wall infill within the framing depth with the
+same 1/4-inch exterior setback as the upper front panels. Fit around permanent
+lumber, siding backing and the outlet opening. Predrill toe screws into adjacent
+lumber, with four per panel allowed. Tiny seams below 1/4 inch high use hardware
+cloth rather than fragile plywood slivers. Scribe the lower panels to the same
+3/4-inch grade clearance as the siding and close the remaining gap with mesh.
+The rear service/future door opening stays open. This is a wall barrier, not a
+sealed animal-proof enclosure while that opening remains open.
+
+Use the shared `output/plywood_layout.svg` and `.json`: roof strips and infill
+come from the same purchased sheet stock. Follow the numbered layout with
+1/8-inch kerfs, then field-fit the blanks. No ceiling panel is installed or
+included in future purchase quantities. Keep the entire overhead space open for
+future tambour installation; wall infill can be unscrewed if future guides need
+access. No floor panel is added.
+
 Install the actual 1-inch wall backing segments with their existing specified
 connections. Keep the space below the top diagonal clear for the prototype
 tambour door; no local roof-support blocks or their toe screws are installed.
@@ -666,7 +688,9 @@ one backer. Shorten strip ends around gussets with 1/4-inch clearance and
 anchor independently at generated framing-supported locations. Recess anchor
 heads flush in plywood. Preserve open channels and joint outlets; do not cut
 transversely through a strip for drainage. Field-treat cut edges as required.
-Keep open paths behind and between framing members for drainage and the guide's 1-inch net free ventilation area.
+The recessed panels leave only a 1/4-inch nominal wall cavity. Keep its drainage
+paths and screened lower edges open; the former open-frame ventilation assumption
+no longer applies.
 
 Seat the two printed ASA/ABS gusset bearing covers before the roof boards:
 cover 1 at back-left and cover 2 at front-right. Their bearing lands align with
@@ -684,8 +708,6 @@ The model does not establish approval or connection load capacity.
 New model objects:
 
 ```text
-enclosure_siding_backing_front_1_1
-enclosure_siding_backing_front_1_2
 enclosure_siding_backing_left_1_1
 enclosure_siding_backing_left_1_2
 enclosure_siding_backing_left_1_3
@@ -694,6 +716,29 @@ enclosure_siding_backing_right_1_1
 enclosure_siding_backing_right_1_2
 enclosure_siding_backing_right_1_3
 enclosure_siding_backing_right_opening_1_1
+enclosure_siding_infill_front_animal_1
+enclosure_siding_infill_front_animal_2
+enclosure_siding_infill_left_animal_5
+enclosure_siding_infill_left_animal_6
+enclosure_siding_infill_left_animal_7
+enclosure_siding_infill_left_animal_8
+enclosure_siding_infill_left_animal_9
+enclosure_siding_infill_left_animal_10
+enclosure_siding_infill_left_animal_11
+enclosure_siding_infill_left_animal_12
+enclosure_siding_infill_right_animal_13
+enclosure_siding_infill_right_animal_14
+enclosure_siding_infill_right_animal_15
+enclosure_siding_infill_right_animal_16
+enclosure_siding_infill_right_animal_17
+enclosure_siding_infill_right_animal_18
+enclosure_siding_infill_right_animal_19
+enclosure_siding_infill_right_animal_20
+enclosure_siding_infill_right_animal_21
+enclosure_siding_infill_right_animal_22
+enclosure_siding_infill_right_animal_23
+enclosure_siding_infill_right_animal_24
+enclosure_siding_infill_rear_animal_25
 enclosure_siding_roof_strip_1_1
 enclosure_siding_roof_strip_1_2
 enclosure_siding_roof_strip_2_1

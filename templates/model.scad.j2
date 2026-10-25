@@ -12,6 +12,7 @@
 tambour_door_open = true;
 // Show tambour parts retained for possible future installation
 show_deferred = false;
+// Show finish boards and trim; backing, screws, and mesh stay visible
 siding = true;
 ground = false;
 footings = true;
@@ -422,6 +423,12 @@ function ts_tangent(s) = s[2];
 
 function s_name(s) = s[0];
 function s_material(s) = s[1];
+function s_visible_without_siding(s) =
+    s_material(s) == "PT_5/4x6_backing"
+    || s_material(s) == "PT_exterior_plywood_3_4"
+    || s_material(s) == "strip_anchor"
+    || s_material(s) == "face_screw"
+    || s_material(s) == "mesh";
 function s_start(s) = s[2];
 function s_size(s) = s[3];
 function s_color(s) = s[4];
@@ -1155,11 +1162,9 @@ if ({{ assembly.toggle }}) {
 }
 {% endfor %}
 
-if (siding) {
-    for (s = siding_parts) {
-        if (object_is_visible(s_name(s))) {
-            render_siding_part(s, object_is_highlighted(s_name(s)));
-        }
+for (s = siding_parts) {
+    if ((siding || s_visible_without_siding(s)) && object_is_visible(s_name(s))) {
+        render_siding_part(s, object_is_highlighted(s_name(s)));
     }
 }
 

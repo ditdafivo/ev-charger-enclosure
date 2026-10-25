@@ -33,6 +33,10 @@ generated Pages deployments from getting ahead of the source code on GitHub.
 The `--width`, `--depth`, and `--height` options customize the enclosure. Run
 `uv run build.py --help` for their descriptions.
 
+In the model parameters, deselect `siding` to hide the finish boards and trim.
+Wall backing, plywood roof strips, siding screws, strip anchors, and pest mesh
+remain visible, subject to the selected build step.
+
 The default level finished post tops are at `z = 49.625` inches, with `z = 0`
 at the outside corner of `post_fl`. The surveyed vertical ground-to-top heights
 are 49 5/8 inches at front-left, 49 1/4 at front-right, 48 1/2 at back-left,

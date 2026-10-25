@@ -2089,6 +2089,7 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "fabrication.csv",
                     "fabrication.json",
                     "gusset_plate_6x6.dxf",
+                    "gusset_covers",
                     "siding_cut_list.csv", "siding_cut_list.json", "siding_installation.json",
                     "siding_bom.csv", "roof_support_review.scad",
                     "siding_corner_front_left.scad", "siding_corner_front_right.scad",

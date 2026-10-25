@@ -152,7 +152,12 @@ for drainage. This arrangement does not establish manufacturer acceptance of the
 ventilation or exposed-roof adaptation. Treat cut plywood edges as required by
 the selected preservative system; verify exterior bond, grade and actual thickness.
 
-Shorten strip ends around the gusset envelopes with 1/8-inch clearance. The
+Shorten strip ends around the steel gusset envelopes with 1/4-inch clearance,
+leaving room for the [printed gusset bearing covers](GUSSET_COVERS.md). The
+covers support the roof siding at these interrupted edges, flush with the
+plywood; relieved channels leave the board joints clear. The covers are floating
+bearing pieces, captured by the installed roof boards. Keep siding and trim
+fasteners in their specified wood backing. The
 strips bear on the existing perimeter framing and diagonal, without local
 support blocks below the diagonal. This preserves the 1-inch modeled clearance
 between the diagonal underside and the prototype tambour hardware envelope.
@@ -189,6 +194,7 @@ Generated files include:
 
 - `output/model.scad`: enclosure, schematic recessed/face screw heads and downward build steps.
 - `output/roof_support_review.scad`: cropped roof framing, gussets and strips; render with `openscad -D build_step=22`.
+- `output/gusset_covers/`: two ASA/ABS bearing covers as millimetre STL/STEP files and a placement manifest.
 - `output/siding_corner_*.scad`: four cropped roof/wall corner views.
 - `output/siding_cut_list.csv` and `.json`: physical board, backing and trim cuts.
 - `output/siding_installation.json`: supported attachment locations, fixed

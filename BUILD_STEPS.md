@@ -662,11 +662,18 @@ the outlet. Keep the regular wall supports above and below this local backing.
 Install the 3/4-inch PT exterior plywood roof strips in place of all roof shims
 and intermediate roof backing. Rip with the panel strength axis along X.
 Full courses use paired provisional 1.5-inch strips; the narrow closure uses
-one backer. Shorten strip ends around gussets with 1/8-inch clearance and
+one backer. Shorten strip ends around gussets with 1/4-inch clearance and
 anchor independently at generated framing-supported locations. Recess anchor
 heads flush in plywood. Preserve open channels and joint outlets; do not cut
 transversely through a strip for drainage. Field-treat cut edges as required.
 Keep open paths behind and between framing members for drainage and the guide's 1-inch net free ventilation area.
+
+Seat the two printed ASA/ABS gusset bearing covers before the roof boards:
+cover 1 at back-left and cover 2 at front-right. Their bearing lands align with
+the plywood tops; their relieved channels align with the roof joints. Check
+that each sits without rocking and clears every gusset screw head. The roof
+boards capture these floating covers; keep all fasteners in the specified wood
+backing. See GUSSET_COVERS.md for printing and fit checks.
 
 Dry-fit two US135 courses directly against representative lumber before cutting
 production pieces. Verify the provisional 130 mm installed pitch, rear-profile
@@ -696,6 +703,8 @@ enclosure_siding_roof_strip_3_2
 enclosure_siding_roof_strip_4_1
 enclosure_siding_roof_strip_4_2
 enclosure_siding_roof_strip_5_1
+gusset_cover_1
+gusset_cover_2
 enclosure_siding_roof_strip_1_1_anchor_1
 enclosure_siding_roof_strip_1_1_anchor_2
 enclosure_siding_roof_strip_1_2_anchor_3

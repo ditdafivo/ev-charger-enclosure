@@ -68,6 +68,7 @@ from lumber_model.gusset import (
     pan_head_cylinder_primitives,
 )
 from lumber_model.gusset_dxf import generate_gusset_dxf
+from lumber_model.gusset_cover import covers_for_siding, generate_gusset_covers, HEIGHT
 from lumber_model.us135 import US135Siding, US135_THICKNESS, ROOF_STRIP_THICKNESS
 
 DEFAULT_WIDTH = 24
@@ -1619,6 +1620,7 @@ def build_enclosure(
         frame_top_z=FRAME_DIMS.z,
         roof_support_z=FRAME_DIMS.z+ROOF_STRIP_THICKNESS,
         roof_gussets=tuple(roof_gusset_envelopes),
+        roof_hardware_clearance=1/4,
         bottom_z=SIDING_BOTTOM_Z,
         rear_opening_min_x=TAMBOUR_LEFT_X,
         rear_opening_max_x=TAMBOUR_RIGHT_X,
@@ -1634,6 +1636,30 @@ def build_enclosure(
                            FRONT_STREET_LIGHT_CENTER_X+3.125,
                            FRONT_STREET_LIGHT_CENTER_Z+1.2+1/8),
     )
+
+    # Floating bearing caps are captured by the roof boards. World-aligned
+    # primitive boxes match the fabrication solids without mesh dependencies.
+    for cover in covers_for_siding(siding):
+        components.add(
+            cover.name,
+            assembly="top_bracing_hardware",
+            component_type=ComponentType(
+                name="printed_ASA_ABS_gusset_bearing_cover",
+                size=(GUSSET_SIZE_IN, GUSSET_SIZE_IN, HEIGHT/25.4),
+                color=(0.22, 0.30, 0.36, 1.0),
+                shape="primitive_union",
+                mount_point=(0, 0, 0),
+                include_primitive_envelope=True,
+                box_primitives=tuple(
+                    (tuple(v/25.4 for v in pos), tuple(v/25.4 for v in size))
+                    for pos, size in cover.boxes
+                ),
+            ),
+            member="post_bl",
+            at=0,
+            absolute_anchor=cover.origin_in,
+            component_basis=((1,0,0),(0,1,0),(0,0,1)),
+        )
 
     cables = CableCollection()
     cables.add(
@@ -2045,6 +2071,12 @@ def build_enclosure(
                 2,
             ),
             PurchasedItem(
+                "printed_gusset_bearing_cover",
+                "top_bracing_hardware",
+                "ASA/ABS printed floating roof bearing covers; one of each relief layout; see GUSSET_COVERS.md",
+                2,
+            ),
+            PurchasedItem(
                 "number_9_pan_head_screw",
                 "top_bracing_hardware",
                 "#9 pan-head screw; length intentionally unspecified",
@@ -2139,6 +2171,7 @@ def write_outputs(
     enclosure.model.write_fabrication_json(output_dir / "fabrication.json")
     enclosure.siding.write_artifacts(output_dir)
     generate_gusset_dxf(output_dir / "gusset_plate_6x6.dxf")
+    generate_gusset_covers(enclosure.siding, output_dir / "gusset_covers")
     generate_tambour_fabrication(
         output_dir / "tambour",
         config=enclosure.TAMBOUR_FABRICATION,

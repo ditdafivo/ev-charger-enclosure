@@ -70,6 +70,11 @@ fabrication copy directly, run:
 uv run python tools/generate_gusset_dxf.py
 ```
 
+The build also exports two printable ASA/ABS gusset bearing covers in
+`output/gusset_covers/`. They support the roof siding flush with the plywood
+where the strips stop at the gussets. See [GUSSET_COVERS.md](GUSSET_COVERS.md)
+for STL/STEP files, placement, printing and fit checks.
+
 Tambour installation, including the front guide uprights and upper blocks, is
 deferred indefinitely. The permanent side receiver rails attach directly to the
 front and back posts and support the charger header independently. Printable ASA tracks, removable

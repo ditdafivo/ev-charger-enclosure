@@ -501,7 +501,7 @@ class TambourClearanceBuildTests(unittest.TestCase):
                 part.start,
                 tuple(a + b for a, b in zip(part.start, part.size, strict=True)),
             )
-            for part in build.siding.board_parts
+            for part in (*build.siding.board_parts, *build.siding.infill_parts)
         ]
         handle_center_x = (
             tambour.left_points[0][0] + tambour.right_points[0][0]

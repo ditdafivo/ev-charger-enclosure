@@ -333,22 +333,27 @@ class US135Siding(CompositeSiding):
     def infill_parts(self) -> tuple[SidingPart, ...]:
         """Recessed wall infill, fitted between all intersecting timber/backing."""
         parts = []
-        for wall in ("front", "left", "right", "rear"):
+        for wall, address in (("front", False), ("left", False), ("right", False),
+                              ("rear", False), ("front", True)):
             along_axis, normal_axis = (0, 1) if wall in ("front", "rear") else (1, 0)
             lo, hi = (self.min_x, self.max_x) if along_axis == 0 else (self.min_y, self.max_y)
-            normal = {"front": self.min_y + .25, "rear": self.max_y - 1,
-                      "left": self.min_x + .25, "right": self.max_x - 1}[wall]
+            # Animal panels finish flush with the inside post faces, entirely
+            # within the 3-1/2-inch wall depth. Numeral backing remains separate.
+            normal = {"front": self.min_y + 2.75, "rear": self.max_y - 3.5,
+                      "left": self.min_x + 2.75, "right": self.max_x - 3.5}[wall]
+            if address:
+                normal = self.min_y + .25
             bottom = min(self.ground_z(*self.xy(wall, a)) for a in (lo, hi)) + self.ground_clearance
             halfway = (bottom + self.frame_top_z) / 2
-            bands = ((bottom, halfway), (halfway, self.frame_top_z)) if wall == "front" else ((bottom, self.frame_top_z),)
+            bands = ((halfway, self.frame_top_z),) if address else ((bottom, self.frame_top_z),)
             for band_index, (z0, z1) in enumerate(bands):
                 rectangles = [(lo, hi, z0, z1)]
                 obstacles = list(self.infill_framing or self.framing) + [(p.start, p.size) for p in self.wall_backing_parts]
                 if wall == "rear":
-                    # Preserve the existing service / future door opening.
+                    # Keep the service opening clear up to the brace for the future rear bend.
                     start = (self.rear_opening_min_x, normal, bottom)
                     size = (self.rear_opening_max_x-self.rear_opening_min_x, .75,
-                            self.rear_opening_top_z-bottom)
+                            self.frame_top_z-bottom)
                     obstacles.append((start, size))
                 if wall == "right":
                     obstacles.extend(((normal, o.min_y, o.bottom_z), (.75, o.max_y-o.min_y, o.top_z-o.bottom_z)) for o in self.right_openings)
@@ -383,12 +388,12 @@ class US135Siding(CompositeSiding):
                     if min(ca, cb) >= d:
                         continue
                     base = min(ca, cb)
-                    if d-base < .25:
-                        continue  # Screen tiny grade/backing seams rather than fragile plywood slivers.
+                    if min(d-base, b-a) < .25:
+                        continue  # Screen tiny seams rather than fragile plywood slivers.
                     pos = [0., 0., base]; size = [0., 0., d-base]
                     pos[along_axis] = a; pos[normal_axis] = normal
                     size[along_axis] = b-a; size[normal_axis] = .75
-                    label = "address" if wall == "front" and band_index == 1 else "animal"
+                    label = "address" if address else "animal"
                     name = f"{self.name}_infill_{wall}_{label}_{len(parts)+1}"
                     polygon = ((0, ca-base), (b-a, cb-base), (b-a, d-base), (0, d-base))
                     bores = tuple(bore for bore in self.front_bores if a <= bore.center_x <= b and c <= bore.center_z <= d) if wall == "front" else ()
@@ -885,7 +890,7 @@ class US135Siding(CompositeSiding):
             "wall_drainage_tradeoff":"small inverted-joint water-retention gap accepted for desert climate",
             "attachment_method":"custom direct face fastening to open lumber framing; inverted wall profiles, one concealed lower-overlap row with local exceptions; not a manufacturer-approved replacement for AW08",
             "trim_method":"applied US20 at four outside corners, rear opening and roof edges; corners stop below roof trim",
-            "ventilation_status":"Recessed infill leaves a nominal 1/4 inch cavity; preserve screened drainage paths and reassess ventilation of completed shell; former open-frame assumption no longer applies",
+            "ventilation_status":"Animal infill closes the inner side of the 3-1/2 inch framing cavities; separate numeral backing leaves a local 1/4 inch siding gap; preserve screened drainage paths",
             "course_pitch_in":self.course_pitch, "course_pitch_status":"provisional 130 mm; verify two engaged samples before cutting",
             "board_profile_width_in":self.board_width, "board_thickness_in":self.board_thickness,
             "board_standoff_in":0.0, "ground_clearance_in":self.ground_clearance,
@@ -895,7 +900,8 @@ class US135Siding(CompositeSiding):
             "roof_support_z":self.roof_support_z,
             "roof_finished_top_z":self.roof_finished_top_z,
             "wall_infill":[dict(name=p.name,start_in=p.start,size_in=p.size,polygon=p.polygon) for p in self.infill_parts],
-            "infill_setback_in":.25,
+            "animal_infill_alignment":"Interior face flush with inside post faces; panels remain inside framing depth",
+            "address_backing_exterior_setback_in":.25,
             "infill_toe_entries":self.infill_toe_entries,
             "infill_attachment":"Predrilled toe screws from panel face into bordering timber; four per panel allowance; field-select final positions, angle and length",
             "ceiling":"omitted entirely for future tambour access",

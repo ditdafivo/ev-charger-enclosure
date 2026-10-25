@@ -43,14 +43,18 @@ class PlywoodTests(unittest.TestCase):
             self.assertEqual(part.material, 'PT_exterior_plywood_3_4')
             normal_axis = 1 if part.plane == 'xz' else 0
             self.assertEqual(part.size[normal_axis], .75)
-            if '_front_' in part.name:
+            if '_address_' in part.name:
                 self.assertEqual(part.start[1], .25)
+            elif '_front_' in part.name:
+                self.assertEqual(part.start[1]+.75, build.members['post_fl'].max_on('y'))
             elif '_left_' in part.name:
-                self.assertEqual(part.start[0], .25)
+                self.assertEqual(part.start[0]+.75, build.members['post_fl'].max_on('x'))
             elif '_right_' in part.name:
-                self.assertEqual(part.start[0]+.75, siding.max_x-.25)
+                self.assertEqual(part.start[0], build.members['post_fr'].min_on('x'))
             else:
+                self.assertEqual(part.start[1], build.members['post_bl'].min_on('y'))
                 self.assertGreaterEqual(part.start[2], siding.rear_opening_top_z)
+        self.assertFalse(any('_rear_' in p.name for p in siding.infill_parts))
         upper = [p for p in siding.infill_parts if '_address_' in p.name]
         self.assertEqual(len(upper), 2)
         self.assertTrue(all(p.start[2]+p.size[2] == build.members['brace_fl_fr'].min_on('z') for p in upper))

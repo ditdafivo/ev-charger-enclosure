@@ -174,9 +174,10 @@ Larger configurations compare additional full sheets with 2 x 4 ft panels,
 using the stated approximate price ratio (0.49 per small panel).
 
 Panels fit between permanent framing/backing rather than lining its interior
-faces. Exterior faces sit 1/4 inch behind the framing to leave a siding gap.
-Predrilled toe screws attach the panels to neighboring lumber. The upper front
-panels provide broad backing for the eventual house-number location. Keep the
-rear access opening and overhead space open; there is no ceiling or floor panel.
+faces. Their interior faces finish flush with the inside post faces, leaving
+the wall cavities between the siding and plywood. Predrilled toe screws attach
+the panels to neighboring lumber. Separate upper-front numeral panels remain
+1/4 inch behind the exterior framing faces for the eventual house-number
+location. Keep the rear access opening and overhead space open; there is no ceiling or floor panel.
 The mesh skirt closes the grade gap and tiny seams. The open rear access still
 permits animal entry until it has a suitable closure.

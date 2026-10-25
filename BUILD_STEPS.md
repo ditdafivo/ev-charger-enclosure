@@ -603,8 +603,8 @@ New model objects:
 
 ```text
 enclosure_siding_backing_front_1_1
-enclosure_siding_infill_front_address_3
-enclosure_siding_infill_front_address_4
+enclosure_siding_infill_front_address_12
+enclosure_siding_infill_front_address_13
 ```
 
 ## 20. Prepare the direct lighting cable route (`light-transition-box`)
@@ -658,12 +658,15 @@ power_street_light_uf_b
 ## 22. Prepare siding backing and ventilation (`siding-preparation`)
 
 Fit the remaining 3/4-inch PT wall infill within the framing depth with the
-same 1/4-inch exterior setback as the upper front panels. Fit around permanent
-lumber, siding backing and the outlet opening. Predrill toe screws into adjacent
-lumber, with four per panel allowed. Tiny seams below 1/4 inch high use hardware
+interior faces flush with the inside post faces. These animal barriers sit on
+the interior side of each cavity; the upper-front numeral backing is a separate
+layer near the siding. Fit around permanent lumber, siding backing and the
+outlet opening. Predrill toe screws into adjacent
+lumber, with four per panel allowed. Tiny seams narrower than 1/4 inch use hardware
 cloth rather than fragile plywood slivers. Scribe the lower panels to the same
 3/4-inch grade clearance as the siding and close the remaining gap with mesh.
-The rear service/future door opening stays open. This is a wall barrier, not a
+The rear service/future door opening stays clear up to the brace; omit interior
+header infill there to clear the future tambour handle sweep. This is a wall barrier, not a
 sealed animal-proof enclosure while that opening remains open.
 
 Use the shared `output/plywood_layout.svg` and `.json`: roof strips and infill
@@ -688,9 +691,9 @@ one backer. Shorten strip ends around gussets with 1/4-inch clearance and
 anchor independently at generated framing-supported locations. Recess anchor
 heads flush in plywood. Preserve open channels and joint outlets; do not cut
 transversely through a strip for drainage. Field-treat cut edges as required.
-The recessed panels leave only a 1/4-inch nominal wall cavity. Keep its drainage
-paths and screened lower edges open; the former open-frame ventilation assumption
-no longer applies.
+The animal panels leave the framing cavities between the siding and interior
+plywood. The separate numeral backing leaves a local 1/4-inch gap behind the
+front siding. Keep screened drainage paths open.
 
 Seat the two printed ASA/ABS gusset bearing covers before the roof boards:
 cover 1 at back-left and cover 2 at front-right. Their bearing lands align with
@@ -716,29 +719,6 @@ enclosure_siding_backing_right_1_1
 enclosure_siding_backing_right_1_2
 enclosure_siding_backing_right_1_3
 enclosure_siding_backing_right_opening_1_1
-enclosure_siding_infill_front_animal_1
-enclosure_siding_infill_front_animal_2
-enclosure_siding_infill_left_animal_5
-enclosure_siding_infill_left_animal_6
-enclosure_siding_infill_left_animal_7
-enclosure_siding_infill_left_animal_8
-enclosure_siding_infill_left_animal_9
-enclosure_siding_infill_left_animal_10
-enclosure_siding_infill_left_animal_11
-enclosure_siding_infill_left_animal_12
-enclosure_siding_infill_right_animal_13
-enclosure_siding_infill_right_animal_14
-enclosure_siding_infill_right_animal_15
-enclosure_siding_infill_right_animal_16
-enclosure_siding_infill_right_animal_17
-enclosure_siding_infill_right_animal_18
-enclosure_siding_infill_right_animal_19
-enclosure_siding_infill_right_animal_20
-enclosure_siding_infill_right_animal_21
-enclosure_siding_infill_right_animal_22
-enclosure_siding_infill_right_animal_23
-enclosure_siding_infill_right_animal_24
-enclosure_siding_infill_rear_animal_25
 enclosure_siding_roof_strip_1_1
 enclosure_siding_roof_strip_1_2
 enclosure_siding_roof_strip_2_1
@@ -768,6 +748,17 @@ enclosure_siding_roof_strip_4_2_anchor_15
 enclosure_siding_roof_strip_4_2_anchor_16
 enclosure_siding_roof_strip_5_1_anchor_17
 enclosure_siding_roof_strip_5_1_anchor_18
+enclosure_siding_infill_front_animal_1
+enclosure_siding_infill_left_animal_2
+enclosure_siding_infill_left_animal_3
+enclosure_siding_infill_left_animal_4
+enclosure_siding_infill_left_animal_5
+enclosure_siding_infill_right_animal_6
+enclosure_siding_infill_right_animal_7
+enclosure_siding_infill_right_animal_8
+enclosure_siding_infill_right_animal_9
+enclosure_siding_infill_right_animal_10
+enclosure_siding_infill_right_animal_11
 ```
 
 ## 23. Install the hardware-cloth skirt (`siding-skirt`)

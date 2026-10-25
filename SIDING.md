@@ -60,9 +60,9 @@ desert installation; keep the existing drainage paths open.
    framing and diagonal; keep the space below the diagonal clear.
 2. Install the hardware-cloth skirt independently of the boards. Keep paths
    behind and between framing members unobstructed for drainage and the guide's
-   minimum 1-inch continuous net free ventilation area. The recessed infill leaves a 1/4-inch nominal cavity; the former open-frame
-   airflow assumption no longer applies. Keep drainage and screened edge paths
-   clear and reassess ventilation for the actual completed shell.
+   minimum 1-inch continuous net free ventilation area. Animal infill closes the interior side of the framing cavities; separate
+   numeral backing leaves a local 1/4-inch siding gap. Keep drainage and screened
+   edge paths clear and reassess ventilation for the completed shell.
 3. Install the US135 roof cover while the sides remain open for access to the
    support strips and fasteners. Leave US20 roof-edge trim until after the wall
    siding is installed.
@@ -193,11 +193,12 @@ panels at an assumed 0.49 of a full sheet's cost. This is a feasible layout,
 not a proof of the optimal stock count. Roof strips retain the sheet strength
 axis along their length; wall infill blanks may rotate.
 
-Infill sits within the framing thickness, with exterior faces set back 1/4 inch
-from posts and siding backing. Fit around the permanent timber and outlet;
-toe-screw from the interior panel face into adjacent lumber. Upper front panels
-cover both bays for flexible numeral placement, replacing the narrow support
-board. Use rigid spacers across the setback at numeral attachments and confirm
+Animal infill sits within the framing thickness at the interior side of the
+cavities, with interior faces flush with the inside post faces. Fit around the
+permanent timber and outlet; toe-screw from the interior panel face into adjacent
+lumber. Separate upper-front numeral panels cover both bays near the exterior,
+set back 1/4 inch from the post and siding-backing faces, replacing the narrow
+support board. Use rigid spacers across the setback at numeral attachments and confirm
 mounting screw engagement. Preserve the mesh skirt, screen tiny seams, keep the
 rear opening accessible, and omit all ceiling panels for future tambour access.
 See BUILD_STEPS.md steps 19 and 22 for fitting and attachment details.

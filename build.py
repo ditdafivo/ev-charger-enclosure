@@ -1579,6 +1579,13 @@ def build_enclosure(
         ground=grounds[0].resolved(members),
         framing=tuple((m.start,m.size) for m in members.values() if m.name != "brace_bl_fr"),
         infill_framing=tuple((m.start,m.size) for m in members.values() if m.name != "brace_bl_fr" and m.name not in DEFERRED_OBJECT_NAMES),
+        front_infill_back_y=members["front_center_rail"].max_on("y"),
+        front_infill_top_z=members["brace_fl_fr"].min_on("z"),
+        front_infill_header_top_z=members["rail_ft"].max_on("z"),
+        front_infill_bores=(FrontSidingBore(
+            "power_ev_back_adapter", POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_CENTER_Z,
+            MALE_TERMINAL_ADAPTERS["3/4"].size[1],
+        ),),
         diagonal=diagonal_footprint,
         front_trim_relief=(FRONT_STREET_LIGHT_CENTER_X-3.125,
                            FRONT_STREET_LIGHT_CENTER_X+3.125,

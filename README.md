@@ -174,10 +174,14 @@ Larger configurations compare additional full sheets with 2 x 4 ft panels,
 using the stated approximate price ratio (0.49 per small panel).
 
 Panels fit between permanent framing/backing rather than lining its interior
-faces. Their interior faces finish flush with the inside post faces, leaving
-the wall cavities between the siding and plywood. Predrilled toe screws attach
+faces. Side panels finish flush with the inside post faces. Front animal panels
+finish rear-face flush with `front_center_rail`, closing both bays beside it,
+the space between the lower rails, and the lowest cavity below them. A separate
+strip above the front header remains at the inside front-post plane to clear
+the future tambour handle. Predrilled toe screws attach
 the panels to neighboring lumber. Separate upper-front numeral panels remain
 1/4 inch behind the exterior framing faces for the eventual house-number
 location. Keep the rear access opening and overhead space open; there is no ceiling or floor panel.
-The mesh skirt closes the grade gap and tiny seams. The open rear access still
+The exterior mesh skirt and an additional inner wrap along both side walls
+and the front plywood plane close the grade gaps and tiny seams. The open rear access still
 permits animal entry until it has a suitable closure.

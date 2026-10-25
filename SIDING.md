@@ -193,13 +193,22 @@ panels at an assumed 0.49 of a full sheet's cost. This is a feasible layout,
 not a proof of the optimal stock count. Roof strips retain the sheet strength
 axis along their length; wall infill blanks may rotate.
 
-Animal infill sits within the framing thickness at the interior side of the
-cavities, with interior faces flush with the inside post faces. Fit around the
-permanent timber and outlet; toe-screw from the interior panel face into adjacent
+Side-wall animal infill sits within the framing thickness, flush with the
+inside post faces. Front animal infill sits farther back, with its rear face
+flush with the rear face of front_center_rail. Separate panels close the bays
+on both sides of that rail, between the two lower horizontal rails, below the
+lowest rail. The strip above the header stays at the inside front-post
+plane, up to the front brace, to clear the future tambour handle. Fit around the
+permanent timber and outlet. Bore the front between-rails panel snugly around
+the existing power_ev_back_adapter barrel (nominal 1.35 inches) and seal any
+residual seam; toe-screw from the interior panel face into adjacent
 lumber. Separate upper-front numeral panels cover both bays near the exterior,
 set back 1/4 inch from the post and siding-backing faces, replacing the narrow
 support board. Use rigid spacers across the setback at numeral attachments and confirm
-mounting screw engagement. Preserve the mesh skirt, screen tiny seams, keep the
+mounting screw engagement. Retain the exterior mesh skirt and add a continuous inner ground-gap wrap
+along both side-wall infills and the new front plane. Join the front corners,
+terminate the side runs against the posts, and overlap mesh joints 2 inches.
+Sample grade at the installed panel and mesh coordinates. Screen tiny seams, keep the
 rear opening accessible, and omit all ceiling panels for future tambour access.
 See BUILD_STEPS.md steps 19 and 22 for fitting and attachment details.
 

@@ -1,5 +1,12 @@
 # TPU conduit sealing rings — Bambu X2D
 
+**Current UF-B layout:** print only five rings: three E943E (3/4 inch),
+one E943F (1 inch), and one E943G (1-1/4 inch). The two E943D rings for
+`power_junction_light_adapter` and `power_junction_outlet_adapter` are obsolete;
+those branches now use UF cable connectors and their specified hardware.
+The seven-ring STEP, 3MF, ZIP, inventory, and dimensions below describe the
+archived conduit layout. Use individual size files for the current five-ring set.
+
 Print seven flat rings: two for Carlon E943D (1/2 inch), three for E943E
 (3/4 inch), one for E943F (1 inch), and one for E943G (1-1/4 inch).
 These correspond to every modeled `*_sealing_washer` in the EV charger enclosure.

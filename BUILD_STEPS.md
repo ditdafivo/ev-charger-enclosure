@@ -383,15 +383,18 @@ power_pull_box_junction_feed
 ## 12. Preassemble and mount the power junction (`power-junction-assembly`)
 
 Before mounting the Carlon E987N power junction box, fit its rear-facing
-3/4-inch male input fitting for the shallow pull box and the two right-side
-1/2-inch light and receptacle outlets. Cut the entry holes to suit the actual
-male threads. Insert each fitting from outside with a sealing washer against
-the exterior wall and tighten a locknut inside. The light outlet is forward of
+3/4-inch male input fitting for the shallow pull box and the right-side
+FSW50Z-12.2-1 watertight UF cable connector for the receptacle. Prepare the
+lighting connector port beside it; that connector is added in Step 20.
+Cut the entry holes to suit the actual hardware and install its supplied
+sealing and retention hardware according to the connector instructions.
+The 3/4-inch conduit input retains its exterior sealing washer and interior
+locknut. The light outlet is forward of
 the receptacle outlet. Then mount the connected box on `front_center_rail`,
 spanning x = 13 to 17 inches in the default model, and y = 3.1875 to 7.1875
 inches. Its bottom face remains at the modeled elevation of approximately
 z = 6.51 inches, supported along its lower edge by `rail_fbl`. Keep every
-fitting axis aligned with its conduit path and connect the rear fitting to the
+fitting axis aligned with its conduit or cable path and connect the rear fitting to the
 3/4-inch branch left accessible in Step 11.
 
 Check that the fittings and internal locknuts are clear of `front_center_rail`.
@@ -400,8 +403,9 @@ Keep the rear fitting aligned with the raised 3/4-inch feed from the shallow pul
 The #6 charger group continues vertically through the 4×4×2-inch pull box and bypasses
 the junction box. The #12 supply group branches through the 4×4×2-inch pull box's rear
 port into the box, where its hot/hot/neutral conductors feed separate light and outlet
-hot/neutral pairs and the #12 equipment grounds are spliced. The modeled junction-box
-calculation is 18.00 in³ against an assumed 49.00 in³ marked capacity. Verify the
+hot/neutral pairs and the equipment grounds are spliced. The lighting pair is
+#14 UF-B and the outlet pair is #12 UF-B. The modeled junction-box calculation
+is 17.50 in³ against an assumed 49.00 in³ marked capacity. Verify the
 marking on the installed box and the locally required calculation before construction.
 
 New model objects:
@@ -411,12 +415,7 @@ power_junction_box
 power_junction_input_adapter
 power_junction_input_adapter_sealing_washer
 power_junction_input_adapter_locknut
-power_junction_light_adapter
-power_junction_light_adapter_sealing_washer
-power_junction_light_adapter_locknut
-power_junction_outlet_adapter
-power_junction_outlet_adapter_sealing_washer
-power_junction_outlet_adapter_locknut
+power_junction_outlet_uf_connector
 ```
 
 ## 13. Install the outlet box and backing (`outlet-rough-in`)
@@ -439,23 +438,26 @@ back_right_outlet_backer_upper
 back_right_outlet
 ```
 
-## 14. Install the outlet conduit run (`outlet-conduit`)
+## 14. Install the outlet UF-B run (`outlet-conduit`)
 
-Install the 1/2-inch feed from the junction box to the outlet box. Locate the
-junction-box outlet fitting and horizontal run at the same centerline elevation
-of z = 7.17 inches.
-This puts the conduit underside at z = 6.75 inches, resting on the top face of
-`rail_rbl` during the longer horizontal run. Retain the two modeled
-4-inch-radius sweeps to turn along the rail and rise into the outlet's bottom
-hub.
+Run continuous 12/2 UF-B with equipment ground from the front power junction
+box to the outlet, following the former conduit path along `rail_rbl` and
+up into the outlet's bottom hub. Use the same Commercial Electric
+FSW50Z-12.2-1 watertight UF connector at both ends: one at the junction-box
+exit and one at the outlet entry. Confirm the actual outlet hub and connector
+interface before assembly.
 
-Confirm conduit clearances before covering the framing. Pull and terminate the
-outlet branch's #12 conductors only under the approved wiring design.
+The modeled cable retains the former conduit centerline at z = 7.17 inches
+in the default enclosure, giving its 0.45-inch circular envelope about
+0.195 inch of clearance above the rail. Retain the two 4-inch-radius sweeps. Support
+the UF-B along the route and near both boxes, keeping loads off the connections.
+Terminate the outlet branch under the approved wiring design.
 
 New model objects:
 
 ```text
-power_back_right_outlet_feed
+back_right_outlet_uf_connector
+power_back_right_outlet_uf_b
 ```
 
 ## 15. Add the low-voltage termination (`low-voltage-termination`)
@@ -599,61 +601,47 @@ New model objects:
 front_address_number_support
 ```
 
-## 20. Mount the light transition box (`light-transition-box`)
+## 20. Prepare the direct lighting cable route (`light-transition-box`)
 
-Secure the Commercial Electric WRB550B round weatherproof box to the inward,
-negative-X face of `post_fr`. The cover faces negative X for access from inside
-the enclosure. Set the complete box envelope 4 inches below the underside of
-`brace_fl_fr`, and its minimum Y at 1/4 inch. This is 1 inch lower than the
-initial placement sketch to accommodate the connector and 2-inch UF-B bends.
-In the default enclosure the box envelope spans x = 22.4 to 24, y = 0.25 to
-4.45, and z = 38.725 to 44.125 inches. Keep its cover accessible and clear of
-the tambour. No extension ring is used.
+The round Commercial Electric WRB550B transition box and WBC300G cover are
+removed. The front power junction box, immediately ahead of the power ground
+riser pull box, is now the lighting cable's only junction-box origin.
 
-Reroute the 1/2-inch lighting conduit from the existing power junction fitting
-up `post_fr` into the round box's bottom hub. The route uses a 2 1/2-inch
-rising sweep and a gentle offset that finishes vertically on the box entry line; omit the old
-horizontal run to the centered light. The bottom entry center is x = 23.2,
-y = 2.35, z = 38.725 inches. Support the conduit on the post.
-
-Fit the Commercial Electric FSW50Z-12.2-1 watertight UF connector in the top
-hub. Install a WBC300G blank cover with its gasket and close unused hubs.
-Box, fitting, and cover envelopes are schematic; confirm mating hardware
-against the actual parts. Bond the metal box and cover as required.
+Keep the former conduit corridor from its right-side lighting port to the
+inside of `post_fr`, including the 2 1/2-inch rising sweep and gentle offset.
+Continue directly beneath `brace_fl_fr` to the light; no splice or intermediate
+box is modeled on the post. Check the route and cable supports before siding.
+Install the lighting UF connector in the front junction-box port prepared in
+Step 12.
 
 New model objects:
 
 ```text
-front_street_light_base_box
-front_street_light_box_cover
-front_street_light_uf_connector
-power_street_light_feed
+power_junction_light_uf_connector
 ```
 
 ## 21. Route the UF-B lighting cable (`light-uf-b-cable`)
 
-Use 14/2 copper UF-B with equipment ground and **15 A maximum branch
-protection**. Splice the conduit-fed #12 conductors to the UF-B inside the
-accessible round box. Keep the UF jacket intact through the connector and
-leave the required jacket and conductor lengths inside the box. Tighten the
-connector to its instructions; it seals and restrains the jacket, not stripped
-individual conductors. Confirm wet-location markings on the conduit-fed wire
-(for example THWN-2); THHN alone does not establish a wet-location rating.
+Run continuous 14/2 copper UF-B with equipment ground from the front power
+junction box to the Brook light, retaining the existing **15 A maximum branch
+protection** assumption. Make the supply-to-lighting-cable splice inside the
+accessible front junction box. Use its Commercial Electric FSW50Z-12.2-1
+watertight connector, the same interface formerly used at the round fixture
+box and now used for the outlet branch. Keep the jacket intact through the
+connector and tighten it according to its instructions.
 
-Run UF-B upward from the box connector, sweep toward negative X, and support
-it beneath `brace_fl_fr`. At the light centerline, turn toward negative Y to
-pass through the siding and enter the lower portion of the fixture base,
-beneath the bracket. The nominal bore is 1/2 inch diameter at x = 13.75 and
-z = 47.75 inches in the default enclosure, wholly below the brace. Protect
-the penetration from abrasion and seal around the jacket independently of
-the fixture perimeter. Secure the cable using supports suitable for UF-B,
-including the required support near the box; keep loads off the connections.
+Follow the former conduit path up `post_fr`, then sweep toward negative X
+beneath `brace_fl_fr`. At the light centerline turn toward negative Y through
+the siding into the lower fixture base, beneath the bracket. The nominal bore
+is 1/2 inch diameter at x = 13.75 and z = 47.75 inches in the default enclosure.
+Protect the penetration from abrasion and seal around the jacket independently
+of the fixture perimeter. Secure UF-B along the route and near the box.
 
-The model uses a conservative 0.45-inch circular cable envelope and 2-inch
-bend radii. Actual UF-B is flat: confirm jacket dimensions, bend requirements,
-protective sleeve/bushing clearance, and connector fit before drilling.
-The gray route represents line-voltage UF-B. The former low-voltage
-street-light service run is removed and its gland opening is closed.
+Both UF-B runs use a schematic 0.45-inch circular envelope; the lighting route
+uses 2-inch bends below the brace. Actual UF-B is flat: confirm jacket dimensions,
+bend requirements, penetration clearance, and connector fit before drilling.
+The gray routes represent line-voltage UF-B. The former low-voltage street-light
+service run is removed and its gland opening is closed.
 
 New model objects:
 

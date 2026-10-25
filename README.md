@@ -103,12 +103,18 @@ variant 45573961023747. Its published overall dimensions are 16 x 2.4 x
 it into the low part of `brace_fl_fr`; default bracket center is z = 48.625
 inches. Bracket geometry and fixture subdivisions are schematic.
 
-A Commercial Electric WRB550B round box on the inside face of `post_fr`
-transitions the conduit-fed conductors to 14/2 UF-B, with 15 A maximum branch
-protection. A FSW50Z-12.2-1 watertight connector feeds the cable beneath the
-brace and through a nominal 1/2-inch siding bore into the fixture's lower
-base. The box has a gasketed WBC300G blank cover; no extension ring or
-provisional recessed box is used. The former low-voltage light cable is removed.
+Continuous 14/2 UF-B runs from the front power junction box, ahead of the
+power ground riser pull box, along the former conduit path up `post_fr`,
+then beneath the brace and through the nominal 1/2-inch siding bore into
+the fixture's lower base. The existing 15 A maximum lighting-branch assumption
+is retained. The round WRB550B transition box and its blank cover are removed.
+
+A separate 12/2 UF-B run follows the former outlet conduit path along the lower
+right rail into the outlet box. Three Commercial Electric FSW50Z-12.2-1
+watertight UF connectors use the former light-box interface: two exits on the
+front junction box and one entry at the outlet box. Cable lengths in the BOM
+include 18 inches of termination/service allowance per run. The former
+low-voltage light cable is removed.
 
 Four separate silver numerals **4754**, each 5 inches high and 1 inch deep,
 form a 12-inch-wide arrangement 3 inches below the light. One-inch standoffs

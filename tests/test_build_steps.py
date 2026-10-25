@@ -156,7 +156,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn("enclosure_tambour_track", model.deferred_object_names)
         self.assertIn("enclosure_tambour_door", model.deferred_object_names)
         self.assertEqual(step_by_object["front_address_number_support"], 19)
-        self.assertEqual(step_by_object["front_street_light_base_box"], 20)
+        self.assertEqual(step_by_object["power_junction_light_uf_connector"], 20)
         self.assertEqual(step_by_object["front_street_light"], 37)
         self.assertEqual(step_by_object["front_address_number_1"], 37)
         self.assertEqual(step_by_object["power_street_light_uf_b"], 21)
@@ -191,7 +191,7 @@ class BuildStepModelTests(unittest.TestCase):
              "back_right_outlet"),
         )
         self.assertEqual(
-            model.build_steps[13].object_names, ("power_back_right_outlet_feed",),
+            model.build_steps[13].object_names, ("back_right_outlet_uf_connector", "power_back_right_outlet_uf_b"),
         )
         self.assertNotIn("roof_support_fr", step_by_object)
         corners = {
@@ -236,7 +236,7 @@ class BuildStepModelTests(unittest.TestCase):
         self.assertIn('["back_right_outlet_backer_lower", 13]', scad)
         self.assertIn('["back_right_outlet", 13]', scad)
         self.assertIn('["right_center_rail", 9]', scad)
-        self.assertIn('["power_back_right_outlet_feed", 14]', scad)
+        self.assertIn('["power_back_right_outlet_uf_b", 14]', scad)
         self.assertIn('["back_right_outlet_cover", 38]', scad)
         self.assertIn("show_deferred = false;", scad)
         self.assertIn("build_step == floor(build_step)", scad)

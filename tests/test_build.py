@@ -876,28 +876,33 @@ class FrontStreetLightBuildTests(unittest.TestCase):
                         self.assertGreater(standoff.box_min[2], support.min_on("z"))
                         self.assertLess(standoff.box_min[2]+standoff.box_size[2], support.max_on("z"))
 
-    def test_transition_box_and_conduit_use_real_round_box(self):
+    def test_direct_uf_connections_replace_round_box_and_branch_conduits(self):
         for e in (build.default_build, build.build_enclosure(36,24,55)):
-            box = self.resolved(e, "front_street_light_base_box")
-            self.assertEqual(box.type_name, "commercial_electric_wrb550b_outlet_box")
-            self.assertAlmostEqual(box.box_min[0]+box.box_size[0], e.members["post_fr"].min_on("x"))
-            self.assertAlmostEqual(box.box_min[2]+box.box_size[2], e.members["brace_fl_fr"].min_on("z")-4)
-            conduit = e.conduits["power_street_light_feed"].resolved(e.components,e.members)
-            self.assertVectorAlmostEqual(conduit.points[-1], e.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT)
-            self.assertVectorAlmostEqual(conduit.points[-1], (
-                box.box_min[0]+box.box_size[0]/2,
-                box.box_min[1]+box.box_size[1]/2, box.box_min[2]))
-            self.assertAlmostEqual(conduit.points[-2][0], conduit.points[-1][0])
-            self.assertAlmostEqual(conduit.points[-2][1], conduit.points[-1][1])
-            cover = self.resolved(e, "front_street_light_box_cover")
-            self.assertAlmostEqual(cover.box_min[0]+cover.box_size[0], box.box_min[0])
-            self.assertEqual(cover.out_vec, (-1,0,0))
+            for name in ("front_street_light_base_box", "front_street_light_box_cover",
+                         "front_street_light_uf_connector", "power_junction_light_adapter",
+                         "power_junction_outlet_adapter"):
+                self.assertNotIn(name, e.components)
+            for name in ("power_street_light_feed", "power_back_right_outlet_feed"):
+                self.assertNotIn(name, e.conduits)
+            for name, endpoint in (
+                ("power_junction_light_uf_connector",e.cables["power_street_light_uf_b"].points[0]),
+                ("power_junction_outlet_uf_connector",e.cables["power_back_right_outlet_uf_b"].points[0]),
+                ("back_right_outlet_uf_connector",e.cables["power_back_right_outlet_uf_b"].points[-1]),
+            ):
+                instance=e.components[name]
+                connector=self.resolved(e,name)
+                self.assertEqual(connector.type_name,"commercial_electric_fsw50z_12_2_1")
+                self.assertVectorAlmostEqual(endpoint,tuple(
+                    instance.absolute_anchor[i]+connector.out_vec[i]*e.POWER_UF_CONNECTOR_LENGTH
+                    for i in range(3)))
+            rows={r["name"]:r for r in e.model.bom_rows()}
+            self.assertEqual(rows["commercial_electric_fsw50z_12_2_1"]["qty"],3)
+            self.assertIn("outlet_12_2_uf_b",rows)
 
     def test_uf_b_is_continuous_and_bends_below_brace(self):
         for e in (build.default_build, build.build_enclosure(36,24,55)):
             cable = e.cables["power_street_light_uf_b"]
-            connector = self.resolved(e, "front_street_light_uf_connector")
-            self.assertAlmostEqual(cable.points[0][2], connector.box_min[2]+connector.box_size[2])
+            self.assertVectorAlmostEqual(cable.points[0],e.POWER_LIGHT_UF_EXIT)
             self.assertGreaterEqual(minimum_cable_bend_radius(cable.points), 2-1e-6)
             self.assertLess(max(p[2] for p in cable.points)+cable.diameter/2, e.members["brace_fl_fr"].min_on("z"))
             self.assertVectorAlmostEqual(cable.points[-1], (
@@ -914,7 +919,8 @@ class FrontStreetLightBuildTests(unittest.TestCase):
         self.assertNotIn("provisional_brook_recessed_junction_box",rows)
         self.assertEqual(rows["silver_address_number_standoff"]["qty"],8)
         self.assertIn("commercial_electric_fsw50z_12_2_1",rows)
-        self.assertIn("commercial_electric_wrb550b_outlet_box",rows)
+        self.assertNotIn("commercial_electric_wrb550b_outlet_box",rows)
+        self.assertNotIn("commercial_electric_wbc300g_cover",rows)
         scad = e.model.to_scad()
         self.assertIn('c_shape(c) == "raised_numeral"', scad)
         self.assertIn('for (b = s[5])', scad)
@@ -945,10 +951,10 @@ class PowerJunctionBuildTests(unittest.TestCase):
             build.POWER_JUNCTION_BOTTOM_Z-build.POWER_JUNCTION_GROUND_Z,
             6,
         )
-        self.assertEqual(build.POWER_JUNCTION_BOX_FILL.required_volume, 18)
-        self.assertEqual(build.POWER_JUNCTION_BOX_FILL.remaining_volume, 31)
-        self.assertAlmostEqual(build.POWER_LIGHT_ADAPTER_END[0], 18.25)
-        self.assertAlmostEqual(build.POWER_OUTLET_ADAPTER_END_X, 18.25)
+        self.assertEqual(build.POWER_JUNCTION_BOX_FILL.required_volume, 17.5)
+        self.assertEqual(build.POWER_JUNCTION_BOX_FILL.remaining_volume, 31.5)
+        self.assertAlmostEqual(build.POWER_LIGHT_UF_EXIT[0], 18.25)
+        self.assertAlmostEqual(build.POWER_OUTLET_UF_EXIT[0], 18.25)
 
     def test_default_charger_riser_fittings_and_route(self) -> None:
         expected_types = {
@@ -1062,7 +1068,6 @@ class PowerJunctionBuildTests(unittest.TestCase):
             )
             for name in ("power_ev_top_adapter", "power_ev_bottom_adapter",
                          "power_ev_back_adapter", "power_junction_input_adapter",
-                         "power_junction_light_adapter", "power_junction_outlet_adapter",
                          "low_voltage_input_adapter"):
                 fitting = resolved(name)
                 instance = enclosure.components[name]
@@ -1109,7 +1114,6 @@ class PowerJunctionBuildTests(unittest.TestCase):
         riser = self.resolved_conduit("power_ground_riser", enclosure)
         branch = self.resolved_conduit("power_pull_box_junction_feed", enclosure)
         ev = self.resolved_conduit("power_ev_charger_feed", enclosure)
-        light = self.resolved_conduit("power_street_light_feed", enclosure)
 
         self.assertEqual(riser.trade_size, "1-1/4")
         self.assertVectorAlmostEqual(
@@ -1146,26 +1150,16 @@ class PowerJunctionBuildTests(unittest.TestCase):
             ComponentAnchor,
         )
 
-        self.assertEqual(light.trade_size, "1/2")
-        self.assertVectorAlmostEqual(
-            light.points[0], enclosure.POWER_LIGHT_ADAPTER_END
-        )
-        self.assertVectorAlmostEqual(
-            light.points[-1],
-            enclosure.FRONT_STREET_LIGHT_CONDUIT_ENTRY.resolve(enclosure.members),
-        )
         self.assertEqual(len(ev.points), 2)
-        self.assertEqual(light.bends, ((1, 2.5),))
-        self.assertGreater(len(light.points), 20)
 
-    def test_street_light_feed_rises_into_transition_box(self):
-        light = self.resolved_conduit("power_street_light_feed")
-        self.assertVectorAlmostEqual(light.points[0], build.POWER_LIGHT_ADAPTER_END)
-        self.assertVectorAlmostEqual(light.points[-1], build.FRONT_STREET_LIGHT_CONDUIT_ENTRY_POINT)
+    def test_street_light_uf_follows_post_corridor(self):
+        light = build.cables["power_street_light_uf_b"]
+        self.assertVectorAlmostEqual(light.points[0],build.POWER_LIGHT_UF_EXIT)
         self.assertGreater(light.points[-1][2],light.points[0][2])
-        self.assertEqual(light.bends, ((1,2.5),))
-        self.assertAlmostEqual(max(p[0] for p in light.points), build.POWER_LIGHT_POST_X)
-        self.assertAlmostEqual(light.points[-2][1],light.points[-1][1])
+        self.assertAlmostEqual(max(p[0] for p in light.points),build.POWER_LIGHT_POST_X)
+        self.assertTrue(any(abs(p[0]-build.POWER_LIGHT_POST_X)<1e-9
+                            and abs(p[1]-build.FRONT_LIGHT_ROUTE_Y)<1e-9
+                            for p in light.points))
 
     def test_layout_tracks_resized_enclosures(self) -> None:
         for enclosure in (
@@ -1181,50 +1175,25 @@ class PowerJunctionBuildTests(unittest.TestCase):
                 (enclosure.POWER_RISER_X, enclosure.POWER_RISER_Y),
             )
 
-    def test_outlet_feed_rests_on_lower_right_rail(self) -> None:
-        outlet = self.resolved_conduit("power_back_right_outlet_feed")
-
-        self.assertEqual(outlet.trade_size, "1/2")
-        self.assertEqual(outlet.bends, ((1, 4), (2, 4)))
-        adapter = build.components["power_junction_outlet_adapter"].resolved(
-            build.members["front_center_rail"]
-        )
-        self.assertAlmostEqual(
-            adapter.box_min[2]+adapter.box_size[2]/2,
-            build.POWER_OUTLET_HORIZONTAL_RUN_Z,
-        )
-        self.assertAlmostEqual(outlet.points[0][2], build.POWER_OUTLET_HORIZONTAL_RUN_Z)
-        self.assertVectorAlmostEqual(
-            outlet.points[0],
-            (
-                build.POWER_OUTLET_ADAPTER_END_X,
-                build.POWER_JUNCTION_PORT_Y,
-                build.POWER_JUNCTION_OUTLET_PORT_Z,
-            ),
-        )
-        self.assertVectorAlmostEqual(
-            outlet.points[-1],
-            build.BACK_RIGHT_OUTLET_CONDUIT_ENTRY.resolve(build.members),
-        )
-        rail = build.members["rail_rbl"]
-        run_points = [point for point in outlet.points
-                      if abs(point[0]-build.BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0]) < 1e-9
-                      and abs(point[2]-build.POWER_OUTLET_HORIZONTAL_RUN_Z) < 1e-9]
-        self.assertEqual(len(run_points), 2)
-        self.assertGreater(run_points[1][1]-run_points[0][1], 3)
-        for x, y, z in run_points:
-            self.assertAlmostEqual(z-outlet.od/2, rail.max_on("z"))
-            self.assertGreaterEqual(x-outlet.od/2, rail.min_on("x"))
-            self.assertLessEqual(x+outlet.od/2, rail.max_on("x"))
-            self.assertGreaterEqual(y, rail.min_on("y"))
-            self.assertLessEqual(y, rail.max_on("y"))
-        self.assertAlmostEqual(min(point[2] for point in outlet.points),
-                               build.POWER_OUTLET_HORIZONTAL_RUN_Z)
-        self.assertLess(
-            max(point[0] for point in outlet.points)
-            + CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2,
-            build.siding.max_x,
-        )
+    def test_outlet_uf_b_follows_lower_right_rail(self):
+        for e in (build.default_build,build.build_enclosure(width=36,depth=30,height=55)):
+            outlet=e.cables["power_back_right_outlet_uf_b"]
+            self.assertVectorAlmostEqual(outlet.points[0],e.POWER_OUTLET_UF_EXIT)
+            self.assertVectorAlmostEqual(outlet.points[-1],e.POWER_OUTLET_UF_ENTRY)
+            self.assertGreaterEqual(minimum_cable_bend_radius(outlet.points),4-1e-6)
+            rail=e.members["rail_rbl"]
+            run_points=[p for p in outlet.points if
+                        abs(p[0]-e.BACK_RIGHT_OUTLET_CONDUIT_ENTRY_POINT[0])<1e-9
+                        and abs(p[2]-e.POWER_OUTLET_HORIZONTAL_RUN_Z)<1e-9]
+            self.assertEqual(len(run_points),2)
+            self.assertGreater(run_points[1][1]-run_points[0][1],3)
+            for x,y,z in run_points:
+                self.assertAlmostEqual(z,rail.max_on("z")+CONDUIT_OD_BY_TRADE_SIZE["1/2"]/2)
+                self.assertGreaterEqual(x-outlet.diameter/2,rail.min_on("x"))
+                self.assertLessEqual(x+outlet.diameter/2,rail.max_on("x"))
+                self.assertGreaterEqual(y,rail.min_on("y"))
+                self.assertLessEqual(y,rail.max_on("y"))
+            self.assertLess(max(p[0] for p in outlet.points)+outlet.diameter/2,e.siding.max_x)
 
 
 class LowVoltageBuildTests(unittest.TestCase):
@@ -1746,13 +1715,10 @@ class ParameterizedBuildTests(unittest.TestCase):
             enclosure.members["rail_fbu"].min_on("y")-low_voltage_box.box_size[1],
         )
 
-        outlet_feed = self.resolved_conduit(
-            enclosure,
-            "power_back_right_outlet_feed",
-        )
+        outlet_feed = enclosure.cables["power_back_right_outlet_uf_b"]
         self.assertVectorAlmostEqual(
             outlet_feed.points[-1],
-            enclosure.BACK_RIGHT_OUTLET_CONDUIT_ENTRY.resolve(enclosure.members),
+            enclosure.POWER_OUTLET_UF_ENTRY,
         )
         for name in (
             "low_voltage_wifi_feed",
@@ -1828,27 +1794,15 @@ class ParameterizedBuildTests(unittest.TestCase):
                 baseline_component.box_min[2],
             )
 
-        baseline_light_feed = self.resolved_conduit(
-            baseline,
-            "power_street_light_feed",
-        )
-        taller_light_feed = self.resolved_conduit(
-            taller,
-            "power_street_light_feed",
-        )
+        baseline_light_feed = baseline.cables["power_street_light_uf_b"]
+        taller_light_feed = taller.cables["power_street_light_uf_b"]
         self.assertAlmostEqual(
             taller_light_feed.points[-1][2]-baseline_light_feed.points[-1][2],
             55-build.DEFAULT_HEIGHT,
         )
 
-        baseline_outlet_feed = self.resolved_conduit(
-            baseline,
-            "power_back_right_outlet_feed",
-        )
-        taller_outlet_feed = self.resolved_conduit(
-            taller,
-            "power_back_right_outlet_feed",
-        )
+        baseline_outlet_feed = baseline.cables["power_back_right_outlet_uf_b"]
+        taller_outlet_feed = taller.cables["power_back_right_outlet_uf_b"]
         self.assertVectorAlmostEqual(
             taller_outlet_feed.points[-1],
             baseline_outlet_feed.points[-1],

@@ -1,10 +1,10 @@
 # Printed gusset bearing covers
 
-Two shallow ASA/ABS caps support the roof siding where the 6-inch gussets
-interrupt the plywood strips. Each has bearing lands at **3/4 inch above the
-framing**, matching the strip tops. The underside is a ribbed, open-bottom
-cover over the plate and all 16 existing pan heads. These are prototype bearing
-accessories; printed-part load capacity and long-term creep have not been tested.
+Two open ASA/ABS bearing covers support the roof siding where the 6-inch steel
+gussets interrupt the plywood strips. Their top surfaces continue **only the
+actual plywood runs**, at **3/4 inch above the framing**, matching the plywood
+tops. The spaces between runs are open except for recessed connecting ribs.
+Printed-part load capacity and long-term creep have not been tested.
 
 Generate the parts with:
 
@@ -12,82 +12,93 @@ Generate the parts with:
 uv run tools/generate_gusset_covers.py
 ```
 
-The normal `uv run build.py --no-deploy` also exports these parts and includes
+The normal `uv run build.py --no-deploy` also exports the parts and includes
 them in the enclosure model, BOM and siding-preparation build step.
 
-| File in `output/gusset_covers/` | Location | Quantity |
-| --- | --- | --- |
-| `gusset_cover_1.stl` / `.step` | Back-left gusset | 1 |
-| `gusset_cover_2.stl` / `.step` | Front-right gusset | 1 |
+| File in `output/gusset_covers/` | Location | Quantity | Current size, X × Y × Z |
+| --- | --- | --- | --- |
+| `gusset_cover_1.stl` / `.step` | Back-left gusset | 1 | 163.4 × 175 × 19.05 mm |
+| `gusset_cover_2.stl` / `.step` | Front-right gusset | 1 | 163.4 × 182.425 × 19.05 mm |
 
-STLs are in **millimetres**, already oriented with the roof-bearing face down.
-STEP files use installed orientation, with XY measured from the steel plate's
-minimum corner and Z from the lumber top. The manifest gives the corresponding
-world origins in inches. Each part occupies **163.4 × 163.4 × 19.05 mm**
-(6.433 × 6.433 × 0.750 inches). The two parts have different joint reliefs;
-keep their installed X/Y axes aligned with the enclosure. In installed axes,
-relief channels run along X, parallel to the front of the enclosure.
+[Generated top-view preview](output/gusset_covers/preview.svg) shows both covers
+alongside their plywood runs. Blue is the bearing surface, gray is recessed
+framework, and tan is the adjacent plywood. Dashed outlines mark the steel and
+screw heads; some are hidden beneath the bearing bands in the physical part.
+
+STLs are in **millimetres**, with the roof-bearing faces down and the part
+translated to nonnegative print coordinates. STEP and OpenSCAD copies use
+installed orientation, with XY measured from the steel plate's minimum corner
+and Z from the lumber top. The manifest records world origins in inches,
+plate-relative Y bounds in millimetres, source strip names, and actual part
+sizes. Keep the installed X/Y axes aligned with the enclosure; the bearing
+bands run along X, parallel to the front. The covers are different parts.
 
 ## Bearing and fit
 
-- The skirt reaches **5.5 mm (0.217 inch)** beyond each plate edge. This leaves
-  **0.85 mm (0.033 inch)** inside the verified 6.35 mm (1/4-inch) plate-to-frame
-  margin. Its inner face clears the plate by **0.6 mm per side**. The skirt is
-  4.9 mm thick and bears on the exposed framing wherever framing is present.
-- Internal **2.4 mm webs** bear on the steel between the screw rows. They do
-  not rest on the heads. The underside of the continuous 4 mm deck is at 8 mm;
-  the modeled plate-plus-head stack is 4.674 mm, leaving **3.33 mm overhead**.
-  Measure the actual screw heads before printing; the model uses 8.89 mm
-  diameter and 2.794 mm height above the 1.880 mm plate.
-- Raised lands reach the plywood support plane only beneath full-thickness
-  roof-board material. Joint channels are **7.05 mm deep**, with 0.6 mm lateral
-  allowance on either side of the modeled joint. The shallow deck continues
-  beneath them to keep the cap connected. This follows the project's simplified
-  US135 profile and provisional 130 mm pitch; verify against engaged boards.
-- **6 mm wide × 3 mm high drainage gates** in the skirt and web bottoms connect
-  the screw wells to the open perimeter. Keep these gates clear.
-- Plywood strip ends now stop **1/4 inch from the steel**, leaving 0.85 mm
-  between the printed cap and the strip wherever their extents overlap. Existing
-  strip-anchor locations are recalculated against the shortened strips.
+- Each cover has three bearing bands in the default layout. Their Y positions
+  and widths exactly match the plywood runs shortened by that gusset, including
+  the wider rear closure strip. No broad connecting sheet remains between them.
+- The back-left cover extends **11.6 mm farther inward toward the front** than
+  the former square cover, reaching Y = 15.9518 inches in the enclosure. The
+  front-right cover extends **19.025 mm toward the rear**, reaching Y = 7.2156
+  inches. These boundaries follow the inner edges of the interrupted runs.
+  Dimensions recalculate when the roof layout changes.
+- The original plate-locating skirt still reaches **5.5 mm (0.217 inch)** beyond
+  each plate edge, leaving **0.85 mm (0.033 inch)** inside the verified 1/4-inch
+  plate-to-frame margin. Its inner face clears the steel by **0.6 mm per side**.
+  The added inward extensions occupy the open area beyond the plate.
+- Internal **2.4 mm webs** bear on steel between the screw rows. Bearing bands
+  begin at Z = 8 mm, leaving **3.33 mm overhead** above the modeled steel/head
+  stack. Measure actual heads before printing: the model uses 8.89 mm diameter
+  and 2.794 mm head height above the 1.880 mm plate.
+- All connecting ribs stay at or below Z = 8 mm, **11.05 mm below the siding**.
+  Longitudinal ribs continue into the extensions, with a transverse tie at the
+  new inward edge. Extension feet reach the lumber only where the ribs overlap
+  existing top-flush framing; no support is assumed beneath open areas.
+- Original **6 × 3 mm drainage gates** remain in the skirt and web bottoms.
+  Added feet have gates along their longer direction where space permits;
+  short feet remain solid. Keep the framework and outlets clear.
+- Plywood still stops **1/4 inch from the steel**, leaving **0.85 mm** between
+  the cover and plywood ends. Strip lengths and fastener positions are unchanged
+  by this revision. Both covers clear the siding's modeled mating profiles.
 
-The load path is siding → raised lands → deck/webs/skirt → plate/framing.
-The cap supports bearing only. Keep siding and trim fasteners in the designated
-plywood or lumber; do not substitute printed plastic for their screw engagement.
-No gusset screw is removed, loosened or lengthened to install the cap.
+The load path is siding → bearing bands → webs/skirt/feet → steel/framing.
+Keep siding and trim fasteners in their designated plywood or lumber. No gusset
+screw is removed, loosened or lengthened. Roof boards capture the floating
+covers vertically; the original skirts limit lateral movement.
 
 ## Printing
 
 Use ASA or ABS with the filament manufacturer's enclosed-printer settings.
 Start with a **0.4 or 0.6 mm nozzle, 0.2 mm layers, at least 6 perimeters,
 6 top/bottom layers, and 40–50% infill**. Preserve solid webs and skirt in the
-slicer. A brim may help keep the wide part flat. Confirm that the slicer preserves
-the exact 19.05 mm installed height; layer quantization must not lift the roof.
-These are starting settings, not a verified strength specification.
+slicer. A brim may help keep the part flat. Confirm that layer quantization
+preserves the 19.05 mm installed height. These are starting settings, not a
+verified strength specification.
 
-Print the supplied STL bearing face down. Use build-plate supports under the
-recessed joint channels and edge reliefs. The open screw wells and ribs then
-build upward without buried support. Remove the channel supports completely;
-do not fill the reliefs or drain gates with adhesive. Keep the bearing lands
-flat, and avoid a brim or elephant foot that changes their contact plane.
-Do not apply a generic shrink compensation without measuring a sample; the
-0.6 mm side clearance is already built into the CAD.
+Print the supplied STL bearing faces down. Enable build-plate supports beneath
+recessed connecting ribs that bridge the open gaps between bearing bands. Those
+ribs begin 11.05 mm above the bed in this orientation. Inspect the slicer preview
+for unsupported starts and check support access before printing. Remove all
+supports and brim material, keeping bearing faces flat and drain gates open.
+Do not apply generic shrink compensation without measuring a sample; the
+0.6 mm plate clearance is already built into the CAD.
 
 ## Installation check
 
-1. Place cover 1 over the back-left plate and cover 2 over the front-right plate.
-   Both slide on from above with the ribs downward. The surrounding skirt
-   locates the cap; it is not a snap fit or a gasket.
-2. Confirm all feet seat, the cap does not rock, and no screw head contacts a
-   rib. Check deck flatness with a straightedge spanning adjacent plywood.
-   Neither the skirt nor any web projects below the framing top plane.
-3. Dry-fit the actual roof courses. Align each joint with its relieved channel;
-   verify the board backs bear on the lands and the mating lips stay clear.
-   Regenerate if the measured course pitch or board position changes.
-4. Install the roof boards with their existing supported wood fasteners. They
-   capture the floating caps vertically; the skirts limit lateral movement.
-   Secure the caps temporarily during assembly if needed, then remove the
-   temporary restraint. Check drainage paths before closing the roof.
+1. Seat cover 1 over the back-left plate, extending toward the front. Seat cover
+   2 over the front-right plate, extending toward the rear. Both slide down from
+   above with the ribs downward. Verify that the added feet bear on framing.
+2. Check that each cover sits without rocking and clears every screw head.
+   Use a straightedge across the bearing bands and adjacent plywood to confirm
+   their tops align. No rib or foot projects below the framing top plane.
+3. Dry-fit the roof courses. Check that each bearing band continues its plywood
+   run, supports full-thickness board material, and clears the mating profiles.
+   Regenerate the covers if the measured board pitch or strip layout changes.
+4. Install the boards with their specified wood fasteners. Use temporary
+   restraint for the floating covers during assembly if needed, then remove it.
+   Check the open gaps and drainage gates before closing the roof.
 
-Treat the first prints as fit prototypes before making production parts. The geometry
-checks verify modeled clearances, single-solid CAD and alignment; they do not
-establish snow, uplift or thermal-creep capacity.
+Treat the first prints as fit prototypes. Geometry checks verify modeled
+clearances, connection of the CAD solids and alignment; they do not establish
+snow, uplift or thermal-creep capacity.

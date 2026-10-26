@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 
-from lumber_model.gusset import GUSSET_SIZE_IN, GUSSET_THICKNESS_IN
+from lumber_model.gusset import GUSSET_HOLE_CENTERS_IN, GUSSET_SIZE_IN, GUSSET_THICKNESS_IN
 
 MM = 25.4
 PLATE = GUSSET_SIZE_IN * MM
@@ -14,7 +14,6 @@ OVERHANG = 5.5  # Fits inside the verified 6.35 mm plate-to-frame margin.
 FIT = 0.6
 WEB = 2.4
 DECK_BOTTOM = 8.0
-DECK_TOP = 12.0  # Recessed joint channels are 7.05 mm below the bearing plane.
 DRAIN_WIDTH = 6.0
 DRAIN_HEIGHT = 3.0
 Box = tuple[tuple[float, float, float], tuple[float, float, float]]
@@ -25,6 +24,9 @@ class GussetCover:
     name: str
     origin_in: tuple[float, float, float]
     bearing_bands_mm: tuple[tuple[float, float], ...]
+    y_bounds_mm: tuple[float, float]
+    source_strips: tuple[str, ...]
+    framing_rectangles_mm: tuple[tuple[float, float, float, float], ...]
 
     @property
     def boxes(self) -> tuple[Box, ...]:
@@ -32,9 +34,8 @@ class GussetCover:
         boxes: list[Box] = []
         lo, hi = -OVERHANG, PLATE + OVERHANG
         span = hi-lo
-        boxes.append(((lo, lo, DECK_BOTTOM), (span, span, DECK_TOP-DECK_BOTTOM)))
         for a, b in self.bearing_bands_mm:
-            boxes.append(((lo, a, DECK_TOP), (span, b-a, HEIGHT-DECK_TOP)))
+            boxes.append(((lo, a, DECK_BOTTOM), (span, b-a, HEIGHT-DECK_BOTTOM)))
 
         def rib(axis: int, across: float, width: float, bottom: float) -> None:
             # The upper part is continuous; lower gates connect every screw well
@@ -61,29 +62,113 @@ class GussetCover:
             rib(axis, PLATE+FIT, OVERHANG-FIT, 0)
             for center in (WEB/2, 1.5*MM, 3*MM, 4.5*MM, PLATE-WEB/2):
                 rib(axis, center-WEB/2, WEB, GUSSET_THICKNESS_IN*MM)
+        # Continue the longitudinal webs inward without extending the skirt's
+        # plate-locating faces. Cross-ties and feet stay below the bearing bands.
+        extension_rails = []
+        for ya, yb in ((self.y_bounds_mm[0], lo), (hi, self.y_bounds_mm[1])):
+            if yb-ya < 1e-7:
+                continue
+            rail_x = [(lo, OVERHANG-FIT), (PLATE+FIT, OVERHANG-FIT)]
+            rail_x += [(c-WEB/2, WEB) for c in
+                       (WEB/2, 1.5*MM, 3*MM, 4.5*MM, PLATE-WEB/2)]
+            for x, width in rail_x:
+                extension_rails.append(((x, ya, DECK_BOTTOM-WEB), (width, yb-ya, WEB)))
+            edge_y = ya if ya < lo else yb-WEB
+            extension_rails.append(((lo, edge_y, DECK_BOTTOM-WEB), (span, WEB, WEB)))
+
+        boxes.extend(extension_rails)
+        for pos, size in extension_rails:
+            for fx, fy, fw, fh in self.framing_rectangles_mm:
+                xa, xb = max(pos[0], fx), min(pos[0]+size[0], fx+fw)
+                ya, yb = max(pos[1], fy), min(pos[1]+size[1], fy+fh)
+                if min(xb-xa, yb-ya) < 1e-7:
+                    continue
+                # Feet only where existing framing supports them. A gate below
+                # each foot preserves drainage through the extended framework.
+                boxes.append(((xa, ya, DRAIN_HEIGHT),
+                              (xb-xa, yb-ya, DECK_BOTTOM-WEB-DRAIN_HEIGHT)))
+                along = 0 if xb-xa > yb-ya else 1
+                start, end = (xa, xb) if along == 0 else (ya, yb)
+                mid = (start+end)/2
+                segments = ((start, end),) if end-start <= DRAIN_WIDTH else (
+                    (start, mid-DRAIN_WIDTH/2), (mid+DRAIN_WIDTH/2, end))
+                for a, b in segments:
+                    foot_pos = [xa, ya, 0]
+                    foot_size = [xb-xa, yb-ya, DRAIN_HEIGHT]
+                    foot_pos[along], foot_size[along] = a, b-a
+                    boxes.append((tuple(foot_pos), tuple(foot_size)))
         return tuple(boxes)
 
 
 def covers_for_siding(siding) -> tuple[GussetCover, ...]:
-    """Relieve each cap at the actual roof-board joints, keeping laps unobstructed."""
+    """Continue only plywood runs whose ends were shortened by each gusset."""
     result = []
     for index, (origin, size) in enumerate(siding.roof_gussets, 1):
         if any(abs(v-GUSSET_SIZE_IN)>1e-6 for v in size[:2]):
             raise ValueError('Gusset covers require the 6 x 6 inch plates')
-        bands = []
-        for board in siding.board_parts:
-            if '_top_' not in board.name:
-                continue
-            # Same full-thickness bearing envelope as the plywood strips, plus
-            # 0.6 mm clearance at either side of the joint/board-end relief.
-            lap = siding.board_width-siding.course_pitch
-            a = max(-OVERHANG, (board.start[1]+lap-origin[1])*MM+FIT)
-            b = min(PLATE+OVERHANG,
-                    (min(board.start[1]+board.size[1], board.start[1]+siding.course_pitch)-origin[1])*MM-FIT)
-            if b>a:
-                bands.append((a,b))
-        result.append(GussetCover(f'gusset_cover_{index}', origin, tuple(bands)))
+        left = origin[0]+size[0]/2 < (siding.min_x+siding.max_x)/2
+        rear = origin[1]+size[1]/2 > (siding.min_y+siding.max_y)/2
+        clearance = siding.roof_hardware_clearance
+        interrupted = []
+        for strip in siding.roof_strips:
+            end = strip.start[0] if left else strip.start[0]+strip.size[0]
+            cutoff = origin[0]+size[0]+clearance if left else origin[0]-clearance
+            if (abs(end-cutoff)<1e-7 and
+                    strip.start[1]<origin[1]+size[1]+clearance and
+                    strip.start[1]+strip.size[1]>origin[1]-clearance):
+                interrupted.append(strip)
+        if not interrupted:
+            raise ValueError(f'Gusset {index}: no interrupted plywood runs')
+        lo, hi = -OVERHANG, PLATE+OVERHANG
+        raw_bands = [((s.start[1]-origin[1])*MM,
+                      (s.start[1]+s.size[1]-origin[1])*MM) for s in interrupted]
+        y_bounds = (min(lo, min(a for a, _ in raw_bands)), hi) if rear else (
+            lo, max(hi, max(b for _, b in raw_bands)))
+        bands = tuple((max(a,y_bounds[0]), min(b,y_bounds[1])) for a,b in raw_bands)
+        framing = tuple(((loc[0]-origin[0])*MM, (loc[1]-origin[1])*MM,
+                         extent[0]*MM, extent[1]*MM)
+                        for loc, extent in siding.framing
+                        if abs(loc[2]+extent[2]-origin[2])<1e-7)
+        result.append(GussetCover(f'gusset_cover_{index}', origin, bands,
+                                  y_bounds, tuple(s.name for s in interrupted), framing))
     return tuple(result)
+
+
+def _write_preview(covers: tuple[GussetCover, ...], path: Path) -> None:
+    """A top view showing bearing bands, open framework, and adjacent plywood."""
+    svg = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 620">',
+           '<rect width="1120" height="620" fill="#f5f6f7"/>',
+           '<g font-family="sans-serif" fill="#21313b" text-anchor="middle">',
+           '<text x="560" y="45" font-size="25">Gusset covers: plywood-aligned bearing bands</text>',
+           '<text x="560" y="77" font-size="15">Top view; rear (+Y) is up. Tan stubs show the adjacent plywood runs.</text>']
+    for index, cover in enumerate(covers):
+        center = 300+520*index
+        svg.append(f'<text x="{center}" y="119" font-size="20">'
+                   f'{"Back-left" if index == 0 else "Front-right"} (cover {index+1})</text>')
+        svg.append(f'<g transform="translate({center-163.4+2*OVERHANG} '
+                   f'{510+2*cover.y_bounds_mm[0]}) scale(2 -2)">')
+        for pos, size in cover.boxes:
+            if pos[2]+size[2] <= DECK_BOTTOM+1e-7:
+                svg.append(f'<rect x="{pos[0]}" y="{pos[1]}" width="{size[0]}" '
+                           f'height="{size[1]}" fill="#a5aeb4"/>')
+        for a,b in cover.bearing_bands_mm:
+            svg.append(f'<rect x="{-OVERHANG}" y="{a}" width="{PLATE+2*OVERHANG}" '
+                       f'height="{b-a}" fill="#377e96"/>')
+            stub_x = PLATE+0.25*MM if index == 0 else -0.25*MM-30
+            svg.append(f'<rect x="{stub_x}" y="{a}" width="30" height="{b-a}" '
+                       'fill="#c6a570"/>')
+        svg.append(f'<rect width="{PLATE}" height="{PLATE}" fill="none" '
+                   'stroke="#273b47" stroke-width="0.6" stroke-dasharray="3 2"/>')
+        for x,y in GUSSET_HOLE_CENTERS_IN:
+            svg.append(f'<circle cx="{x*MM}" cy="{y*MM}" r="4.445" fill="none" '
+                       'stroke="#273b47" stroke-width="0.45" stroke-dasharray="1 1"/>')
+        svg.append('</g>')
+        length = cover.y_bounds_mm[1]-cover.y_bounds_mm[0]
+        svg.append(f'<text x="{center}" y="547" font-size="16">'
+                   f'163.4 × {length:g} mm; bearing height 19.05 mm</text>')
+    svg.extend(['<text x="560" y="590" font-size="15">Blue: siding bearing  ·  Gray: recessed ribs  ·  Dashed: steel and screw-head outlines</text>',
+                '</g></svg>'])
+    path.write_text('\n'.join(svg)+'\n')
 
 
 def generate_gusset_covers(siding, directory: Path) -> list[Path]:
@@ -93,7 +178,8 @@ def generate_gusset_covers(siding, directory: Path) -> list[Path]:
     directory.mkdir(parents=True, exist_ok=True)
     paths = []
     records = []
-    for cover in covers_for_siding(siding):
+    covers = covers_for_siding(siding)
+    for cover in covers:
         solids = [Location(pos)*CadBox(*size, align=(Align.MIN,)*3)
                   for pos, size in cover.boxes]
         solid = Part() + solids
@@ -103,8 +189,11 @@ def generate_gusset_covers(siding, directory: Path) -> list[Path]:
         stl_path = directory/f'{cover.name}.stl'
         scad_path = directory/f'{cover.name}.scad'
         export_step(solid, step_path)
-        # Bearing face down; only the shallow joint relief needs bed support.
-        printable = solid.rotate(Axis.X, 180).translate((OVERHANG, PLATE+OVERHANG, HEIGHT))
+        # Use actual bounds: the two Y extensions have different lengths and
+        # directions. Bearing faces touch the bed; the ribs then build upward.
+        bounds = solid.bounding_box()
+        printable = solid.rotate(Axis.X, 180).translate(
+            (-bounds.min.X, bounds.max.Y, bounds.max.Z))
         export_stl(printable, stl_path, tolerance=0.05, angular_tolerance=0.1)
         scad_path.write_text(
             '// Millimetres. Installed orientation; STL is bearing face down.\n'
@@ -115,11 +204,16 @@ def generate_gusset_covers(siding, directory: Path) -> list[Path]:
         paths.extend((step_path, stl_path, scad_path))
         records.append(dict(name=cover.name, quantity=1, origin_in=cover.origin_in,
                             bearing_bands_mm=cover.bearing_bands_mm,
-                            size_mm=[PLATE+2*OVERHANG]*2+[HEIGHT],
+                            y_bounds_mm=cover.y_bounds_mm,
+                            source_strips=cover.source_strips,
+                            size_mm=list(bounds.size),
                             volume_mm3=solid.volume))
     manifest = directory/'manifest.json'
     manifest.write_text(json.dumps(dict(units='mm', material='ASA or ABS',
         skirt_margin_mm=6.35-OVERHANG, plate_side_clearance_mm=FIT,
         parts=records), indent=2)+'\n')
     paths.append(manifest)
+    preview = directory/'preview.svg'
+    _write_preview(covers, preview)
+    paths.append(preview)
     return paths

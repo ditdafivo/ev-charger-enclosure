@@ -156,7 +156,9 @@ the selected preservative system; verify exterior bond, grade and actual thickne
 Shorten strip ends around the steel gusset envelopes with 1/4-inch clearance,
 leaving room for the [printed gusset bearing covers](GUSSET_COVERS.md). The
 covers support the roof siding at these interrupted edges, flush with the
-plywood; relieved channels leave the board joints clear. The covers are floating
+plywood. Their bearing bands continue only the interrupted plywood runs, with
+open gaps and recessed ribs between bands. Each extends inward in Y to the
+inner edge of its interrupted runs. The covers are floating
 bearing pieces, captured by the installed roof boards. Keep siding and trim
 fasteners in their specified wood backing. The
 strips bear on the existing perimeter framing and diagonal, without local

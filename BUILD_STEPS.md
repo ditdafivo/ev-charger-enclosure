@@ -701,8 +701,10 @@ plywood. The separate numeral backing leaves a local 1/4-inch gap behind the
 front siding. Keep screened drainage paths open.
 
 Seat the two printed ASA/ABS gusset bearing covers before the roof boards:
-cover 1 at back-left and cover 2 at front-right. Their bearing lands align with
-the plywood tops; their relieved channels align with the roof joints. Check
+cover 1 at back-left extending toward the front, and cover 2 at front-right
+extending toward the rear. Their bearing bands continue the interrupted plywood
+runs flush with the plywood tops; recessed ribs connect the bands across open
+gaps. Check the added extension feet bear on framing. Check
 that each sits without rocking and clears every gusset screw head. The roof
 boards capture these floating covers; keep all fasteners in the specified wood
 backing. See GUSSET_COVERS.md for printing and fit checks.

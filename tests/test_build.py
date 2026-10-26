@@ -2091,6 +2091,18 @@ class ParameterizedBuildTests(unittest.TestCase):
             self.assertTrue(
                 (output_dir / "tambour" / "joint_fit_preview.step").is_file()
             )
+            cover_dir = output_dir / "gusset_covers"
+            cover_manifest = json.loads((cover_dir / "manifest.json").read_text())
+            for record, expected_y in zip(cover_manifest["parts"], (175,182.425)):
+                self.assertAlmostEqual(record["size_mm"][1],expected_y)
+                self.assertEqual(len(record["source_strips"]),3)
+                data = (cover_dir / f'{record["name"]}.stl').read_bytes()
+                count = struct.unpack_from('<I',data,80)[0]
+                vertices = [vertex for i in range(count) for vertex in
+                            struct.iter_unpack('<3f',data[84+50*i+12:84+50*i+48])]
+                for axis, extent in enumerate(record["size_mm"]):
+                    self.assertAlmostEqual(min(v[axis] for v in vertices),0,places=4)
+                    self.assertAlmostEqual(max(v[axis] for v in vertices),extent,places=4)
 
 
 if __name__ == "__main__":

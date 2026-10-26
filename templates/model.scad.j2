@@ -14,6 +14,8 @@ tambour_door_open = true;
 show_deferred = false;
 // Show finish boards and trim; backing, screws, and mesh stay visible
 siding = true;
+// Show roof plywood backers; independent of finish siding visibility
+roof_plywood_backers = true;
 ground = false;
 footings = true;
 center_gland_cat6 = true;
@@ -113,6 +115,8 @@ tambours = [
 siding_parts = [
     {{ siding_records | join(',\n    ') }}
 ];
+
+roof_plywood_backer_names = {{ roof_plywood_backer_names }};
 
 xygrid_bounds = {{ xygrid_bounds }};
 xygrid_origin = {{ xygrid_origin }};
@@ -423,6 +427,9 @@ function ts_tangent(s) = s[2];
 
 function s_name(s) = s[0];
 function s_material(s) = s[1];
+function s_is_roof_plywood_backer(s) = len([
+    for (name = roof_plywood_backer_names) if (name == s_name(s)) name
+]) > 0;
 function s_visible_without_siding(s) =
     s_material(s) == "PT_5/4x6_backing"
     || s_material(s) == "PT_exterior_plywood_3_4"
@@ -1163,7 +1170,8 @@ if ({{ assembly.toggle }}) {
 {% endfor %}
 
 for (s = siding_parts) {
-    if ((siding || s_visible_without_siding(s)) && object_is_visible(s_name(s))) {
+    if ((siding || s_visible_without_siding(s)) && object_is_visible(s_name(s))
+        && (roof_plywood_backers || !s_is_roof_plywood_backer(s))) {
         render_siding_part(s, object_is_highlighted(s_name(s)));
     }
 }

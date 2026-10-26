@@ -36,6 +36,9 @@ The `--width`, `--depth`, and `--height` options customize the enclosure. Run
 In the model parameters, deselect `siding` to hide the finish boards and trim.
 Wall backing, plywood roof strips, siding screws, strip anchors, and pest mesh
 remain visible, subject to the selected build step.
+Independently deselect `roof_plywood_backers` to hide just the roof plywood
+strips. Gusset covers, wall backing, screws, and all other objects retain their
+existing visibility settings.
 
 The default level finished post tops are at `z = 49.625` inches, with `z = 0`
 at the outside corner of `post_fl`. The surveyed vertical ground-to-top heights

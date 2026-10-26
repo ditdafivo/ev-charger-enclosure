@@ -247,6 +247,8 @@ class CompositeSidingTests(unittest.TestCase):
         self.assertIn('"shell_top_5", "composite_decking"', scad)
         self.assertIn('"shell_angle_tambour_right_b"', scad)
         self.assertIn("(siding || s_visible_without_siding(s)) && object_is_visible(s_name(s))", scad)
+        self.assertIn("roof_plywood_backers = true;", scad)
+        self.assertIn("roof_plywood_backers || !s_is_roof_plywood_backer(s)", scad)
         self.assertIn("module render_siding_part(s, highlighted = false)", scad)
 
     def test_bom_serializes_siding_rows_to_csv_and_json(self) -> None:

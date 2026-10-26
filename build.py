@@ -68,6 +68,7 @@ from lumber_model.gusset import (
     pan_head_cylinder_primitives,
 )
 from lumber_model.gusset_dxf import generate_gusset_dxf
+from lumber_model.gusset_cover import covers_for_siding, generate_gusset_covers, HEIGHT
 from lumber_model.us135 import US135Siding, US135_THICKNESS, ROOF_STRIP_THICKNESS
 
 DEFAULT_WIDTH = 24
@@ -93,7 +94,6 @@ DEFERRED_OBJECT_NAMES = (
     "right_tambour_vertical_backing",
     "left_tambour_bend_backer",
     "right_tambour_bend_backer",
-    "tambour_ceiling_panel",
     "enclosure_tambour_track",
     "enclosure_tambour_door",
 )
@@ -605,12 +605,6 @@ def build_enclosure(
     FRONT_LIGHT_ROUTE_X=members["post_fr"].min_on("x")-0.8
     FRONT_LIGHT_ROUTE_Y=2.35
     FRONT_ADDRESS_CENTER_Z=FRONT_STREET_LIGHT_CENTER_Z-1.2-3-2.5
-    members.add(
-        "front_address_number_support", assembly="electrical_backing",
-        type="5/4x6", axis="x", rotated=False,
-        start=AbsoluteCoord(members["post_fl"].max_on("x"), 0, FRONT_ADDRESS_CENTER_Z-2.75),
-        length=members["post_fr"].min_on("x")-members["post_fl"].max_on("x"),
-    )
 
     grounds = [
         GroundSurface(
@@ -972,7 +966,7 @@ def build_enclosure(
             component_type=ComponentType(
                 name=f"silver_address_digit_{digit}", size=(2.25,5,1),
                 color=(0.75,0.77,0.8,1), shape="raised_numeral", text=digit,
-            ), member="front_address_number_support", at=0, face="wide_neg",
+            ), member="brace_fl_fr", at=0, face="wide_neg",
             absolute_anchor=(number_x, FRONT_STREET_LIGHT_BOX_FACE_Y-1, FRONT_ADDRESS_CENTER_Z),
             component_basis=((1,0,0),(0,0,1),(0,-1,0)),
         )
@@ -983,7 +977,7 @@ def build_enclosure(
                     name="silver_address_number_standoff", size=(0.375,0.375,1),
                     color=(0.75,0.77,0.8,1), shape="primitive_union",
                     cylinder_primitives=(((0.1875,0.1875,0),"out",1,0.375),),
-                ), member="front_address_number_support", at=0, face="wide_neg",
+                ), member="brace_fl_fr", at=0, face="wide_neg",
                 absolute_anchor=(number_x,FRONT_STREET_LIGHT_BOX_FACE_Y, FRONT_ADDRESS_CENTER_Z+z_offset),
                 component_basis=((1,0,0),(0,0,1),(0,-1,0)),
             )
@@ -1564,52 +1558,6 @@ def build_enclosure(
         slat_color=TAMBOUR_DOOR_COLOR,
     )
 
-    TAMBOUR_CEILING_THICKNESS=0.25
-    TAMBOUR_CEILING_CLEARANCE=0.25
-    TAMBOUR_CEILING_BEND_INSET=0.75
-    TAMBOUR_CEILING_FRONT_Y=members["rail_ft"].max_on("y")
-    TAMBOUR_CEILING_REAR_Y=(
-        TAMBOUR_TRACK_BACK_Y-TAMBOUR_BEND_RADIUS-TAMBOUR_CEILING_BEND_INSET
-    )
-    TAMBOUR_CEILING_TOP_Z=FRAME_DIMS.z-3.5
-    TAMBOUR_CEILING_BOTTOM_Z=(
-        TAMBOUR_CEILING_TOP_Z-TAMBOUR_CEILING_THICKNESS
-    )
-    TAMBOUR_CEILING_DEPTH=(
-        TAMBOUR_CEILING_REAR_Y-TAMBOUR_CEILING_FRONT_Y
-    )
-    TAMBOUR_CEILING_WIDTH=TAMBOUR_RIGHT_X-TAMBOUR_LEFT_X
-    if TAMBOUR_CEILING_DEPTH <= 0:
-        raise ValueError("enclosure depth leaves no room for the tambour ceiling")
-    tambour_ceiling_type=ComponentType(
-        name="quarter_inch_exterior_plywood_panel",
-        size=(
-            TAMBOUR_CEILING_DEPTH,
-            TAMBOUR_CEILING_THICKNESS,
-            TAMBOUR_CEILING_WIDTH,
-        ),
-        color=(0.72, 0.58, 0.38, 1.0),
-        default_face="wide_pos",
-        mount_point=(0, 0, 0),
-    )
-    components.add(
-        "tambour_ceiling_panel",
-        assembly="tambour_guard",
-        component_type=tambour_ceiling_type,
-        member="brace_fl_bl",
-        at=(
-            TAMBOUR_CEILING_FRONT_Y
-            - members["brace_fl_bl"].min_on("y")
-        ),
-        face="wide_pos",
-        offset=(
-            0,
-            TAMBOUR_CEILING_BOTTOM_Z
-            - members["brace_fl_bl"].center_on("z"),
-            0,
-        ),
-    )
-
     siding = US135Siding(
         "enclosure_siding",
         min_x=0,
@@ -1619,6 +1567,7 @@ def build_enclosure(
         frame_top_z=FRAME_DIMS.z,
         roof_support_z=FRAME_DIMS.z+ROOF_STRIP_THICKNESS,
         roof_gussets=tuple(roof_gusset_envelopes),
+        roof_hardware_clearance=1/4,
         bottom_z=SIDING_BOTTOM_Z,
         rear_opening_min_x=TAMBOUR_LEFT_X,
         rear_opening_max_x=TAMBOUR_RIGHT_X,
@@ -1629,11 +1578,43 @@ def build_enclosure(
         board_thickness=US135_THICKNESS,
         ground=grounds[0].resolved(members),
         framing=tuple((m.start,m.size) for m in members.values() if m.name != "brace_bl_fr"),
+        infill_framing=tuple((m.start,m.size) for m in members.values() if m.name != "brace_bl_fr" and m.name not in DEFERRED_OBJECT_NAMES),
+        front_infill_back_y=members["front_center_rail"].max_on("y"),
+        front_infill_top_z=members["brace_fl_fr"].min_on("z"),
+        front_infill_header_top_z=members["rail_ft"].max_on("z"),
+        front_infill_bores=(FrontSidingBore(
+            "power_ev_back_adapter", POWER_PULL_BOX_AXIS_X, POWER_PULL_BOX_CENTER_Z,
+            MALE_TERMINAL_ADAPTERS["3/4"].size[1],
+        ),),
         diagonal=diagonal_footprint,
         front_trim_relief=(FRONT_STREET_LIGHT_CENTER_X-3.125,
                            FRONT_STREET_LIGHT_CENTER_X+3.125,
                            FRONT_STREET_LIGHT_CENTER_Z+1.2+1/8),
     )
+
+    # Floating bearing caps are captured by the roof boards. World-aligned
+    # primitive boxes match the fabrication solids without mesh dependencies.
+    for cover in covers_for_siding(siding):
+        components.add(
+            cover.name,
+            assembly="top_bracing_hardware",
+            component_type=ComponentType(
+                name="printed_ASA_ABS_gusset_bearing_cover",
+                size=(GUSSET_SIZE_IN, GUSSET_SIZE_IN, HEIGHT/25.4),
+                color=(0.22, 0.30, 0.36, 1.0),
+                shape="primitive_union",
+                mount_point=(0, 0, 0),
+                include_primitive_envelope=True,
+                box_primitives=tuple(
+                    (tuple(v/25.4 for v in pos), tuple(v/25.4 for v in size))
+                    for pos, size in cover.boxes
+                ),
+            ),
+            member="post_bl",
+            at=0,
+            absolute_anchor=cover.origin_in,
+            component_basis=((1,0,0),(0,1,0),(0,0,1)),
+        )
 
     cables = CableCollection()
     cables.add(
@@ -2045,6 +2026,12 @@ def build_enclosure(
                 2,
             ),
             PurchasedItem(
+                "printed_gusset_bearing_cover",
+                "top_bracing_hardware",
+                "ASA/ABS printed floating roof bearing covers; one of each relief layout; see GUSSET_COVERS.md",
+                2,
+            ),
+            PurchasedItem(
                 "number_9_pan_head_screw",
                 "top_bracing_hardware",
                 "#9 pan-head screw; length intentionally unspecified",
@@ -2139,6 +2126,7 @@ def write_outputs(
     enclosure.model.write_fabrication_json(output_dir / "fabrication.json")
     enclosure.siding.write_artifacts(output_dir)
     generate_gusset_dxf(output_dir / "gusset_plate_6x6.dxf")
+    generate_gusset_covers(enclosure.siding, output_dir / "gusset_covers")
     generate_tambour_fabrication(
         output_dir / "tambour",
         config=enclosure.TAMBOUR_FABRICATION,

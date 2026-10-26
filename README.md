@@ -70,6 +70,11 @@ fabrication copy directly, run:
 uv run python tools/generate_gusset_dxf.py
 ```
 
+The build also exports two printable ASA/ABS gusset bearing covers in
+`output/gusset_covers/`. They support the roof siding flush with the plywood
+where the strips stop at the gussets. See [GUSSET_COVERS.md](GUSSET_COVERS.md)
+for STL/STEP files, placement, printing and fit checks.
+
 Tambour installation, including the front guide uprights and upper blocks, is
 deferred indefinitely. The permanent side receiver rails attach directly to the
 front and back posts and support the charger header independently. Printable ASA tracks, removable
@@ -122,8 +127,9 @@ low-voltage light cable is removed.
 
 Four separate silver numerals **4754**, each 5 inches high and 1 inch deep,
 form a 12-inch-wide arrangement 3 inches below the light. One-inch standoffs
-attach through the siding into a spanning support board with an actual
-1-inch thickness. The numeral font is Liberation Sans Regular.
+attach through the siding into 3/4-inch PT plywood across the upper front bays.
+The plywood is recessed 1/4 inch behind the framing faces; use rigid local
+spacers across that gap at numeral fasteners. The numeral font is Liberation Sans Regular.
 
 This is a physical installation concept; the open-backed fixture connection
 has not been verified against its certification. Measure the actual bracket,
@@ -157,3 +163,25 @@ beneath mitered US20 roof-edge trim. See
 [SIDING.md](SIDING.md) for the downward procedure, the required two-course
 physical dry fit, provisional course pitch, custom face fastening, corner details,
 fastener assumptions and the generated siding fabrication files.
+
+## Fitted plywood wall infill
+
+The roof strips and fitted 3/4-inch PT wall panels share one cutting plan.
+Default dimensions need **one 4 x 8 ft sheet**, with no supplemental panel.
+See `output/plywood_layout.svg` for the numbered layout and
+`output/plywood_layout.json` for coordinates, kerfs and remaining offcuts.
+Larger configurations compare additional full sheets with 2 x 4 ft panels,
+using the stated approximate price ratio (0.49 per small panel).
+
+Panels fit between permanent framing/backing rather than lining its interior
+faces. Side panels finish flush with the inside post faces. Front animal panels
+finish rear-face flush with `front_center_rail`, closing both bays beside it,
+the space between the lower rails, and the lowest cavity below them. A separate
+strip above the front header remains at the inside front-post plane to clear
+the future tambour handle. Predrilled toe screws attach
+the panels to neighboring lumber. Separate upper-front numeral panels remain
+1/4 inch behind the exterior framing faces for the eventual house-number
+location. Keep the rear access opening and overhead space open; there is no ceiling or floor panel.
+The exterior mesh skirt and an additional inner wrap along both side walls
+and the front plywood plane close the grade gaps and tiny seams. The open rear access still
+permits animal entry until it has a suitable closure.

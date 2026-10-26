@@ -584,21 +584,27 @@ power_guard_removable_panel
 
 ## 19. Add the address-number support (`address-number-support`)
 
-Install one actual 1 x 5 1/2-inch support board between `post_fl` and `post_fr`,
-with its front face at y = 0, directly behind the siding. Use 5/4x6 stock
-with a verified finished thickness of 1 inch, not nominal 1x lumber. Fasten its
-ends to the posts with exterior-rated support hardware. The default board is
-20 1/2 inches long and spans z = 39.175 to 44.675 inches. It receives the
-address-number standoff fasteners through the siding. Verify end attachments
-and actual numeral mounting locations before drilling.
+Install the front vertical siding backing first, then fit 3/4-inch PT plywood across both upper front bays, from the half-height
+line to the underside of the front brace. The posts and vertical siding backing
+fill the interruptions. Set the exterior plywood faces 1/4 inch behind the
+post/backing faces, leaving a gap behind the siding. These panels replace the
+narrow 5/4x6 numeral support and allow the numeral position to be decided later.
 
-The former three street-light backing 2x4s are removed. The light mounts to
-`brace_fl_fr`; the established tambour track position remains y = 5 inches.
+Predrill angled entries from the accessible interior panel face into adjacent
+lumber; use toe screws rather than surface-mounted cleats. Field-select screw
+length and angle for sound timber engagement with contained tips. Do not drive
+into plywood edges. The BOM allows four screws per panel; confirm the final
+pattern on the fitted parts. Field-fit panel edges with a small installation gap.
+Seal numeral penetrations and use rigid local spacers across the siding-to-panel
+gap so tightening standoffs does not pull the siding inward. Confirm actual
+numeral mounting screw engagement in 3/4-inch plywood before drilling.
 
 New model objects:
 
 ```text
-front_address_number_support
+enclosure_siding_backing_front_1_1
+enclosure_siding_infill_front_address_16
+enclosure_siding_infill_front_address_17
 ```
 
 ## 20. Prepare the direct lighting cable route (`light-transition-box`)
@@ -651,6 +657,30 @@ power_street_light_uf_b
 
 ## 22. Prepare siding backing and ventilation (`siding-preparation`)
 
+Fit the 3/4-inch PT side-wall infill flush with the inside post faces. Remove
+the former full-height panel between the front posts. Fit the front animal
+panels with their rear faces flush with the rear face of front_center_rail:
+one on either side, one between rail_fbl and rail_fbu, and one below rail_fbl.
+Their ends meet the side-wall infill. Keep the separate strip above rail_ft
+at the inside front-post plane, up to the front brace, to clear the future
+tambour handle. The upper-front numeral backing remains a separate layer near the siding. Fit around permanent lumber, siding backing and the
+outlet opening. Bore the between-rails front panel snugly around the existing
+power_ev_back_adapter (nominal 1.35-inch barrel); field-fit and seal any
+residual seam so the penetration cannot admit animals. Predrill toe screws into adjacent
+lumber, with four per panel allowed. Tiny seams narrower than 1/4 inch use hardware
+cloth rather than fragile plywood slivers. Scribe the lower panels to the same
+3/4-inch grade clearance as the siding and close the remaining gap with mesh.
+The rear service/future door opening stays clear up to the brace; omit interior
+header infill there to clear the future tambour handle sweep. This is a wall barrier, not a
+sealed animal-proof enclosure while that opening remains open.
+
+Use the shared `output/plywood_layout.svg` and `.json`: roof strips and infill
+come from the same purchased sheet stock. Follow the numbered layout with
+1/8-inch kerfs, then field-fit the blanks. No ceiling panel is installed or
+included in future purchase quantities. Keep the entire overhead space open for
+future tambour installation; wall infill can be unscrewed if future guides need
+access. No floor panel is added.
+
 Install the actual 1-inch wall backing segments with their existing specified
 connections. Keep the space below the top diagonal clear for the prototype
 tambour door; no local roof-support blocks or their toe screws are installed.
@@ -662,11 +692,22 @@ the outlet. Keep the regular wall supports above and below this local backing.
 Install the 3/4-inch PT exterior plywood roof strips in place of all roof shims
 and intermediate roof backing. Rip with the panel strength axis along X.
 Full courses use paired provisional 1.5-inch strips; the narrow closure uses
-one backer. Shorten strip ends around gussets with 1/8-inch clearance and
+one backer. Shorten strip ends around gussets with 1/4-inch clearance and
 anchor independently at generated framing-supported locations. Recess anchor
 heads flush in plywood. Preserve open channels and joint outlets; do not cut
 transversely through a strip for drainage. Field-treat cut edges as required.
-Keep open paths behind and between framing members for drainage and the guide's 1-inch net free ventilation area.
+The animal panels leave the framing cavities between the siding and interior
+plywood. The separate numeral backing leaves a local 1/4-inch gap behind the
+front siding. Keep screened drainage paths open.
+
+Seat the two printed ASA/ABS gusset bearing covers before the roof boards:
+cover 1 at back-left extending toward the front, and cover 2 at front-right
+extending toward the rear. Their bearing bands continue the interrupted plywood
+runs flush with the plywood tops; recessed ribs connect the bands across open
+gaps. Check the added extension feet bear on framing. Check
+that each sits without rocking and clears every gusset screw head. The roof
+boards capture these floating covers; keep all fasteners in the specified wood
+backing. See GUSSET_COVERS.md for printing and fit checks.
 
 Dry-fit two US135 courses directly against representative lumber before cutting
 production pieces. Verify the provisional 130 mm installed pitch, rear-profile
@@ -677,8 +718,6 @@ The model does not establish approval or connection load capacity.
 New model objects:
 
 ```text
-enclosure_siding_backing_front_1_1
-enclosure_siding_backing_front_1_2
 enclosure_siding_backing_left_1_1
 enclosure_siding_backing_left_1_2
 enclosure_siding_backing_left_1_3
@@ -696,6 +735,8 @@ enclosure_siding_roof_strip_3_2
 enclosure_siding_roof_strip_4_1
 enclosure_siding_roof_strip_4_2
 enclosure_siding_roof_strip_5_1
+gusset_cover_1
+gusset_cover_2
 enclosure_siding_roof_strip_1_1_anchor_1
 enclosure_siding_roof_strip_1_1_anchor_2
 enclosure_siding_roof_strip_1_2_anchor_3
@@ -714,14 +755,35 @@ enclosure_siding_roof_strip_4_2_anchor_15
 enclosure_siding_roof_strip_4_2_anchor_16
 enclosure_siding_roof_strip_5_1_anchor_17
 enclosure_siding_roof_strip_5_1_anchor_18
+enclosure_siding_infill_front_animal_1
+enclosure_siding_infill_front_animal_2
+enclosure_siding_infill_front_animal_3
+enclosure_siding_infill_front_animal_4
+enclosure_siding_infill_left_animal_5
+enclosure_siding_infill_left_animal_6
+enclosure_siding_infill_left_animal_7
+enclosure_siding_infill_left_animal_8
+enclosure_siding_infill_right_animal_9
+enclosure_siding_infill_right_animal_10
+enclosure_siding_infill_right_animal_11
+enclosure_siding_infill_right_animal_12
+enclosure_siding_infill_right_animal_13
+enclosure_siding_infill_right_animal_14
+enclosure_siding_infill_front_animal_15
 ```
 
 ## 23. Install the hardware-cloth skirt (`siding-skirt`)
 
 Install the 1/4-inch hardware cloth behind the future siding, overlap joints
 2 inches, and staple it independently to framing. Extend it to grade while
-keeping siding and US20 at least 3/4 inch above grade. Preserve drainage and
-ventilation. The rear access opening remains open.
+keeping siding and US20 at least 3/4 inch above grade. Retain this exterior
+skirt and add an inner wrap along the inside faces of both side-wall infills,
+from the front posts to the rear posts, and across the lowest front panel at
+the rear plane of front_center_rail. Join the front strip to both side strips;
+terminate the side strips against the posts. Follow actual grade under each
+run, bridging the plywood ground clearance with 2-inch strips extending from
+1/4 inch below grade to 1-3/4 inches above it. Overlap joints and terminations
+2 inches and screen narrow fitting seams. Preserve drainage and ventilation. The rear access opening remains open.
 
 New model objects:
 
@@ -1090,6 +1152,243 @@ enclosure_siding_mesh_rear_2_horizontal_4
 enclosure_siding_mesh_rear_2_horizontal_5
 enclosure_siding_mesh_rear_2_horizontal_6
 enclosure_siding_mesh_rear_2_horizontal_7
+enclosure_siding_mesh_inner_front_1_wire_0
+enclosure_siding_mesh_inner_front_1_wire_1
+enclosure_siding_mesh_inner_front_1_wire_2
+enclosure_siding_mesh_inner_front_1_wire_3
+enclosure_siding_mesh_inner_front_1_wire_4
+enclosure_siding_mesh_inner_front_1_wire_5
+enclosure_siding_mesh_inner_front_1_wire_6
+enclosure_siding_mesh_inner_front_1_wire_7
+enclosure_siding_mesh_inner_front_1_wire_8
+enclosure_siding_mesh_inner_front_1_wire_9
+enclosure_siding_mesh_inner_front_1_wire_10
+enclosure_siding_mesh_inner_front_1_wire_11
+enclosure_siding_mesh_inner_front_1_wire_12
+enclosure_siding_mesh_inner_front_1_wire_13
+enclosure_siding_mesh_inner_front_1_wire_14
+enclosure_siding_mesh_inner_front_1_wire_15
+enclosure_siding_mesh_inner_front_1_wire_16
+enclosure_siding_mesh_inner_front_1_wire_17
+enclosure_siding_mesh_inner_front_1_wire_18
+enclosure_siding_mesh_inner_front_1_wire_19
+enclosure_siding_mesh_inner_front_1_wire_20
+enclosure_siding_mesh_inner_front_1_wire_21
+enclosure_siding_mesh_inner_front_1_wire_22
+enclosure_siding_mesh_inner_front_1_wire_23
+enclosure_siding_mesh_inner_front_1_wire_24
+enclosure_siding_mesh_inner_front_1_wire_25
+enclosure_siding_mesh_inner_front_1_wire_26
+enclosure_siding_mesh_inner_front_1_wire_27
+enclosure_siding_mesh_inner_front_1_wire_28
+enclosure_siding_mesh_inner_front_1_wire_29
+enclosure_siding_mesh_inner_front_1_wire_30
+enclosure_siding_mesh_inner_front_1_wire_31
+enclosure_siding_mesh_inner_front_1_wire_32
+enclosure_siding_mesh_inner_front_1_wire_33
+enclosure_siding_mesh_inner_front_1_wire_34
+enclosure_siding_mesh_inner_front_1_wire_35
+enclosure_siding_mesh_inner_front_1_wire_36
+enclosure_siding_mesh_inner_front_1_wire_37
+enclosure_siding_mesh_inner_front_1_wire_38
+enclosure_siding_mesh_inner_front_1_wire_39
+enclosure_siding_mesh_inner_front_1_wire_40
+enclosure_siding_mesh_inner_front_1_wire_41
+enclosure_siding_mesh_inner_front_1_wire_42
+enclosure_siding_mesh_inner_front_1_wire_43
+enclosure_siding_mesh_inner_front_1_wire_44
+enclosure_siding_mesh_inner_front_1_wire_45
+enclosure_siding_mesh_inner_front_1_wire_46
+enclosure_siding_mesh_inner_front_1_wire_47
+enclosure_siding_mesh_inner_front_1_wire_48
+enclosure_siding_mesh_inner_front_1_wire_49
+enclosure_siding_mesh_inner_front_1_wire_50
+enclosure_siding_mesh_inner_front_1_wire_51
+enclosure_siding_mesh_inner_front_1_wire_52
+enclosure_siding_mesh_inner_front_1_wire_53
+enclosure_siding_mesh_inner_front_1_wire_54
+enclosure_siding_mesh_inner_front_1_wire_55
+enclosure_siding_mesh_inner_front_1_wire_56
+enclosure_siding_mesh_inner_front_1_wire_57
+enclosure_siding_mesh_inner_front_1_wire_58
+enclosure_siding_mesh_inner_front_1_wire_59
+enclosure_siding_mesh_inner_front_1_wire_60
+enclosure_siding_mesh_inner_front_1_wire_61
+enclosure_siding_mesh_inner_front_1_wire_62
+enclosure_siding_mesh_inner_front_1_wire_63
+enclosure_siding_mesh_inner_front_1_wire_64
+enclosure_siding_mesh_inner_front_1_wire_65
+enclosure_siding_mesh_inner_front_1_wire_66
+enclosure_siding_mesh_inner_front_1_wire_67
+enclosure_siding_mesh_inner_front_1_wire_68
+enclosure_siding_mesh_inner_front_1_wire_69
+enclosure_siding_mesh_inner_front_1_wire_70
+enclosure_siding_mesh_inner_front_1_wire_71
+enclosure_siding_mesh_inner_front_1_wire_72
+enclosure_siding_mesh_inner_front_1_wire_73
+enclosure_siding_mesh_inner_front_1_wire_74
+enclosure_siding_mesh_inner_front_1_wire_75
+enclosure_siding_mesh_inner_front_1_wire_76
+enclosure_siding_mesh_inner_front_1_wire_77
+enclosure_siding_mesh_inner_front_1_wire_78
+enclosure_siding_mesh_inner_front_1_wire_79
+enclosure_siding_mesh_inner_front_1_wire_80
+enclosure_siding_mesh_inner_front_1_wire_81
+enclosure_siding_mesh_inner_front_1_wire_82
+enclosure_siding_mesh_inner_front_1_horizontal_0
+enclosure_siding_mesh_inner_front_1_horizontal_1
+enclosure_siding_mesh_inner_front_1_horizontal_2
+enclosure_siding_mesh_inner_front_1_horizontal_3
+enclosure_siding_mesh_inner_front_1_horizontal_4
+enclosure_siding_mesh_inner_front_1_horizontal_5
+enclosure_siding_mesh_inner_front_1_horizontal_6
+enclosure_siding_mesh_inner_front_1_horizontal_7
+enclosure_siding_mesh_inner_left_1_wire_0
+enclosure_siding_mesh_inner_left_1_wire_1
+enclosure_siding_mesh_inner_left_1_wire_2
+enclosure_siding_mesh_inner_left_1_wire_3
+enclosure_siding_mesh_inner_left_1_wire_4
+enclosure_siding_mesh_inner_left_1_wire_5
+enclosure_siding_mesh_inner_left_1_wire_6
+enclosure_siding_mesh_inner_left_1_wire_7
+enclosure_siding_mesh_inner_left_1_wire_8
+enclosure_siding_mesh_inner_left_1_wire_9
+enclosure_siding_mesh_inner_left_1_wire_10
+enclosure_siding_mesh_inner_left_1_wire_11
+enclosure_siding_mesh_inner_left_1_wire_12
+enclosure_siding_mesh_inner_left_1_wire_13
+enclosure_siding_mesh_inner_left_1_wire_14
+enclosure_siding_mesh_inner_left_1_wire_15
+enclosure_siding_mesh_inner_left_1_wire_16
+enclosure_siding_mesh_inner_left_1_wire_17
+enclosure_siding_mesh_inner_left_1_wire_18
+enclosure_siding_mesh_inner_left_1_wire_19
+enclosure_siding_mesh_inner_left_1_wire_20
+enclosure_siding_mesh_inner_left_1_wire_21
+enclosure_siding_mesh_inner_left_1_wire_22
+enclosure_siding_mesh_inner_left_1_wire_23
+enclosure_siding_mesh_inner_left_1_wire_24
+enclosure_siding_mesh_inner_left_1_wire_25
+enclosure_siding_mesh_inner_left_1_wire_26
+enclosure_siding_mesh_inner_left_1_wire_27
+enclosure_siding_mesh_inner_left_1_wire_28
+enclosure_siding_mesh_inner_left_1_wire_29
+enclosure_siding_mesh_inner_left_1_wire_30
+enclosure_siding_mesh_inner_left_1_wire_31
+enclosure_siding_mesh_inner_left_1_wire_32
+enclosure_siding_mesh_inner_left_1_wire_33
+enclosure_siding_mesh_inner_left_1_wire_34
+enclosure_siding_mesh_inner_left_1_wire_35
+enclosure_siding_mesh_inner_left_1_wire_36
+enclosure_siding_mesh_inner_left_1_wire_37
+enclosure_siding_mesh_inner_left_1_wire_38
+enclosure_siding_mesh_inner_left_1_wire_39
+enclosure_siding_mesh_inner_left_1_wire_40
+enclosure_siding_mesh_inner_left_1_wire_41
+enclosure_siding_mesh_inner_left_1_wire_42
+enclosure_siding_mesh_inner_left_1_wire_43
+enclosure_siding_mesh_inner_left_1_wire_44
+enclosure_siding_mesh_inner_left_1_wire_45
+enclosure_siding_mesh_inner_left_1_wire_46
+enclosure_siding_mesh_inner_left_1_wire_47
+enclosure_siding_mesh_inner_left_1_wire_48
+enclosure_siding_mesh_inner_left_1_wire_49
+enclosure_siding_mesh_inner_left_1_wire_50
+enclosure_siding_mesh_inner_left_1_wire_51
+enclosure_siding_mesh_inner_left_1_wire_52
+enclosure_siding_mesh_inner_left_1_wire_53
+enclosure_siding_mesh_inner_left_1_wire_54
+enclosure_siding_mesh_inner_left_1_wire_55
+enclosure_siding_mesh_inner_left_1_wire_56
+enclosure_siding_mesh_inner_left_1_wire_57
+enclosure_siding_mesh_inner_left_1_wire_58
+enclosure_siding_mesh_inner_left_1_wire_59
+enclosure_siding_mesh_inner_left_1_wire_60
+enclosure_siding_mesh_inner_left_1_wire_61
+enclosure_siding_mesh_inner_left_1_wire_62
+enclosure_siding_mesh_inner_left_1_wire_63
+enclosure_siding_mesh_inner_left_1_wire_64
+enclosure_siding_mesh_inner_left_1_horizontal_0
+enclosure_siding_mesh_inner_left_1_horizontal_1
+enclosure_siding_mesh_inner_left_1_horizontal_2
+enclosure_siding_mesh_inner_left_1_horizontal_3
+enclosure_siding_mesh_inner_left_1_horizontal_4
+enclosure_siding_mesh_inner_left_1_horizontal_5
+enclosure_siding_mesh_inner_left_1_horizontal_6
+enclosure_siding_mesh_inner_left_1_horizontal_7
+enclosure_siding_mesh_inner_right_1_wire_0
+enclosure_siding_mesh_inner_right_1_wire_1
+enclosure_siding_mesh_inner_right_1_wire_2
+enclosure_siding_mesh_inner_right_1_wire_3
+enclosure_siding_mesh_inner_right_1_wire_4
+enclosure_siding_mesh_inner_right_1_wire_5
+enclosure_siding_mesh_inner_right_1_wire_6
+enclosure_siding_mesh_inner_right_1_wire_7
+enclosure_siding_mesh_inner_right_1_wire_8
+enclosure_siding_mesh_inner_right_1_wire_9
+enclosure_siding_mesh_inner_right_1_wire_10
+enclosure_siding_mesh_inner_right_1_wire_11
+enclosure_siding_mesh_inner_right_1_wire_12
+enclosure_siding_mesh_inner_right_1_wire_13
+enclosure_siding_mesh_inner_right_1_wire_14
+enclosure_siding_mesh_inner_right_1_wire_15
+enclosure_siding_mesh_inner_right_1_wire_16
+enclosure_siding_mesh_inner_right_1_wire_17
+enclosure_siding_mesh_inner_right_1_wire_18
+enclosure_siding_mesh_inner_right_1_wire_19
+enclosure_siding_mesh_inner_right_1_wire_20
+enclosure_siding_mesh_inner_right_1_wire_21
+enclosure_siding_mesh_inner_right_1_wire_22
+enclosure_siding_mesh_inner_right_1_wire_23
+enclosure_siding_mesh_inner_right_1_wire_24
+enclosure_siding_mesh_inner_right_1_wire_25
+enclosure_siding_mesh_inner_right_1_wire_26
+enclosure_siding_mesh_inner_right_1_wire_27
+enclosure_siding_mesh_inner_right_1_wire_28
+enclosure_siding_mesh_inner_right_1_wire_29
+enclosure_siding_mesh_inner_right_1_wire_30
+enclosure_siding_mesh_inner_right_1_wire_31
+enclosure_siding_mesh_inner_right_1_wire_32
+enclosure_siding_mesh_inner_right_1_wire_33
+enclosure_siding_mesh_inner_right_1_wire_34
+enclosure_siding_mesh_inner_right_1_wire_35
+enclosure_siding_mesh_inner_right_1_wire_36
+enclosure_siding_mesh_inner_right_1_wire_37
+enclosure_siding_mesh_inner_right_1_wire_38
+enclosure_siding_mesh_inner_right_1_wire_39
+enclosure_siding_mesh_inner_right_1_wire_40
+enclosure_siding_mesh_inner_right_1_wire_41
+enclosure_siding_mesh_inner_right_1_wire_42
+enclosure_siding_mesh_inner_right_1_wire_43
+enclosure_siding_mesh_inner_right_1_wire_44
+enclosure_siding_mesh_inner_right_1_wire_45
+enclosure_siding_mesh_inner_right_1_wire_46
+enclosure_siding_mesh_inner_right_1_wire_47
+enclosure_siding_mesh_inner_right_1_wire_48
+enclosure_siding_mesh_inner_right_1_wire_49
+enclosure_siding_mesh_inner_right_1_wire_50
+enclosure_siding_mesh_inner_right_1_wire_51
+enclosure_siding_mesh_inner_right_1_wire_52
+enclosure_siding_mesh_inner_right_1_wire_53
+enclosure_siding_mesh_inner_right_1_wire_54
+enclosure_siding_mesh_inner_right_1_wire_55
+enclosure_siding_mesh_inner_right_1_wire_56
+enclosure_siding_mesh_inner_right_1_wire_57
+enclosure_siding_mesh_inner_right_1_wire_58
+enclosure_siding_mesh_inner_right_1_wire_59
+enclosure_siding_mesh_inner_right_1_wire_60
+enclosure_siding_mesh_inner_right_1_wire_61
+enclosure_siding_mesh_inner_right_1_wire_62
+enclosure_siding_mesh_inner_right_1_wire_63
+enclosure_siding_mesh_inner_right_1_wire_64
+enclosure_siding_mesh_inner_right_1_horizontal_0
+enclosure_siding_mesh_inner_right_1_horizontal_1
+enclosure_siding_mesh_inner_right_1_horizontal_2
+enclosure_siding_mesh_inner_right_1_horizontal_3
+enclosure_siding_mesh_inner_right_1_horizontal_4
+enclosure_siding_mesh_inner_right_1_horizontal_5
+enclosure_siding_mesh_inner_right_1_horizontal_6
+enclosure_siding_mesh_inner_right_1_horizontal_7
 ```
 
 ## 24. Install the US135 roof cover (`siding-roof`)

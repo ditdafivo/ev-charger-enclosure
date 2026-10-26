@@ -13,7 +13,7 @@ from typing import Any
 from lumber_model.fabrication import clip_polygon_to_box
 from lumber_model.ground import ResolvedGroundSurface
 from lumber_model.siding import (
-    CompositeSiding, SidingPart, _subtract_front_opening, _subtract_right_opening,
+    CompositeSiding, SidingPart, FrontSidingBore, FrontSidingOpening, _subtract_front_opening, _subtract_right_opening,
     minimum_stock_board_count,
 )
 
@@ -72,6 +72,11 @@ class US135Siding(CompositeSiding):
     ground: ResolvedGroundSurface | None = None
     # Existing lumber bounding boxes, used to notch added backing around it.
     framing: tuple[tuple[tuple[float, float, float], tuple[float, float, float]], ...] = ()
+    infill_framing: tuple[tuple[tuple[float,float,float],tuple[float,float,float]], ...] = ()
+    front_infill_back_y: float | None = None
+    front_infill_top_z: float | None = None
+    front_infill_header_top_z: float | None = None
+    front_infill_bores: tuple[FrontSidingBore, ...] = ()
     diagonal: tuple[tuple[float, float], ...] = ()
     roof_strip_thickness: float = ROOF_STRIP_THICKNESS
     roof_strip_width: float = 1.5
@@ -86,6 +91,12 @@ class US135Siding(CompositeSiding):
                       self.roof_strip_width, self.roof_hardware_clearance):
             if not math.isfinite(value) or value <= 0:
                 raise ValueError("US135 layout dimensions must be finite and positive")
+        if self.front_infill_back_y is not None and (not math.isfinite(self.front_infill_back_y) or
+                not self.min_y + 3.5 <= self.front_infill_back_y <= self.max_y - 3.5):
+            raise ValueError("front infill rear plane must lie between the post rows")
+        for elevation in (self.front_infill_top_z, self.front_infill_header_top_z):
+            if elevation is not None and not math.isfinite(elevation):
+                raise ValueError("front infill elevations must be finite")
         if abs(self.roof_support_z-self.frame_top_z-self.roof_strip_thickness)>1e-8:
             raise ValueError("roof support plane must match plywood strip thickness")
         if self.course_pitch > self.board_width:
@@ -291,7 +302,7 @@ class US135Siding(CompositeSiding):
         return self._stations(self.min_x+1.75,self.max_x-1.75,10)
 
     @cached_property
-    def backing_parts(self) -> tuple[SidingPart,...]:
+    def wall_backing_parts(self) -> tuple[SidingPart,...]:
         parts = []
         def add_notched(name: str, start: tuple[float,float,float], size: tuple[float,float,float], axis: int,
                         extra: tuple = ()) -> None:
@@ -326,7 +337,140 @@ class US135Siding(CompositeSiding):
                     "right": ((self.max_x-1,a,z),(1,b-a,end_z-z)),
                 }[wall]
                 add_notched(f"backing_{wall}_{j}",start,size,2)
-        return tuple(parts)+self.roof_strips
+        return tuple(parts)
+
+    @cached_property
+    def infill_parts(self) -> tuple[SidingPart, ...]:
+        """Recessed wall infill, fitted between all intersecting timber/backing."""
+        parts = []
+        passes = [("front", False, False), ("left", False, False),
+                  ("right", False, False), ("rear", False, False)]
+        if self.front_infill_header_top_z is not None:
+            passes.append(("front", False, True))
+        passes.append(("front", True, False))
+        for wall, address, upper_front in passes:
+            along_axis, normal_axis = (0, 1) if wall in ("front", "rear") else (1, 0)
+            lo, hi = (self.min_x, self.max_x) if along_axis == 0 else (self.min_y, self.max_y)
+            # Side infill stays within the posts; front infill moves to the
+            # rail rear plane. The upper strip stays forward of the handle sweep.
+            normal = {"front": self.min_y + 2.75, "rear": self.max_y - 3.5,
+                      "left": self.min_x + 2.75, "right": self.max_x - 3.5}[wall]
+            if wall == "front" and not address and not upper_front and self.front_infill_back_y is not None:
+                normal = self.front_infill_back_y - .75
+                lo, hi = self.min_x + 3.5, self.max_x - 3.5
+            def panel_xy(a):
+                if address:
+                    return self.xy(wall, a)
+                return (a, normal + .75) if along_axis == 0 else (normal + (.75 if wall == "left" else 0), a)
+            if address:
+                normal = self.min_y + .25
+            bottom = min(self.ground_z(*panel_xy(a)) for a in (lo, hi)) + self.ground_clearance
+            halfway = (bottom + self.frame_top_z) / 2
+            top = self.frame_top_z
+            if wall == "front" and not address:
+                top = self.front_infill_top_z if self.front_infill_top_z is not None else top
+                if upper_front:
+                    bottom = self.front_infill_header_top_z
+                elif self.front_infill_header_top_z is not None:
+                    top = self.front_infill_header_top_z
+            bands = ((halfway, top),) if address else ((bottom, top),)
+            for band_index, (z0, z1) in enumerate(bands):
+                rectangles = [(lo, hi, z0, z1)]
+                obstacles = list(self.infill_framing or self.framing) + [(p.start, p.size) for p in self.wall_backing_parts]
+                if wall == "rear":
+                    # Keep the service opening clear up to the brace for the future rear bend.
+                    start = (self.rear_opening_min_x, normal, bottom)
+                    size = (self.rear_opening_max_x-self.rear_opening_min_x, .75,
+                            self.frame_top_z-bottom)
+                    obstacles.append((start, size))
+                if wall == "right":
+                    obstacles.extend(((normal, o.min_y, o.bottom_z), (.75, o.max_y-o.min_y, o.top_z-o.bottom_z)) for o in self.right_openings)
+                for start, size in obstacles:
+                    if normal >= start[normal_axis]+size[normal_axis]-1e-8 or normal+.75 <= start[normal_axis]+1e-8:
+                        continue
+                    opening = FrontSidingOpening("timber", start[along_axis], start[along_axis]+size[along_axis], start[2], start[2]+size[2])
+                    rectangles = [r for rectangle in rectangles for r in _subtract_front_opening(rectangle, opening)]
+                # Rejoin artificial splits introduced by subtracting disconnected framing.
+                changed = True
+                while changed:
+                    changed = False
+                    for i, a in enumerate(rectangles):
+                        for j in range(i+1, len(rectangles)):
+                            b = rectangles[j]
+                            if a[2:] == b[2:] and (abs(a[1]-b[0])<1e-8 or abs(b[1]-a[0])<1e-8):
+                                merged = (min(a[0], b[0]), max(a[1], b[1]), a[2], a[3])
+                            elif a[:2] == b[:2] and (abs(a[3]-b[2])<1e-8 or abs(b[3]-a[2])<1e-8):
+                                merged = (a[0], a[1], min(a[2], b[2]), max(a[3], b[3]))
+                            else:
+                                continue
+                            rectangles[i] = merged
+                            rectangles.pop(j)
+                            changed = True
+                            break
+                        if changed:
+                            break
+                for a, b, c, d in rectangles:
+                    # Scribe only grade-adjacent edges; retain the independent mesh skirt.
+                    ca = max(c, self.ground_z(*panel_xy(a))+self.ground_clearance)
+                    cb = max(c, self.ground_z(*panel_xy(b))+self.ground_clearance)
+                    if min(ca, cb) >= d:
+                        continue
+                    base = min(ca, cb)
+                    if min(d-base, b-a) < .25:
+                        continue  # Screen tiny seams rather than fragile plywood slivers.
+                    pos = [0., 0., base]; size = [0., 0., d-base]
+                    pos[along_axis] = a; pos[normal_axis] = normal
+                    size[along_axis] = b-a; size[normal_axis] = .75
+                    label = "address" if address else "animal"
+                    name = f"{self.name}_infill_{wall}_{label}_{len(parts)+1}"
+                    polygon = ((0, ca-base), (b-a, cb-base), (b-a, d-base), (0, d-base))
+                    bore_candidates = self.front_infill_bores if wall == "front" and not address and not upper_front else self.front_bores
+                    bores = tuple(bore for bore in bore_candidates if a <= bore.center_x <= b and c <= bore.center_z <= d) if wall == "front" else ()
+                    parts.append(SidingPart(name, ROOF_STRIP_MATERIAL, tuple(pos), tuple(size),
+                                           (.56,.38,.19,1), cut_length=d-base,
+                                           polygon=polygon, plane="xz" if along_axis == 0 else "yz", front_bores=bores))
+        return tuple(parts)
+
+    @cached_property
+    def backing_parts(self) -> tuple[SidingPart, ...]:
+        return self.wall_backing_parts + self.roof_strips + self.infill_parts
+
+    @cached_property
+    def infill_toe_entries(self) -> tuple[dict[str, Any], ...]:
+        """Candidate face entries into verified adjacent timber, not edge drives."""
+        entries = []
+        timber = (self.infill_framing or self.framing) + tuple((p.start,p.size) for p in self.wall_backing_parts)
+        for panel in self.infill_parts:
+            along, normal = (0,1) if panel.plane == "xz" else (1,0)
+            inward = -1 if "_right_" in panel.name or "_rear_" in panel.name else 1
+            face = panel.start[normal] + (panel.size[normal] if inward == 1 else 0)
+            for edge_axis, transverse_axis in ((along,2),(2,along)):
+                for direction in (-1, 1):
+                    edge = panel.start[edge_axis] + (panel.size[edge_axis] if direction == 1 else 0)
+                    for fraction in (1/3, 2/3):
+                        point = list(panel.start)
+                        point[edge_axis] = edge + direction*.01
+                        point[normal] = face-inward*.1
+                        point[transverse_axis] += panel.size[transverse_axis]*fraction
+                        support = next(((loc,size) for loc,size in timber if all(loc[k]-1e-8 <= point[k] <= loc[k]+size[k]+1e-8 for k in range(3))), None)
+                        if support is None:
+                            continue
+                        point[edge_axis] = edge-direction*min(.25,panel.size[edge_axis]/4)
+                        point[normal] = face
+                        axis = [0.,0.,0.]
+                        axis[edge_axis] = direction/math.sqrt(1.0625)
+                        axis[normal] = -inward*.25/math.sqrt(1.0625)
+                        entries.append(dict(panel=panel.name, entry_in=tuple(point), axis=tuple(axis),
+                                            supporting_timber_start_in=support[0],
+                                            status="Candidate only; field-select length and confirm contained tip and engagement"))
+        return tuple(entries)
+
+    @cached_property
+    def plywood_layout(self) -> dict[str, Any]:
+        from lumber_model.plywood import plan_plywood
+        cuts = [(p.name, p.size[0], p.size[1], False) for p in self.roof_strips]
+        cuts += [(p.name, p.size[0] if p.plane == "xz" else p.size[1], p.size[2], True) for p in self.infill_parts]
+        return plan_plywood(cuts, self.kerf)
 
     @cached_property
     def roof_strips(self) -> tuple[SidingPart,...]:
@@ -594,30 +738,49 @@ class US135Siding(CompositeSiding):
         return tuple(parts)
 
     @cached_property
+    def mesh_segments(self) -> tuple[tuple[str, str, float, float, float], ...]:
+        """Name, wall orientation, along start/end, and actual fixed XY coordinate."""
+        segments = []
+        for wall in ("front", "left", "right", "rear"):
+            spans = [self.span(wall)]
+            if wall == "rear":
+                spans = [(self.span(wall)[0], self.rear_opening_min_x),
+                         (self.rear_opening_max_x, self.span(wall)[1])]
+            for j, (a, b) in enumerate(spans, 1):
+                x, y = self._mesh_xy(wall, a)
+                segments.append((f"{wall}_{j}", wall, a, b, y if wall in ("front", "rear") else x))
+        if self.front_infill_back_y is not None:
+            segments.extend((
+                ("inner_front_1", "front", self.min_x+3.5, self.max_x-3.5, self.front_infill_back_y),
+                ("inner_left_1", "left", self.min_y+3.5, self.max_y-3.5, self.min_x+3.5),
+                ("inner_right_1", "right", self.min_y+3.5, self.max_y-3.5, self.max_x-3.5-.025),
+            ))
+        return tuple(segment for segment in segments if segment[3] > segment[2])
+
+    @property
+    def mesh_purchase_length_in(self) -> float:
+        # Allow one two-inch overlapped termination/joint for each cut strip.
+        return sum(b-a+2 for _, _, a, b, _ in self.mesh_segments)
+
+    @cached_property
     def mesh_parts(self) -> tuple[SidingPart,...]:
-        parts=[]
-        for wall in ("front","left","right","rear"):
-            spans=[self.span(wall)]
-            if wall=="rear":
-                spans=[(self.span(wall)[0],self.rear_opening_min_x),(self.rear_opening_max_x,self.span(wall)[1])]
-            for j,(a,b) in enumerate(spans,1):
-                # Render real 1/4-inch openings, not a ventilation-blocking slab.
-                n=math.ceil((b-a)/0.25)
-                for k in range(n+1):
-                    s=min(b,a+k*0.25); z=self.ground_z(*self.xy(wall,s))
-                    x,y=self._mesh_xy(wall,s)
-                    parts.append(SidingPart(f"{self.name}_mesh_{wall}_{j}_wire_{k}","mesh",
-                        (x,y,z-0.25),(0.025,0.025,2),(0.35,0.36,0.37,1)))
-                for k in range(8):
-                    edge=tuple((s,self.ground_z(*self.xy(wall,s))-0.25+k*0.25) for s in (a,b))
-                    z0=min(z for s,z in edge)
-                    x,y=self._mesh_xy(wall,a)
-                    if wall in ("front","rear"):
-                        size=(b-a,0.025,max(z for s,z in edge)-z0+0.025); plane="xz"
-                    else:
-                        size=(0.025,b-a,max(z for s,z in edge)-z0+0.025); plane="yz"
-                    poly=((0,edge[0][1]-z0),(b-a,edge[1][1]-z0),(b-a,edge[1][1]-z0+0.025),(0,edge[0][1]-z0+0.025))
-                    parts.append(SidingPart(f"{self.name}_mesh_{wall}_{j}_horizontal_{k}","mesh",(x,y,z0),size,(0.35,0.36,0.37,1),polygon=poly,plane=plane))
+        parts = []
+        for name, wall, a, b, normal in self.mesh_segments:
+            front = wall in ("front", "rear")
+            samples = [min(b, a+k*.25) for k in range(math.ceil((b-a)/.25)+1)]
+            xy = [(s, normal) if front else (normal, s) for s in samples]
+            grade = [self.ground_z(x, y) for x, y in xy]
+            for k, ((x, y), z) in enumerate(zip(xy, grade)):
+                parts.append(SidingPart(f"{self.name}_mesh_{name}_wire_{k}", "mesh",
+                    (x,y,z-.25), (.025,.025,2), (.35,.36,.37,1)))
+            for k in range(8):
+                elevations = [z-.25+k*.25 for z in grade]
+                z0 = min(elevations)
+                size = (b-a,.025,max(elevations)-z0+.025) if front else (.025,b-a,max(elevations)-z0+.025)
+                lower = tuple((s-a,z-z0) for s,z in zip(samples,elevations))
+                upper = tuple((s-a,z-z0+.025) for s,z in reversed(tuple(zip(samples,elevations))))
+                parts.append(SidingPart(f"{self.name}_mesh_{name}_horizontal_{k}", "mesh",
+                    (*xy[0],z0), size, (.35,.36,.37,1), polygon=lower+upper, plane="xz" if front else "yz"))
         return tuple(parts)
 
     def _mesh_xy(self,wall: str,s: float) -> tuple[float,float]:
@@ -647,6 +810,12 @@ class US135Siding(CompositeSiding):
                 kerf_allowance_in=self.kerf))
         for p in (*self.backing_parts,*self.angle_parts):
             if p.cut_length is not None:
+                if p in self.infill_parts:
+                    rows.append(dict(name=p.name,material=p.material,length_in=p.size[2],
+                        blank_width_in=48,finished_width_in=p.size[0] if p.plane=="xz" else p.size[1],
+                        thickness_in=.75,course="",wall=p.name.split("_infill_")[1].split("_")[0],
+                        bottom_edge=list(p.polygon[:2]),operation="field fit between framing; scribe grade; predrill toe screws" + "".join(f"; snug bore {b.diameter:g} in at X={b.center_x:g}, Z={b.center_z:g}; seal residual seam" for b in p.front_bores),kerf_allowance_in=self.kerf))
+                    continue
                 if p.material==ROOF_STRIP_MATERIAL:
                     course=int(p.name.rsplit('_',2)[1])
                     rows.append(dict(name=p.name,material=p.material,length_in=p.cut_length,
@@ -675,23 +844,15 @@ class US135Siding(CompositeSiding):
             rows.append(dict(category="siding",assembly=self.assembly,name=f"{self.name}_{material}",
                 type=f"{material}; 1/8 in kerf per cut",qty=len(lengths),length_in=round(sum(lengths),4),
                 total_linear_ft=round(sum(lengths)/12,4),stock_length_ft=stock/12,stock_board_qty=qty))
-        # Conservative 4x8 sheet allowance: one 96-inch rip lane per strip,
-        # no claim of optimal two-dimensional nesting or offcut reuse.
-        sheets=1
-        remaining_width=48.0
-        for strip in self.roof_strips:
-            lane_width=strip.size[1]+self.kerf
-            if lane_width>48 or strip.cut_length+self.kerf>96:
-                raise ValueError(f"{strip.name}: strip does not fit 4 x 8 ft stock")
-            if lane_width>remaining_width+1e-8:
-                sheets+=1
-                remaining_width=48.0
-            remaining_width-=lane_width
-        rows.append(dict(category="sheet",assembly=self.assembly,name=f"{self.name}_{ROOF_STRIP_MATERIAL}",
-            type="3/4 in PT exterior structural plywood; 4 x 8 ft sheet; strength axis along strips",
-            qty=len(self.roof_strips),total_linear_ft=round(sum(p.cut_length for p in self.roof_strips)/12,4),
-            stock_board_qty=sheets))
+        for stock, count in self.plywood_layout["purchases"].items():
+            if not count:
+                continue
+            rows.append(dict(category="sheet",assembly=self.assembly,
+                name=f"{self.name}_{ROOF_STRIP_MATERIAL}" + ("_2x4" if stock=="2x4" else ""),
+                type=f"3/4 in PT exterior structural plywood; {stock} ft panel; shared roof-strip and wall-infill cutting layout",
+                qty=sum(1 for cut in self.plywood_layout["cuts"] if (self.plywood_layout["sheets"][cut["sheet"]-1]["width_in"]==48) == (stock=="2x4")),stock_board_qty=count))
         for name,description,qty in (
+            ("infill_toe_screws","PT-compatible exterior screws; predrill angled panel-face entries into adjacent lumber; field-select length; allowance four per panel",4*len(self.infill_parts)),
             ("face_screws","#8 x 1-1/4 in SS304 composite face screw into lumber; one fixed point per board, other holes oversized and free to slide",sum(a.wall!="roof" for a in self.attachments)),
             ("roof_face_screws","Provisional #8 x 1-1/8 in stainless retaining-head screw into plywood only; nominal 5/8 in penetration; verify thread engagement and sliding retention",sum(a.wall=="roof" for a in self.attachments)),
             ("roof_strip_anchors","Corrosion-resistant framing screws; recess heads flush in plywood; field-select length and substrate penetration",len(self.roof_strip_anchors)),
@@ -700,8 +861,7 @@ class US135Siding(CompositeSiding):
             ("backing_brackets","Stainless backing attachment angle, two at each end; field-select structural screws",4*sum(p.material=="PT_5/4x6_backing" for p in self.backing_parts)),
         ):
             rows.append(dict(category="hardware",assembly=self.assembly,name=f"{self.name}_{name}",type=description,qty=qty))
-        perimeter=2*(self.max_x-self.min_x+self.max_y-self.min_y)-(self.rear_opening_max_x-self.rear_opening_min_x)
-        rows.append(dict(category="siding",assembly=self.assembly,name=f"{self.name}_mesh",type="1/4 in corrosion-resistant hardware cloth; cut 2 in skirt, overlap joints 2 in; framing staples",qty=1,total_linear_ft=math.ceil((perimeter+10)/12)))
+        rows.append(dict(category="siding",assembly=self.assembly,name=f"{self.name}_mesh",type="1/4 in corrosion-resistant hardware cloth; cut 2 in skirt, overlap joints 2 in; framing staples",qty=1,total_linear_ft=math.ceil(self.mesh_purchase_length_in/12)))
         # Keep the shared BOM CSV schema used by lumber and purchased parts.
         template=dict.fromkeys(CompositeSiding.bom_rows(self)[0], "")
         return [{**template,**row} for row in rows]
@@ -712,14 +872,16 @@ class US135Siding(CompositeSiding):
             "US135":"Walls and roof cover; direct face fastening without clips or stand-off. Provisional 130 mm course pitch; sample-fit before cutting.",
             "US20":"Four outside corners, two rear jambs, one rear header and four roof edges. Applied L-angle; front fixture relief required.",
             "PT_5/4x6_backing":"Verified actual 1 in thickness; rip to 3-1/2 in and field-fit segments around existing framing.",
-            ROOF_STRIP_MATERIAL:"Rip 1.5 in paired strips beneath full roof courses; narrow closure uses one backer. 3/4 in actual modeled thickness. Keep drainage channels open. Conservative sheet allowance: one rip lane per strip, including kerf; verify actual grade, thickness and sheet layout.",
+            ROOF_STRIP_MATERIAL:"Shared guillotine cut plan in plywood_layout.json/svg; 1/8 in kerf; reuse sheet remainder for fitted wall panels. Roof strips follow strength axis. Field-fit and treat cut edges.",
+            ROOF_STRIP_MATERIAL+"_2x4":"Supplemental 2 x 4 ft panel; same grade/thickness/treatment as full sheet; see shared cut layout.",
+            "infill_toe_screws":"Four per panel purchase allowance; predrill from accessible interior panel face toward neighboring timber. Field-select length/angle for contained tips and sound lumber engagement; do not screw into plywood edges.",
             "roof_face_screws":"Roof only. One midpoint fixed connection per board; all others slide. Tip stays within plywood; verify production stack and usable thread engagement. Custom unverified connection.",
             "roof_strip_anchors":"Two end anchors per strip at generated framing-supported locations; independent of siding screws. Countersink into plywood only, flush below siding.",
             "face_screws":"Walls only. One per generated wall attachment. One concealed overlap row on intact courses; local cut/termination exceptions; one fixed point per physical board and sliding holes elsewhere. Custom schedule, not load-verified.",
             "roof_trim_screws":"Roof horizontal legs only. Added 1/2 in length preserves former nominal framing penetration through the thicker stack. Verify framing landing and independent movement.",
             "trim_screws":"Wall and vertical trim allowance; verify backing, penetration and independent movement of trim and underlying siding.",
             "backing_brackets":"Four per backing segment; field-select hardware and structural screws for each actual joint.",
-            "mesh":"2 in skirt with 1/4 in openings and 2 in joint overlaps; staple independently to framing.",
+            "mesh":"Exterior skirt plus inner side-wall/front-cavity wrap; 2 in strips with 1/4 in openings and 2 in joint overlaps; staple independently to framing.",
         }
         rows=[]
         for row in self.bom_rows():
@@ -727,11 +889,11 @@ class US135Siding(CompositeSiding):
             stock=row.get("stock_board_qty")
             mesh=item=="mesh"
             note=notes[item]
-            if stock and item!=ROOF_STRIP_MATERIAL:
+            if stock and not item.startswith(ROOF_STRIP_MATERIAL):
                 note+=" Calculated stock minimum includes 1/8 in kerf per cut and offcut reuse; no damage/contingency allowance."
             rows.append(dict(item=item,description=row["type"],
                 quantity=stock if stock else row["total_linear_ft"] if mesh else row["qty"],
-                unit="4 x 8 ft sheets" if item==ROOF_STRIP_MATERIAL else "stock pieces" if stock else "linear ft of 2 in strip" if mesh else "each",
+                unit="2 x 4 ft panels" if item==ROOF_STRIP_MATERIAL+"_2x4" else "4 x 8 ft sheets" if item==ROOF_STRIP_MATERIAL else "stock pieces" if stock else "linear ft of 2 in strip" if mesh else "each",
                 stock_length_ft=row.get("stock_length_ft","") if stock else "",
                 finished_cut_count=row["qty"] if stock else "",
                 finished_total_linear_ft=row.get("total_linear_ft","") if stock or mesh else "",
@@ -751,6 +913,8 @@ class US135Siding(CompositeSiding):
         from dataclasses import asdict
         from pathlib import Path
         directory=Path(directory)
+        from lumber_model.plywood import write_layout
+        write_layout(self.plywood_layout, directory)
         purchases=self.purchase_bom_rows()
         with (directory/"siding_bom.csv").open("w",newline="") as f:
             writer=csv.DictWriter(f,fieldnames=list(purchases[0]),lineterminator="\n")
@@ -773,7 +937,7 @@ class US135Siding(CompositeSiding):
             "wall_drainage_tradeoff":"small inverted-joint water-retention gap accepted for desert climate",
             "attachment_method":"custom direct face fastening to open lumber framing; inverted wall profiles, one concealed lower-overlap row with local exceptions; not a manufacturer-approved replacement for AW08",
             "trim_method":"applied US20 at four outside corners, rear opening and roof edges; corners stop below roof trim",
-            "ventilation_status":"verify unobstructed 1 inch net free airflow behind open framing; no clip-created stand-off",
+            "ventilation_status":"Side infill closes the inner wall cavities; front infill closes the rail rear plane below the header; upper strip stays forward for handle clearance; preserve screened drainage paths",
             "course_pitch_in":self.course_pitch, "course_pitch_status":"provisional 130 mm; verify two engaged samples before cutting",
             "board_profile_width_in":self.board_width, "board_thickness_in":self.board_thickness,
             "board_standoff_in":0.0, "ground_clearance_in":self.ground_clearance,
@@ -782,6 +946,16 @@ class US135Siding(CompositeSiding):
             "roof_strip_width_in":self.roof_strip_width,
             "roof_support_z":self.roof_support_z,
             "roof_finished_top_z":self.roof_finished_top_z,
+            "wall_infill":[dict(name=p.name,start_in=p.start,size_in=p.size,polygon=p.polygon,bores=[dict(name=b.name,center_x_in=b.center_x,center_z_in=b.center_z,diameter_in=b.diameter) for b in p.front_bores]) for p in self.infill_parts],
+            "animal_infill_alignment":"Side panels flush with inside post faces; front animal panels below header rear-face flush with front_center_rail; upper strip stays at inside front-post plane",
+            "front_infill_back_y_in":self.front_infill_back_y,
+            "front_infill_header_top_z_in":self.front_infill_header_top_z,
+            "mesh_segments":[dict(name=n,wall=w,start_in=a,end_in=b,normal_in=c) for n,w,a,b,c in self.mesh_segments],
+            "mesh_purchase_length_in":self.mesh_purchase_length_in,
+            "address_backing_exterior_setback_in":.25,
+            "infill_toe_entries":self.infill_toe_entries,
+            "infill_attachment":"Predrilled toe screws from panel face into bordering timber; four per panel allowance; field-select final positions, angle and length",
+            "ceiling":"omitted entirely for future tambour access",
             "roof_strips":[dict(name=p.name,start_in=p.start,size_in=p.size,
                 strength_axis="X",gusset_clearance_in=self.roof_hardware_clearance) for p in self.roof_strips],
             "roof_strip_anchors":[asdict(a) for a in self.roof_strip_anchors],

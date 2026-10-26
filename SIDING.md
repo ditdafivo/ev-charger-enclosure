@@ -60,8 +60,9 @@ desert installation; keep the existing drainage paths open.
    framing and diagonal; keep the space below the diagonal clear.
 2. Install the hardware-cloth skirt independently of the boards. Keep paths
    behind and between framing members unobstructed for drainage and the guide's
-   minimum 1-inch continuous net free ventilation area. The open frame must
-   provide this airflow; there is no clip-created space behind the boards.
+   minimum 1-inch continuous net free ventilation area. Animal infill closes the interior side of the framing cavities; separate
+   numeral backing leaves a local 1/4-inch siding gap. Keep drainage and screened
+   edge paths clear and reassess ventilation for the completed shell.
 3. Install the US135 roof cover while the sides remain open for access to the
    support strips and fasteners. Leave US20 roof-edge trim until after the wall
    siding is installed.
@@ -152,7 +153,14 @@ for drainage. This arrangement does not establish manufacturer acceptance of the
 ventilation or exposed-roof adaptation. Treat cut plywood edges as required by
 the selected preservative system; verify exterior bond, grade and actual thickness.
 
-Shorten strip ends around the gusset envelopes with 1/8-inch clearance. The
+Shorten strip ends around the steel gusset envelopes with 1/4-inch clearance,
+leaving room for the [printed gusset bearing covers](GUSSET_COVERS.md). The
+covers support the roof siding at these interrupted edges, flush with the
+plywood. Their bearing bands continue only the interrupted plywood runs, with
+open gaps and recessed ribs between bands. Each extends inward in Y to the
+inner edge of its interrupted runs. The covers are floating
+bearing pieces, captured by the installed roof boards. Keep siding and trim
+fasteners in their specified wood backing. The
 strips bear on the existing perimeter framing and diagonal, without local
 support blocks below the diagonal. This preserves the 1-inch modeled clearance
 between the diagonal underside and the prototype tambour hardware envelope.
@@ -180,15 +188,38 @@ This level cover permits leakage; snow, uplift, ponding and exposed-roof capacit
 remain unverified. The [ceiling guide](https://www.newtechwood.com/pdf/All_Weather_Siding_Ceiling_Installation_Guide.pdf)
 informs movement guidance without establishing this support arrangement's capacity.
 
-Plywood purchasing uses a conservative 4 x 8 ft sheet allowance: one longitudinal
-rip lane per strip including kerf, without optimized offcut reuse. Sheet quantities
-are separate from linear lumber stock. The installation JSON records strip
-coordinates, independent anchors, short siding screws and toe-screw entry axes.
+Plywood purchasing uses a shared guillotine cutting layout for roof strips and
+fitted 3/4-inch wall infill, including 1/8-inch saw kerfs. The default cuts fit
+one 4 x 8 ft PT sheet. Larger builds compare additional sheets with 2 x 4 ft
+panels at an assumed 0.49 of a full sheet's cost. This is a feasible layout,
+not a proof of the optimal stock count. Roof strips retain the sheet strength
+axis along their length; wall infill blanks may rotate.
+
+Side-wall animal infill sits within the framing thickness, flush with the
+inside post faces. Front animal infill sits farther back, with its rear face
+flush with the rear face of front_center_rail. Separate panels close the bays
+on both sides of that rail, between the two lower horizontal rails, below the
+lowest rail. The strip above the header stays at the inside front-post
+plane, up to the front brace, to clear the future tambour handle. Fit around the
+permanent timber and outlet. Bore the front between-rails panel snugly around
+the existing power_ev_back_adapter barrel (nominal 1.35 inches) and seal any
+residual seam; toe-screw from the interior panel face into adjacent
+lumber. Separate upper-front numeral panels cover both bays near the exterior,
+set back 1/4 inch from the post and siding-backing faces, replacing the narrow
+support board. Use rigid spacers across the setback at numeral attachments and confirm
+mounting screw engagement. Retain the exterior mesh skirt and add a continuous inner ground-gap wrap
+along both side-wall infills and the new front plane. Join the front corners,
+terminate the side runs against the posts, and overlap mesh joints 2 inches.
+Sample grade at the installed panel and mesh coordinates. Screen tiny seams, keep the
+rear opening accessible, and omit all ceiling panels for future tambour access.
+See BUILD_STEPS.md steps 19 and 22 for fitting and attachment details.
 
 Generated files include:
 
+- `output/plywood_layout.svg` and `.json`: shared sheet layout and usable offcuts.
 - `output/model.scad`: enclosure, schematic recessed/face screw heads and downward build steps.
 - `output/roof_support_review.scad`: cropped roof framing, gussets and strips; render with `openscad -D build_step=22`.
+- `output/gusset_covers/`: two ASA/ABS bearing covers as millimetre STL/STEP files and a placement manifest.
 - `output/siding_corner_*.scad`: four cropped roof/wall corner views.
 - `output/siding_cut_list.csv` and `.json`: physical board, backing and trim cuts.
 - `output/siding_installation.json`: supported attachment locations, fixed

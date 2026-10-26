@@ -53,8 +53,9 @@ bands run along X, parallel to the front. The covers are different parts.
   and 2.794 mm head height above the 1.880 mm plate.
 - All connecting ribs stay at or below Z = 8 mm, **11.05 mm below the siding**.
   Longitudinal ribs continue into the extensions, with a transverse tie at the
-  new inward edge. Extension feet reach the lumber only where the ribs overlap
-  existing top-flush framing; no support is assumed beneath open areas.
+  new inward edge. All extension rails and the inward edge have feet down to
+  the framing top plane, removing the former 5.6 mm raised corner. This applies
+  to both covers. Feet over open framing bays remain unsupported there.
 - Original **6 × 3 mm drainage gates** remain in the skirt and web bottoms.
   Added feet have gates along their longer direction where space permits;
   short feet remain solid. Keep the framework and outlets clear.

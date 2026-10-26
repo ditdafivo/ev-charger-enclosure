@@ -60,11 +60,18 @@ class GussetCoverTests(unittest.TestCase):
                 if pos[2]+size[2] > DECK_BOTTOM+1e-7:
                     self.assertTrue(any(a-1e-7<=pos[1] and pos[1]+size[1]<=b+1e-7
                                         for a,b in cover.bearing_bands_mm))
-                if pos[2]==0 and (pos[1]<-OVERHANG-1e-7 or
-                                  pos[1]+size[1]>PLATE+OVERHANG+1e-7):
-                    self.assertTrue(any(fx-1e-7<=pos[0] and pos[0]+size[0]<=fx+fw+1e-7
-                                        and fy-1e-7<=pos[1] and pos[1]+size[1]<=fy+fh+1e-7
-                                        for fx,fy,fw,fh in cover.framing_rectangles_mm))
+
+    def test_extension_corners_reach_framing_plane(self):
+        # The inward edge must not have the former 5.6 mm raised half, even
+        # where the nominal framing footprint ends. Small drains stay open.
+        for cover in covers_for_siding(default_build.siding):
+            edge = (cover.y_bounds_mm[0]+1 if cover.y_bounds_mm[0] < -OVERHANG
+                    else cover.y_bounds_mm[1]-1)
+            for x in (-OVERHANG+1, 110, PLATE+OVERHANG-1):
+                self.assertTrue(any(
+                    all(pos[i] <= v <= pos[i]+size[i]
+                        for i, v in enumerate((x, edge, 0.1)))
+                    for pos, size in cover.boxes), (cover.name, x, edge))
 
     def test_inward_extension_reaches_interrupted_run_edges(self):
         rear,front = covers_for_siding(default_build.siding)

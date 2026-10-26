@@ -26,7 +26,6 @@ class GussetCover:
     bearing_bands_mm: tuple[tuple[float, float], ...]
     y_bounds_mm: tuple[float, float]
     source_strips: tuple[str, ...]
-    framing_rectangles_mm: tuple[tuple[float, float, float, float], ...]
 
     @property
     def boxes(self) -> tuple[Box, ...]:
@@ -78,25 +77,23 @@ class GussetCover:
 
         boxes.extend(extension_rails)
         for pos, size in extension_rails:
-            for fx, fy, fw, fh in self.framing_rectangles_mm:
-                xa, xb = max(pos[0], fx), min(pos[0]+size[0], fx+fw)
-                ya, yb = max(pos[1], fy), min(pos[1]+size[1], fy+fh)
-                if min(xb-xa, yb-ya) < 1e-7:
-                    continue
-                # Feet only where existing framing supports them. A gate below
-                # each foot preserves drainage through the extended framework.
-                boxes.append(((xa, ya, DRAIN_HEIGHT),
-                              (xb-xa, yb-ya, DECK_BOTTOM-WEB-DRAIN_HEIGHT)))
-                along = 0 if xb-xa > yb-ya else 1
-                start, end = (xa, xb) if along == 0 else (ya, yb)
-                mid = (start+end)/2
-                segments = ((start, end),) if end-start <= DRAIN_WIDTH else (
-                    (start, mid-DRAIN_WIDTH/2), (mid+DRAIN_WIDTH/2, end))
-                for a, b in segments:
-                    foot_pos = [xa, ya, 0]
-                    foot_size = [xb-xa, yb-ya, DRAIN_HEIGHT]
-                    foot_pos[along], foot_size[along] = a, b-a
-                    boxes.append((tuple(foot_pos), tuple(foot_size)))
+            # Extend every rail to the framing plane. Clipping feet to the
+            # modeled framing left an unnecessary raised corner in the print.
+            # These extensions are entirely outside the steel plate footprint.
+            xa, ya = pos[:2]
+            xb, yb = xa+size[0], ya+size[1]
+            boxes.append(((xa, ya, DRAIN_HEIGHT),
+                          (xb-xa, yb-ya, DECK_BOTTOM-WEB-DRAIN_HEIGHT)))
+            along = 0 if xb-xa > yb-ya else 1
+            start, end = (xa, xb) if along == 0 else (ya, yb)
+            mid = (start+end)/2
+            segments = ((start, end),) if end-start <= DRAIN_WIDTH else (
+                (start, mid-DRAIN_WIDTH/2), (mid+DRAIN_WIDTH/2, end))
+            for a, b in segments:
+                foot_pos = [xa, ya, 0]
+                foot_size = [xb-xa, yb-ya, DRAIN_HEIGHT]
+                foot_pos[along], foot_size[along] = a, b-a
+                boxes.append((tuple(foot_pos), tuple(foot_size)))
         return tuple(boxes)
 
 
@@ -125,12 +122,8 @@ def covers_for_siding(siding) -> tuple[GussetCover, ...]:
         y_bounds = (min(lo, min(a for a, _ in raw_bands)), hi) if rear else (
             lo, max(hi, max(b for _, b in raw_bands)))
         bands = tuple((max(a,y_bounds[0]), min(b,y_bounds[1])) for a,b in raw_bands)
-        framing = tuple(((loc[0]-origin[0])*MM, (loc[1]-origin[1])*MM,
-                         extent[0]*MM, extent[1]*MM)
-                        for loc, extent in siding.framing
-                        if abs(loc[2]+extent[2]-origin[2])<1e-7)
         result.append(GussetCover(f'gusset_cover_{index}', origin, bands,
-                                  y_bounds, tuple(s.name for s in interrupted), framing))
+                                  y_bounds, tuple(s.name for s in interrupted)))
     return tuple(result)
 
 

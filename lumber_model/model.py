@@ -1261,6 +1261,10 @@ class Model:
             tambour_assemblies=self.scad_tambour_assemblies(),
             tambour_records=self.scad_tambour_records(),
             siding_records=self.scad_siding_records(),
+            roof_plywood_backer_names=json.dumps([
+                strip.name for siding in self.sidings
+                for strip in getattr(siding, "roof_strips", ())
+            ]),
             xygrid_origin=self._scad_xygrid_origin(),
             build_step_records=self.scad_build_step_records(),
             deferred_object_records=self.scad_deferred_object_records(),

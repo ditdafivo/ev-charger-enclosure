@@ -416,6 +416,27 @@ def build_enclosure(
         rotated=True,
     )
 
+    # Brace the low ends of the 1-inch siding backing against inward bumps.
+    # Stand these rails on edge directly behind the backing; the left rail
+    # fits beneath the existing flat lower side rail.
+    for name, support_a, support_b, cross_axis in (
+        ("front_siding_low_rail", "post_fl", "post_fr", "y"),
+        ("left_siding_low_rail", "post_fl", "post_bl", "x"),
+    ):
+        members.between(
+            name,
+            assembly="frame",
+            type="2x4",
+            support_a=support_a,
+            support_b=support_b,
+            position=members["rail_lbl"].min_on("z")-WIDTH_4x4/2,
+            cross_offset=(
+                members[support_a].min_on(cross_axis)+1+HEIGHT_2x4/2
+                -members[support_a].center_on(cross_axis)
+            ),
+            rotated=False,
+        )
+
     for name,support_a,support_b,position,position_axis in [
         (
             "rail_lt",

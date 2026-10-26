@@ -97,6 +97,11 @@ extends only over the full heights of the courses intersected by the cutout;
 the extra screw stations apply only to those courses. Regular wall backing and
 screw stations continue independently above and below it. Existing framing fills
 interruptions in the local backing. Removing the clips does not remove the backing requirement.
+On-edge 2x4 rails behind the front and left center backing brace its low ends
+against inward contact. Each rail spans between corner posts, directly behind
+the 1-inch backing, from z = 1 3/4 to 5 1/4 inches. Attach the backing to the
+rail and the rail ends to the posts; the left rail fits below the existing
+lower side rail.
 The hardware cloth has 1/4-inch openings, a 2-inch cut height and 2-inch joint
 overlaps. The nominal 3/4-inch grade gap remains under siding and trim. The rear
 access opening remains open.

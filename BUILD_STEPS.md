@@ -682,7 +682,14 @@ future tambour installation; wall infill can be unscrewed if future guides need
 access. No floor panel is added.
 
 Install the actual 1-inch wall backing segments with their existing specified
-connections. Keep the space below the top diagonal clear for the prototype
+connections. Brace the low front and left center backing with the on-edge
+2x4 rails `front_siding_low_rail` (20 1/2 inches long) and
+`left_siding_low_rail` (15 7/8 inches long). Fit each between its corner posts,
+directly against the inside face of the 1-inch backing. Both rails run from
+z = 1 3/4 to 5 1/4 inches; the left rail fits beneath `rail_lbl`.
+Fasten the rail ends positively to the posts and attach the center backing to
+each new rail so low contact transfers into the framing.
+Keep the space below the top diagonal clear for the prototype
 tambour door; no local roof-support blocks or their toe screws are installed.
 The plywood roof strips bear on the existing perimeter framing and diagonal.
 
@@ -718,6 +725,8 @@ The model does not establish approval or connection load capacity.
 New model objects:
 
 ```text
+front_siding_low_rail
+left_siding_low_rail
 enclosure_siding_backing_left_1_1
 enclosure_siding_backing_left_1_2
 enclosure_siding_backing_left_1_3

@@ -25,6 +25,30 @@ from lumber_model.fabrication import clip_polygon_to_box
 
 
 class TopBracingBuildTests(unittest.TestCase):
+    def test_low_siding_rails_brace_backing_between_posts_without_overlaps(self) -> None:
+        for enclosure in (build.default_build, build.build_enclosure(width=36, depth=30)):
+            for wall, span_axis, cross_axis, end_post in (
+                ("front", "x", "y", "post_fr"),
+                ("left", "y", "x", "post_bl"),
+            ):
+                rail = enclosure.members[f"{wall}_siding_low_rail"]
+                self.assertEqual(rail.type, "2x4")
+                self.assertAlmostEqual(rail.min_on(span_axis), enclosure.members["post_fl"].max_on(span_axis))
+                self.assertAlmostEqual(rail.max_on(span_axis), enclosure.members[end_post].min_on(span_axis))
+                self.assertAlmostEqual(rail.min_on("z"), 1.75)
+                self.assertAlmostEqual(rail.max_on("z"), enclosure.members["rail_lbl"].min_on("z"))
+                cross_index = "xyz".index(cross_axis)
+                backing = next(p for p in enclosure.siding.wall_backing_parts
+                               if p.name == f"enclosure_siding_backing_{wall}_1_1")
+                self.assertAlmostEqual(rail.min_on(cross_axis), backing.start[cross_index]+backing.size[cross_index])
+                self.assertLess(backing.start[2], rail.min_on("z"))
+                self.assertGreaterEqual(backing.start[2]+backing.size[2], rail.max_on("z"))
+                for other in enclosure.members.values():
+                    if other.name == rail.name:
+                        continue
+                    overlap = [min(rail.max[i], other.max[i])-max(rail.min[i], other.min[i]) for i in range(3)]
+                    self.assertFalse(all(d > 1e-8 for d in overlap), (rail.name, other.name))
+
     def test_diagonal_friction_fits_between_post_faces_without_overlapping_posts(self) -> None:
         for enclosure in (build.default_build, build.build_enclosure(width=36, depth=30)):
             brace = enclosure.members["brace_bl_fr"]

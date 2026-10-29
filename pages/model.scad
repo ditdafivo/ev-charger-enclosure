@@ -16,6 +16,8 @@ show_deferred = false;
 siding = true;
 // Show roof plywood backers; independent of finish siding visibility
 roof_plywood_backers = true;
+// Show US20 trim along the roof edges
+top_edge_trim = true;
 ground = false;
 footings = true;
 center_gland_cat6 = true;
@@ -1278,6 +1280,7 @@ siding_parts = [
     ["enclosure_siding_mesh_inner_right_1_horizontal_7", "mesh", [23.975, 3.5, 2.1491], [0.025, 15.875, 1.4864], [0.35, 0.36, 0.37, 1], [], [[0, 0], [0.25, 0.023], [0.5, 0.046], [0.75, 0.069], [1, 0.0921], [1.25, 0.1151], [1.5, 0.1381], [1.75, 0.1611], [2, 0.1841], [2.25, 0.2071], [2.5, 0.2301], [2.75, 0.2532], [3, 0.2762], [3.25, 0.2992], [3.5, 0.3222], [3.75, 0.3452], [4, 0.3682], [4.25, 0.3912], [4.5, 0.4143], [4.75, 0.4373], [5, 0.4603], [5.25, 0.4833], [5.5, 0.5063], [5.75, 0.5293], [6, 0.5523], [6.25, 0.5754], [6.5, 0.5984], [6.75, 0.6214], [7, 0.6444], [7.25, 0.6674], [7.5, 0.6904], [7.75, 0.7134], [8, 0.7365], [8.25, 0.7595], [8.5, 0.7825], [8.75, 0.8055], [9, 0.8285], [9.25, 0.8515], [9.5, 0.8745], [9.75, 0.8976], [10, 0.9206], [10.25, 0.9436], [10.5, 0.9666], [10.75, 0.9896], [11, 1.0126], [11.25, 1.0356], [11.5, 1.0587], [11.75, 1.0817], [12, 1.1047], [12.25, 1.1277], [12.5, 1.1507], [12.75, 1.1737], [13, 1.1967], [13.25, 1.2198], [13.5, 1.2428], [13.75, 1.2658], [14, 1.2888], [14.25, 1.3118], [14.5, 1.3348], [14.75, 1.3578], [15, 1.3808], [15.25, 1.4039], [15.5, 1.4269], [15.75, 1.4499], [15.875, 1.4614], [15.875, 1.4864], [15.75, 1.4749], [15.5, 1.4519], [15.25, 1.4289], [15, 1.4058], [14.75, 1.3828], [14.5, 1.3598], [14.25, 1.3368], [14, 1.3138], [13.75, 1.2908], [13.5, 1.2678], [13.25, 1.2448], [13, 1.2217], [12.75, 1.1987], [12.5, 1.1757], [12.25, 1.1527], [12, 1.1297], [11.75, 1.1067], [11.5, 1.0837], [11.25, 1.0606], [11, 1.0376], [10.75, 1.0146], [10.5, 0.9916], [10.25, 0.9686], [10, 0.9456], [9.75, 0.9226], [9.5, 0.8995], [9.25, 0.8765], [9, 0.8535], [8.75, 0.8305], [8.5, 0.8075], [8.25, 0.7845], [8, 0.7615], [7.75, 0.7384], [7.5, 0.7154], [7.25, 0.6924], [7, 0.6694], [6.75, 0.6464], [6.5, 0.6234], [6.25, 0.6004], [6, 0.5773], [5.75, 0.5543], [5.5, 0.5313], [5.25, 0.5083], [5, 0.4853], [4.75, 0.4623], [4.5, 0.4393], [4.25, 0.4162], [4, 0.3932], [3.75, 0.3702], [3.5, 0.3472], [3.25, 0.3242], [3, 0.3012], [2.75, 0.2782], [2.5, 0.2551], [2.25, 0.2321], [2, 0.2091], [1.75, 0.1861], [1.5, 0.1631], [1.25, 0.1401], [1, 0.1171], [0.75, 0.094], [0.5, 0.071], [0.25, 0.048], [0, 0.025]], "yz", []]
 ];
 
+top_edge_trim_names = ["enclosure_siding_US20_front_top", "enclosure_siding_US20_front_face", "enclosure_siding_US20_rear_top", "enclosure_siding_US20_rear_face", "enclosure_siding_US20_left_top", "enclosure_siding_US20_left_face", "enclosure_siding_US20_right_top", "enclosure_siding_US20_right_face"];
 roof_plywood_backer_names = ["enclosure_siding_roof_strip_1_1", "enclosure_siding_roof_strip_1_2", "enclosure_siding_roof_strip_2_1", "enclosure_siding_roof_strip_2_2", "enclosure_siding_roof_strip_3_1", "enclosure_siding_roof_strip_3_2", "enclosure_siding_roof_strip_4_1", "enclosure_siding_roof_strip_4_2", "enclosure_siding_roof_strip_5_1"];
 
 xygrid_bounds = [-35.25, 62.75, -37.5625, 60.4375];
@@ -2594,6 +2597,9 @@ function s_material(s) = s[1];
 function s_is_roof_plywood_backer(s) = len([
     for (name = roof_plywood_backer_names) if (name == s_name(s)) name
 ]) > 0;
+function s_is_top_edge_trim(s) = len([
+    for (name = top_edge_trim_names) if (name == s_name(s)) name
+]) > 0;
 function s_visible_without_siding(s) =
     s_material(s) == "PT_5/4x6_backing"
     || s_material(s) == "PT_exterior_plywood_3_4"
@@ -3371,7 +3377,8 @@ if (tambour_tambour_track) {
 
 for (s = siding_parts) {
     if ((siding || s_visible_without_siding(s)) && object_is_visible(s_name(s))
-        && (roof_plywood_backers || !s_is_roof_plywood_backer(s))) {
+        && (roof_plywood_backers || !s_is_roof_plywood_backer(s))
+        && (top_edge_trim || !s_is_top_edge_trim(s))) {
         render_siding_part(s, object_is_highlighted(s_name(s)));
     }
 }

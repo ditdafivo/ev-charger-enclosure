@@ -2117,7 +2117,7 @@ class ParameterizedBuildTests(unittest.TestCase):
             )
             cover_dir = output_dir / "gusset_covers"
             cover_manifest = json.loads((cover_dir / "manifest.json").read_text())
-            for record, expected_y in zip(cover_manifest["parts"], (175,182.425)):
+            for record, expected_y in zip(cover_manifest["parts"], (187,170.425)):
                 self.assertAlmostEqual(record["size_mm"][1],expected_y)
                 self.assertEqual(len(record["source_strips"]),3)
                 data = (cover_dir / f'{record["name"]}.stl').read_bytes()

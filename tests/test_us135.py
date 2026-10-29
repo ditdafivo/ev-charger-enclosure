@@ -144,8 +144,8 @@ class US135Tests(unittest.TestCase):
                     self.assertGreater(strips[1].start[1]-strips[0].start[1]-strips[0].size[1],0)
                 for strip in strips:
                     self.assertEqual(strip.size[2],0.75)
-                    # The entire strip bears beneath solid profile, not a groove lip.
-                    self.assertGreaterEqual(strip.start[1],board.start[1]+s.board_width-s.course_pitch-1e-8)
+                    # Low-Y backing supports the recessed lip; high-Y backing avoids the underside rebate.
+                    self.assertGreaterEqual(strip.start[1],board.start[1]-1e-8)
                     self.assertLessEqual(strip.start[1]+strip.size[1],min(board.start[1]+board.size[1],board.start[1]+s.course_pitch)+1e-8)
                     for loc,size in s.roof_gussets:
                         self.assertFalse(all(strip.start[k]<loc[k]+size[k]+0.125-1e-8 and
@@ -160,14 +160,32 @@ class US135Tests(unittest.TestCase):
                 attachments=[a for a in s.attachments if a.board==board.name]
                 fixed=next(a for a in attachments if a.locked)
                 self.assertAlmostEqual(fixed.along,(s.min_x+s.max_x)/2)
-                for strip in strips:
-                    row=[a for a in attachments if abs(a.elevation-strip.start[1]-strip.size[1]/2)<1e-8]
-                    xs=sorted(a.along for a in row)
-                    self.assertTrue(xs)
-                    self.assertTrue(all(b-a<=10+1e-8 for a,b in zip(xs,xs[1:])))
-                    for a in row:
-                        self.assertEqual(a.length_in,1.125)
-                        self.assertGreater(board.start[2]+board.size[2]-a.length_in,strip.start[2])
+                self.assertEqual(len({a.elevation for a in attachments}),1)
+                xs=sorted(a.along for a in attachments)
+                self.assertTrue(all(b-a<=10+1e-8 for a,b in zip(xs,xs[1:])))
+                for a in attachments:
+                    self.assertTrue(a.recessed)
+                    self.assertEqual(a.concealment,"trim-concealed" if course=="1" else "overlap-concealed")
+                    self.assertAlmostEqual(a.elevation,board.start[1]+(s.board_width-s.course_pitch)/2)
+                    self.assertEqual(a.length_in,0.875)
+                    tip=board.start[2]+s.board_thickness/2-a.length_in
+                    self.assertGreater(tip,s.frame_top_z)
+                    self.assertLess(tip,s.roof_support_z)
+                    head=next(p for p in s.hardware_parts if p.name.startswith(board.name+"_face_screw_")
+                              and abs(p.start[0]+p.size[0]/2-a.along)<1e-8)
+                    self.assertAlmostEqual(head.start[2],s.roof_support_z+s.board_thickness/2)
+                    self.assertLess(head.start[2]+head.size[2],s.roof_finished_top_z)
+                    corners=[(a.along+dx,a.elevation+dy) for dx in (-0.125,0.125) for dy in (-0.125,0.125)]
+                    if course=="1":
+                        # Verify complete heads fall under the actual mitered trim.
+                        trim=next(p for p in s.angle_parts if p.name.endswith("US20_front_top"))
+                        self.assertTrue(all(s._inside_polygon(x-trim.start[0],y-trim.start[1],trim.polygon)
+                                            for x,y in corners))
+                    else:
+                        covering=next(p for p in s.board_parts if p.name==f"{s.name}_top_{int(course)-1}")
+                        self.assertTrue(all(covering.start[0]<=x<=covering.start[0]+covering.size[0]
+                                            and covering.start[1]+s.course_pitch<=y<=covering.start[1]+covering.size[1]
+                                            for x,y in corners))
             if dims[0]==24:
                 self.assertEqual(len(s.roof_strips),9)
                 self.assertEqual(len([p for p in s.roof_strips if "strip_5_" in p.name]),1)
@@ -292,6 +310,7 @@ class US135Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             s.write_artifacts(tmp)
             manifest=json.loads((Path(tmp)/'siding_installation.json').read_text())
+            self.assertEqual(manifest['roof_installation_order'],[f'{s.name}_top_{i}' for i in range(5,0,-1)])
             self.assertEqual(manifest['board_standoff_in'],0)
             self.assertIn('custom direct face fastening',manifest['attachment_method'])
             self.assertTrue((Path(tmp)/'siding_bom.csv').exists())

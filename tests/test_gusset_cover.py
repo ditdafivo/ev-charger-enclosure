@@ -35,7 +35,7 @@ class GussetCoverTests(unittest.TestCase):
                 self.assertFalse(overlap((pos,size), ((0,0,0),(6*MM,6*MM,0.074*MM))))
             for a, b in cover.bearing_bands_mm:
                 self.assertTrue(any(
-                    a/MM+cover.origin_in[1] >= board.start[1]+s.board_width-s.course_pitch-1e-7
+                    a/MM+cover.origin_in[1] >= board.start[1]-1e-7
                     and b/MM+cover.origin_in[1] <= min(board.start[1]+board.size[1],board.start[1]+s.course_pitch)+1e-7
                     for board in s.board_parts if '_top_' in board.name))
             component = default_build.components[cover.name]
@@ -79,8 +79,8 @@ class GussetCoverTests(unittest.TestCase):
         self.assertAlmostEqual(rear.y_bounds_mm[1],PLATE+OVERHANG)
         self.assertAlmostEqual(front.y_bounds_mm[0],-OVERHANG)
         self.assertAlmostEqual(front.y_bounds_mm[1],front.bearing_bands_mm[-1][1])
-        self.assertAlmostEqual(rear.y_bounds_mm[1]-rear.y_bounds_mm[0],175)
-        self.assertAlmostEqual(front.y_bounds_mm[1]-front.y_bounds_mm[0],182.425)
+        self.assertAlmostEqual(rear.y_bounds_mm[1]-rear.y_bounds_mm[0],187)
+        self.assertAlmostEqual(front.y_bounds_mm[1]-front.y_bounds_mm[0],170.425)
 
     def test_covers_follow_changed_roof_depth(self):
         from build import build_enclosure

@@ -1406,13 +1406,17 @@ Install the roof cover before the wall siding so the open sides preserve
 access to the roof support strips and fasteners. Leave roof-edge trim until
 after the wall siding is installed.
 
-Run boards along X and progress across Y. Seat boards directly on the
-3/4-inch plywood support strips. Use provisional #8 x 1-1/8-inch stainless
-retaining-head screws into plywood only, nominally 5/8-inch penetration.
-Verify production profile thickness, actual plywood thickness, usable thread
-engagement and contained tips before installation. Face-fasten along the strip
-centerlines at generated locations, no more than 10 inches apart. Use one fixed point per
-physical board and sliding holes elsewhere, including the ripped final board.
+Run boards along X and install **from rear (+Y) toward front (-Y)**, starting
+with the ripped rear course. Seat boards on the 3/4-inch plywood strips, with
+the low-Y strip beneath the recessed fastening overlap. Retain the second
+bearing strip on full boards. Use provisional #8 x 7/8-inch stainless
+retaining-head screws straight down through the nominal 1/4-inch recessed lip,
+for nominal 5/8-inch plywood penetration. Dry-fit production boards to check
+lip retention, head clearance, engagement, sliding holes and contained tips.
+Each board has one low-Y screw row at generated stations no more than 10 inches
+apart, with one midpoint fixed point and sliding holes elsewhere. The next
+frontward board conceals that row; front roof-edge US20 conceals the frontmost
+row. Keep joints free to move and independently anchor all bearing strips.
 Horizontal roof trim uses 2-1/2-inch screws through the increased stack, with
 framing landing and movement checked separately. US20 trim carries no roof
 weight. This level cover may leak; snow, uplift,
@@ -1430,41 +1434,23 @@ enclosure_siding_top_1_face_screw_134
 enclosure_siding_top_1_face_screw_135
 enclosure_siding_top_1_face_screw_136
 enclosure_siding_top_1_face_screw_137
-enclosure_siding_top_1_face_screw_138
-enclosure_siding_top_1_face_screw_139
-enclosure_siding_top_1_face_screw_140
-enclosure_siding_top_1_face_screw_141
-enclosure_siding_top_2_face_screw_142
-enclosure_siding_top_2_face_screw_143
-enclosure_siding_top_2_face_screw_144
-enclosure_siding_top_2_face_screw_145
-enclosure_siding_top_2_face_screw_146
-enclosure_siding_top_2_face_screw_147
-enclosure_siding_top_2_face_screw_148
-enclosure_siding_top_2_face_screw_149
-enclosure_siding_top_2_face_screw_150
-enclosure_siding_top_3_face_screw_151
-enclosure_siding_top_3_face_screw_152
-enclosure_siding_top_3_face_screw_153
-enclosure_siding_top_3_face_screw_154
-enclosure_siding_top_3_face_screw_155
-enclosure_siding_top_3_face_screw_156
-enclosure_siding_top_3_face_screw_157
-enclosure_siding_top_3_face_screw_158
-enclosure_siding_top_3_face_screw_159
-enclosure_siding_top_3_face_screw_160
-enclosure_siding_top_4_face_screw_161
-enclosure_siding_top_4_face_screw_162
-enclosure_siding_top_4_face_screw_163
-enclosure_siding_top_4_face_screw_164
-enclosure_siding_top_4_face_screw_165
-enclosure_siding_top_4_face_screw_166
-enclosure_siding_top_4_face_screw_167
-enclosure_siding_top_4_face_screw_168
-enclosure_siding_top_5_face_screw_169
-enclosure_siding_top_5_face_screw_170
-enclosure_siding_top_5_face_screw_171
-enclosure_siding_top_5_face_screw_172
+enclosure_siding_top_2_face_screw_138
+enclosure_siding_top_2_face_screw_139
+enclosure_siding_top_2_face_screw_140
+enclosure_siding_top_2_face_screw_141
+enclosure_siding_top_3_face_screw_142
+enclosure_siding_top_3_face_screw_143
+enclosure_siding_top_3_face_screw_144
+enclosure_siding_top_3_face_screw_145
+enclosure_siding_top_3_face_screw_146
+enclosure_siding_top_4_face_screw_147
+enclosure_siding_top_4_face_screw_148
+enclosure_siding_top_4_face_screw_149
+enclosure_siding_top_4_face_screw_150
+enclosure_siding_top_5_face_screw_151
+enclosure_siding_top_5_face_screw_152
+enclosure_siding_top_5_face_screw_153
+enclosure_siding_top_5_face_screw_154
 ```
 
 ## 25. Wrap the front, left and right with wall siding course 1 (`siding-course-1`)

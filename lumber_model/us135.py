@@ -479,8 +479,9 @@ class US135Siding(CompositeSiding):
         lap=self.board_width-self.course_pitch
         for board in self.board_parts:
             if "_top_" not in board.name: continue
-            # Stay inside the full-thickness underside, including a scribed last course.
-            lo=board.start[1]+lap
+            # The low-Y recessed lip retains its underside: back it directly.
+            # Keep the other strip clear of the high-Y underside rebate.
+            lo=board.start[1]
             hi=min(board.start[1]+board.size[1],board.start[1]+self.course_pitch)
             width=hi-lo
             if width<=0: raise ValueError(f"{board.name}: no solid underside for roof support")
@@ -625,14 +626,19 @@ class US135Siding(CompositeSiding):
             if "_top_" not in part.name: continue
             candidates=[]
             course=part.name.rsplit('_',1)[1]
-            for strip in self.roof_strips:
-                if not strip.name.startswith(f"{self.name}_roof_strip_{course}_"): continue
-                y=strip.start[1]+strip.size[1]/2
-                a=strip.start[0]+0.75; b=strip.start[0]+strip.size[0]-0.75
-                midpoint=(self.min_x+self.max_x)/2
-                stations=sorted(set((*self._stations(a,b,10),midpoint)))
-                candidates.extend(Attachment(part.name,"roof",x,y,"face_screw",length_in=1.125)
-                    for x in stations if a<=x<=b)
+            # Install from rear to front: the next frontward board covers
+            # this recessed low-Y row. US20 covers the frontmost row.
+            y=part.start[1]+lap/2
+            strip=next(p for p in self.roof_strips
+                       if p.name.startswith(f"{self.name}_roof_strip_{course}_")
+                       and p.start[1]<=y<=p.start[1]+p.size[1])
+            a=strip.start[0]+0.75; b=strip.start[0]+strip.size[0]-0.75
+            midpoint=(self.min_x+self.max_x)/2
+            stations=sorted(set((*self._stations(a,b,10),midpoint)))
+            concealment="trim-concealed" if course=="1" else "overlap-concealed"
+            candidates.extend(Attachment(part.name,"roof",x,y,"face_screw",
+                length_in=0.875,concealment=concealment,recessed=True)
+                for x in stations if a<=x<=b)
             if not candidates:
                 raise ValueError(f"{part.name}: no roof attachment support")
             fixed=min(candidates,key=lambda a:abs(a.along-(self.min_x+self.max_x)/2))
@@ -651,7 +657,8 @@ class US135Siding(CompositeSiding):
         head=0.25; height=0.08
         for i,a in enumerate(self.attachments,1):
             if a.wall=="roof":
-                start=(a.along-head/2,a.elevation-head/2,self.roof_finished_top_z)
+                head_z=self.roof_finished_top_z-(self.board_thickness/2 if a.recessed else 0)
+                start=(a.along-head/2,a.elevation-head/2,head_z)
                 size=(head,head,height)
             else:
                 x,y=self.xy(a.wall,a.along)
@@ -854,7 +861,7 @@ class US135Siding(CompositeSiding):
         for name,description,qty in (
             ("infill_toe_screws","PT-compatible exterior screws; predrill angled panel-face entries into adjacent lumber; field-select length; allowance four per panel",4*len(self.infill_parts)),
             ("face_screws","#8 x 1-1/4 in SS304 composite face screw into lumber; one fixed point per board, other holes oversized and free to slide",sum(a.wall!="roof" for a in self.attachments)),
-            ("roof_face_screws","Provisional #8 x 1-1/8 in stainless retaining-head screw into plywood only; nominal 5/8 in penetration; verify thread engagement and sliding retention",sum(a.wall=="roof" for a in self.attachments)),
+            ("roof_face_screws","Provisional #8 x 7/8 in stainless retaining-head screw into plywood only; through recessed overlap; nominal 5/8 in penetration; verify head clearance and sliding retention",sum(a.wall=="roof" for a in self.attachments)),
             ("roof_strip_anchors","Corrosion-resistant framing screws; recess heads flush in plywood; field-select length and substrate penetration",len(self.roof_strip_anchors)),
             ("trim_screws","#8 x 2 in SS304 trim screw through US20/board into lumber; predrill for independent board and trim movement",sum(2+math.ceil(p.cut_length/24) for p in self.angle_parts if p.cut_length and not p.name.endswith("_top"))),
             ("roof_trim_screws","#8 x 2-1/2 in stainless roof trim screw through US20/board/plywood into framing; allow independent movement",sum(2+math.ceil(p.cut_length/24) for p in self.angle_parts if p.cut_length and p.name.endswith("_top"))),
@@ -875,7 +882,7 @@ class US135Siding(CompositeSiding):
             ROOF_STRIP_MATERIAL:"Shared guillotine cut plan in plywood_layout.json/svg; 1/8 in kerf; reuse sheet remainder for fitted wall panels. Roof strips follow strength axis. Field-fit and treat cut edges.",
             ROOF_STRIP_MATERIAL+"_2x4":"Supplemental 2 x 4 ft panel; same grade/thickness/treatment as full sheet; see shared cut layout.",
             "infill_toe_screws":"Four per panel purchase allowance; predrill from accessible interior panel face toward neighboring timber. Field-select length/angle for contained tips and sound lumber engagement; do not screw into plywood edges.",
-            "roof_face_screws":"Roof only. One midpoint fixed connection per board; all others slide. Tip stays within plywood; verify production stack and usable thread engagement. Custom unverified connection.",
+            "roof_face_screws":"Roof only. One recessed low-Y row, concealed rear-to-front; one midpoint fixed connection per board; all others slide. Tip stays within plywood; verify production stack and usable thread engagement. Custom unverified connection.",
             "roof_strip_anchors":"Two end anchors per strip at generated framing-supported locations; independent of siding screws. Countersink into plywood only, flush below siding.",
             "face_screws":"Walls only. One per generated wall attachment. One concealed overlap row on intact courses; local cut/termination exceptions; one fixed point per physical board and sliding holes elsewhere. Custom schedule, not load-verified.",
             "roof_trim_screws":"Roof horizontal legs only. Added 1/2 in length preserves former nominal framing penetration through the thicker stack. Verify framing landing and independent movement.",
@@ -960,7 +967,8 @@ class US135Siding(CompositeSiding):
                 strength_axis="X",gusset_clearance_in=self.roof_hardware_clearance) for p in self.roof_strips],
             "roof_strip_anchors":[asdict(a) for a in self.roof_strip_anchors],
             "roof_drainage":"Open channels between continuous strips; clear tongue/groove rebates and gusset outlets. Final narrow course has one backer. No transverse cuts through load-bearing strips.",
-            "roof_fastener_status":"Provisional #8 x 1-1/8 in; nominal 5/8 in plywood penetration; contained tip, thread engagement and head retention require production dry fit",
+            "roof_installation_order":[p.name for p in reversed(self.board_parts) if "_top_" in p.name],
+            "roof_fastener_status":"Provisional #8 x 7/8 in through nominal 1/4 in recessed overlap; nominal 5/8 in plywood penetration; contained tip, thread engagement and head retention require production dry fit",
             "roof_status":"level cover allowing leakage; snow/wind/load capacity not established by siding or ceiling guide",
             "geometry_status":"simplified mating rebates and hardware/trim envelopes, not machining CAD",
             "attachments":[asdict(a) for a in self.attachments],

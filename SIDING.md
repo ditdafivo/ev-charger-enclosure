@@ -146,8 +146,9 @@ Default purchase stock is 8 feet for both US135 and US20.
 Roof boards run along X and courses progress along Y. Each full-width board
 rests on two continuous **3/4-inch PT exterior structural plywood strips**,
 provisionally 1.5 inches wide. Rip with the panel strength axis along X. Place
-strips within the full-thickness underside, clear of mating rebates. The narrow
-final course uses one backer instead of overlapping strips. Verify these bearing
+the low-Y strip directly beneath the recessed fastening lip and keep the
+high-Y strip clear of the underside rebate. The narrow
+rear course uses one backer instead of overlapping strips. Verify these bearing
 zones against the production profile before ripping plywood.
 
 The strips replace the intermediate roof backing, perimeter shims and diagonal
@@ -176,15 +177,27 @@ Anchor each plywood strip independently near its two ends at the generated
 framing/diagonal-supported locations. Recess anchor heads flush in plywood so
 they do not clamp the siding. Field-select anchor screw length and penetration.
 
-Roof face screws are separately counted: provisional **#8 x 1-1/8-inch stainless
-retaining-head screws**, nominally 5/8-inch penetration through 1/2-inch siding
-into 3/4-inch plywood. This is a geometric candidate, not a verified fastener
-product or connection capacity. Check the actual stack, contained tip, usable
-thread engagement, head retention and sliding-hole behavior. A #8 x 1-1/4-inch
-screw through the nominal 1/2-inch siding and 3/4-inch plywood reaches only
-the framing surface; it provides no penetration into the diagonal. Attach along strip
-centerlines at no more than 10-inch spacing, with exactly one midpoint fixed
-connection per physical board and sliding connections elsewhere.
+Roof screws are separately counted: provisional **#8 x 7/8-inch stainless
+retaining-head screws**, nominally 5/8-inch penetration through the recessed
+1/4-inch overlap into 3/4-inch plywood. The default layout uses **21 screws**,
+replacing the former 39 screws in two face rows. This is a geometric candidate,
+not a verified fastener product or connection capacity. Check the actual stack, contained tip, usable
+thread engagement, head retention and sliding-hole behavior.
+
+Install roof courses **from rear (+Y) toward front (-Y)**, beginning with the
+ripped rear course. Each board receives one straight-down screw row at the
+midpoint of its recessed low-Y overlap, provisionally 6 mm from the profile
+edge. The next frontward board covers that row; front US20 covers the final
+frontmost row. Retain both bearing strips on full boards even though only the
+low-Y strip carries siding screws. Keep screw stations at no more than 10-inch
+spacing, with one midpoint fixed connection per physical board and sliding
+connections elsewhere. Independently anchor both strips before laying boards.
+
+Dry-fit the production joint before drilling: verify lip retention, head
+clearance, joint engagement without clamping the neighboring board, and actual
+screw penetration. Do not angle screws through the tongue. The simplified model
+shows heads on a half-thickness recess; it does not establish usable machining
+or connection capacity. Roof uplift retention remains unverified.
 
 Use 2-1/2-inch roof trim screws through horizontal US20/board/plywood into
 framing, preserving the former nominal framing penetration. Wall trim retains

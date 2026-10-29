@@ -17,8 +17,8 @@ them in the enclosure model, BOM and siding-preparation build step.
 
 | File in `output/gusset_covers/` | Location | Quantity | Current size, X × Y × Z |
 | --- | --- | --- | --- |
-| `gusset_cover_1.stl` / `.step` | Back-left gusset | 1 | 163.4 × 175 × 19.05 mm |
-| `gusset_cover_2.stl` / `.step` | Front-right gusset | 1 | 163.4 × 182.425 × 19.05 mm |
+| `gusset_cover_1.stl` / `.step` | Back-left gusset | 1 | 163.4 × 187 × 19.05 mm |
+| `gusset_cover_2.stl` / `.step` | Front-right gusset | 1 | 163.4 × 170.425 × 19.05 mm |
 
 [Generated top-view preview](output/gusset_covers/preview.svg) shows both covers
 alongside their plywood runs. Blue is the bearing surface, gray is recessed
@@ -38,9 +38,9 @@ bands run along X, parallel to the front. The covers are different parts.
 - Each cover has three bearing bands in the default layout. Their Y positions
   and widths exactly match the plywood runs shortened by that gusset, including
   the wider rear closure strip. No broad connecting sheet remains between them.
-- The back-left cover extends **11.6 mm farther inward toward the front** than
-  the former square cover, reaching Y = 15.9518 inches in the enclosure. The
-  front-right cover extends **19.025 mm toward the rear**, reaching Y = 7.2156
+- The back-left cover extends **23.6 mm farther inward toward the front** than
+  the former square cover, reaching Y = 15.4793 inches in the enclosure. The
+  front-right cover extends **7.025 mm toward the rear**, reaching Y = 6.7431
   inches. These boundaries follow the inner edges of the interrupted runs.
   Dimensions recalculate when the roof layout changes.
 - The original plate-locating skirt still reaches **5.5 mm (0.217 inch)** beyond
@@ -60,8 +60,9 @@ bands run along X, parallel to the front. The covers are different parts.
   Added feet have gates along their longer direction where space permits;
   short feet remain solid. Keep the framework and outlets clear.
 - Plywood still stops **1/4 inch from the steel**, leaving **0.85 mm** between
-  the cover and plywood ends. Strip lengths and fastener positions are unchanged
-  by this revision. Both covers clear the siding's modeled mating profiles.
+  the cover and plywood ends. The low-Y bearing bands follow the shifted
+  plywood beneath the recessed fastening lips;
+  the high-Y bands remain clear of the underside rebates.
 
 The load path is siding → bearing bands → webs/skirt/feet → steel/framing.
 Keep siding and trim fasteners in their designated plywood or lumber. No gusset

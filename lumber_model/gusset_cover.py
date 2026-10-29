@@ -11,6 +11,9 @@ MM = 25.4
 PLATE = GUSSET_SIZE_IN * MM
 HEIGHT = 0.75 * MM
 OVERHANG = 5.5  # Fits inside the verified 6.35 mm plate-to-frame margin.
+# Field print overhung the rear framing by 1/4 inch. Restore the nominal
+# plate-to-frame inset as well, without changing the enclosure model.
+BACK_LEFT_REAR_TRIM_MM = 0.25 * MM + (0.25 * MM - OVERHANG)
 FIT = 0.6
 WEB = 2.4
 DECK_BOTTOM = 8.0
@@ -94,11 +97,23 @@ class GussetCover:
                 foot_size = [xb-xa, yb-ya, DRAIN_HEIGHT]
                 foot_pos[along], foot_size[along] = a, b-a
                 boxes.append((tuple(foot_pos), tuple(foot_size)))
-        return tuple(boxes)
+        # The fabrication-only rear trim cuts through every layer, including
+        # the nominal skirt and webs that were built around the full plate.
+        clipped = []
+        for pos, size in boxes:
+            if (pos[1] >= self.y_bounds_mm[0]-1e-7 and
+                    pos[1]+size[1] <= self.y_bounds_mm[1]+1e-7):
+                clipped.append((pos, size))
+                continue
+            a = max(pos[1], self.y_bounds_mm[0])
+            b = min(pos[1]+size[1], self.y_bounds_mm[1])
+            if b-a > 1e-7:
+                clipped.append(((pos[0], a, pos[2]), (size[0], b-a, size[2])))
+        return tuple(clipped)
 
 
-def covers_for_siding(siding) -> tuple[GussetCover, ...]:
-    """Continue only plywood runs whose ends were shortened by each gusset."""
+def covers_for_siding(siding, *, fabrication: bool = False) -> tuple[GussetCover, ...]:
+    """Continue interrupted plywood runs; optionally apply field-fit trimming."""
     result = []
     for index, (origin, size) in enumerate(siding.roof_gussets, 1):
         if any(abs(v-GUSSET_SIZE_IN)>1e-6 for v in size[:2]):
@@ -121,9 +136,14 @@ def covers_for_siding(siding) -> tuple[GussetCover, ...]:
                       (s.start[1]+s.size[1]-origin[1])*MM) for s in interrupted]
         y_bounds = (min(lo, min(a for a, _ in raw_bands)), hi) if rear else (
             lo, max(hi, max(b for _, b in raw_bands)))
-        bands = tuple((max(a,y_bounds[0]), min(b,y_bounds[1])) for a,b in raw_bands)
+        if fabrication and left and rear:
+            y_bounds = (y_bounds[0], y_bounds[1]-BACK_LEFT_REAR_TRIM_MM)
+        trimmed_bands = [(max(a,y_bounds[0]), min(b,y_bounds[1])) for a,b in raw_bands]
+        bands = tuple((a,b) for a,b in trimmed_bands if b-a > 1e-7)
+        source_strips = tuple(s.name for s,(a,b) in zip(interrupted, trimmed_bands)
+                              if b-a > 1e-7)
         result.append(GussetCover(f'gusset_cover_{index}', origin, bands,
-                                  y_bounds, tuple(s.name for s in interrupted)))
+                                  y_bounds, source_strips))
     return tuple(result)
 
 
@@ -171,7 +191,7 @@ def generate_gusset_covers(siding, directory: Path) -> list[Path]:
     directory.mkdir(parents=True, exist_ok=True)
     paths = []
     records = []
-    covers = covers_for_siding(siding)
+    covers = covers_for_siding(siding, fabrication=True)
     for cover in covers:
         solids = [Location(pos)*CadBox(*size, align=(Align.MIN,)*3)
                   for pos, size in cover.boxes]

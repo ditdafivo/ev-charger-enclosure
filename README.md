@@ -39,6 +39,8 @@ remain visible, subject to the selected build step.
 Independently deselect `roof_plywood_backers` to hide just the roof plywood
 strips. Gusset covers, wall backing, screws, and all other objects retain their
 existing visibility settings.
+Deselect `top_edge_trim` to hide the US20 trim that runs along the roof edges,
+while keeping the wall and opening trim visible.
 
 The default level finished post tops are at `z = 49.625` inches, with `z = 0`
 at the outside corner of `post_fl`. The surveyed vertical ground-to-top heights

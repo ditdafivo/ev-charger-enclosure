@@ -921,6 +921,19 @@ class Model:
     def scad_siding_records(self) -> list[str]:
         return [part.scad_record() for siding in self.sidings for part in siding.parts]
 
+    def scad_top_edge_trim_names(self) -> list[str]:
+        suffixes = tuple(
+            f"_US20_{side}_{section}"
+            for side in ("front", "rear", "left", "right")
+            for section in ("top", "face")
+        )
+        return [
+            part.name
+            for siding in self.sidings
+            for part in siding.parts
+            if part.material == "US20" and part.name.endswith(suffixes)
+        ]
+
     def scad_build_step_records(self) -> list[str]:
         return [
             f'[{json.dumps(name)}, {step.number}]'
@@ -1261,6 +1274,7 @@ class Model:
             tambour_assemblies=self.scad_tambour_assemblies(),
             tambour_records=self.scad_tambour_records(),
             siding_records=self.scad_siding_records(),
+            top_edge_trim_names=json.dumps(self.scad_top_edge_trim_names()),
             roof_plywood_backer_names=json.dumps([
                 strip.name for siding in self.sidings
                 for strip in getattr(siding, "roof_strips", ())

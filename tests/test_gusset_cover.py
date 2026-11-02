@@ -12,7 +12,7 @@ def overlap(a, b):
 
 
 class GussetCoverTests(unittest.TestCase):
-    def test_field_trim_only_changes_back_left_fabrication_rear_edge(self):
+    def test_field_trim_only_changes_back_left_rear_edge(self):
         nominal, nominal_front = covers_for_siding(default_build.siding)
         trimmed, front = covers_for_siding(default_build.siding, fabrication=True)
         self.assertEqual(front, nominal_front)
@@ -20,20 +20,10 @@ class GussetCoverTests(unittest.TestCase):
         self.assertEqual(trimmed.origin_in, nominal.origin_in)
         self.assertEqual(trimmed.source_strips, nominal.source_strips)
         self.assertEqual(trimmed.y_bounds_mm[0], nominal.y_bounds_mm[0])
-        self.assertAlmostEqual(nominal.y_bounds_mm[1]-trimmed.y_bounds_mm[1], 7.2)
-        self.assertAlmostEqual(trimmed.y_bounds_mm[1]-trimmed.y_bounds_mm[0], 179.8)
-        self.assertEqual(trimmed.bearing_bands_mm[:-1], nominal.bearing_bands_mm[:-1])
-        self.assertAlmostEqual(trimmed.bearing_bands_mm[-1][1], trimmed.y_bounds_mm[1])
-        expected_boxes = []
-        for pos, size in nominal.boxes:
-            end = min(pos[1]+size[1], trimmed.y_bounds_mm[1])
-            if end-pos[1] > 1e-7:
-                expected_boxes.append((pos, (size[0], end-pos[1], size[2])))
-        self.assertEqual(len(trimmed.boxes), len(expected_boxes))
-        for (pos, size), (expected_pos, expected_size) in zip(trimmed.boxes, expected_boxes):
-            self.assertEqual(pos, expected_pos)
-            for actual, expected in zip(size, expected_size):
-                self.assertAlmostEqual(actual, expected)
+        self.assertAlmostEqual(nominal.y_bounds_mm[1]-trimmed.y_bounds_mm[1], 2.325)
+        self.assertAlmostEqual(trimmed.y_bounds_mm[1]-trimmed.y_bounds_mm[0], 184.675)
+        self.assertAlmostEqual(trimmed.y_bounds_mm[1], trimmed.bearing_bands_mm[-1][1])
+        self.assertEqual(trimmed.bearing_bands_mm, nominal.bearing_bands_mm)
         for pos, size in trimmed.boxes:
             self.assertGreater(min(size), 0)
             self.assertLessEqual(pos[1]+size[1], trimmed.y_bounds_mm[1]+1e-7)

@@ -11,9 +11,9 @@ MM = 25.4
 PLATE = GUSSET_SIZE_IN * MM
 HEIGHT = 0.75 * MM
 OVERHANG = 5.5  # Fits inside the verified 6.35 mm plate-to-frame margin.
-# Field print overhung the rear framing by 1/4 inch. Restore the nominal
-# plate-to-frame inset as well, without changing the enclosure model.
-BACK_LEFT_REAR_TRIM_MM = 0.25 * MM + (0.25 * MM - OVERHANG)
+# Trim the rear skirt flush with the default layout's rear bearing band.
+# Nominal rear: 157.9 mm; bearing-band rear: 155.575 mm.
+BACK_LEFT_REAR_TRIM_MM = 2.325
 FIT = 0.6
 WEB = 2.4
 DECK_BOTTOM = 8.0

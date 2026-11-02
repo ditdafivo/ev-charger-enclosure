@@ -17,7 +17,7 @@ them in the enclosure model, BOM and siding-preparation build step.
 
 | File in `output/gusset_covers/` | Location | Quantity | Current size, X × Y × Z |
 | --- | --- | --- | --- |
-| `gusset_cover_1.stl` / `.step` | Back-left gusset | 1 | 163.4 × 179.8 × 19.05 mm |
+| `gusset_cover_1.stl` / `.step` | Back-left gusset | 1 | 163.4 × 184.675 × 19.05 mm |
 | `gusset_cover_2.stl` / `.step` | Front-right gusset | 1 | 163.4 × 170.425 × 19.05 mm |
 
 [Generated top-view preview](output/gusset_covers/preview.svg) shows both covers
@@ -37,16 +37,17 @@ bands run along X, parallel to the front. The covers are different parts.
 
 - Each cover has three bearing bands in the default layout. Their Y positions
   and widths follow the plywood runs shortened by that gusset, including
-  the wider rear closure strip, except for the back-left field-fit trim below.
+  the wider rear closure strip.
   No broad connecting sheet remains between them.
 - The first back-left print extended **1/4 inch beyond the actual rear framing
-  edge**. Its fabrication files now trim **7.20 mm (0.2835 inch)** from the rear:
-  the measured 6.35 mm overhang plus the modeled **0.85 mm inset**. This restores
-  that inset on the actual structure. The installed origin and inward edge stay
-  fixed; all rear bearing surfaces, ribs, skirts and feet are clipped together.
-  The enclosure model retains its nominal **187 mm** cover length, and the
-  front-right cover is unchanged. Both the standalone generator and normal
-  build preserve this correction in the fabrication exports.
+  edge**. The rear field-fit trim is now **2.325 mm** in fabrication exports,
+  making the skirt flush with the rear bearing band at plate-relative
+  Y = **155.575 mm**, instead of the nominal skirt edge at **157.9 mm**.
+  The back-left cover extends **3.175 mm beyond the modeled gusset rear edge**,
+  with a **2.575 mm skirt thickness** after the 0.6 mm plate clearance.
+  Fabrication exports use a **184.675 mm** cover length; the enclosure model
+  retains its nominal **187 mm** length. The installed origin, inward edge, and
+  front-right cover are unchanged.
 - The back-left cover extends **23.6 mm farther inward toward the front** than
   the former square cover, reaching Y = 15.4793 inches in the enclosure. The
   front-right cover extends **7.025 mm toward the rear**, reaching Y = 6.7431

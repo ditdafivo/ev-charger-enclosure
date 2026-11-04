@@ -155,9 +155,7 @@ third-party licensing information.
 The shell uses US135 All Weather Pro tongue-and-groove siding with a
 straight-grain face and V-groove joints. Full-height top boards and
 ground-following bottom cuts keep the shell 3/4 inch above grade. A separate 1/4-inch mesh skirt
-closes the lower gap. Wall installation proceeds **top downward**, using temporary
-supports and inverted wall profiles, finished face outward. Screws into lumber
-are concealed by the next lower overlap, with US20 covering edge exceptions
+closes the lower gap. Wall installation proceeds **bottom upward**, with upright profiles on AW08 clips. T-7 spaces supported face-fixed exceptions. Clips engage adjoining courses, with US20 covering edge exceptions
 where possible and local exposed screws at remaining terminations. The build-step viewer
 shows each course in that order. The rear access opening remains open.
 
@@ -165,8 +163,8 @@ The US135 top is a level cover that may leak. Paired 3/4-inch PT plywood strips
 carry the boards and bear on the existing perimeter framing and diagonal;
 US20 covers outside corners and the rear opening; vertical corners terminate
 beneath mitered US20 roof-edge trim. See
-[SIDING.md](SIDING.md) for the downward procedure, the required two-course
-physical dry fit, provisional course pitch, custom face fastening, corner details,
+[SIDING.md](SIDING.md) for the bottom-up procedure, the required two-course
+physical dry fit, provisional course pitch, custom starter, corner details,
 fastener assumptions and the generated siding fabrication files.
 
 ## Fitted plywood wall infill

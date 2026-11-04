@@ -121,6 +121,7 @@ class SidingPart:
     polygon: tuple[tuple[float, float], ...] = ()
     plane: str = "xy"
     rebates: tuple[tuple[Vector3, Vector3], ...] = ()
+    groove_cutters: tuple[tuple[Vector3, ...], ...] = ()
 
     def scad_record(self) -> str:
         return (
@@ -133,7 +134,8 @@ class SidingPart:
             f"[{', '.join(b.scad_record() for b in self.front_bores)}], "
             f"[{', '.join(_format_vector(p) for p in self.polygon)}], "
             f"{scad_string(self.plane)}, "
-            f"[{', '.join('['+_format_vector(a)+', '+_format_vector(b)+']' for a,b in self.rebates)}]"
+            f"[{', '.join('['+_format_vector(a)+', '+_format_vector(b)+']' for a,b in self.rebates)}], "
+            f"[{', '.join('['+', '.join(_format_vector(v) for v in prism)+']' for prism in self.groove_cutters)}]"
             "]"
         )
 

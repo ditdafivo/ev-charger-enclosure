@@ -69,7 +69,7 @@ from lumber_model.gusset import (
 )
 from lumber_model.gusset_dxf import generate_gusset_dxf
 from lumber_model.gusset_cover import covers_for_siding, generate_gusset_covers, HEIGHT
-from lumber_model.us135 import US135Siding, US135_THICKNESS, ROOF_STRIP_THICKNESS
+from lumber_model.us135 import US135Siding, US135_THICKNESS, US135_WALL_STANDOFF, ROOF_STRIP_THICKNESS
 
 DEFAULT_WIDTH = 24
 DEFAULT_DEPTH = 19.375
@@ -164,8 +164,8 @@ def build_enclosure(
     FULL_POST_LEN=BURIED_FRAME_Z+height
     SIDING_BOTTOM_Z=0.75
     SIDING_STOCK_LENGTH_FT=8
-    # Boards seat directly on the open lumber framing.
-    SIDING_BOARD_THICKNESS=US135_THICKNESS
+    # Wall faces include the AW08/T-7 stand-off from open framing.
+    SIDING_BOARD_THICKNESS=US135_THICKNESS+US135_WALL_STANDOFF
     TAMBOUR_DOOR_COLOR=(0.10, 0.12, 0.14, 1.0)
 
     HEIGHT_2x4=1.5

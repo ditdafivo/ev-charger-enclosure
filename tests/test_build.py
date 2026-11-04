@@ -2091,6 +2091,9 @@ class ParameterizedBuildTests(unittest.TestCase):
                     "gusset_covers",
                     "siding_cut_list.csv", "siding_cut_list.json", "siding_installation.json",
                     "siding_bom.csv", "roof_support_review.scad",
+                    "siding_field_layout.pdf", "siding_field_layout.csv", "siding_field_layout.json",
+                    "siding_review_top.scad", "siding_review_top_section.scad",
+                    "siding_review_joint.scad", "siding_review_starter.scad",
                     "plywood_layout.svg", "plywood_layout.json",
                     "siding_corner_front_left.scad", "siding_corner_front_right.scad",
                     "siding_corner_rear_left.scad", "siding_corner_rear_right.scad",
@@ -2117,9 +2120,18 @@ class ParameterizedBuildTests(unittest.TestCase):
             )
             cover_dir = output_dir / "gusset_covers"
             cover_manifest = json.loads((cover_dir / "manifest.json").read_text())
-            for record, expected_y in zip(cover_manifest["parts"], (187,170.425)):
+            from build123d import import_step
+            for record, expected_y in zip(cover_manifest["parts"], (184.675,170.425)):
                 self.assertAlmostEqual(record["size_mm"][1],expected_y)
                 self.assertEqual(len(record["source_strips"]),3)
+                solid = import_step(cover_dir / f'{record["name"]}.step')
+                self.assertTrue(solid.is_valid)
+                self.assertEqual(len(solid.solids()), 1)
+                bounds = solid.bounding_box()
+                self.assertAlmostEqual(bounds.min.Y, record["y_bounds_mm"][0])
+                self.assertAlmostEqual(bounds.max.Y, record["y_bounds_mm"][1])
+                for actual, expected in zip(bounds.size, record["size_mm"]):
+                    self.assertAlmostEqual(actual, expected)
                 data = (cover_dir / f'{record["name"]}.stl').read_bytes()
                 count = struct.unpack_from('<I',data,80)[0]
                 vertices = [vertex for i in range(count) for vertex in

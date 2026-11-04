@@ -1,145 +1,84 @@
 # US135 enclosure siding and roof cover
 
-The enclosure uses horizontal NewTechWood US135, installed **from the top
-downward**, with the wall profiles **upside down and finished face outward**.
-Screws into open lumber framing are normally concealed by the next lower board’s
-overlap; US20 conceals edge exceptions where its actual coverage permits.
-US20 L-angle covers all four outside corners, the rear access opening and the
-roof perimeter. There are no AW08 clips, T-7 spacers, US46 or US44 profiles.
-Generate the model and fabrication files with `uv run build.py --no-deploy`.
-Dimensions are inches.
+Walls use horizontal NewTechWood US135 in the manufacturer's orientation,
+finished face outward, installed **bottom upward on AW08 clips**. Layout is
+calculated from the full top board downward so all walls share seam elevations.
+The ripped bottom starter preserves its upper engagement edge and is installed
+first. US20 remains the applied corner, opening and roof-edge trim.
+Generate with `uv run build.py --no-deploy`. Dimensions are inches.
 
-This is a **custom concealed face-fastened adaptation**, not the manufacturer's illustrated
-US135 attachment system. The supplied [horizontal installation guide](ALL_WEATHER_Siding_Horizontal_Installation_Guide.pdf)
-(09.16.25 US) controls the reference material and movement guidance; its face
-fastening details do not establish an approved all-face-fastened connection
-schedule. The [US135 drawing](https://www.newtechwood.com/pdf/US135_Architect_DWG_US.pdf)
-shows AW08 at every support. Connection capacity and manufacturer acceptance
-of this adaptation remain unverified.
+## References and sample checks
 
-## Dimensions and fabrication status
+The supplied [horizontal guide](ALL_WEATHER_Siding_Horizontal_Installation_Guide.pdf)
+(09.16.25 US) governs reference installation and movement details. The
+[US135 drawing](https://www.newtechwood.com/pdf/US135_Architect_DWG_US.pdf)
+shows AW08 at every support, one locked clip per board, 142 mm overall width
+and nominal 13 mm thickness. It says not to scale the drawing.
 
-US135 All Weather Pro has a straight-grain face and V-groove course joints.
-The model uses 142 mm overall width, 1/2-inch thickness and a **provisional
-130 mm installed course pitch**. Measure two engaged production boards before
-cutting. The simplified mating rebates and seam markings do not reproduce the
-machining profile or grain texture. The 0.002-inch preview clearance between
-rebate faces prevents flicker without changing stock dimensions or pitch.
+The model retains 1/2-inch stock thickness and **provisional 130 mm installed
+pitch**. The triangular V-groove envelope is provisionally 3 mm wide by 1.5 mm
+deep. The modeled wall stand-off is 8 mm, matching nominal T-7 height; verify
+production clip seating and the actual profile. These are adjustable fields
+on `US135Siding`: `course_pitch`, `wall_standoff`, `groove_width`, `groove_depth`.
+No texture or exact clip machining is represented. Geometry shows real recessed
+joint relief rather than painted seam lines.
 
-Boards seat directly on framing, with **zero added stand-off**. The finished
-wall face is 1/2 inch outside the framing; the front face is y = -0.5. Fixture,
-numeral and outlet positions follow that face. The wall top remains z = 50.125.
-The 3/4-inch PT plywood strips replace the roof shims and intermediate roof
-backing, putting roof support at z = 50.375 and the roof board top at z = 50.875.
-Schematic US20 thickness adds 0.22 inch above that.
+Dry-fit production boards, AW08 and T-7 before cutting. Measure engaged pitch,
+visible groove, stand-off, screw clearance and starter engagement. The ripped
+bottom starter is a **custom adaptation**, not the guide's normal AW02 start.
+The unchanged roof cover is also custom. Manufacturer acceptance and connection
+capacity of these adaptations remain unverified.
 
-The defaults give ten wall courses. Solid-wall top boards retain their full
-profile height. The rear top board is one physical board with an access notch;
-each lower rear wing is a separate physical offcut. Rendered opening fragments
-do not multiply the stock-board count or fixed-point count.
+## Field layout and bottom-up installation
 
-Before cutting production pieces, dry-fit two courses on representative lumber.
-Check rear-profile seating, engagement in the inverted orientation, installed
-pitch, usable overlap material, screw access, head clearance and retention, and
-movement-hole behavior. The modeled row is at the overlap midpoint, provisionally
-6 mm (0.236 inch) from the original lower profile edge; it is not a drilling
-dimension. Schematic heads sit on the recessed fastening surface and may intersect
-the simplified covering tongue. No head cavity or machining relief is specified;
-the physical profile must provide clearance without clamping the adjacent board.
-**This physical dry fit has not been performed.**
+`output/siding_field_layout.pdf` gives nominal dimensions below **level post
+tops**, a common course table, top trim overlap, and four wall elevations.
+JSON and CSV companions retain unrounded dimensions. Negative offsets mean
+above the datum. Course IDs count from the top; installation order counts from
+the bottom. The field sheet is a nominal layout, not an as-built survey.
 
-The small inverted-joint gap can retain water. This tradeoff is accepted for this
-desert installation; keep the existing drainage paths open.
+1. Verify the post-top datum with a level. If the actual tops differ, transfer
+   one common level datum rather than following each post independently.
+2. Dry-fit production boards and measure pitch. Update the model and regenerate
+   if needed; do not distribute cumulative pitch error through the courses.
+3. Mark the starter upper edge and all visible seams around the enclosure.
+   Use the same marks across corners and the rear opening.
+4. Scribe the starter bottom to local grade plus 3/4 inch, checking high spots.
+   Preserve the upper engagement profile. Face-fix its lower edge over T-7
+   spacers into wood backing; attach AW08 at supported upper-edge stations.
+   Stoppers space the board; screws obtain retention from the backing.
+   The high-grade rear starter wing is very narrow below the engagement lip:
+   verify usable material and screw edge distances before drilling. Schematic
+   centers do not establish an adequate connection.
+5. Engage subsequent courses upward. Attach AW08 at every supported upper-edge
+   station, with support spacing no more than 16 inches. Lock one midpoint clip
+   per physical board using the guide's locking screw; leave other clips free
+   for movement. Each rear wing is a separate physical board.
+6. At cutout exceptions and the full top board, face-fix over T-7 into backed
+   locations. One fixed connection per board; other face holes allow movement.
+   The notched rear top board remains one physical board. Gold hardware marks
+   fixed connections. Head and spacer envelopes are schematic.
+7. Apply US20 after boards. Verify screw-head coverage: the 40 mm top angle
+   does not necessarily conceal face screws below the upper engagement lip.
+   Exposed exceptions remain visible in the model and installation manifest.
 
-## Concealed fastening and downward installation
+## Top board, trim and interfaces
 
-1. Install the framing, fixture backing, added wall backing and plywood roof strips.
-   Existing rails and posts fill interruptions between new backing segments.
-   Attach wall backing segments positively to framing with suitable stainless
-   angles and structural screws. Roof strips bear on the existing perimeter
-   framing and diagonal; keep the space below the diagonal clear.
-2. Install the hardware-cloth skirt independently of the boards. Keep paths
-   behind and between framing members unobstructed for drainage and the guide's
-   minimum 1-inch continuous net free ventilation area. Animal infill closes the interior side of the framing cavities; separate
-   numeral backing leaves a local 1/4-inch siding gap. Keep drainage and screened
-   edge paths clear and reassess ventilation for the completed shell.
-3. Install the US135 roof cover while the sides remain open for access to the
-   support strips and fasteners. Leave US20 roof-edge trim until after the wall
-   siding is installed.
-4. Hold each inverted top board level with padded temporary supports fixed to
-   framing. Seat it against the lumber and install #8 x 1-1/4-inch stainless
-   composite screws through the recessed lower overlap at supported stations.
-   Verify usable material, penetration and head clearance on production boards.
-5. Engage the next inverted course below, concealing the preceding fastening
-   row, and continue downward. Intact courses use one lower-overlap row, with
-   their upper edges engaged in the preceding course. At cutouts, the rear header
-   and scribed terminations, use supported local face screws where the overlap
-   is unavailable. US20 is the preferred concealment at corners and opening
-   edges; exposed screws remain only where neither overlap nor trim covers them.
-   The generated manifest classifies full-head coverage using actual modeled
-   trim extents, including the front fixture relief. Retention remains untested;
-   do not assume an unsupported lip can carry a fastener.
-6. Use **one fixed point per physical board**. All remaining face connections
-   need oversized holes and heads free to slide. Page 5 of the supplied guide
-   gives thread/hole/head size relationships. Do not clamp or countersink the
-   sliding connections tightly into the composite. The preview shows schematic screw
-   head envelopes; it does not machine the holes. Gold heads mark the fixed points.
-7. The notched rear top board fixes at the backed header near its midpoint;
-   all wing connections slide. Each separate lower wing has its own fixed
-   point. Do not treat display fragments as separate physical boards.
-8. Scribe the final course to surveyed grade plus 3/4 inch and check intervening
-   high spots. Retain supported local fastening and movement clearance without
-   lowering the courses above. Remove props after permanent fasteners retain
-   each board.
+The full physical top profile remains at the existing wall-top elevation;
+US20 obscures part of it. The field sheet distinguishes physical width,
+exposed face height and trim overlap away from the front fixture relief.
+Review `siding_review_top.scad`, `siding_review_top_section.scad`,
+`siding_review_joint.scad`, `siding_review_starter.scad` and the four
+`siding_corner_*.scad` views. These preserve actual cutouts and trim relief.
 
-Wall support spacing remains at most 16 inches. Extra backing beside the outlet
-extends only over the full heights of the courses intersected by the cutout;
-the extra screw stations apply only to those courses. Regular wall backing and
-screw stations continue independently above and below it. Existing framing fills
-interruptions in the local backing. Removing the clips does not remove the backing requirement.
-On-edge 2x4 rails behind the front and left center backing brace its low ends
-against inward contact. Each rail spans between corner posts, directly behind
-the 1-inch backing, from z = 1 3/4 to 5 1/4 inches. Attach the backing to the
-rail and the rail ends to the posts; the left rail fits below the existing
-lower side rail.
-The hardware cloth has 1/4-inch openings, a 2-inch cut height and 2-inch joint
-overlaps. The nominal 3/4-inch grade gap remains under siding and trim. The rear
-access opening remains open.
-
-## US20 corners, opening and roof edges
-
-[US20](https://www.newtechwood.com/pdf/Wall-Cladding-US20US20_P12_Line_Dwg_20221219.pdf)
-is a nominal 40 x 40 mm L-angle. Apply it after the boards, covering square-cut
-ends. It is narrower than US46, so verify actual overlap, clearance and backing
-before drilling. It covers edges; it does not support the boards.
-
-At all four outside corners, vertical US20 stops beneath the roof-edge US20
-faces with 1/8-inch modeled clearance. Each vertical trim retains 3/4-inch
-clearance above its own local grade. Rear-opening jamb returns face inward;
-the jamb tops stop below the header return with movement clearance. Check the
-full return against actual opening backing and service access.
-
-Roof-edge US20 has horizontal legs over the roof and vertical legs over the
-wall tops. Its horizontal legs meet at 45-degree plan miters with movement
-gaps. The staggered vertical-corner/roof junction avoids a three-way compound
-miter and uses no unsupported corner cap.
-
-The front roof-edge face needs relief around the Brook mounting body:
-6 1/4 inches wide, to 1/8 inch above its modeled top. Check the actual fixture
-before cutting. Fasten on either side of the relief into the front brace.
-Use #8 x 2-inch stainless wall trim screws into lumber. Horizontal roof trim
-uses 2-1/2-inch screws through the thicker roof stack; check actual penetration. The trim-screw BOM is an allowance, not a drilled layout.
-
-Fix each trim piece once and allow its other connections to slide. Screws
-passing through siding must allow independent movement of that board too.
-Do not clamp a long angle tightly against several courses. Leave movement
-and drainage gaps open; seal fixture penetrations independently.
-
-The 1/8-inch modeled end/trim allowance is for pieces up to 8 feet installed
-at 32 F or warmer. Check page 11 of the supplied guide against actual conditions.
-The model rejects layouts beyond that length envelope. Stock minimums include
-1/8-inch kerf per cut and offcut reuse, with no damage/contingency allowance.
-Default purchase stock is 8 feet for both US135 and US20.
+Clip stand-off moves wall faces outward; fixture and outlet placement follow
+that face. Roof support height and board thickness remain unchanged. Roof-edge
+US20 spans the revised wall perimeter and existing roof edge. Check actual
+trim bearing and fastening reach before cutting. Retain 1/8-inch end allowances,
+corner-to-roof trim clearance, independent trim movement and drainage paths.
+The gap envelope remains pieces up to 8 feet at 32 F or warmer; check the guide
+for actual installation conditions. Keep existing backing, animal infill and
+mesh, with the rear service opening accessible.
 
 ## Roof cover and review files
 
@@ -235,7 +174,7 @@ See BUILD_STEPS.md steps 19 and 22 for fitting and attachment details.
 Generated files include:
 
 - `output/plywood_layout.svg` and `.json`: shared sheet layout and usable offcuts.
-- `output/model.scad`: enclosure, schematic recessed/face screw heads and downward build steps.
+- `output/model.scad`: enclosure, schematic recessed/face screw heads and bottom-up wall build steps.
 - `output/roof_support_review.scad`: cropped roof framing, gussets and strips; render with `openscad -D build_step=22`.
 - `output/gusset_covers/`: two ASA/ABS bearing covers as millimetre STL/STEP files and a placement manifest.
 - `output/siding_corner_*.scad`: four cropped roof/wall corner views.

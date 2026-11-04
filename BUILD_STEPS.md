@@ -603,8 +603,8 @@ New model objects:
 
 ```text
 enclosure_siding_backing_front_1_1
-enclosure_siding_infill_front_address_16
 enclosure_siding_infill_front_address_17
+enclosure_siding_infill_front_address_18
 ```
 
 ## 20. Prepare the direct lighting cable route (`light-transition-box`)
@@ -716,10 +716,10 @@ that each sits without rocking and clears every gusset screw head. The roof
 boards capture these floating covers; keep all fasteners in the specified wood
 backing. See GUSSET_COVERS.md for printing and fit checks.
 
-Dry-fit two US135 courses directly against representative lumber before cutting
+Dry-fit two US135 courses with AW08 and T-7 on representative lumber before cutting
 production pieces. Verify the provisional 130 mm installed pitch, rear-profile
-seating, inverted engagement, overlap material, head clearance and movement-hole retention. This is a custom
-face-fastened adaptation; the manufacturer's US135 detail uses AW08 clips.
+seating, upright clip engagement, overlap material, head clearance and movement-hole retention. The starter and roof are custom
+adaptations; the manufacturer's US135 detail uses AW08 clips.
 The model does not establish approval or connection load capacity.
 
 New model objects:
@@ -768,6 +768,7 @@ enclosure_siding_infill_front_animal_1
 enclosure_siding_infill_front_animal_2
 enclosure_siding_infill_front_animal_3
 enclosure_siding_infill_front_animal_4
+enclosure_siding_infill_front_animal_16
 enclosure_siding_infill_left_animal_5
 enclosure_siding_infill_left_animal_6
 enclosure_siding_infill_left_animal_7
@@ -778,7 +779,7 @@ enclosure_siding_infill_right_animal_11
 enclosure_siding_infill_right_animal_12
 enclosure_siding_infill_right_animal_13
 enclosure_siding_infill_right_animal_14
-enclosure_siding_infill_front_animal_15
+enclosure_siding_infill_right_animal_15
 ```
 
 ## 23. Install the hardware-cloth skirt (`siding-skirt`)
@@ -1430,39 +1431,430 @@ enclosure_siding_top_2
 enclosure_siding_top_3
 enclosure_siding_top_4
 enclosure_siding_top_5
-enclosure_siding_top_1_face_screw_134
-enclosure_siding_top_1_face_screw_135
-enclosure_siding_top_1_face_screw_136
-enclosure_siding_top_1_face_screw_137
-enclosure_siding_top_2_face_screw_138
-enclosure_siding_top_2_face_screw_139
-enclosure_siding_top_2_face_screw_140
-enclosure_siding_top_2_face_screw_141
-enclosure_siding_top_3_face_screw_142
-enclosure_siding_top_3_face_screw_143
-enclosure_siding_top_3_face_screw_144
-enclosure_siding_top_3_face_screw_145
-enclosure_siding_top_3_face_screw_146
-enclosure_siding_top_4_face_screw_147
-enclosure_siding_top_4_face_screw_148
-enclosure_siding_top_4_face_screw_149
-enclosure_siding_top_4_face_screw_150
-enclosure_siding_top_5_face_screw_151
-enclosure_siding_top_5_face_screw_152
-enclosure_siding_top_5_face_screw_153
-enclosure_siding_top_5_face_screw_154
+enclosure_siding_top_1_face_screw_147
+enclosure_siding_top_1_face_screw_148
+enclosure_siding_top_1_face_screw_149
+enclosure_siding_top_1_face_screw_150
+enclosure_siding_top_2_face_screw_151
+enclosure_siding_top_2_face_screw_152
+enclosure_siding_top_2_face_screw_153
+enclosure_siding_top_2_face_screw_154
+enclosure_siding_top_3_face_screw_155
+enclosure_siding_top_3_face_screw_156
+enclosure_siding_top_3_face_screw_157
+enclosure_siding_top_3_face_screw_158
+enclosure_siding_top_3_face_screw_159
+enclosure_siding_top_4_face_screw_160
+enclosure_siding_top_4_face_screw_161
+enclosure_siding_top_4_face_screw_162
+enclosure_siding_top_4_face_screw_163
+enclosure_siding_top_5_face_screw_164
+enclosure_siding_top_5_face_screw_165
+enclosure_siding_top_5_face_screw_166
+enclosure_siding_top_5_face_screw_167
 ```
 
-## 25. Wrap the front, left and right with wall siding course 1 (`siding-course-1`)
+## 25. Install wall course 10, bottom up (`siding-course-10`)
 
-Hold the full-height top boards level with padded framing-mounted supports.
-Seat the boards directly against the lumber and face-fasten at the generated
-supported locations. Use one fixed point per physical board; predrill all other
-holes for movement and leave their heads free to slide. Install profiles upside
-down, finished face outward. One recessed lower-overlap row is concealed by the
-next course. Schematic heads require a production-profile clearance check.
-Keep the ends clear for the applied US20 corner covers installed in step 36.
-Remove temporary supports after permanent fasteners retain each board.
+Transfer the common course grid from level post tops using siding_field_layout.pdf. Scribe the bottom starter to grade plus 3/4 inch, preserving the upper engagement profile. Face-fix its lower edge over T-7 into backing and attach AW08 at its upper edge. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_10
+enclosure_siding_left_10
+enclosure_siding_right_10
+enclosure_siding_rear_10_1
+enclosure_siding_rear_10_2
+enclosure_siding_front_10_AW08_121
+enclosure_siding_front_10_AW08_122
+enclosure_siding_front_10_AW08_123
+enclosure_siding_front_10_face_screw_124
+enclosure_siding_front_10_face_screw_125
+enclosure_siding_front_10_face_screw_126
+enclosure_siding_left_10_AW08_127
+enclosure_siding_left_10_AW08_128
+enclosure_siding_left_10_AW08_129
+enclosure_siding_left_10_face_screw_130
+enclosure_siding_left_10_face_screw_131
+enclosure_siding_left_10_face_screw_132
+enclosure_siding_right_10_AW08_133
+enclosure_siding_right_10_AW08_134
+enclosure_siding_right_10_AW08_135
+enclosure_siding_right_10_face_screw_136
+enclosure_siding_right_10_face_screw_137
+enclosure_siding_right_10_face_screw_138
+enclosure_siding_rear_10_1_AW08_139
+enclosure_siding_rear_10_1_AW08_140
+enclosure_siding_rear_10_1_face_screw_141
+enclosure_siding_rear_10_1_face_screw_142
+enclosure_siding_rear_10_2_AW08_143
+enclosure_siding_rear_10_2_AW08_144
+enclosure_siding_rear_10_2_face_screw_145
+enclosure_siding_rear_10_2_face_screw_146
+enclosure_siding_front_10_clip_body_121
+enclosure_siding_front_10_clip_body_122
+enclosure_siding_front_10_clip_body_123
+enclosure_siding_front_10_T_7_124
+enclosure_siding_front_10_T_7_125
+enclosure_siding_front_10_T_7_126
+enclosure_siding_left_10_clip_body_127
+enclosure_siding_left_10_clip_body_128
+enclosure_siding_left_10_clip_body_129
+enclosure_siding_left_10_T_7_130
+enclosure_siding_left_10_T_7_131
+enclosure_siding_left_10_T_7_132
+enclosure_siding_right_10_clip_body_133
+enclosure_siding_right_10_clip_body_134
+enclosure_siding_right_10_clip_body_135
+enclosure_siding_right_10_T_7_136
+enclosure_siding_right_10_T_7_137
+enclosure_siding_right_10_T_7_138
+enclosure_siding_rear_10_1_clip_body_139
+enclosure_siding_rear_10_1_clip_body_140
+enclosure_siding_rear_10_1_T_7_141
+enclosure_siding_rear_10_1_T_7_142
+enclosure_siding_rear_10_2_clip_body_143
+enclosure_siding_rear_10_2_clip_body_144
+enclosure_siding_rear_10_2_T_7_145
+enclosure_siding_rear_10_2_T_7_146
+```
+
+## 26. Install wall course 9, bottom up (`siding-course-9`)
+
+Engage the board with the clips below, verify its seam against the common datum marks, and secure AW08 at every supported upper-edge station. Use T-7 face fixing at cutout exceptions. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_9
+enclosure_siding_left_9
+enclosure_siding_right_9
+enclosure_siding_rear_9_1
+enclosure_siding_rear_9_2
+enclosure_siding_front_9_AW08_108
+enclosure_siding_front_9_AW08_109
+enclosure_siding_front_9_AW08_110
+enclosure_siding_left_9_AW08_111
+enclosure_siding_left_9_AW08_112
+enclosure_siding_left_9_AW08_113
+enclosure_siding_right_9_AW08_114
+enclosure_siding_right_9_AW08_115
+enclosure_siding_right_9_AW08_116
+enclosure_siding_rear_9_1_AW08_117
+enclosure_siding_rear_9_1_AW08_118
+enclosure_siding_rear_9_2_AW08_119
+enclosure_siding_rear_9_2_AW08_120
+enclosure_siding_front_9_clip_body_108
+enclosure_siding_front_9_clip_body_109
+enclosure_siding_front_9_clip_body_110
+enclosure_siding_left_9_clip_body_111
+enclosure_siding_left_9_clip_body_112
+enclosure_siding_left_9_clip_body_113
+enclosure_siding_right_9_clip_body_114
+enclosure_siding_right_9_clip_body_115
+enclosure_siding_right_9_clip_body_116
+enclosure_siding_rear_9_1_clip_body_117
+enclosure_siding_rear_9_1_clip_body_118
+enclosure_siding_rear_9_2_clip_body_119
+enclosure_siding_rear_9_2_clip_body_120
+```
+
+## 27. Install wall course 8, bottom up (`siding-course-8`)
+
+Engage the board with the clips below, verify its seam against the common datum marks, and secure AW08 at every supported upper-edge station. Use T-7 face fixing at cutout exceptions. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_8
+enclosure_siding_left_8
+enclosure_siding_right_8
+enclosure_siding_rear_8_1
+enclosure_siding_rear_8_2
+enclosure_siding_front_8_AW08_95
+enclosure_siding_front_8_AW08_96
+enclosure_siding_front_8_AW08_97
+enclosure_siding_left_8_AW08_98
+enclosure_siding_left_8_AW08_99
+enclosure_siding_left_8_AW08_100
+enclosure_siding_right_8_AW08_101
+enclosure_siding_right_8_AW08_102
+enclosure_siding_right_8_AW08_103
+enclosure_siding_rear_8_1_AW08_104
+enclosure_siding_rear_8_1_AW08_105
+enclosure_siding_rear_8_2_AW08_106
+enclosure_siding_rear_8_2_AW08_107
+enclosure_siding_front_8_clip_body_95
+enclosure_siding_front_8_clip_body_96
+enclosure_siding_front_8_clip_body_97
+enclosure_siding_left_8_clip_body_98
+enclosure_siding_left_8_clip_body_99
+enclosure_siding_left_8_clip_body_100
+enclosure_siding_right_8_clip_body_101
+enclosure_siding_right_8_clip_body_102
+enclosure_siding_right_8_clip_body_103
+enclosure_siding_rear_8_1_clip_body_104
+enclosure_siding_rear_8_1_clip_body_105
+enclosure_siding_rear_8_2_clip_body_106
+enclosure_siding_rear_8_2_clip_body_107
+```
+
+## 28. Install wall course 7, bottom up (`siding-course-7`)
+
+Engage the board with the clips below, verify its seam against the common datum marks, and secure AW08 at every supported upper-edge station. Use T-7 face fixing at cutout exceptions. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_7
+enclosure_siding_left_7
+enclosure_siding_right_7_piece_1
+enclosure_siding_right_7_piece_2
+enclosure_siding_right_7_piece_3
+enclosure_siding_rear_7_1
+enclosure_siding_rear_7_2
+enclosure_siding_front_7_AW08_80
+enclosure_siding_front_7_AW08_81
+enclosure_siding_front_7_AW08_82
+enclosure_siding_left_7_AW08_83
+enclosure_siding_left_7_AW08_84
+enclosure_siding_left_7_AW08_85
+enclosure_siding_right_7_AW08_86
+enclosure_siding_right_7_AW08_87
+enclosure_siding_right_7_AW08_88
+enclosure_siding_right_7_AW08_89
+enclosure_siding_right_7_AW08_90
+enclosure_siding_rear_7_1_AW08_91
+enclosure_siding_rear_7_1_AW08_92
+enclosure_siding_rear_7_2_AW08_93
+enclosure_siding_rear_7_2_AW08_94
+enclosure_siding_front_7_clip_body_80
+enclosure_siding_front_7_clip_body_81
+enclosure_siding_front_7_clip_body_82
+enclosure_siding_left_7_clip_body_83
+enclosure_siding_left_7_clip_body_84
+enclosure_siding_left_7_clip_body_85
+enclosure_siding_right_7_clip_body_86
+enclosure_siding_right_7_clip_body_87
+enclosure_siding_right_7_clip_body_88
+enclosure_siding_right_7_clip_body_89
+enclosure_siding_right_7_clip_body_90
+enclosure_siding_rear_7_1_clip_body_91
+enclosure_siding_rear_7_1_clip_body_92
+enclosure_siding_rear_7_2_clip_body_93
+enclosure_siding_rear_7_2_clip_body_94
+```
+
+## 29. Install wall course 6, bottom up (`siding-course-6`)
+
+Engage the board with the clips below, verify its seam against the common datum marks, and secure AW08 at every supported upper-edge station. Use T-7 face fixing at cutout exceptions. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_6
+enclosure_siding_left_6
+enclosure_siding_right_6_piece_1
+enclosure_siding_right_6_piece_2
+enclosure_siding_right_6_piece_3
+enclosure_siding_rear_6_1
+enclosure_siding_rear_6_2
+enclosure_siding_front_6_AW08_65
+enclosure_siding_front_6_AW08_66
+enclosure_siding_front_6_AW08_67
+enclosure_siding_left_6_AW08_68
+enclosure_siding_left_6_AW08_69
+enclosure_siding_left_6_AW08_70
+enclosure_siding_right_6_AW08_71
+enclosure_siding_right_6_AW08_72
+enclosure_siding_right_6_AW08_73
+enclosure_siding_right_6_AW08_74
+enclosure_siding_right_6_AW08_75
+enclosure_siding_rear_6_1_AW08_76
+enclosure_siding_rear_6_1_AW08_77
+enclosure_siding_rear_6_2_AW08_78
+enclosure_siding_rear_6_2_AW08_79
+enclosure_siding_front_6_clip_body_65
+enclosure_siding_front_6_clip_body_66
+enclosure_siding_front_6_clip_body_67
+enclosure_siding_left_6_clip_body_68
+enclosure_siding_left_6_clip_body_69
+enclosure_siding_left_6_clip_body_70
+enclosure_siding_right_6_clip_body_71
+enclosure_siding_right_6_clip_body_72
+enclosure_siding_right_6_clip_body_73
+enclosure_siding_right_6_clip_body_74
+enclosure_siding_right_6_clip_body_75
+enclosure_siding_rear_6_1_clip_body_76
+enclosure_siding_rear_6_1_clip_body_77
+enclosure_siding_rear_6_2_clip_body_78
+enclosure_siding_rear_6_2_clip_body_79
+```
+
+## 30. Install wall course 5, bottom up (`siding-course-5`)
+
+Engage the board with the clips below, verify its seam against the common datum marks, and secure AW08 at every supported upper-edge station. Use T-7 face fixing at cutout exceptions. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_5
+enclosure_siding_left_5
+enclosure_siding_right_5
+enclosure_siding_rear_5_1
+enclosure_siding_rear_5_2
+enclosure_siding_front_5_AW08_52
+enclosure_siding_front_5_AW08_53
+enclosure_siding_front_5_AW08_54
+enclosure_siding_left_5_AW08_55
+enclosure_siding_left_5_AW08_56
+enclosure_siding_left_5_AW08_57
+enclosure_siding_right_5_AW08_58
+enclosure_siding_right_5_AW08_59
+enclosure_siding_right_5_AW08_60
+enclosure_siding_rear_5_1_AW08_61
+enclosure_siding_rear_5_1_AW08_62
+enclosure_siding_rear_5_2_AW08_63
+enclosure_siding_rear_5_2_AW08_64
+enclosure_siding_front_5_clip_body_52
+enclosure_siding_front_5_clip_body_53
+enclosure_siding_front_5_clip_body_54
+enclosure_siding_left_5_clip_body_55
+enclosure_siding_left_5_clip_body_56
+enclosure_siding_left_5_clip_body_57
+enclosure_siding_right_5_clip_body_58
+enclosure_siding_right_5_clip_body_59
+enclosure_siding_right_5_clip_body_60
+enclosure_siding_rear_5_1_clip_body_61
+enclosure_siding_rear_5_1_clip_body_62
+enclosure_siding_rear_5_2_clip_body_63
+enclosure_siding_rear_5_2_clip_body_64
+```
+
+## 31. Install wall course 4, bottom up (`siding-course-4`)
+
+Engage the board with the clips below, verify its seam against the common datum marks, and secure AW08 at every supported upper-edge station. Use T-7 face fixing at cutout exceptions. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_4
+enclosure_siding_left_4
+enclosure_siding_right_4
+enclosure_siding_rear_4_1
+enclosure_siding_rear_4_2
+enclosure_siding_front_4_AW08_39
+enclosure_siding_front_4_AW08_40
+enclosure_siding_front_4_AW08_41
+enclosure_siding_left_4_AW08_42
+enclosure_siding_left_4_AW08_43
+enclosure_siding_left_4_AW08_44
+enclosure_siding_right_4_AW08_45
+enclosure_siding_right_4_AW08_46
+enclosure_siding_right_4_AW08_47
+enclosure_siding_rear_4_1_AW08_48
+enclosure_siding_rear_4_1_AW08_49
+enclosure_siding_rear_4_2_AW08_50
+enclosure_siding_rear_4_2_AW08_51
+enclosure_siding_front_4_clip_body_39
+enclosure_siding_front_4_clip_body_40
+enclosure_siding_front_4_clip_body_41
+enclosure_siding_left_4_clip_body_42
+enclosure_siding_left_4_clip_body_43
+enclosure_siding_left_4_clip_body_44
+enclosure_siding_right_4_clip_body_45
+enclosure_siding_right_4_clip_body_46
+enclosure_siding_right_4_clip_body_47
+enclosure_siding_rear_4_1_clip_body_48
+enclosure_siding_rear_4_1_clip_body_49
+enclosure_siding_rear_4_2_clip_body_50
+enclosure_siding_rear_4_2_clip_body_51
+```
+
+## 32. Install wall course 3, bottom up (`siding-course-3`)
+
+Engage the board with the clips below, verify its seam against the common datum marks, and secure AW08 at every supported upper-edge station. Use T-7 face fixing at cutout exceptions. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_3
+enclosure_siding_left_3
+enclosure_siding_right_3
+enclosure_siding_rear_3_1
+enclosure_siding_rear_3_2
+enclosure_siding_front_3_AW08_26
+enclosure_siding_front_3_AW08_27
+enclosure_siding_front_3_AW08_28
+enclosure_siding_left_3_AW08_29
+enclosure_siding_left_3_AW08_30
+enclosure_siding_left_3_AW08_31
+enclosure_siding_right_3_AW08_32
+enclosure_siding_right_3_AW08_33
+enclosure_siding_right_3_AW08_34
+enclosure_siding_rear_3_1_AW08_35
+enclosure_siding_rear_3_1_AW08_36
+enclosure_siding_rear_3_2_AW08_37
+enclosure_siding_rear_3_2_AW08_38
+enclosure_siding_front_3_clip_body_26
+enclosure_siding_front_3_clip_body_27
+enclosure_siding_front_3_clip_body_28
+enclosure_siding_left_3_clip_body_29
+enclosure_siding_left_3_clip_body_30
+enclosure_siding_left_3_clip_body_31
+enclosure_siding_right_3_clip_body_32
+enclosure_siding_right_3_clip_body_33
+enclosure_siding_right_3_clip_body_34
+enclosure_siding_rear_3_1_clip_body_35
+enclosure_siding_rear_3_1_clip_body_36
+enclosure_siding_rear_3_2_clip_body_37
+enclosure_siding_rear_3_2_clip_body_38
+```
+
+## 33. Install wall course 2, bottom up (`siding-course-2`)
+
+Engage the board with the clips below, verify its seam against the common datum marks, and secure AW08 at every supported upper-edge station. Use T-7 face fixing at cutout exceptions. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
+
+New model objects:
+
+```text
+enclosure_siding_front_2
+enclosure_siding_left_2
+enclosure_siding_right_2
+enclosure_siding_rear_2_1
+enclosure_siding_rear_2_2
+enclosure_siding_front_2_AW08_13
+enclosure_siding_front_2_AW08_14
+enclosure_siding_front_2_AW08_15
+enclosure_siding_left_2_AW08_16
+enclosure_siding_left_2_AW08_17
+enclosure_siding_left_2_AW08_18
+enclosure_siding_right_2_AW08_19
+enclosure_siding_right_2_AW08_20
+enclosure_siding_right_2_AW08_21
+enclosure_siding_rear_2_1_AW08_22
+enclosure_siding_rear_2_1_AW08_23
+enclosure_siding_rear_2_2_AW08_24
+enclosure_siding_rear_2_2_AW08_25
+enclosure_siding_front_2_clip_body_13
+enclosure_siding_front_2_clip_body_14
+enclosure_siding_front_2_clip_body_15
+enclosure_siding_left_2_clip_body_16
+enclosure_siding_left_2_clip_body_17
+enclosure_siding_left_2_clip_body_18
+enclosure_siding_right_2_clip_body_19
+enclosure_siding_right_2_clip_body_20
+enclosure_siding_right_2_clip_body_21
+enclosure_siding_rear_2_1_clip_body_22
+enclosure_siding_rear_2_1_clip_body_23
+enclosure_siding_rear_2_2_clip_body_24
+enclosure_siding_rear_2_2_clip_body_25
+```
+
+## 34. Install wall course 1, bottom up (`siding-course-1`)
+
+Engage the full top profile with the clips below. Face-fix over T-7 into supported backing. Check actual screw-head coverage by US20; exposed heads are shown where the trim is too short. Preserve the full profile and the rear access notch. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
 
 New model objects:
 
@@ -1479,15 +1871,20 @@ enclosure_siding_left_1_face_screw_6
 enclosure_siding_right_1_face_screw_7
 enclosure_siding_right_1_face_screw_8
 enclosure_siding_right_1_face_screw_9
+enclosure_siding_front_1_T_7_1
+enclosure_siding_front_1_T_7_2
+enclosure_siding_front_1_T_7_3
+enclosure_siding_left_1_T_7_4
+enclosure_siding_left_1_T_7_5
+enclosure_siding_left_1_T_7_6
+enclosure_siding_right_1_T_7_7
+enclosure_siding_right_1_T_7_8
+enclosure_siding_right_1_T_7_9
 ```
 
-## 26. Install the notched rear top siding board (`siding-course-1-rear`)
+## 35. Install wall course 1, bottom up (`siding-course-1-rear`)
 
-Cut one physical rear board with an access notch; the three displayed solids
-are portions of this same board. Support it temporarily and face-fasten into
-the rear posts and header. Its one fixed point is the supported header screw
-near the midpoint. All wing and other header connections must permit movement.
-Keep clearance around the opening and beneath the future US20 covers.
+Engage the full top profile with the clips below. Face-fix over T-7 into supported backing. Check actual screw-head coverage by US20; exposed heads are shown where the trim is too short. Preserve the full profile and the rear access notch. Lock one midpoint clip per physical board where clips are available; otherwise fix one face connection. Allow other connections to slide. Rear wings are separate boards. Clip and groove dimensions require a production dry fit.
 
 New model objects:
 
@@ -1498,315 +1895,9 @@ enclosure_siding_rear_1_piece_3
 enclosure_siding_rear_1_face_screw_10
 enclosure_siding_rear_1_face_screw_11
 enclosure_siding_rear_1_face_screw_12
-```
-
-## 27. Install wall siding course 2, top down (`siding-course-2`)
-
-Install wall course 2, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_2
-enclosure_siding_left_2
-enclosure_siding_right_2
-enclosure_siding_rear_2_1
-enclosure_siding_rear_2_2
-enclosure_siding_front_2_face_screw_13
-enclosure_siding_front_2_face_screw_14
-enclosure_siding_front_2_face_screw_15
-enclosure_siding_left_2_face_screw_16
-enclosure_siding_left_2_face_screw_17
-enclosure_siding_left_2_face_screw_18
-enclosure_siding_right_2_face_screw_19
-enclosure_siding_right_2_face_screw_20
-enclosure_siding_right_2_face_screw_21
-enclosure_siding_rear_2_1_face_screw_22
-enclosure_siding_rear_2_1_face_screw_23
-enclosure_siding_rear_2_2_face_screw_24
-enclosure_siding_rear_2_2_face_screw_25
-```
-
-## 28. Install wall siding course 3, top down (`siding-course-3`)
-
-Install wall course 3, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_3
-enclosure_siding_left_3
-enclosure_siding_right_3
-enclosure_siding_rear_3_1
-enclosure_siding_rear_3_2
-enclosure_siding_front_3_face_screw_26
-enclosure_siding_front_3_face_screw_27
-enclosure_siding_front_3_face_screw_28
-enclosure_siding_left_3_face_screw_29
-enclosure_siding_left_3_face_screw_30
-enclosure_siding_left_3_face_screw_31
-enclosure_siding_right_3_face_screw_32
-enclosure_siding_right_3_face_screw_33
-enclosure_siding_right_3_face_screw_34
-enclosure_siding_rear_3_1_face_screw_35
-enclosure_siding_rear_3_1_face_screw_36
-enclosure_siding_rear_3_2_face_screw_37
-enclosure_siding_rear_3_2_face_screw_38
-```
-
-## 29. Install wall siding course 4, top down (`siding-course-4`)
-
-Install wall course 4, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_4
-enclosure_siding_left_4
-enclosure_siding_right_4
-enclosure_siding_rear_4_1
-enclosure_siding_rear_4_2
-enclosure_siding_front_4_face_screw_39
-enclosure_siding_front_4_face_screw_40
-enclosure_siding_front_4_face_screw_41
-enclosure_siding_left_4_face_screw_42
-enclosure_siding_left_4_face_screw_43
-enclosure_siding_left_4_face_screw_44
-enclosure_siding_right_4_face_screw_45
-enclosure_siding_right_4_face_screw_46
-enclosure_siding_right_4_face_screw_47
-enclosure_siding_rear_4_1_face_screw_48
-enclosure_siding_rear_4_1_face_screw_49
-enclosure_siding_rear_4_2_face_screw_50
-enclosure_siding_rear_4_2_face_screw_51
-```
-
-## 30. Install wall siding course 5, top down (`siding-course-5`)
-
-Install wall course 5, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_5
-enclosure_siding_left_5
-enclosure_siding_right_5
-enclosure_siding_rear_5_1
-enclosure_siding_rear_5_2
-enclosure_siding_front_5_face_screw_52
-enclosure_siding_front_5_face_screw_53
-enclosure_siding_front_5_face_screw_54
-enclosure_siding_left_5_face_screw_55
-enclosure_siding_left_5_face_screw_56
-enclosure_siding_left_5_face_screw_57
-enclosure_siding_right_5_face_screw_58
-enclosure_siding_right_5_face_screw_59
-enclosure_siding_right_5_face_screw_60
-enclosure_siding_rear_5_1_face_screw_61
-enclosure_siding_rear_5_1_face_screw_62
-enclosure_siding_rear_5_2_face_screw_63
-enclosure_siding_rear_5_2_face_screw_64
-```
-
-## 31. Install wall siding course 6, top down (`siding-course-6`)
-
-Install wall course 6, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_6
-enclosure_siding_left_6
-enclosure_siding_right_6_piece_1
-enclosure_siding_right_6_piece_2
-enclosure_siding_right_6_piece_3
-enclosure_siding_rear_6_1
-enclosure_siding_rear_6_2
-enclosure_siding_front_6_face_screw_65
-enclosure_siding_front_6_face_screw_66
-enclosure_siding_front_6_face_screw_67
-enclosure_siding_left_6_face_screw_68
-enclosure_siding_left_6_face_screw_69
-enclosure_siding_left_6_face_screw_70
-enclosure_siding_right_6_face_screw_71
-enclosure_siding_right_6_face_screw_72
-enclosure_siding_right_6_face_screw_73
-enclosure_siding_right_6_face_screw_74
-enclosure_siding_right_6_face_screw_75
-enclosure_siding_rear_6_1_face_screw_76
-enclosure_siding_rear_6_1_face_screw_77
-enclosure_siding_rear_6_2_face_screw_78
-enclosure_siding_rear_6_2_face_screw_79
-```
-
-## 32. Install wall siding course 7, top down (`siding-course-7`)
-
-Install wall course 7, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_7
-enclosure_siding_left_7
-enclosure_siding_right_7_piece_1
-enclosure_siding_right_7_piece_2
-enclosure_siding_right_7_piece_3
-enclosure_siding_rear_7_1
-enclosure_siding_rear_7_2
-enclosure_siding_front_7_face_screw_80
-enclosure_siding_front_7_face_screw_81
-enclosure_siding_front_7_face_screw_82
-enclosure_siding_left_7_face_screw_83
-enclosure_siding_left_7_face_screw_84
-enclosure_siding_left_7_face_screw_85
-enclosure_siding_right_7_face_screw_86
-enclosure_siding_right_7_face_screw_87
-enclosure_siding_right_7_face_screw_88
-enclosure_siding_right_7_face_screw_89
-enclosure_siding_right_7_face_screw_90
-enclosure_siding_rear_7_1_face_screw_91
-enclosure_siding_rear_7_1_face_screw_92
-enclosure_siding_rear_7_2_face_screw_93
-enclosure_siding_rear_7_2_face_screw_94
-```
-
-## 33. Install wall siding course 8, top down (`siding-course-8`)
-
-Install wall course 8, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_8
-enclosure_siding_left_8
-enclosure_siding_right_8
-enclosure_siding_rear_8_1
-enclosure_siding_rear_8_2
-enclosure_siding_front_8_face_screw_95
-enclosure_siding_front_8_face_screw_96
-enclosure_siding_front_8_face_screw_97
-enclosure_siding_left_8_face_screw_98
-enclosure_siding_left_8_face_screw_99
-enclosure_siding_left_8_face_screw_100
-enclosure_siding_right_8_face_screw_101
-enclosure_siding_right_8_face_screw_102
-enclosure_siding_right_8_face_screw_103
-enclosure_siding_rear_8_1_face_screw_104
-enclosure_siding_rear_8_1_face_screw_105
-enclosure_siding_rear_8_2_face_screw_106
-enclosure_siding_rear_8_2_face_screw_107
-```
-
-## 34. Install wall siding course 9, top down (`siding-course-9`)
-
-Install wall course 9, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-New model objects:
-
-```text
-enclosure_siding_front_9
-enclosure_siding_left_9
-enclosure_siding_right_9
-enclosure_siding_rear_9_1
-enclosure_siding_rear_9_2
-enclosure_siding_front_9_face_screw_108
-enclosure_siding_front_9_face_screw_109
-enclosure_siding_front_9_face_screw_110
-enclosure_siding_left_9_face_screw_111
-enclosure_siding_left_9_face_screw_112
-enclosure_siding_left_9_face_screw_113
-enclosure_siding_right_9_face_screw_114
-enclosure_siding_right_9_face_screw_115
-enclosure_siding_right_9_face_screw_116
-enclosure_siding_rear_9_1_face_screw_117
-enclosure_siding_rear_9_1_face_screw_118
-enclosure_siding_rear_9_2_face_screw_119
-enclosure_siding_rear_9_2_face_screw_120
-```
-
-## 35. Install wall siding course 10, top down (`siding-course-10`)
-
-Install wall course 10, proceeding downward. Engage it with the course
-above, support it temporarily, and face-fasten directly into lumber at the
-generated locations in the inverted lower overlap, concealed by the next course.
-Use supported local exceptions at cutouts and terminations; prefer US20 coverage.
-Fix each physical board once; keep all other holes oversized and free to slide.
-Each separate rear wing has its own fixed point. Keep screws clear of openings
-and keep the board ends clear beneath the future US20 covers.
-
-Scribe the final course to actual grade plus 3/4 inch, checking intervening
-high spots. Narrow remainders use a centered screw row. Preserve movement
-clearance without lowering the courses above.
-
-New model objects:
-
-```text
-enclosure_siding_front_10
-enclosure_siding_left_10
-enclosure_siding_right_10
-enclosure_siding_rear_10_1
-enclosure_siding_rear_10_2
-enclosure_siding_front_10_face_screw_121
-enclosure_siding_front_10_face_screw_122
-enclosure_siding_front_10_face_screw_123
-enclosure_siding_left_10_face_screw_124
-enclosure_siding_left_10_face_screw_125
-enclosure_siding_left_10_face_screw_126
-enclosure_siding_right_10_face_screw_127
-enclosure_siding_right_10_face_screw_128
-enclosure_siding_right_10_face_screw_129
-enclosure_siding_rear_10_1_face_screw_130
-enclosure_siding_rear_10_1_face_screw_131
-enclosure_siding_rear_10_2_face_screw_132
-enclosure_siding_rear_10_2_face_screw_133
+enclosure_siding_rear_1_T_7_10
+enclosure_siding_rear_1_T_7_11
+enclosure_siding_rear_1_T_7_12
 ```
 
 ## 36. Fit US20 corners, rear-access and roof-edge trim (`siding-trim`)
@@ -1865,7 +1956,7 @@ Install the MOD Lighting Brook MOD119, 16-inch black, 3000K variant
 and 3.9 inches projecting from the wall. Center the supplied bracket at
 x = 13.75 and z = 48.625 inches in the default enclosure: 1/2 inch above the
 underside of `brace_fl_fr`. Set the bracket against the siding exterior at
-y = -0.5 inch and fasten through the siding into the low part of the brace.
+y = -0.815 inch and fasten through the siding into the low part of the brace.
 The cable enters the lower base below the bracket, through the small bore
 specified in step 21. There is no large box opening in the siding.
 
@@ -1884,7 +1975,7 @@ arrangement is 12 inches wide: four 2 1/4-inch digit envelopes with 1-inch
 spacing. Keep a 3-inch vertical gap below the Brook. Default numeral bounds
 span x = 7.75 to 19.75, z = 39.425 to 44.425 inches. Each digit has two
 1-inch standoffs, leaving 1 inch from siding to its back; its front is at
-y = -2.5 inches. Fasten the standoffs through the siding into the actual
+y = -2.815 inches. Fasten the standoffs through the siding into the actual
 1-inch-thick support installed in step 19. Standoff diameter and mounting
 positions are schematic and must follow the selected numeral hardware.
 

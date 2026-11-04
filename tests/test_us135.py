@@ -216,8 +216,8 @@ class US135Tests(unittest.TestCase):
 
     def test_direct_seating_and_applied_trim(self):
         s=build.siding
-        self.assertEqual(s.exterior_offset,0.5)
-        self.assertEqual(s.xy('front',s.min_x)[1],-0.5)
+        self.assertAlmostEqual(s.exterior_offset,0.5+8/25.4)
+        self.assertAlmostEqual(s.xy('front',s.min_x)[1],-s.exterior_offset)
         self.assertTrue(all(p.start[2]==s.roof_support_z for p in s.board_parts if '_top_' in p.name))
         self.assertEqual({p.material for p in s.angle_parts},{'US20'})
         for p in s.angle_parts:
@@ -225,7 +225,7 @@ class US135Tests(unittest.TestCase):
                 self.assertAlmostEqual(max(p.size[:2]),40/25.4)
             if p.name.endswith('US20_front_face'):
                 self.assertAlmostEqual(p.start[2]+p.size[2],s.roof_finished_top_z+0.22)
-        self.assertEqual({p.material for p in s.hardware_parts},{'face_screw','strip_anchor'})
+        self.assertEqual({p.material for p in s.hardware_parts},{'face_screw','strip_anchor','AW08','clip_body','T-7'})
         for p in s.hardware_parts:
             self.assertTrue(all(d>0 for d in p.size))
         jamb=next(p for p in s.angle_parts if p.name.endswith('opening_left_1'))
@@ -254,32 +254,34 @@ class US135Tests(unittest.TestCase):
             for c in s.cuts:
                 if c.wall not in ('front','left') or c.course!=2: continue
                 rows={round(a.elevation,6) for a in s.attachments if a.board==c.name}
-                self.assertEqual(rows,{round(c.bottom+(s.board_width-s.course_pitch)/2,6)})
+                self.assertEqual(rows,{round(c.top-(s.board_width-s.course_pitch)/2,6)})
 
-    def test_concealment_and_recessed_head_envelopes(self):
-        s=build.build_enclosure().siding
-        kinds=set()
-        for a,head in zip(s.attachments,s.hardware_parts):
-            if a.wall=="roof": continue
-            kinds.add(a.concealment)
-            cut=next(c for c in s.cuts if c.name==a.board)
-            if a.concealment=="overlap-concealed":
-                self.assertTrue(a.recessed)
-                self.assertTrue(s._overlap_covers(cut,a.along,a.elevation))
-                self.assertIsNone(a.exception_reason)
-            elif a.concealment=="trim-concealed":
-                self.assertTrue(s._trim_covers(a.wall,a.along,a.elevation))
-            else:
-                self.assertIsNotNone(a.exception_reason)
-                self.assertFalse(s._trim_covers(a.wall,a.along,a.elevation))
-            if a.recessed:
-                axis=1 if a.wall in ("front","rear") else 0
-                face=s.xy(a.wall,a.along)[axis]
-                bearing=head.start[axis]+(head.size[axis] if a.wall in ("front","left") else 0)
-                self.assertAlmostEqual(abs(face-bearing),s.board_thickness/2)
-        self.assertEqual(kinds,{"overlap-concealed","trim-concealed","exposed"})
+    def test_starter_and_clip_retention(self):
+        s=build.siding
+        for cut in s.cuts:
+            attachments=[a for a in s.attachments if a.board==cut.name]
+            self.assertEqual(sum(a.locked for a in attachments),1)
+            if cut.course==len(s.courses):
+                self.assertTrue(any(a.kind=="face_screw" for a in attachments))
+                self.assertTrue(any(a.kind=="AW08" for a in attachments))
+            for a in attachments:
+                if a.kind=="AW08":
+                    self.assertAlmostEqual(a.elevation,cut.top-(s.board_width-s.course_pitch)/2)
+                    self.assertTrue(a.recessed)
+        for wall in ("front","rear","left","right"):
+            parts=[p for p in s.board_parts if f"_{wall}_" in p.name]
+            self.assertTrue(all(p.groove_cutters==s.wall_grooves(wall) for p in parts))
+        from lumber_model.siding_layout import layout_data
+        changed=replace(s,course_pitch=129/25.4)
+        for candidate in (s,changed):
+            data=layout_data(candidate)
+            self.assertEqual(data['datum_z'],candidate.frame_top_z)
+            for row,(bottom,top) in zip(data['courses'],candidate.courses):
+                self.assertAlmostEqual(row['bottom_below_post_top_in'],candidate.frame_top_z-bottom)
+                self.assertAlmostEqual(row['top_below_post_top_in'],candidate.frame_top_z-top)
+            self.assertAlmostEqual(candidate.courses[0][1]-candidate.courses[0][0],candidate.board_width)
 
-    def test_inverted_wall_profiles_keep_lower_fastening_lip_against_frame(self):
+    def test_upright_profiles_have_upper_recessed_fastening_edge(self):
         s=build.build_enclosure().siding
         for wall in ("front","rear","left","right"):
             cut=next(c for c in s.cuts if c.wall==wall and c.course==2)
@@ -289,19 +291,19 @@ class US135Tests(unittest.TestCase):
             outer=s.xy(wall,cut.start)[axis]
             lower_mid=lower[0][axis]+lower[1][axis]/2
             upper_mid=upper[0][axis]+upper[1][axis]/2
-            self.assertLess(abs(lower_mid-outer),abs(upper_mid-outer))
+            self.assertGreater(abs(lower_mid-outer),abs(upper_mid-outer))
 
     def test_cut_bom_shopping_and_generated_artifacts(self):
         s=build.siding
         bom={r['name']:r for r in s.bom_rows()}
-        self.assertEqual(bom[f'{s.name}_face_screws']['qty'],sum(a.wall!='roof' for a in s.attachments))
+        self.assertEqual(bom[f'{s.name}_face_screws']['qty'],sum(a.wall!='roof' and a.kind=='face_screw' for a in s.attachments))
         self.assertEqual(bom[f'{s.name}_US20']['stock_board_qty'],5)
         self.assertEqual(bom[f'{s.name}_US135']['stock_board_qty'],10)
         self.assertEqual(bom[f'{s.name}_US20']['qty'],11)
-        self.assertFalse(any(token in row['name'] for row in bom.values()
-                             for token in ('AW08','T-7','US44','US46','clip_screws','locking_screws','stopper_screws')))
+        for item in ('AW08','clip_screws','locking_screws','T-7','stopper_screws'):
+            self.assertGreater(bom[f'{s.name}_{item}']['qty'],0)
         purchases={r['item']:r for r in s.purchase_bom_rows()}
-        self.assertEqual(purchases['face_screws']['quantity'],sum(a.wall!='roof' for a in s.attachments))
+        self.assertEqual(purchases['face_screws']['quantity'],sum(a.wall!='roof' and a.kind=='face_screw' for a in s.attachments))
         self.assertEqual(purchases['US20']['quantity'],5)
         self.assertEqual(bom[f'{s.name}_US135']['qty'],len(s.cut_lengths))
         self.assertTrue(any(r['type'].startswith('US135') for r in build.model.shopping_list_rows()))
@@ -311,25 +313,27 @@ class US135Tests(unittest.TestCase):
             s.write_artifacts(tmp)
             manifest=json.loads((Path(tmp)/'siding_installation.json').read_text())
             self.assertEqual(manifest['roof_installation_order'],[f'{s.name}_top_{i}' for i in range(5,0,-1)])
-            self.assertEqual(manifest['board_standoff_in'],0)
-            self.assertIn('custom direct face fastening',manifest['attachment_method'])
+            self.assertEqual(manifest['board_standoff_in'],s.wall_standoff)
+            self.assertIn('AW08',manifest['attachment_method'])
             self.assertTrue((Path(tmp)/'siding_bom.csv').exists())
             self.assertEqual(manifest['product'],'US135')
             self.assertEqual(manifest['product_line'],'All Weather Pro')
-            self.assertIn('top downward',manifest['wall_installation'])
+            self.assertIn('bottom upward',manifest['wall_installation'])
+            self.assertTrue((Path(tmp)/'siding_field_layout.pdf').exists())
+            self.assertTrue((Path(tmp)/'siding_review_top_section.scad').exists())
             self.assertIn('NOT PERFORMED',manifest['physical_dry_fit_status'])
             self.assertEqual(len(list(Path(tmp).glob('siding_corner_*.scad'))),4)
         # Increasing saw kerf must never decrease stock requirements.
         wide={r['name']:r for r in replace(s,kerf=0.25).bom_rows()}
         self.assertGreaterEqual(wide[f'{s.name}_US135']['stock_board_qty'],bom[f'{s.name}_US135']['stock_board_qty'])
 
-    def test_viewer_installs_wall_courses_downward(self):
+    def test_viewer_installs_wall_courses_upward(self):
         steps={name:step.number for step in build.model.build_steps for name in step.object_names}
         s=build.siding
         for wall in ('front','left','right'):
             cuts=[c for c in s.cuts if c.wall==wall]
             numbers=[min(steps[p.name] for p in s.board_parts if p.name==c.name or p.name.startswith(c.name+'_piece_')) for c in cuts]
-            self.assertEqual(numbers,sorted(numbers))
+            self.assertEqual(numbers,sorted(numbers,reverse=True))
             self.assertEqual(len(set(numbers)),len(cuts))
         build.model.validate()
 

@@ -2,3 +2,4 @@ output/
 .venv/
 **/__pycache__/**
 /ALL_WEATHER_Siding_Horizontal_Installation_Guide.pdf
+.codex-attachments/

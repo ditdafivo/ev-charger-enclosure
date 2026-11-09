@@ -167,6 +167,10 @@ beneath mitered US20 roof-edge trim. See
 physical dry fit, provisional course pitch, custom starter, corner details,
 fastener assumptions and the generated siding fabrication files.
 
+[US20_CORNER.md](US20_CORNER.md) describes a standalone ASA corner-elbow
+prototype with rounded, generous slip sockets, fit coupons and estimated miter fixtures.
+It does not change the enclosure trim or cut list.
+
 ## Fitted plywood wall infill
 
 The roof strips and fitted 3/4-inch PT wall panels share one cutting plan.

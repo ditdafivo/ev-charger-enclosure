@@ -1,117 +1,125 @@
-# Printed gusset bearing covers
+# Printed gusset bearing and fastening covers
 
-Two open ASA/ABS bearing covers support the roof siding where the 6-inch steel
-gussets interrupt the plywood strips. Their top surfaces continue **only the
-actual plywood runs**, at **3/4 inch above the framing**, matching the plywood
-tops. The spaces between runs are open except for recessed connecting ribs.
-Printed-part load capacity and long-term creep have not been tested.
+Two ASA/ABS covers bridge the plywood runs interrupted by the 6-inch steel
+gussets. Bearing surfaces sit **19.05 mm (3/4 inch) above framing**, flush with
+plywood tops. Full-height outer lands provide a US20 fastening base on each
+corner side. Two recessed inward tabs per cover accept long wood screws into
+the perimeter braces. All holes are **field-drilled**.
 
-Generate the parts with:
+## Generate and customize
 
 ```sh
 uv run tools/generate_gusset_covers.py
+uv run tools/generate_gusset_covers.py --outward-x-mm 6.35 --outward-y-mm 8 --inward-x-mm 30 --inward-y-mm 25 --tab-width-x-mm 25 --tab-width-y-mm 25 --tab-recess-x-mm 6 --tab-recess-y-mm 6
 ```
 
-The normal `uv run build.py --no-deploy` also exports the parts and includes
-them in the enclosure model, BOM and siding-preparation build step.
+All dimensions below are **millimetres**. X runs parallel to the front/back
+braces; Y runs parallel to the side braces. Each axis is independently adjustable
+and the same base specification is mirrored for both covers. Each cover also
+has the additional outward X/Y offsets listed below.
 
-| File in `output/gusset_covers/` | Location | Quantity | Current size, X × Y × Z |
+| Parameter / CLI option | Default | Reference |
+| --- | --- | --- |
+| `outward_x_mm` / `--outward-x-mm` | 6.35 | Beyond the outside left/right framing edge |
+| `outward_y_mm` / `--outward-y-mm` | 6.35 | Beyond the outside front/rear framing edge |
+| `back_left_outward_x_extra_mm` / `--back-left-outward-x-extra-mm` | 5.5 | Additional negative-X reach on back-left cover |
+| `back_left_outward_y_extra_mm` / `--back-left-outward-y-extra-mm` | 4.7625 | Additional positive-Y reach on back-left cover |
+| `front_right_outward_x_extra_mm` / `--front-right-outward-x-extra-mm` | 3.175 | Additional positive-X reach on front-right cover |
+| `front_right_outward_y_extra_mm` / `--front-right-outward-y-extra-mm` | 4.7625 | Additional negative-Y reach on front-right cover |
+| `inward_x_mm` / `--inward-x-mm` | 25 | Along the front/back brace beyond the existing cover edge |
+| `inward_y_mm` / `--inward-y-mm` | 25 | Along the side brace beyond the existing cover edge |
+| `tab_width_x_mm` / `--tab-width-x-mm` | 25 | Across the X-running tab, centered over its brace |
+| `tab_width_y_mm` / `--tab-width-y-mm` | 25 | Across the Y-running tab, centered over its brace |
+| `tab_recess_x_mm` / `--tab-recess-x-mm` | 6 | X-tab top below siding underside |
+| `tab_recess_y_mm` / `--tab-recess-y-mm` | 6 | Y-tab top below siding underside |
+
+Reaches must be finite and nonnegative; zero inward reach omits that tab. Widths
+must be positive and fit within the supporting brace. Recesses must be positive
+and less than 19.05 mm. Defaults leave **13.05 mm thick tabs**, with 6 mm for
+screw-head clearance. Confirm actual #10 flange-head dimensions during fitting.
+
+Python callers can pass `spec=GussetCoverSpec(...)` to `covers_for_siding` or
+`generate_gusset_covers`. The enclosure model and normal
+`uv run build.py --no-deploy` use the same defaults. Custom standalone exports do
+not change the enclosure configuration.
+
+| File in `output/gusset_covers/` | Location | Quantity | Default X × Y × Z |
 | --- | --- | --- | --- |
-| `gusset_cover_1.stl` / `.step` | Back-left gusset | 1 | 163.4 × 184.675 × 19.05 mm |
-| `gusset_cover_2.stl` / `.step` | Front-right gusset | 1 | 163.4 × 170.425 × 19.05 mm |
+| `gusset_cover_bl.stl` / `.step` | Back-left | 1 | 201.1 × 223.9625 × 19.05 mm |
+| `gusset_covet_fr.stl` / `.step` | Front-right | 1 | 198.775 × 207.3875 × 19.05 mm |
 
-[Generated top-view preview](output/gusset_covers/preview.svg) shows both covers
-alongside their plywood runs. Blue is the bearing surface, gray is recessed
-framework, and tan is the adjacent plywood. Dashed outlines mark the steel and
-screw heads; some are hidden beneath the bearing bands in the physical part.
+The [top-view preview](output/gusset_covers/preview.svg) shows blue bearing/trim
+lands, orange recessed anchor tabs, gray framework and tan adjacent plywood.
+STLs are in millimetres, bearing faces down, translated to nonnegative print
+coordinates. STEP and SCAD use installed axes relative to the steel plate's
+minimum corner, with Z from the framing top. The manifest records effective
+parameters, world origins in inches, original bearing-band and framework bounds,
+new land/tab boxes, actual total sizes and solid volumes. The covers differ.
 
-STLs are in **millimetres**, with the roof-bearing faces down and the part
-translated to nonnegative print coordinates. STEP and OpenSCAD copies use
-installed orientation, with XY measured from the steel plate's minimum corner
-and Z from the lumber top. The manifest records world origins in inches,
-plate-relative Y bounds in millimetres, source strip names, and actual part
-sizes. Keep the installed X/Y axes aligned with the enclosure; the bearing
-bands run along X, parallel to the front. The covers are different parts.
+## Bearing, clearances and field relief
 
-## Bearing and fit
+The original bearing bands follow the interrupted plywood runs, including the
+rear closure strip. Only the outermost band continues outward in Y; X extensions
+continue the individual bands. Spaces between runs retain recessed framework.
+Outer lands reach **1/4 inch beyond the brace edges** by default, independently
+of the original plate-locating skirt. The front-right land adds **1/8 inch in
+positive X** and **3/16 inch in negative Y**, for total reaches of **3/8 inch
+positive X** and **7/16 inch negative Y**. Plywood, siding boards and US20
+geometry are not extended by this generator; coordinate their field fitting
+with the new lands.
 
-- Each cover has three bearing bands in the default layout. Their Y positions
-  and widths follow the plywood runs shortened by that gusset, including
-  the wider rear closure strip.
-  No broad connecting sheet remains between them.
-- The first back-left print extended **1/4 inch beyond the actual rear framing
-  edge**. The rear field-fit trim is now **2.325 mm** in fabrication exports,
-  making the skirt flush with the rear bearing band at plate-relative
-  Y = **155.575 mm**, instead of the nominal skirt edge at **157.9 mm**.
-  The back-left cover extends **3.175 mm beyond the modeled gusset rear edge**,
-  with a **2.575 mm skirt thickness** after the 0.6 mm plate clearance.
-  Fabrication exports use a **184.675 mm** cover length; the enclosure model
-  retains its nominal **187 mm** length. The installed origin, inward edge, and
-  front-right cover are unchanged.
-- The back-left cover extends **23.6 mm farther inward toward the front** than
-  the former square cover, reaching Y = 15.4793 inches in the enclosure. The
-  front-right cover extends **7.025 mm toward the rear**, reaching Y = 6.7431
-  inches. These boundaries follow the inner edges of the interrupted runs.
-  Dimensions recalculate when the roof layout changes.
-- The original plate-locating skirt still reaches **5.5 mm (0.217 inch)** beyond
-  each plate edge except at the trimmed back-left rear edge, leaving
-  **0.85 mm (0.033 inch)** inside the verified 1/4-inch
-  plate-to-frame margin. Its inner face clears the steel by **0.6 mm per side**.
-  The added inward extensions occupy the open area beyond the plate.
-- Internal **2.4 mm webs** bear on steel between the screw rows. Bearing bands
-  begin at Z = 8 mm, leaving **3.33 mm overhead** above the modeled steel/head
-  stack. Measure actual heads before printing: the model uses 8.89 mm diameter
-  and 2.794 mm head height above the 1.880 mm plate.
-- All connecting ribs stay at or below Z = 8 mm, **11.05 mm below the siding**.
-  Longitudinal ribs continue into the extensions, with a transverse tie at the
-  new inward edge. All extension rails and the inward edge have feet down to
-  the framing top plane, removing the former 5.6 mm raised corner. This applies
-  to both covers. Feet over open framing bays remain unsupported there.
-- Original **6 × 3 mm drainage gates** remain in the skirt and web bottoms.
-  Added feet have gates along their longer direction where space permits;
-  short feet remain solid. Keep the framework and outlets clear.
-- Plywood still stops **1/4 inch from the steel**, leaving **0.85 mm** between
-  the cover and plywood ends. The low-Y bearing bands follow the shifted
-  plywood beneath the recessed fastening lips;
-  the high-Y bands remain clear of the underside rebates.
+The back-left offsets instead give **11.85 mm beyond the left framing edge**
+and **11.1125 mm (7/16 inch) beyond the rear framing edge**. These put the outer
+edges **1/2 inch farther in negative X** and **9/16 inch farther in positive Y**
+than the original field-trimmed fabrication cover before fastening extensions
+were added. In structure coordinates, that original left edge was X = +0.85 mm;
+the new edge is X = -11.85 mm. The original rear edge was Y = 22.75 inches;
+the new edge is Y = 23.3125 inches in the default enclosure. Plate seating and
+the inward tabs retain their existing positions.
 
-The load path is siding → bearing bands → webs/skirt/feet → steel/framing.
-Keep siding and trim fasteners in their designated plywood or lumber. No gusset
-screw is removed, loosened or lengthened. Roof boards capture the floating
-covers vertically; the original skirts limit lateral movement.
+The original skirt extends 5.5 mm beyond the plate, with 0.6 mm plate clearance.
+Fabrication exports retain the **2.325 mm back-left rear skirt trim**, ending the
+original framework at plate-relative Y = 155.575 mm. The enclosure model retains
+its nominal rear framework edge at 157.9 mm. This trim never clips the new outer
+fastening land. The inward framework edges still follow the interrupted plywood
+runs; new tabs extend from those edges along each brace.
 
-## Printing
+Internal 2.4 mm webs bear on steel between screw rows. Original bearing bands
+start at Z = 8 mm, leaving 3.33 mm above the modeled steel/head stack. The model
+uses 8.89 mm diameter heads, 2.794 mm high above 1.880 mm steel. Preserve existing
+gusset screws. Original 6 × 3 mm drainage gates and extension feet remain;
+keep their outlets clear.
 
-Use ASA or ABS with the filament manufacturer's enclosed-printer settings.
-Start with a **0.4 or 0.6 mm nozzle, 0.2 mm layers, at least 6 perimeters,
-6 top/bottom layers, and 40–50% infill**. Preserve solid webs and skirt in the
-slicer. A brim may help keep the part flat. Confirm that layer quantization
-preserves the 19.05 mm installed height. These are starting settings, not a
-verified strength specification.
+**Field-cut plywood relief is required wherever the new inward tabs overlap a
+plywood strip.** The tabs are solid down to the framing plane; reducing their
+height clears siding and anchor heads, but does not clear plywood. Cut relief
+for the actual tab footprint and verify screw access before closing the roof.
+Do not drill anchors into steel or rely on a tab over an open framing bay.
 
-Print the supplied STL bearing faces down. Enable build-plate supports beneath
-recessed connecting ribs that bridge the open gaps between bearing bands. Those
-ribs begin 11.05 mm above the bed in this orientation. Inspect the slicer preview
-for unsupported starts and check support access before printing. Remove all
-supports and brim material, keeping bearing faces flat and drain gates open.
-Do not apply generic shrink compensation without measuring a sample; the
-0.6 mm plate clearance is already built into the CAD.
+## Printing and installation
 
-## Installation check
+Use ASA or ABS with enclosed-printer settings. Start with a 0.4 or 0.6 mm nozzle,
+0.2 mm layers, at least 6 perimeters, 6 top/bottom layers and 40–50% infill.
+Preserve solid webs, tabs and lands. Print bearing faces down with supports
+beneath recessed ribs and tabs; check the slicer for unsupported starts and
+support access. Remove supports without damaging bearing surfaces or drains.
+Do not apply generic shrink compensation without measuring a sample.
 
-1. Seat cover 1 over the back-left plate, extending toward the front. Seat cover
-   2 over the front-right plate, extending toward the rear. Both slide down from
-   above with the ribs downward. Verify that the added feet bear on framing.
-2. Check that each cover sits without rocking and clears every screw head.
-   Use a straightedge across the bearing bands and adjacent plywood to confirm
-   their tops align. No rib or foot projects below the framing top plane.
-3. Dry-fit the roof courses. Check that each bearing band continues its plywood
-   run, supports full-thickness board material, and clears the mating profiles.
-   Regenerate the covers if the measured board pitch or strip layout changes.
-4. Install the boards with their specified wood fasteners. Use temporary
-   restraint for the floating covers during assembly if needed, then remove it.
-   Check the open gaps and drainage gates before closing the roof.
+1. Seat `gusset_cover_bl` at back-left, extending toward the front, and
+   `gusset_covet_fr` at front-right, extending toward the rear. Check framing
+   contact, plate/head clearance and absence of rocking.
+2. Check the outer lands against the actual brace edges and proposed trim
+   position. Adjust X/Y parameters independently and regenerate as needed.
+3. Mark and cut plywood relief for the inward tabs. Verify the tabs sit on
+   lumber, their tops are recessed and the remaining bearing bands align with
+   adjacent plywood.
+4. Field-drill each tab and positively fasten it into its brace with a long wood
+   screw. Select length and position for actual lumber engagement. Confirm the
+   head clears the siding underside and avoid obstructing drains.
+5. Dry-fit roof boards and their profiles, including the intended extended
+   spacers beneath trim. Fasten the boards, then fit US20 with one trim screw
+   into the cover's full-height land on each corner side.
 
-Treat the first prints as fit prototypes. Geometry checks verify modeled
-clearances, connection of the CAD solids and alignment; they do not establish
-snow, uplift or thermal-creep capacity.
+Treat the defaults as fit-prototype dimensions. Geometry checks establish modeled
+clearances and connected solids; printed screw retention, snow/uplift capacity
+and long-term creep have not been established.

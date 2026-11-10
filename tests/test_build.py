@@ -2121,15 +2121,15 @@ class ParameterizedBuildTests(unittest.TestCase):
             cover_dir = output_dir / "gusset_covers"
             cover_manifest = json.loads((cover_dir / "manifest.json").read_text())
             from build123d import import_step
-            for record, expected_y in zip(cover_manifest["parts"], (184.675,170.425)):
+            for record, expected_y in zip(cover_manifest["parts"], (223.9625,207.3875)):
                 self.assertAlmostEqual(record["size_mm"][1],expected_y)
                 self.assertEqual(len(record["source_strips"]),3)
                 solid = import_step(cover_dir / f'{record["name"]}.step')
                 self.assertTrue(solid.is_valid)
                 self.assertEqual(len(solid.solids()), 1)
                 bounds = solid.bounding_box()
-                self.assertAlmostEqual(bounds.min.Y, record["y_bounds_mm"][0])
-                self.assertAlmostEqual(bounds.max.Y, record["y_bounds_mm"][1])
+                self.assertAlmostEqual(bounds.min.Y, record["bounds_mm"][0][1])
+                self.assertAlmostEqual(bounds.max.Y, record["bounds_mm"][0][1]+expected_y)
                 for actual, expected in zip(bounds.size, record["size_mm"]):
                     self.assertAlmostEqual(actual, expected)
                 data = (cover_dir / f'{record["name"]}.stl').read_bytes()

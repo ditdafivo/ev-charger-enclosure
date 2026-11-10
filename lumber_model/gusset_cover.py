@@ -1,8 +1,9 @@
 """Gusset bearing caps. Dimensions are mm; installed origin is the plate minimum."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import json
+import math
 from pathlib import Path
 
 from lumber_model.gusset import GUSSET_HOLE_CENTERS_IN, GUSSET_SIZE_IN, GUSSET_THICKNESS_IN
@@ -23,15 +24,59 @@ Box = tuple[tuple[float, float, float], tuple[float, float, float]]
 
 
 @dataclass(frozen=True)
+class GussetCoverSpec:
+    """Field-fit dimensions in mm; outward reaches start at framing edges."""
+    outward_x_mm: float = 6.35
+    outward_y_mm: float = 6.35
+    # Together with the base offsets, add 1/2 in -X and 9/16 in +Y
+    # relative to the original field-trimmed back-left fabrication cover.
+    back_left_outward_x_extra_mm: float = 5.5
+    back_left_outward_y_extra_mm: float = 4.7625
+    front_right_outward_x_extra_mm: float = 3.175
+    front_right_outward_y_extra_mm: float = 4.7625
+    inward_x_mm: float = 25.0
+    inward_y_mm: float = 25.0
+    tab_width_x_mm: float = 25.0
+    tab_width_y_mm: float = 25.0
+    tab_recess_x_mm: float = 6.0
+    tab_recess_y_mm: float = 6.0
+
+    def __post_init__(self) -> None:
+        for name, value in asdict(self).items():
+            if not math.isfinite(value) or value < 0:
+                raise ValueError(f'{name} must be finite and nonnegative')
+            if 'width' in name and value == 0:
+                raise ValueError(f'{name} must be positive')
+            if 'recess' in name and not 0 < value < HEIGHT:
+                raise ValueError(f'{name} must be between zero and {HEIGHT:g} mm')
+
+
+DEFAULT_SPEC = GussetCoverSpec()
+
+
+@dataclass(frozen=True)
 class GussetCover:
     name: str
     origin_in: tuple[float, float, float]
     bearing_bands_mm: tuple[tuple[float, float], ...]
     y_bounds_mm: tuple[float, float]
     source_strips: tuple[str, ...]
+    trim_lands: tuple[Box, ...] = ()
+    anchor_tabs: tuple[Box, ...] = ()
 
     @property
     def boxes(self) -> tuple[Box, ...]:
+        return self.base_boxes + self.trim_lands + self.anchor_tabs
+
+    @property
+    def bounds_mm(self) -> Box:
+        boxes = self.boxes
+        lo = tuple(min(p[i] for p, _ in boxes) for i in range(3))
+        hi = tuple(max(p[i]+s[i] for p, s in boxes) for i in range(3))
+        return lo, tuple(hi[i]-lo[i] for i in range(3))
+
+    @property
+    def base_boxes(self) -> tuple[Box, ...]:
         """A connected solid, including open-bottom screw wells and drain gates."""
         boxes: list[Box] = []
         lo, hi = -OVERHANG, PLATE + OVERHANG
@@ -112,7 +157,8 @@ class GussetCover:
         return tuple(clipped)
 
 
-def covers_for_siding(siding, *, fabrication: bool = False) -> tuple[GussetCover, ...]:
+def covers_for_siding(siding, *, fabrication: bool = False,
+                      spec: GussetCoverSpec = DEFAULT_SPEC) -> tuple[GussetCover, ...]:
     """Continue interrupted plywood runs; optionally apply field-fit trimming."""
     result = []
     for index, (origin, size) in enumerate(siding.roof_gussets, 1):
@@ -142,8 +188,65 @@ def covers_for_siding(siding, *, fabrication: bool = False) -> tuple[GussetCover
         bands = tuple((a,b) for a,b in trimmed_bands if b-a > 1e-7)
         source_strips = tuple(s.name for s,(a,b) in zip(interrupted, trimmed_bands)
                               if b-a > 1e-7)
-        result.append(GussetCover(f'gusset_cover_{index}', origin, bands,
-                                  y_bounds, source_strips))
+        # Frame-relative limits; preserve the original plate-locating skirt.
+        back_left = left and rear
+        front_right = not left and not rear
+        extra_x = (spec.back_left_outward_x_extra_mm if back_left else
+                   spec.front_right_outward_x_extra_mm if front_right else 0)
+        extra_y = (spec.back_left_outward_y_extra_mm if back_left else
+                   spec.front_right_outward_y_extra_mm if front_right else 0)
+        outward_x = spec.outward_x_mm + extra_x
+        outward_y = spec.outward_y_mm + extra_y
+        outer_x = siding.min_x-outward_x/MM if left else siding.max_x+outward_x/MM
+        outer_y = siding.max_y+outward_y/MM if rear else siding.min_y-outward_y/MM
+        ox, oy = (outer_x-origin[0])*MM, (outer_y-origin[1])*MM
+        xlo, xhi = (min(lo, ox), hi) if left else (lo, max(hi, ox))
+        lands = []
+        xa, xb = (xlo, lo) if left else (hi, xhi)
+        if xb > xa:
+            lands.extend(((xa, a, DECK_BOTTOM), (xb-xa, b-a, HEIGHT-DECK_BOTTOM))
+                         for a, b in bands)
+        ya, yb = (bands[-1][1], oy) if rear else (oy, bands[0][0])
+        if yb > ya:
+            lands.append(((xlo, ya, DECK_BOTTOM), (xhi-xlo, yb-ya, HEIGHT-DECK_BOTTOM)))
+
+        def brace_center(axis: int) -> float:
+            transverse = 1-axis
+            edge = ((siding.max_y if rear else siding.min_y) if axis == 0 else
+                    (siding.min_x if left else siding.max_x))
+            candidates = [(p, z) for p, z in siding.framing
+                          if abs(p[2]+z[2]-origin[2]) < 1e-6
+                          and z[axis] > GUSSET_SIZE_IN
+                          and p[transverse]-1e-7 <= edge <= p[transverse]+z[transverse]+1e-7]
+            if len(candidates) != 1:
+                raise ValueError(f'Gusset {index}: cannot identify axis {axis} supporting brace')
+            p, z = candidates[0]
+            width = spec.tab_width_x_mm if axis == 0 else spec.tab_width_y_mm
+            if width > z[transverse]*MM:
+                raise ValueError(f'Gusset {index}: axis {axis} tab width exceeds brace width')
+            return (p[transverse]+z[transverse]/2-origin[transverse])*MM
+
+        tabs = []
+        for axis, reach, width, recess, direction, start in (
+            (0, spec.inward_x_mm, spec.tab_width_x_mm, spec.tab_recess_x_mm,
+             1 if left else -1, hi if left else lo),
+            (1, spec.inward_y_mm, spec.tab_width_y_mm, spec.tab_recess_y_mm,
+             -1 if rear else 1, y_bounds[0] if rear else y_bounds[1]),
+        ):
+            if reach == 0:
+                continue
+            center = brace_center(axis)
+            pos = [0., 0., 0.]
+            size = [0., 0., HEIGHT-recess]
+            pos[axis] = start if direction > 0 else start-reach
+            pos[1-axis] = center-width/2
+            size[axis], size[1-axis] = reach, width
+            tabs.append((tuple(pos), tuple(size)))
+        name = ('gusset_cover_bl' if left and rear else
+                'gusset_covet_fr' if not left and not rear else
+                f'gusset_cover_{index}')
+        result.append(GussetCover(name, origin, bands,
+                                  y_bounds, source_strips, tuple(lands), tuple(tabs)))
     return tuple(result)
 
 
@@ -157,9 +260,11 @@ def _write_preview(covers: tuple[GussetCover, ...], path: Path) -> None:
     for index, cover in enumerate(covers):
         center = 300+520*index
         svg.append(f'<text x="{center}" y="119" font-size="20">'
-                   f'{"Back-left" if index == 0 else "Front-right"} (cover {index+1})</text>')
-        svg.append(f'<g transform="translate({center-163.4+2*OVERHANG} '
-                   f'{510+2*cover.y_bounds_mm[0]}) scale(2 -2)">')
+                   f'{"Back-left" if index == 0 else "Front-right"} ({cover.name})</text>')
+        lower, extent = cover.bounds_mm
+        scale = min(1.7, 440/extent[0], 360/extent[1])
+        svg.append(f'<g transform="translate({center-scale*(lower[0]+extent[0]/2)} '
+                   f'{505+scale*lower[1]}) scale({scale} {-scale})">')
         for pos, size in cover.boxes:
             if pos[2]+size[2] <= DECK_BOTTOM+1e-7:
                 svg.append(f'<rect x="{pos[0]}" y="{pos[1]}" width="{size[0]}" '
@@ -170,28 +275,32 @@ def _write_preview(covers: tuple[GussetCover, ...], path: Path) -> None:
             stub_x = PLATE+0.25*MM if index == 0 else -0.25*MM-30
             svg.append(f'<rect x="{stub_x}" y="{a}" width="30" height="{b-a}" '
                        'fill="#c6a570"/>')
+        for boxes, color in ((cover.trim_lands, '#377e96'), (cover.anchor_tabs, '#c47738')):
+            for pos, land_size in boxes:
+                svg.append(f'<rect x="{pos[0]}" y="{pos[1]}" width="{land_size[0]}" '
+                           f'height="{land_size[1]}" fill="{color}"/>')
         svg.append(f'<rect width="{PLATE}" height="{PLATE}" fill="none" '
                    'stroke="#273b47" stroke-width="0.6" stroke-dasharray="3 2"/>')
         for x,y in GUSSET_HOLE_CENTERS_IN:
             svg.append(f'<circle cx="{x*MM}" cy="{y*MM}" r="4.445" fill="none" '
                        'stroke="#273b47" stroke-width="0.45" stroke-dasharray="1 1"/>')
         svg.append('</g>')
-        length = cover.y_bounds_mm[1]-cover.y_bounds_mm[0]
         svg.append(f'<text x="{center}" y="547" font-size="16">'
-                   f'163.4 × {length:g} mm; bearing height 19.05 mm</text>')
-    svg.extend(['<text x="560" y="590" font-size="15">Blue: siding bearing  ·  Gray: recessed ribs  ·  Dashed: steel and screw-head outlines</text>',
+                   f'{extent[0]:g} × {extent[1]:g} mm; bearing height 19.05 mm</text>')
+    svg.extend(['<text x="560" y="590" font-size="15">Blue: bearing / trim lands · Orange: recessed anchor tabs · Gray: ribs · Dashed: steel / heads</text>',
                 '</g></svg>'])
     path.write_text('\n'.join(svg)+'\n')
 
 
-def generate_gusset_covers(siding, directory: Path) -> list[Path]:
+def generate_gusset_covers(siding, directory: Path, *,
+                           spec: GussetCoverSpec = DEFAULT_SPEC) -> list[Path]:
     """Export two individually relieved caps in mm, with STEP in installed axes."""
     from build123d import Align, Axis, Box as CadBox, Location, Part, export_step, export_stl
 
     directory.mkdir(parents=True, exist_ok=True)
     paths = []
     records = []
-    covers = covers_for_siding(siding, fabrication=True)
+    covers = covers_for_siding(siding, fabrication=True, spec=spec)
     for cover in covers:
         solids = [Location(pos)*CadBox(*size, align=(Align.MIN,)*3)
                   for pos, size in cover.boxes]
@@ -219,12 +328,16 @@ def generate_gusset_covers(siding, directory: Path) -> list[Path]:
                             bearing_bands_mm=cover.bearing_bands_mm,
                             y_bounds_mm=cover.y_bounds_mm,
                             source_strips=cover.source_strips,
+                            trim_lands_mm=cover.trim_lands,
+                            anchor_tabs_mm=cover.anchor_tabs,
+                            plywood_relief_required=True,
+                            bounds_mm=cover.bounds_mm,
                             size_mm=list(bounds.size),
                             volume_mm3=solid.volume))
     manifest = directory/'manifest.json'
     manifest.write_text(json.dumps(dict(units='mm', material='ASA or ABS',
         skirt_margin_mm=6.35-OVERHANG, plate_side_clearance_mm=FIT,
-        parts=records), indent=2)+'\n')
+        parameters=asdict(spec), parts=records), indent=2)+'\n')
     paths.append(manifest)
     preview = directory/'preview.svg'
     _write_preview(covers, preview)

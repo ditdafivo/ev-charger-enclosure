@@ -708,13 +708,16 @@ plywood. The separate numeral backing leaves a local 1/4-inch gap behind the
 front siding. Keep screened drainage paths open.
 
 Seat the two printed ASA/ABS gusset bearing covers before the roof boards:
-cover 1 at back-left extending toward the front, and cover 2 at front-right
-extending toward the rear. Their bearing bands continue the interrupted plywood
-runs flush with the plywood tops; recessed ribs connect the bands across open
-gaps. Check the added extension feet bear on framing. Check
-that each sits without rocking and clears every gusset screw head. The roof
-boards capture these floating covers; keep all fasteners in the specified wood
-backing. See GUSSET_COVERS.md for printing and fit checks.
+`gusset_cover_bl` at back-left extending toward the front, and `gusset_covet_fr`
+at front-right extending toward the rear. Their bearing bands continue the
+interrupted plywood runs flush with the plywood tops; recessed ribs connect the
+bands across open gaps. Check the added extension feet bear on framing. Check
+that each sits without rocking and clears every gusset screw head. Field-relieve
+plywood where it overlaps the inward tabs, then field-drill and fasten the
+recessed tabs into the braces with long wood screws before installing boards.
+Check screw-head clearance beneath the siding. The full-height outer lands
+provide the fastening base for one US20 screw on each corner side. See
+GUSSET_COVERS.md for adjustable dimensions, printing and fit checks.
 
 Dry-fit two US135 courses with AW08 and T-7 on representative lumber before cutting
 production pieces. Verify the provisional 130 mm installed pitch, rear-profile
@@ -744,8 +747,8 @@ enclosure_siding_roof_strip_3_2
 enclosure_siding_roof_strip_4_1
 enclosure_siding_roof_strip_4_2
 enclosure_siding_roof_strip_5_1
-gusset_cover_1
-gusset_cover_2
+gusset_cover_bl
+gusset_covet_fr
 enclosure_siding_roof_strip_1_1_anchor_1
 enclosure_siding_roof_strip_1_1_anchor_2
 enclosure_siding_roof_strip_1_2_anchor_3

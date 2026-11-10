@@ -1613,7 +1613,7 @@ def build_enclosure(
                            FRONT_STREET_LIGHT_CENTER_Z+1.2+1/8),
     )
 
-    # Floating bearing caps are captured by the roof boards. World-aligned
+    # Bearing covers have recessed tabs for field-drilled brace anchors. World-aligned
     # primitive boxes match the fabrication solids without mesh dependencies.
     for cover in covers_for_siding(siding):
         components.add(

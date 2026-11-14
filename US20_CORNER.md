@@ -1,5 +1,8 @@
 # ASA rounded slip-socket corner
 
+For the separate measured-profile minimal rear-clip prototype, see
+[US20_CORNER_CLIP.md](US20_CORNER_CLIP.md).
+
 This standalone ASA elbow conceals a gapped 45° US20 roof-rim miter. Both trim
 ends insert lengthwise into fully enclosed L-shaped sockets. The sleeve wraps
 each trim's top, underside, inside and outside faces, and both free edges.
